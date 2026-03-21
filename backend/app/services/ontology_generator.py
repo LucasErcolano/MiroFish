@@ -256,38 +256,84 @@ class OntologyGenerator:
     
     def _validate_and_process(self, result: Dict[str, Any]) -> Dict[str, Any]:
         """验证和后处理结果"""
-        
+
+        if not isinstance(result, dict):
+            result = {}
+
         # 确保必要字段存在
-        if "entity_types" not in result:
+        if not isinstance(result.get("entity_types"), list):
             result["entity_types"] = []
-        if "edge_types" not in result:
+        if not isinstance(result.get("edge_types"), list):
             result["edge_types"] = []
         if "analysis_summary" not in result:
             result["analysis_summary"] = ""
-        
+
         # 验证实体类型
+        validated_entities = []
         for entity in result["entity_types"]:
-            if "attributes" not in entity:
-                entity["attributes"] = []
-            if "examples" not in entity:
-                entity["examples"] = []
-            # 确保description不超过100字符
-            if len(entity.get("description", "")) > 100:
-                entity["description"] = entity["description"][:97] + "..."
-        
+            if isinstance(entity, str):
+                entity = {"name": entity, "description": f"Entity type: {entity}"}
+            if not isinstance(entity, dict):
+                continue
+
+            name = str(entity.get("name", "")).strip()
+            if not name:
+                continue
+
+            attributes = entity.get("attributes")
+            if not isinstance(attributes, list):
+                attributes = []
+
+            examples = entity.get("examples")
+            if not isinstance(examples, list):
+                examples = []
+
+            normalized = dict(entity)
+            normalized["name"] = name
+            normalized["attributes"] = attributes
+            normalized["examples"] = examples
+            if len(normalized.get("description", "")) > 100:
+                normalized["description"] = normalized["description"][:97] + "..."
+
+            validated_entities.append(normalized)
+
+        result["entity_types"] = validated_entities
+
         # 验证关系类型
+        validated_edges = []
         for edge in result["edge_types"]:
-            if "source_targets" not in edge:
-                edge["source_targets"] = []
-            if "attributes" not in edge:
-                edge["attributes"] = []
-            if len(edge.get("description", "")) > 100:
-                edge["description"] = edge["description"][:97] + "..."
-        
+            if isinstance(edge, str):
+                edge = {"name": edge, "description": f"Relationship type: {edge}"}
+            if not isinstance(edge, dict):
+                continue
+
+            name = str(edge.get("name", "")).strip()
+            if not name:
+                continue
+
+            source_targets = edge.get("source_targets")
+            if not isinstance(source_targets, list):
+                source_targets = []
+
+            attributes = edge.get("attributes")
+            if not isinstance(attributes, list):
+                attributes = []
+
+            normalized = dict(edge)
+            normalized["name"] = name
+            normalized["source_targets"] = source_targets
+            normalized["attributes"] = attributes
+            if len(normalized.get("description", "")) > 100:
+                normalized["description"] = normalized["description"][:97] + "..."
+
+            validated_edges.append(normalized)
+
+        result["edge_types"] = validated_edges
+
         # Zep API 限制：最多 10 个自定义实体类型，最多 10 个自定义边类型
         MAX_ENTITY_TYPES = 10
         MAX_EDGE_TYPES = 10
-        
+
         # 兜底类型定义
         person_fallback = {
             "name": "Person",
@@ -298,7 +344,7 @@ class OntologyGenerator:
             ],
             "examples": ["ordinary citizen", "anonymous netizen"]
         }
-        
+
         organization_fallback = {
             "name": "Organization",
             "description": "Any organization not fitting other specific organization types.",
@@ -308,40 +354,40 @@ class OntologyGenerator:
             ],
             "examples": ["small business", "community group"]
         }
-        
+
         # 检查是否已有兜底类型
         entity_names = {e["name"] for e in result["entity_types"]}
         has_person = "Person" in entity_names
         has_organization = "Organization" in entity_names
-        
+
         # 需要添加的兜底类型
         fallbacks_to_add = []
         if not has_person:
             fallbacks_to_add.append(person_fallback)
         if not has_organization:
             fallbacks_to_add.append(organization_fallback)
-        
+
         if fallbacks_to_add:
             current_count = len(result["entity_types"])
             needed_slots = len(fallbacks_to_add)
-            
+
             # 如果添加后会超过 10 个，需要移除一些现有类型
             if current_count + needed_slots > MAX_ENTITY_TYPES:
                 # 计算需要移除多少个
                 to_remove = current_count + needed_slots - MAX_ENTITY_TYPES
                 # 从末尾移除（保留前面更重要的具体类型）
                 result["entity_types"] = result["entity_types"][:-to_remove]
-            
+
             # 添加兜底类型
             result["entity_types"].extend(fallbacks_to_add)
-        
+
         # 最终确保不超过限制（防御性编程）
         if len(result["entity_types"]) > MAX_ENTITY_TYPES:
             result["entity_types"] = result["entity_types"][:MAX_ENTITY_TYPES]
-        
+
         if len(result["edge_types"]) > MAX_EDGE_TYPES:
             result["edge_types"] = result["edge_types"][:MAX_EDGE_TYPES]
-        
+
         return result
     
     def generate_python_code(self, ontology: Dict[str, Any]) -> str:

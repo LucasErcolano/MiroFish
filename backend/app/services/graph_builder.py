@@ -210,74 +210,111 @@ class GraphBuilderService:
         
         # Zep 保留名称，不能作为属性名
         RESERVED_NAMES = {'uuid', 'name', 'group_id', 'name_embedding', 'summary', 'created_at'}
-        
+
         def safe_attr_name(attr_name: str) -> str:
             """将保留名称转换为安全名称"""
             if attr_name.lower() in RESERVED_NAMES:
                 return f"entity_{attr_name}"
             return attr_name
-        
+
+        def normalize_attributes(raw_attributes: Any) -> List[Dict[str, str]]:
+            normalized: List[Dict[str, str]] = []
+            for attr_def in raw_attributes or []:
+                if isinstance(attr_def, str):
+                    attr_def = {"name": attr_def, "description": attr_def}
+                if not isinstance(attr_def, dict):
+                    continue
+
+                attr_name = str(attr_def.get("name", "")).strip()
+                if not attr_name:
+                    continue
+
+                normalized.append({
+                    "name": attr_name,
+                    "description": str(attr_def.get("description") or attr_name),
+                })
+            return normalized
+
+        def normalize_source_targets(raw_source_targets: Any) -> List[EntityEdgeSourceTarget]:
+            normalized: List[EntityEdgeSourceTarget] = []
+            for source_target in raw_source_targets or []:
+                if not isinstance(source_target, dict):
+                    continue
+
+                normalized.append(
+                    EntityEdgeSourceTarget(
+                        source=str(source_target.get("source", "Entity")) or "Entity",
+                        target=str(source_target.get("target", "Entity")) or "Entity",
+                    )
+                )
+
+            # Zep API allows max 10 source_targets per edge type.
+            return normalized[:10]
+
         # 动态创建实体类型
         entity_types = {}
         for entity_def in ontology.get("entity_types", []):
-            name = entity_def["name"]
+            if not isinstance(entity_def, dict):
+                continue
+
+            name = str(entity_def.get("name", "")).strip()
+            if not name:
+                continue
+
             description = entity_def.get("description", f"A {name} entity.")
-            
+
             # 创建属性字典和类型注解（Pydantic v2 需要）
             attrs = {"__doc__": description}
             annotations = {}
-            
-            for attr_def in entity_def.get("attributes", []):
+
+            for attr_def in normalize_attributes(entity_def.get("attributes", [])):
                 attr_name = safe_attr_name(attr_def["name"])  # 使用安全名称
                 attr_desc = attr_def.get("description", attr_name)
                 # Zep API 需要 Field 的 description，这是必需的
                 attrs[attr_name] = Field(description=attr_desc, default=None)
                 annotations[attr_name] = Optional[EntityText]  # 类型注解
-            
+
             attrs["__annotations__"] = annotations
-            
+
             # 动态创建类
             entity_class = type(name, (EntityModel,), attrs)
             entity_class.__doc__ = description
             entity_types[name] = entity_class
-        
+
         # 动态创建边类型
         edge_definitions = {}
         for edge_def in ontology.get("edge_types", []):
-            name = edge_def["name"]
+            if not isinstance(edge_def, dict):
+                continue
+
+            name = str(edge_def.get("name", "")).strip()
+            if not name:
+                continue
+
             description = edge_def.get("description", f"A {name} relationship.")
-            
+
             # 创建属性字典和类型注解
             attrs = {"__doc__": description}
             annotations = {}
-            
-            for attr_def in edge_def.get("attributes", []):
+
+            for attr_def in normalize_attributes(edge_def.get("attributes", [])):
                 attr_name = safe_attr_name(attr_def["name"])  # 使用安全名称
                 attr_desc = attr_def.get("description", attr_name)
                 # Zep API 需要 Field 的 description，这是必需的
                 attrs[attr_name] = Field(description=attr_desc, default=None)
                 annotations[attr_name] = Optional[str]  # 边属性用str类型
-            
+
             attrs["__annotations__"] = annotations
-            
+
             # 动态创建类
             class_name = ''.join(word.capitalize() for word in name.split('_'))
             edge_class = type(class_name, (EdgeModel,), attrs)
             edge_class.__doc__ = description
-            
-            # 构建source_targets
-            source_targets = []
-            for st in edge_def.get("source_targets", []):
-                source_targets.append(
-                    EntityEdgeSourceTarget(
-                        source=st.get("source", "Entity"),
-                        target=st.get("target", "Entity")
-                    )
-                )
-            
+
+            source_targets = normalize_source_targets(edge_def.get("source_targets", []))
             if source_targets:
                 edge_definitions[name] = (edge_class, source_targets)
-        
+
         # 调用Zep API设置本体
         if entity_types or edge_definitions:
             self.backend.set_ontology(
