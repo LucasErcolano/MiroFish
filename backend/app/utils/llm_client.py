@@ -16,6 +16,7 @@ from ..config import Config
 try:
     from prompture.agents import Conversation
     from prompture.infra.provider_env import ProviderEnvironment
+    from prompture.extraction.tools import strip_think_tags, clean_json_text
     _HAS_PROMPTURE = True
 except ImportError:
     _HAS_PROMPTURE = False
@@ -121,12 +122,11 @@ class LLMClient:
         """
         if _HAS_PROMPTURE:
             content = self._chat_prompture(messages, temperature, max_tokens)
+            return strip_think_tags(content)
         else:
             content = self._chat_openai(messages, temperature, max_tokens, response_format)
-
-        # 部分模型（如MiniMax M2.5）会在content中包含<think>思考内容，需要移除
-        content = re.sub(r'<think>[\s\S]*?</think>', '', content).strip()
-        return content
+            # Fallback: strip think tags with regex when Prompture is not available
+            return re.sub(r'<think>[\s\S]*?</think>', '', content).strip()
 
     def chat_json(
         self,
@@ -147,17 +147,18 @@ class LLMClient:
         """
         if _HAS_PROMPTURE:
             response = self._chat_prompture(messages, temperature, max_tokens)
+            # Prompture's clean_json_text strips think tags + markdown fences
+            cleaned = clean_json_text(response)
         else:
             response = self._chat_openai(
                 messages, temperature, max_tokens,
                 response_format={"type": "json_object"},
             )
-
-        # 清理markdown代码块标记
-        cleaned = response.strip()
-        cleaned = re.sub(r'^```(?:json)?\s*\n?', '', cleaned, flags=re.IGNORECASE)
-        cleaned = re.sub(r'\n?```\s*$', '', cleaned)
-        cleaned = cleaned.strip()
+            # Fallback cleaning when Prompture is not available
+            cleaned = re.sub(r'<think>[\s\S]*?</think>', '', response).strip()
+            cleaned = re.sub(r'^```(?:json)?\s*\n?', '', cleaned, flags=re.IGNORECASE)
+            cleaned = re.sub(r'\n?```\s*$', '', cleaned)
+            cleaned = cleaned.strip()
 
         try:
             return json.loads(cleaned)
