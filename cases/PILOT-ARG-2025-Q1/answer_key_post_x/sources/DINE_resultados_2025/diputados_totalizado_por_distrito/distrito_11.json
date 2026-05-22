@@ -1,0 +1,114 @@
+{
+  "total": 208742,
+  "agrupaciones": [
+    {
+      "nombre": "FRENTE DEFENDEMOS LA PAMPA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "96",
+          "Votos": 90097,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE DEFENDEMOS LA PAMPA"
+        }
+      ],
+      "votos": 90097,
+      "porcentaje": "44.60",
+      "idAgrupacion": "96",
+      "color": "#019cde"
+    },
+    {
+      "nombre": "ALIANZA LA LIBERTAD AVANZA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "6",
+          "Votos": 88004,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "ALIANZA LA LIBERTAD AVANZA"
+        }
+      ],
+      "votos": 88004,
+      "porcentaje": "43.56",
+      "idAgrupacion": "6",
+      "color": "#743bbc"
+    },
+    {
+      "nombre": "CAMBIA LA PAMPA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "98",
+          "Votos": 17364,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "CAMBIA LA PAMPA"
+        }
+      ],
+      "votos": 17364,
+      "porcentaje": "8.60",
+      "idAgrupacion": "98",
+      "color": "#f16d01"
+    },
+    {
+      "nombre": "FRENTE DE IZQUIERDA Y DE TRABAJADORES - UNIDAD",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "105",
+          "Votos": 4123,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE DE IZQUIERDA Y DE TRABAJADORES - UNIDAD"
+        }
+      ],
+      "votos": 4123,
+      "porcentaje": "2.04",
+      "idAgrupacion": "105",
+      "color": "#ef2b2d"
+    },
+    {
+      "nombre": "MOVIMIENTO AL SOCIALISMO",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "99",
+          "Votos": 2432,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "MOVIMIENTO AL SOCIALISMO"
+        }
+      ],
+      "votos": 2432,
+      "porcentaje": "1.20",
+      "idAgrupacion": "99",
+      "color": "#ea675f"
+    }
+  ],
+  "COMANDO": 0,
+  "NULO": 3898,
+  "EN BLANCO": 2499,
+  "RECURRIDO": 289,
+  "IMPUGNADO": 36,
+  "IdDistrito": 11,
+  "Distrito": "LA PAMPA",
+  "MesasEscrutadas": 915,
+  "Electores": 3046570,
+  "Votantes": 208742,
+  "ParticipacionSobreEscrutado": 6.85,
+  "Año": 2025,
+  "Recuento": "Provisorio",
+  "IdEleccion": 2,
+  "Elecciones": "GENERALES",
+  "IdCargo": 3,
+  "Cargo": "DIPUTADO NACIONAL",
+  "positivos": 202020,
+  "blancos": 2499,
+  "impugnados": 36,
+  "nulos": 3898,
+  "recurridos": 289,
+  "comando": 0,
+  "union": 325
+}

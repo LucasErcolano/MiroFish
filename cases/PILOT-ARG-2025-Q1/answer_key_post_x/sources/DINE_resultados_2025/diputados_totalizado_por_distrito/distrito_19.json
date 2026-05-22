@@ -1,0 +1,131 @@
+{
+  "total": 274724,
+  "agrupaciones": [
+    {
+      "nombre": "ALIANZA LA LIBERTAD AVANZA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "94",
+          "Votos": 132747,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "ALIANZA LA LIBERTAD AVANZA"
+        }
+      ],
+      "votos": 132747,
+      "porcentaje": "51.46",
+      "idAgrupacion": "94",
+      "color": "#743bbc"
+    },
+    {
+      "nombre": "FRENTE JUSTICIALISTA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "287",
+          "Votos": 86211,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE JUSTICIALISTA"
+        }
+      ],
+      "votos": 86211,
+      "porcentaje": "33.42",
+      "idAgrupacion": "287",
+      "color": "#48b7e5"
+    },
+    {
+      "nombre": "FRENTE PUEBLO",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "286",
+          "Votos": 17538,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE PUEBLO"
+        }
+      ],
+      "votos": 17538,
+      "porcentaje": "6.80",
+      "idAgrupacion": "286",
+      "color": "#ffffff"
+    },
+    {
+      "nombre": "PROVINCIAS UNIDAS",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "140",
+          "Votos": 9493,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "PROVINCIAS UNIDAS"
+        }
+      ],
+      "votos": 9493,
+      "porcentaje": "3.68",
+      "idAgrupacion": "140",
+      "color": "#ff5800"
+    },
+    {
+      "nombre": "FRENTE DE IZQUIERDA Y DE TRABAJADORES - UNIDAD",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "31",
+          "Votos": 9026,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE DE IZQUIERDA Y DE TRABAJADORES - UNIDAD"
+        }
+      ],
+      "votos": 9026,
+      "porcentaje": "3.50",
+      "idAgrupacion": "31",
+      "color": "#ef2b2d"
+    },
+    {
+      "nombre": "MOVIMIENTO AL SOCIALISMO",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "99",
+          "Votos": 2947,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "MOVIMIENTO AL SOCIALISMO"
+        }
+      ],
+      "votos": 2947,
+      "porcentaje": "1.14",
+      "idAgrupacion": "99",
+      "color": "#ea675f"
+    }
+  ],
+  "NULO": 10677,
+  "COMANDO": 0,
+  "IMPUGNADO": 57,
+  "EN BLANCO": 5883,
+  "RECURRIDO": 145,
+  "IdDistrito": 19,
+  "Distrito": "SAN LUIS",
+  "MesasEscrutadas": 1335,
+  "Electores": 4721145,
+  "Votantes": 274724,
+  "ParticipacionSobreEscrutado": 5.82,
+  "Año": 2025,
+  "Recuento": "Provisorio",
+  "IdEleccion": 2,
+  "Elecciones": "GENERALES",
+  "IdCargo": 3,
+  "Cargo": "DIPUTADO NACIONAL",
+  "positivos": 257962,
+  "blancos": 5883,
+  "impugnados": 57,
+  "nulos": 10677,
+  "recurridos": 145,
+  "comando": 0,
+  "union": 202
+}
