@@ -121,8 +121,11 @@ try:
     import oasis
     from oasis import (
         ActionType,
+        AgentGraph,
         LLMAction,
         ManualAction,
+        SocialAgent,
+        UserInfo,
         generate_reddit_agent_graph
     )
 except ImportError as e:
@@ -465,6 +468,135 @@ class RedditSimulationRunner:
             model_platform=ModelPlatformType.OPENAI,
             model_type=llm_model,
         )
+
+    def _has_per_agent_llm_config(self) -> bool:
+        """Return whether any agent declares an explicit LLM route."""
+        for cfg in self.config.get("agent_configs", []):
+            if any(key in cfg for key in ("llm_model", "llm_base_url", "llm_api_key")):
+                return True
+        return False
+
+    def _create_openai_model(self, model_name: str, base_url: str, api_key: str):
+        """Create one OpenAI-compatible CAMEL model with explicit client config."""
+        if not api_key:
+            raise ValueError("Missing LLM API key for per-agent model routing")
+
+        return ModelFactory.create(
+            model_platform=ModelPlatformType.OPENAI,
+            model_type=model_name,
+            api_key=api_key,
+            url=base_url or None,
+        )
+
+    def _create_agent_models(self, agent_count: int):
+        """
+        Build a deterministic agent_id -> model backend map.
+
+        Default behavior is intentionally not handled here; callers only use
+        this path when at least one agent has explicit llm_* fields.
+        """
+        global_api_key = os.environ.get("LLM_API_KEY", "")
+        global_base_url = os.environ.get("LLM_BASE_URL", "") or self.config.get("llm_base_url", "")
+        global_model = (
+            os.environ.get("LLM_MODEL_NAME", "")
+            or self.config.get("llm_model", "gpt-4o-mini")
+        )
+
+        configs_by_id = {
+            cfg.get("agent_id", idx): cfg
+            for idx, cfg in enumerate(self.config.get("agent_configs", []))
+        }
+
+        agent_models = {}
+        routes = []
+        for agent_id in range(agent_count):
+            cfg = configs_by_id.get(agent_id, {})
+            model_name = cfg.get("llm_model") or global_model
+            base_url = cfg.get("llm_base_url") or global_base_url
+            api_key = cfg.get("llm_api_key") or global_api_key
+
+            agent_models[agent_id] = self._create_openai_model(
+                model_name=model_name,
+                base_url=base_url,
+                api_key=api_key,
+            )
+            routes.append({
+                "agent_id": agent_id,
+                "model": model_name,
+                "base_url": base_url,
+                "api_key_set": bool(api_key),
+                "source": "agent_configs" if any(
+                    key in cfg for key in ("llm_model", "llm_base_url", "llm_api_key")
+                ) else "global_default",
+            })
+
+        return agent_models, routes
+
+    def _write_model_routing_audit(self, routes: List[Dict[str, Any]]):
+        """Write redacted per-agent model routes for reproducibility/debugging."""
+        audit_path = os.path.join(self.simulation_dir, "model_routing_audit.jsonl")
+        timestamp = datetime.now().isoformat()
+        with open(audit_path, "w", encoding="utf-8") as f:
+            for route in routes:
+                f.write(json.dumps({
+                    "timestamp": timestamp,
+                    **route,
+                }, ensure_ascii=False) + "\n")
+
+        print(f"Model routing audit: {audit_path}")
+        for route in routes:
+            print(
+                "  - agent_id={agent_id} model={model} base_url={base_url} "
+                "api_key_set={api_key_set}".format(**route)
+            )
+
+    async def _generate_reddit_agent_graph_with_models(
+        self,
+        profile_path: str,
+        agent_models: Dict[int, Any],
+    ) -> AgentGraph:
+        """
+        Local copy of OASIS' Reddit graph construction with per-agent models.
+
+        OASIS 0.2.5's generate_reddit_agent_graph accepts one model argument
+        and passes that same object to every SocialAgent. Passing a list makes
+        every agent randomly schedule across that list, so it cannot pin
+        agent_id -> model deterministically.
+        """
+        agent_graph = AgentGraph()
+        with open(profile_path, "r", encoding="utf-8") as file:
+            agent_info = json.load(file)
+
+        async def process_agent(i):
+            profile = {
+                "nodes": [],
+                "edges": [],
+                "other_info": {},
+            }
+            profile["other_info"]["user_profile"] = agent_info[i]["persona"]
+            profile["other_info"]["mbti"] = agent_info[i]["mbti"]
+            profile["other_info"]["gender"] = agent_info[i]["gender"]
+            profile["other_info"]["age"] = agent_info[i]["age"]
+            profile["other_info"]["country"] = agent_info[i]["country"]
+
+            user_info = UserInfo(
+                name=agent_info[i]["username"],
+                description=agent_info[i]["bio"],
+                profile=profile,
+                recsys_type="reddit",
+            )
+
+            agent = SocialAgent(
+                agent_id=i,
+                user_info=user_info,
+                agent_graph=agent_graph,
+                model=agent_models[i],
+                available_actions=self.AVAILABLE_ACTIONS,
+            )
+            agent_graph.add_agent(agent)
+
+        await asyncio.gather(*[process_agent(i) for i in range(len(agent_info))])
+        return agent_graph
     
     def _get_active_agents_for_round(
         self, 
@@ -553,20 +685,29 @@ class RedditSimulationRunner:
             print(f"  - 最大轮数限制: {max_rounds}")
         print(f"  - Agent数量: {len(self.config.get('agent_configs', []))}")
         
-        print("\n初始化LLM模型...")
-        model = self._create_model()
-        
         print("加载Agent Profile...")
         profile_path = self._get_profile_path()
         if not os.path.exists(profile_path):
             print(f"错误: Profile文件不存在: {profile_path}")
             return
-        
-        self.agent_graph = await generate_reddit_agent_graph(
-            profile_path=profile_path,
-            model=model,
-            available_actions=self.AVAILABLE_ACTIONS,
-        )
+
+        print("\n初始化LLM模型...")
+        if self._has_per_agent_llm_config():
+            with open(profile_path, "r", encoding="utf-8") as f:
+                profile_count = len(json.load(f))
+            agent_models, routes = self._create_agent_models(profile_count)
+            self._write_model_routing_audit(routes)
+            self.agent_graph = await self._generate_reddit_agent_graph_with_models(
+                profile_path=profile_path,
+                agent_models=agent_models,
+            )
+        else:
+            model = self._create_model()
+            self.agent_graph = await generate_reddit_agent_graph(
+                profile_path=profile_path,
+                model=model,
+                available_actions=self.AVAILABLE_ACTIONS,
+            )
         
         db_path = self._get_db_path()
         if os.path.exists(db_path):
