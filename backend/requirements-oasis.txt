@@ -1,0 +1,6 @@
+# OASIS social-simulation environment dependencies.
+# Keep separate from graphiti-core>=0.28.2 because camel-oasis==0.2.5 pins neo4j==5.23.0,
+# while graphiti-core==0.28.2 requires neo4j>=5.26.0.
+camel-oasis==0.2.5
+camel-ai==0.2.78
+neo4j==5.23.0
