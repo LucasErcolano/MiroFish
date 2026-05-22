@@ -1,0 +1,114 @@
+{
+  "total": 334423,
+  "agrupaciones": [
+    {
+      "nombre": "FRENTE DE LA VICTORIA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "88",
+          "Votos": 190783,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE DE LA VICTORIA"
+        }
+      ],
+      "votos": 190783,
+      "porcentaje": "58.36",
+      "idAgrupacion": "88",
+      "color": "#0078bf"
+    },
+    {
+      "nombre": "ALIANZA LA LIBERTAD AVANZA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "21",
+          "Votos": 117301,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "ALIANZA LA LIBERTAD AVANZA"
+        }
+      ],
+      "votos": 117301,
+      "porcentaje": "35.88",
+      "idAgrupacion": "21",
+      "color": "#743bbc"
+    },
+    {
+      "nombre": "JUNTOS POR LA LIBERTAD Y LA REPÚBLICA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "89",
+          "Votos": 11971,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "JUNTOS POR LA LIBERTAD Y LA REPÚBLICA"
+        }
+      ],
+      "votos": 11971,
+      "porcentaje": "3.66",
+      "idAgrupacion": "89",
+      "color": "#fe682d"
+    },
+    {
+      "nombre": "PARTIDO DEL OBRERO",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "71",
+          "Votos": 3625,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "PARTIDO DEL OBRERO"
+        }
+      ],
+      "votos": 3625,
+      "porcentaje": "1.11",
+      "idAgrupacion": "71",
+      "color": "#ef2b2d"
+    },
+    {
+      "nombre": "PRINCIPIOS Y CONVICCIÓN",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "87",
+          "Votos": 3253,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "PRINCIPIOS Y CONVICCIÓN"
+        }
+      ],
+      "votos": 3253,
+      "porcentaje": "1.00",
+      "idAgrupacion": "87",
+      "color": "#009c77"
+    }
+  ],
+  "NULO": 4028,
+  "RECURRIDO": 117,
+  "COMANDO": 0,
+  "IMPUGNADO": 33,
+  "EN BLANCO": 3312,
+  "IdDistrito": 9,
+  "Distrito": "FORMOSA",
+  "MesasEscrutadas": 1512,
+  "Electores": 4917930,
+  "Votantes": 334423,
+  "ParticipacionSobreEscrutado": 6.8,
+  "Año": 2025,
+  "Recuento": "Provisorio",
+  "IdEleccion": 2,
+  "Elecciones": "GENERALES",
+  "IdCargo": 3,
+  "Cargo": "DIPUTADO NACIONAL",
+  "positivos": 326933,
+  "blancos": 3312,
+  "impugnados": 33,
+  "nulos": 4028,
+  "recurridos": 117,
+  "comando": 0,
+  "union": 150
+}

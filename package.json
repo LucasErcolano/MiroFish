@@ -9,7 +9,8 @@
     "dev": "concurrently --kill-others -n \"backend,frontend\" -c \"green,cyan\" \"npm run backend\" \"npm run frontend\"",
     "backend": "cd backend && uv run python run.py",
     "frontend": "cd frontend && npm run dev",
-    "build": "cd frontend && npm run build"
+    "build": "cd frontend && npm run build",
+    "pilot:arg2025q1": "python backend/scripts/run_case_pilot_arg_2025_q1.py --case-dir cases/PILOT-ARG-2025-Q1"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
