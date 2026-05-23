@@ -428,27 +428,22 @@ class ZepToolsService:
         self.api_key = Config.ZEP_API_KEY if api_key is None else api_key
         self.simulation_id = simulation_id
         
-        # 实验性记忆服务
-        self.exp_memory = None
-        if Config.USE_EXPERIMENTAL_MEMORY and simulation_id:
-            from .experimental_memory import ExperimentalMemoryService
-            self.exp_memory = ExperimentalMemoryService(simulation_id)
-            logger.info(f"实验性记忆已在 ZepToolsService 中启用: simulation_id={simulation_id}")
-
-        # 如果没有启用实验性记忆，或者仍需要图谱后端，则验证配置
-        errors = Config.get_graph_backend_config_errors(api_key=self.api_key)
-        if errors and not self.exp_memory:
-            raise ValueError("; ".join(errors))
+        # Centralized Memory Strategy
+        from .memory_factory import MemoryFactory
+        self.provider = MemoryFactory.create_provider(
+            simulation_id=simulation_id or "default",
+            graph_id="default_read_graph", # In a full system, this would be passed down
+            api_key=self.api_key
+        )
         
-        try:
-            self.backend = get_graph_backend(api_key=self.api_key)
-        except Exception as e:
-            if self.exp_memory:
-                logger.warning(f"无法初始化图谱后端 (将仅使用实验性记忆): {e}")
-                self.backend = None
-            else:
-                raise e
+        # Fallbacks for legacy code that directly access these
+        from .experimental_memory import ExperimentalMemoryService
+        self.exp_memory = self.provider if isinstance(self.provider, ExperimentalMemoryService) else None
+        self.backend = getattr(self.provider, 'backend', None)
 
+        if self.exp_memory:
+            logger.info(f"实验性记忆已在 ZepToolsService 中启用 (Provider 模式): simulation_id={simulation_id}")
+        
         # LLM客户端用于InsightForge生成子问题
         self._llm_client = llm_client
         self._search_embedder_client = None
