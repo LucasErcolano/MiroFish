@@ -33,6 +33,15 @@ from .zep_tools import (
 logger = get_logger('mirofish.report_agent')
 
 
+def _safe_text(value: Any) -> str:
+    """Normalize nullable/non-string LLM and tool payloads to loggable text."""
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value
+    return str(value)
+
+
 class ReportLogger:
     """
     Report Agent 详细日志记录器
@@ -195,6 +204,7 @@ class ReportLogger:
         iteration: int
     ):
         """记录工具调用结果（完整内容，不截断）"""
+        result = _safe_text(result)
         self.log(
             action="tool_result",
             stage="generating",
@@ -219,6 +229,7 @@ class ReportLogger:
         has_final_answer: bool
     ):
         """记录 LLM 响应（完整内容，不截断）"""
+        response = _safe_text(response)
         self.log(
             action="llm_response",
             stage="generating",
@@ -242,6 +253,7 @@ class ReportLogger:
         tool_calls_count: int
     ):
         """记录章节内容生成完成（仅记录内容，不代表整个章节完成）"""
+        content = _safe_text(content)
         self.log(
             action="section_content",
             stage="generating",
@@ -266,6 +278,7 @@ class ReportLogger:
 
         前端应监听此日志来判断一个章节是否真正完成，并获取完整内容
         """
+        full_content = _safe_text(full_content)
         self.log(
             action="section_complete",
             stage="generating",
@@ -1073,6 +1086,9 @@ class ReportAgent:
         2. 裸 JSON（响应整体或单行就是一个工具调用 JSON）
         """
         tool_calls = []
+        response = _safe_text(response)
+        if not response:
+            return tool_calls
 
         # 格式1: XML风格（标准格式）
         xml_pattern = r'<tool_call>\s*(\{.*?\})\s*</tool_call>'
@@ -1636,6 +1652,14 @@ class ReportAgent:
             for i, section in enumerate(outline.sections):
                 section_num = i + 1
                 base_progress = 20 + int((i / total_sections) * 70)
+
+                existing_section_content = ReportManager.get_section_content(report_id, section_num, section.title)
+                if existing_section_content:
+                    section.content = existing_section_content
+                    generated_sections.append(f"## {section.title}\n\n{existing_section_content}")
+                    completed_section_titles.append(section.title)
+                    logger.info(t('report.sectionSaved', reportId=report_id, sectionNum=f"{section_num:02d}"))
+                    continue
                 
                 # 更新进度
                 ReportManager.update_progress(
@@ -1653,18 +1677,35 @@ class ReportAgent:
                     )
                 
                 # 生成主章节内容
-                section_content = self._generate_section_react(
-                    section=section,
-                    outline=outline,
-                    previous_sections=generated_sections,
-                    progress_callback=lambda stage, prog, msg:
-                        progress_callback(
-                            stage, 
-                            base_progress + int(prog * 0.7 / total_sections),
-                            msg
-                        ) if progress_callback else None,
-                    section_index=section_num
-                )
+                try:
+                    section_content = self._generate_section_react(
+                        section=section,
+                        outline=outline,
+                        previous_sections=generated_sections,
+                        progress_callback=lambda stage, prog, msg:
+                            progress_callback(
+                                stage,
+                                base_progress + int(prog * 0.7 / total_sections),
+                                msg
+                            ) if progress_callback else None,
+                        section_index=section_num
+                    )
+                except Exception as section_error:
+                    error_message = str(section_error)
+                    logger.error(t('report.reportGenFailed', error=f"{section.title}: {error_message}"))
+                    if self.report_logger:
+                        self.report_logger.log_error(error_message, "failed", section.title)
+                    ReportManager.save_failed_section(report_id, section_num, section.title, error_message)
+                    report.status = ReportStatus.FAILED
+                    report.error = f"Section {section_num} ({section.title}) failed: {error_message}"
+                    ReportManager.save_report(report)
+                    ReportManager.update_progress(
+                        report_id, "failed", -1, t('progress.reportFailed', error=error_message),
+                        current_section=section.title,
+                        completed_sections=completed_section_titles
+                    )
+                    return report
+                section_content = _safe_text(section_content)
                 
                 section.content = section_content
                 generated_sections.append(f"## {section.title}\n\n{section_content}")
@@ -1835,6 +1876,7 @@ class ReportAgent:
             
             if not tool_calls:
                 # 没有工具调用，直接返回响应
+                response = _safe_text(response)
                 clean_response = re.sub(r'<tool_call>.*?</tool_call>', '', response, flags=re.DOTALL)
                 clean_response = re.sub(r'\[TOOL_CALL\].*?\)', '', clean_response)
                 
@@ -1849,7 +1891,7 @@ class ReportAgent:
             for call in tool_calls[:1]:  # 每轮最多执行1次工具调用
                 if len(tool_calls_made) >= self.MAX_TOOL_CALLS_PER_CHAT:
                     break
-                result = self._execute_tool(call["name"], call.get("parameters", {}))
+                result = _safe_text(self._execute_tool(call["name"], call.get("parameters", {})))
                 tool_results.append({
                     "tool": call["name"],
                     "result": result[:1500]  # 限制结果长度
@@ -1871,6 +1913,7 @@ class ReportAgent:
         )
         
         # 清理响应
+        final_response = _safe_text(final_response)
         clean_response = re.sub(r'<tool_call>.*?</tool_call>', '', final_response, flags=re.DOTALL)
         clean_response = re.sub(r'\[TOOL_CALL\].*?\)', '', clean_response)
         
@@ -1944,6 +1987,26 @@ class ReportManager:
         """获取章节Markdown文件路径"""
         return os.path.join(cls._get_report_folder(report_id), f"section_{section_index:02d}.md")
     
+    @classmethod
+    def get_section_content(cls, report_id: str, section_index: int, section_title: str = "") -> str:
+        """Read a previously saved section body for report retry/resume."""
+        path = cls._get_section_path(report_id, section_index)
+        if not os.path.exists(path):
+            return ""
+        with open(path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        if not content.strip():
+            return ""
+
+        lines = content.splitlines()
+        if lines and lines[0].strip().startswith('##'):
+            title_text = lines[0].lstrip('#').strip()
+            if not section_title or title_text == section_title:
+                lines = lines[1:]
+                while lines and lines[0].strip() == "":
+                    lines = lines[1:]
+        return "\n".join(lines).strip()
+
     @classmethod
     def _get_agent_log_path(cls, report_id: str) -> str:
         """获取 Agent 日志文件路径"""
@@ -2128,6 +2191,21 @@ class ReportManager:
         logger.info(t('report.sectionFileSaved', reportId=report_id, fileSuffix=file_suffix))
         return file_path
     
+    @classmethod
+    def save_failed_section(cls, report_id: str, section_index: int, section_title: str, error_message: str) -> str:
+        """Persist a failed section marker without overwriting completed section files."""
+        cls._ensure_report_folder(report_id)
+        file_suffix = f"section_{section_index:02d}.failed.md"
+        file_path = os.path.join(cls._get_report_folder(report_id), file_suffix)
+        md_content = (
+            f"## {section_title}\n\n"
+            f"> Section generation failed and can be retried without regenerating completed sections.\n\n"
+            f"Error: {_safe_text(error_message)}\n"
+        )
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(md_content)
+        return file_path
+
     @classmethod
     def _clean_section_content(cls, content: str, section_title: str) -> str:
         """
