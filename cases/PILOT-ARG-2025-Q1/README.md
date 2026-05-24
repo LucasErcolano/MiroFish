@@ -15,7 +15,7 @@ Qué se puede mirar para la corrida:
 
 Qué no se puede mirar para la corrida:
 - answer_key_post_x/.
-- Noticias, datos, resultados electorales, inflación anual final o análisis publicados después del 31/01/2025.
-- Web/browsing/RAG externo/memoria persistente durante MiroFish.
 
-Estado de ejecución: BLOCKED por ausencia del ejecutable `mirofish` en PATH. El caso preserva configuración, fuentes, hashes, prompt y evaluación bloqueada para reproducir la corrida cuando el CLI esté disponible.
+- Noticias, datos, resultados electorales, inflación anual final o análisis publicados después del 31/01/2025.
+
+  
