@@ -27,9 +27,10 @@ def set_locale(locale: str):
 
 def get_locale() -> str:
     if has_request_context():
-        raw = request.headers.get('Accept-Language', 'zh')
-        return raw if raw in _translations else 'zh'
-    return getattr(_thread_local, 'locale', 'zh')
+        raw = request.headers.get('Accept-Language', 'zh').split(',')[0].split(';')[0].strip()
+        return raw if raw in _languages else 'zh'
+    locale = getattr(_thread_local, 'locale', 'zh')
+    return locale if locale in _languages else 'zh'
 
 
 def t(key: str, **kwargs) -> str:
@@ -67,3 +68,4 @@ def get_language_instruction() -> str:
     locale = get_locale()
     lang_config = _languages.get(locale, _languages.get('zh', {}))
     return lang_config.get('llmInstruction', '请使用中文回答。')
+
