@@ -22,6 +22,8 @@
 
 [English](./README.md) | [中文文档](./README-ZH.md)
 
+For automation and AI-agent execution without the browser UI, see [AI_HEADLESS_RUNNER.md](./AI_HEADLESS_RUNNER.md).
+
 </div>
 
 ## ⚡ Overview
