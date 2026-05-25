@@ -7,6 +7,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import re
 import threading
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -133,10 +134,277 @@ class GraphitiBackend(GraphBackend):
             from graphiti_core.llm_client import OpenAIClient
             from graphiti_core.llm_client.config import LLMConfig
             from graphiti_core.llm_client.openai_generic_client import OpenAIGenericClient
+            import openai
         except ImportError as exc:
             raise ImportError(
                 "Graphiti 依赖未安装，请先在 backend 环境中安装 graphiti-core 与 neo4j"
             ) from exc
+
+        class RobustOpenAIGenericClient(OpenAIGenericClient):
+            """OpenAI-compatible Graphiti client with stricter JSON parsing.
+
+            Some OpenAI-compatible providers return markdown, prose, or truncated
+            JSON even when `response_format` is supplied. Graphiti needs a dict,
+            so keep the provider call generic and parse only the first JSON value.
+            """
+
+            MAX_RETRIES = 3
+
+            async def _generate_response(
+                self,
+                messages,
+                response_model=None,
+                max_tokens=4096,
+                model_size=None,
+            ):
+                openai_messages = []
+                for message in messages:
+                    content = self._clean_input(message.content)
+                    if message.role == "system":
+                        content = (
+                            content
+                            + "\n\nReturn exactly one valid JSON object. "
+                            "Do not include markdown, explanations, comments, or trailing text."
+                        )
+                    if message.role in {"system", "user"}:
+                        openai_messages.append({"role": message.role, "content": content})
+
+                try:
+                    response = await self.client.chat.completions.create(
+                        model=self.model,
+                        messages=openai_messages,
+                        temperature=0,
+                        max_tokens=max_tokens or self.max_tokens,
+                        response_format={"type": "json_object"},
+                    )
+                    content = response.choices[0].message.content or ""
+                    parsed = self._loads_json_content(content)
+                    return self._normalize_response_for_model(parsed, response_model)
+                except openai.RateLimitError:
+                    raise
+                except Exception as exc:
+                    logger.error(f"Error in generating Graphiti LLM JSON response: {exc}")
+                    raise
+
+            @classmethod
+            def _loads_json_content(cls, content: str) -> Dict[str, Any]:
+                cleaned = re.sub(r"<think>[\s\S]*?</think>", "", content).strip()
+                cleaned = re.sub(r"^```(?:json)?\s*\n?", "", cleaned, flags=re.IGNORECASE)
+                cleaned = re.sub(r"\n?```\s*$", "", cleaned).strip()
+
+                try:
+                    parsed = json.loads(cleaned)
+                    if isinstance(parsed, dict):
+                        return parsed
+                    raise ValueError(f"Expected JSON object, got {type(parsed).__name__}")
+                except json.JSONDecodeError:
+                    pass
+
+                extracted = cls._extract_first_json_object(cleaned)
+                try:
+                    parsed = json.loads(extracted)
+                    if isinstance(parsed, dict):
+                        return parsed
+                    raise ValueError(f"Expected JSON object, got {type(parsed).__name__}")
+                except Exception as exc:
+                    snippet = cleaned[:500].replace("\n", "\\n")
+                    raise ValueError(f"Invalid JSON object from LLM. Prefix: {snippet}") from exc
+
+            @staticmethod
+            def _extract_first_json_object(text: str) -> str:
+                start = text.find("{")
+                if start < 0:
+                    raise ValueError("No JSON object start found")
+
+                depth = 0
+                in_string = False
+                escape = False
+                for index in range(start, len(text)):
+                    char = text[index]
+                    if in_string:
+                        if escape:
+                            escape = False
+                        elif char == "\\":
+                            escape = True
+                        elif char == '"':
+                            in_string = False
+                        continue
+
+                    if char == '"':
+                        in_string = True
+                    elif char == "{":
+                        depth += 1
+                    elif char == "}":
+                        depth -= 1
+                        if depth == 0:
+                            return text[start : index + 1]
+
+                raise ValueError("No complete JSON object found")
+
+            @classmethod
+            def _normalize_response_for_model(
+                cls,
+                parsed: Dict[str, Any],
+                response_model: Optional[type[BaseModel]],
+            ) -> Dict[str, Any]:
+                if response_model is None:
+                    return parsed
+
+                expected_fields = set(getattr(response_model, "model_fields", {}).keys())
+                if not expected_fields:
+                    return parsed
+
+                normalized = dict(parsed)
+                aliases = {
+                    "extracted_entities": ("entities", "entity_nodes", "nodes"),
+                    "entity_resolutions": ("entities", "resolutions", "node_resolutions"),
+                    "edges": ("extracted_edges", "facts", "relationships", "relations"),
+                    "summaries": ("entity_summaries", "summarized_entities", "entities"),
+                    "duplicate_facts": ("duplicates", "duplicate_edges"),
+                    "contradicted_facts": ("contradictions", "contradicted_edges"),
+                    "duplicate_name": ("name", "entity_name"),
+                    "summary": ("description", "text"),
+                }
+
+                for expected, candidates in aliases.items():
+                    if expected in expected_fields and expected not in normalized:
+                        for candidate in candidates:
+                            if candidate in normalized:
+                                normalized[expected] = normalized[candidate]
+                                break
+
+                if (
+                    "entity_resolutions" in expected_fields
+                    and "entity_resolutions" not in normalized
+                    and normalized
+                    and all(str(key).isdigit() for key in normalized.keys())
+                ):
+                    normalized["entity_resolutions"] = list(normalized.values())
+
+                list_defaults = {
+                    "extracted_entities": [],
+                    "entity_resolutions": [],
+                    "edges": [],
+                    "summaries": [],
+                    "duplicate_facts": [],
+                    "contradicted_facts": [],
+                }
+                for field_name, default_value in list_defaults.items():
+                    if field_name in expected_fields and field_name not in normalized:
+                        normalized[field_name] = default_value
+
+                if "summary" in expected_fields and "summary" not in normalized:
+                    normalized["summary"] = ""
+
+                if "extracted_entities" in normalized and isinstance(
+                    normalized["extracted_entities"], list
+                ):
+                    normalized["extracted_entities"] = [
+                        cls._normalize_extracted_entity(item)
+                        for item in normalized["extracted_entities"]
+                    ]
+
+                if "entity_resolutions" in normalized:
+                    normalized["entity_resolutions"] = cls._normalize_entity_resolutions(
+                        normalized["entity_resolutions"]
+                    )
+
+                if "edges" in normalized and isinstance(normalized["edges"], list):
+                    normalized["edges"] = [
+                        cls._normalize_extracted_edge(item)
+                        for item in normalized["edges"]
+                    ]
+
+                if "summaries" in normalized and isinstance(normalized["summaries"], list):
+                    normalized["summaries"] = [
+                        cls._normalize_summary(item) for item in normalized["summaries"]
+                    ]
+
+                return normalized
+
+            @staticmethod
+            def _normalize_extracted_entity(item: Any) -> Any:
+                if not isinstance(item, dict):
+                    return item
+                normalized = dict(item)
+                if "name" not in normalized:
+                    for candidate in ("entity_name", "entity", "title", "label"):
+                        if candidate in normalized:
+                            normalized["name"] = normalized[candidate]
+                            break
+                if "entity_type_id" not in normalized:
+                    normalized["entity_type_id"] = 0
+                return normalized
+
+            @classmethod
+            def _normalize_entity_resolutions(cls, value: Any) -> Any:
+                if isinstance(value, dict):
+                    value = list(value.values())
+                if not isinstance(value, list):
+                    return value
+                normalized_items = []
+                for index, item in enumerate(value):
+                    normalized = cls._normalize_extracted_entity(item)
+                    if isinstance(normalized, dict):
+                        normalized.pop("entity_type_id", None)
+                        if "id" not in normalized:
+                            normalized["id"] = index
+                        if "duplicate_name" not in normalized:
+                            normalized["duplicate_name"] = ""
+                    normalized_items.append(normalized)
+                return normalized_items
+
+            @staticmethod
+            def _normalize_extracted_edge(item: Any) -> Any:
+                if not isinstance(item, dict):
+                    return item
+                normalized = dict(item)
+                field_aliases = {
+                    "source_entity_name": ("source", "source_name", "source_entity"),
+                    "target_entity_name": ("target", "target_name", "target_entity"),
+                    "relation_type": ("relationship", "relationship_type", "relation", "type"),
+                    "fact": (
+                        "description",
+                        "summary",
+                        "text",
+                        "fact_text",
+                        "relationship_fact",
+                        "relationship_description",
+                    ),
+                }
+                for expected, candidates in field_aliases.items():
+                    if expected not in normalized:
+                        for candidate in candidates:
+                            if candidate in normalized:
+                                normalized[expected] = normalized[candidate]
+                                break
+                if not normalized.get("relation_type"):
+                    normalized["relation_type"] = "RELATES_TO"
+                if not normalized.get("fact"):
+                    source = normalized.get("source_entity_name") or "source entity"
+                    target = normalized.get("target_entity_name") or "target entity"
+                    relation = normalized.get("relation_type") or "RELATES_TO"
+                    normalized["fact"] = f"{source} {relation} {target}."
+                return normalized
+
+            @staticmethod
+            def _normalize_summary(item: Any) -> Any:
+                if not isinstance(item, dict):
+                    return item
+                normalized = dict(item)
+                if "name" not in normalized:
+                    for candidate in ("entity_name", "entity", "title", "label"):
+                        if candidate in normalized:
+                            normalized["name"] = normalized[candidate]
+                            break
+                if "summary" not in normalized:
+                    for candidate in ("description", "text", "content"):
+                        if candidate in normalized:
+                            normalized["summary"] = normalized[candidate]
+                            break
+                if "summary" not in normalized:
+                    normalized["summary"] = ""
+                return normalized
 
         llm_config = LLMConfig(
             api_key=Config.GRAPHITI_LLM_API_KEY,
@@ -160,7 +428,7 @@ class GraphitiBackend(GraphBackend):
 
         llm_client_mode = (Config.GRAPHITI_LLM_CLIENT_MODE or "openai").lower()
         if llm_client_mode == "generic":
-            llm_client = OpenAIGenericClient(
+            llm_client = RobustOpenAIGenericClient(
                 config=llm_config,
                 max_tokens=Config.GRAPHITI_LLM_MAX_TOKENS,
             )
@@ -232,17 +500,18 @@ class GraphitiBackend(GraphBackend):
 
     def _build_dynamic_model(self, name: str, spec: Dict[str, Any]) -> type[BaseModel]:
         field_definitions = {}
-        for field_spec in spec.get("fields", []):
-            field_name = field_spec.get("name", "").strip()
-            if not field_name:
-                continue
-            field_definitions[field_name] = (
-                Optional[str],
-                Field(
-                    default=None,
-                    description=field_spec.get("description") or field_name,
-                ),
-            )
+        if Config.GRAPHITI_ENABLE_NODE_ATTRIBUTES:
+            for field_spec in spec.get("fields", []):
+                field_name = field_spec.get("name", "").strip()
+                if not field_name:
+                    continue
+                field_definitions[field_name] = (
+                    Optional[str],
+                    Field(
+                        default=None,
+                        description=field_spec.get("description") or field_name,
+                    ),
+                )
 
         model = create_model(name, __base__=BaseModel, **field_definitions)
         model.__doc__ = spec.get("description") or name
