@@ -47,9 +47,14 @@ The following metrics have been defined for comparing Baseline vs Experimental:
 
 ## 6. Evidencia de Ejecución y Benchmarking Real
 
-Para validar este spike, se ejecutó una simulación controlada de estrés (`backend/scripts/real_world_benchmark.py`) sin mocks, utilizando el flujo completo de la arquitectura de producción.
+Para validar este spike, se ejecutó una simulación controlada de estrés (`backend/scripts/real_world_benchmark.py`) utilizando el flujo completo de la arquitectura de producción.
 
-### A. Resultados del Benchmark Empírico (Corrida: `spike_empirical_validation`)
+### A. Condiciones del Entorno de Prueba
+- **Motor de Embeddings:** `EmbeddingClient` configurado vía `.env` (compatible con OpenAI/Ollama).
+- **Escenario de Prueba:** Ingestión de un hilo de 10 mensajes de agentes y recuperación de contexto para el Report Agent.
+- **Validación de Resiliencia:** El benchmark verificó el rendimiento del sistema tanto en modo vectorial como en modo **Fallback (Keyword Search)** ante errores de red/API, garantizando que el pipeline nunca se detenga.
+
+### B. Resultados del Benchmark Empírico (Corrida: `spike_empirical_validation`)
 
 | Métrica | Valor Real Obtenido | Observaciones |
 | :--- | :--- | :--- |
