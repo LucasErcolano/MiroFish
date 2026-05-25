@@ -8,6 +8,8 @@ Install Prompture for multi-provider support: pip install prompture
 
 import json
 import re
+import threading
+import time
 from typing import Optional, Dict, Any, List
 
 from ..config import Config
@@ -54,6 +56,9 @@ class LLMClient:
     OpenAI-compatible API via LLM_BASE_URL).
     """
 
+    _request_lock = threading.Lock()
+    _last_request_at = 0.0
+
     def __init__(
         self,
         api_key: Optional[str] = None,
@@ -97,7 +102,11 @@ class LLMClient:
     def _init_openai(self):
         if not self.api_key:
             raise ValueError("LLM_API_KEY 未配置")
-        self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
+        self.client = OpenAI(
+            api_key=self.api_key,
+            base_url=self.base_url,
+            timeout=Config.LLM_REQUEST_TIMEOUT_SECONDS,
+        )
 
     # ── Public API ─────────────────────────────────────────────────
 
@@ -120,13 +129,10 @@ class LLMClient:
         Returns:
             模型响应文本
         """
+        content = self._request_text(messages, temperature, max_tokens, response_format)
         if _HAS_PROMPTURE:
-            content = self._chat_prompture(messages, temperature, max_tokens)
             return strip_think_tags(content)
-        else:
-            content = self._chat_openai(messages, temperature, max_tokens, response_format)
-            # Fallback: strip think tags with regex when Prompture is not available
-            return re.sub(r'<think>[\s\S]*?</think>', '', content).strip()
+        return re.sub(r'<think>[\s\S]*?</think>', '', content).strip()
 
     def chat_json(
         self,
@@ -145,24 +151,114 @@ class LLMClient:
         Returns:
             解析后的JSON对象
         """
-        if _HAS_PROMPTURE:
-            response = self._chat_prompture(messages, temperature, max_tokens)
-            # Prompture's clean_json_text strips think tags + markdown fences
-            cleaned = clean_json_text(response)
-        else:
-            response = self._chat_openai(
-                messages, temperature, max_tokens
-            )
-            # Fallback cleaning when Prompture is not available
-            cleaned = re.sub(r'<think>[\s\S]*?</think>', '', response).strip()
-            cleaned = re.sub(r'^```(?:json)?\s*\n?', '', cleaned, flags=re.IGNORECASE)
-            cleaned = re.sub(r'\n?```\s*$', '', cleaned)
-            cleaned = cleaned.strip()
+        response_format = {"type": "json_object"}
+        response = self._request_text(messages, temperature, max_tokens, response_format)
+        cleaned = self._clean_json_response(response)
 
         try:
             return json.loads(cleaned)
-        except json.JSONDecodeError:
-            raise ValueError(f"LLM返回的JSON格式无效: {cleaned}")
+        except json.JSONDecodeError as first_error:
+            retry_messages = [
+                *messages,
+                {
+                    "role": "user",
+                    "content": (
+                        "Your previous response was not complete valid JSON. "
+                        "Return the same answer again as one complete JSON object only, "
+                        "with no markdown fences and no extra text."
+                    ),
+                },
+            ]
+            retry_response = self._request_text(
+                retry_messages,
+                0,
+                max(max_tokens * 2, 8192),
+                response_format,
+            )
+            retry_cleaned = self._clean_json_response(retry_response)
+
+            try:
+                return json.loads(retry_cleaned)
+            except json.JSONDecodeError:
+                raise ValueError(f"LLM返回的JSON格式无效: {cleaned}") from first_error
+
+    @staticmethod
+    def _clean_json_response(response: str) -> str:
+        if _HAS_PROMPTURE:
+            # Prompture's clean_json_text strips think tags + markdown fences
+            return clean_json_text(response)
+
+        # Fallback cleaning when Prompture is not available
+        cleaned = re.sub(r'<think>[\s\S]*?</think>', '', response).strip()
+        cleaned = re.sub(r'^```(?:json)?\s*\n?', '', cleaned, flags=re.IGNORECASE)
+        cleaned = re.sub(r'\n?```\s*$', '', cleaned)
+        return cleaned.strip()
+
+    def _request_text(
+        self,
+        messages: List[Dict[str, str]],
+        temperature: float,
+        max_tokens: int,
+        response_format: Optional[Dict] = None,
+    ) -> str:
+        def operation():
+            if _HAS_PROMPTURE:
+                return self._chat_prompture(messages, temperature, max_tokens)
+            return self._chat_openai(messages, temperature, max_tokens, response_format)
+
+        return self._with_retries(operation)
+
+    @classmethod
+    def _wait_for_rate_limit_slot(cls):
+        min_interval = Config.LLM_REQUEST_MIN_INTERVAL_SECONDS
+        if min_interval <= 0:
+            return
+
+        with cls._request_lock:
+            now = time.monotonic()
+            wait_seconds = cls._last_request_at + min_interval - now
+            if wait_seconds > 0:
+                time.sleep(wait_seconds)
+            cls._last_request_at = time.monotonic()
+
+    @staticmethod
+    def _is_retryable_error(exc: Exception) -> bool:
+        status_code = getattr(exc, "status_code", None)
+        if status_code in {408, 409, 429, 500, 502, 503, 504}:
+            return True
+
+        text = str(exc).lower()
+        retry_markers = (
+            "rate limit",
+            "resource_exhausted",
+            "quota",
+            "timeout",
+            "timed out",
+            "temporarily",
+            "overloaded",
+            "try again",
+            "429",
+            "500",
+            "502",
+            "503",
+            "504",
+        )
+        return any(marker in text for marker in retry_markers)
+
+    def _with_retries(self, operation):
+        max_retries = Config.LLM_REQUEST_MAX_RETRIES
+        backoff = Config.LLM_REQUEST_RETRY_BACKOFF_SECONDS
+
+        for attempt in range(max_retries + 1):
+            self._wait_for_rate_limit_slot()
+            try:
+                return operation()
+            except Exception as exc:
+                if attempt >= max_retries or not self._is_retryable_error(exc):
+                    raise
+                time.sleep(backoff * (attempt + 1))
+
+        raise RuntimeError("LLM request failed after retries")
 
     # ── Private: Prompture path ────────────────────────────────────
 
@@ -206,4 +302,11 @@ class LLMClient:
             kwargs["response_format"] = response_format
 
         response = self.client.chat.completions.create(**kwargs)
-        return response.choices[0].message.content
+        content = response.choices[0].message.content
+        if content is None:
+            finish_reason = getattr(response.choices[0], "finish_reason", None)
+            raise ValueError(
+                "LLM returned no message content"
+                + (f" (finish_reason={finish_reason})" if finish_reason else "")
+            )
+        return content
