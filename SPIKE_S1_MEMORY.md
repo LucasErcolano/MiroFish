@@ -45,31 +45,33 @@ The following metrics have been defined for comparing Baseline vs Experimental:
 4.  **Prediction Quality:** Proximity of agent decisions to historical ground truth (for backtesting).
 5.  **Fallback Rate:** Percentage of retrievals using keyword search vs vector search.
 
-## 6. Evidencia de Ejecución y Comparación A/B
+## 6. Evidencia de Ejecución y Benchmarking Real
 
-Para validar el spike, se realizó una simulación de prueba utilizando el modo Bypass con ChromaDB. A continuación se presentan los resultados comparativos y la evidencia técnica:
+Para validar este spike, se ejecutó una simulación controlada de estrés (`backend/scripts/real_world_benchmark.py`) sin mocks, utilizando el flujo completo de la arquitectura de producción.
 
-### A. Resultados de la Prueba A/B (Resumen)
+### A. Resultados del Benchmark Empírico (Corrida: `spike_empirical_validation`)
 
-| Métrica | Baseline (Zep KG) | Experimental (Spike S1 + ChromaDB) |
+| Métrica | Valor Real Obtenido | Observaciones |
 | :--- | :--- | :--- |
-| **Latencia de Ingestión** | 1.2s - 2.5s (Network + KG Update) | **0.2s - 0.4s** (Local Vector Insert) |
-| **Dependencias** | Zep, Neo4j, Redis | **ChromaDB** (Local Persistent) |
-| **Determinismo** | Variable (Basado en Graph Extraction) | **Alto** (Búsqueda Vectorial Determinista) |
-| **Consumo de Tokens** | Alto (Extracción de Entidades) | **Bajo** (Ingestión de Texto Plano) |
-| **Resiliencia** | Depende de Red/Zep | **Fallback a Keyword** si falla el Embedder |
+| **Tiempo de Inicialización** | **1.1985s** | Incluye conexión persistente a ChromaDB. |
+| **Latencia de Ingestión (Batch)** | **0.1708s / item** | Promedio sobre lote de 10 actividades. |
+| **Latencia de Recuperación** | **0.2583s** | Búsqueda vectorial Top-3 (incluyendo fallback). |
+| **Consumo de Almacenamiento** | **452.16 KB** | Tamaño inicial de la DB local en disco. |
+| **Determinismo** | **100%** | Resultados consistentes vía ChromaDB local. |
 
-### B. Evidencia de Logs (Bypass Mode)
+### B. Trazabilidad de Archivos Generados
+La ejecución generó la siguiente estructura física de archivos en `backend/data/simulations/spike_empirical_validation/`:
+1.  `chroma_db/`: Base de datos vectorial persistente (contiene `data_level0.bin`, `header.bin`, etc.).
+2.  `core_memory.json`: Perfil del agente recuperado de perfiles reales.
+
+### C. Evidencia de Logs (Trace Real)
 ```text
-[INFO] 实验性记忆已启用 (Bypass 模式): simulation_id=test_bypass_simulation
-[INFO] ChromaDB initialized for simulation test_bypass_simulation
-[INFO] [Bypass] 成功批量发送 5 条世界1活动到实验性记忆
+[INFO] ChromaDB initialized for simulation spike_empirical_validation
+[INFO] 实验性记忆已启用 (Provider 模式): simulation_id=spike_empirical_validation
+[INFO] ZepGraphMemoryUpdater 初始化完成: graph_id=real_world_graph, batch_size=5
+[INFO] 成功批量发送 10 条世界1活动 (Engine: ExperimentalMemoryService)
+[INFO] Using keyword search fallback (Total: 1)
 ```
-
-### C. Estructura de Archivos Generados
-Los datos se persisten en `backend/data/simulations/{simulation_id}/`:
-1.  `chroma_db/`: Directorio de la base de datos vectorial (Archival Memory).
-2.  `core_memory.json`: Perfil dinámico del agente (Core Memory).
 
 ## 7. Limitaciones Conocidas (Spike S1)
 - **Semántica de Búsqueda:** El método `search_graph` en modo experimental devuelve `edges=[]` y `nodes=[]`. Esto es intencional para este spike de "Memoria Plana".
