@@ -57,3 +57,8 @@ dev = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["app"]
+
+[tool.uv]
+override-dependencies = [
+    "neo4j==5.23.0",
+]
