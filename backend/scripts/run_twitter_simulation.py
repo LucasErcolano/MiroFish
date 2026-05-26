@@ -130,6 +130,8 @@ except ImportError as e:
     print("请先安装: pip install oasis-ai camel-ai")
     sys.exit(1)
 
+from action_logger import PlatformActionLogger
+
 
 # IPC相关常量
 IPC_COMMANDS_DIR = "ipc_commands"
@@ -599,6 +601,9 @@ class TwitterSimulationRunner:
         await self.env.reset()
         print("环境初始化完成\n")
         
+        # 初始化动作日志记录器（供后端监控使用）
+        action_logger = PlatformActionLogger("twitter", self.simulation_dir)
+        
         # 初始化IPC处理器
         self.ipc_handler = IPCHandler(self.simulation_dir, self.env, self.agent_graph)
         self.ipc_handler.update_status("running")
@@ -630,11 +635,18 @@ class TwitterSimulationRunner:
         print("\n开始模拟循环...")
         start_time = datetime.now()
         
+        # 记录模拟开始
+        action_logger.log_simulation_start(self.config)
+        total_actions_count = 0
+        
         for round_num in range(total_rounds):
             # 计算当前模拟时间
             simulated_minutes = round_num * minutes_per_round
             simulated_hour = (simulated_minutes // 60) % 24
             simulated_day = simulated_minutes // (60 * 24) + 1
+            
+            # 记录轮次开始
+            action_logger.log_round_start(round_num + 1, simulated_minutes // 60)
             
             # 获取本轮激活的Agent
             active_agents = self._get_active_agents_for_round(
@@ -642,6 +654,7 @@ class TwitterSimulationRunner:
             )
             
             if not active_agents:
+                action_logger.log_round_end(round_num + 1, 0)
                 continue
             
             # 构建动作
@@ -652,6 +665,23 @@ class TwitterSimulationRunner:
             
             # 执行动作
             await self.env.step(actions)
+            
+            # 记录每个agent的动作
+            round_action_count = len(active_agents)
+            total_actions_count += round_action_count
+            for agent_id_tuple, agent in active_agents:
+                action_logger.log_action(
+                    round_num=round_num + 1,
+                    agent_id=agent_id_tuple,
+                    agent_name=getattr(agent, 'agent_name', f'Agent_{agent_id_tuple}'),
+                    action_type='llm_action',
+                    action_args={},
+                    result='executed',
+                    success=True,
+                )
+            
+            # 记录轮次结束
+            action_logger.log_round_end(round_num + 1, round_action_count)
             
             # 打印进度
             if (round_num + 1) % 10 == 0 or round_num == 0:
@@ -666,6 +696,9 @@ class TwitterSimulationRunner:
         print(f"\n模拟循环完成!")
         print(f"  - 总耗时: {total_elapsed:.1f}秒")
         print(f"  - 数据库: {db_path}")
+        
+        # 记录模拟结束
+        action_logger.log_simulation_end(total_rounds, total_actions_count)
         
         # 是否进入等待命令模式
         if self.wait_for_commands:

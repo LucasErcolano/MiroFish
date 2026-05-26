@@ -1,0 +1,21 @@
+{
+  "base_url": "http://127.0.0.1:5001",
+  "flow_provenance": "frontend_replay_backend_api",
+  "project_name": "PILOT-ARG-2025-Q1 DeepInfra TOP1 POLL local API 40 epochs 20260526-170008",
+  "files": [
+    {
+      "path": "cases/PILOT-ARG-2025-Q1/input_pack_pre_x/sources/POLL_01_CB_Consultora_Diciembre_2024.pdf",
+      "sha256": "5a7b09a83889f591643c84cf7665c544cf533b6d798672a1c40567cccd95577e",
+      "bytes": 6420191
+    }
+  ],
+  "simulation_requirement": "Simulá la evolución político-económica argentina durante 2025.\nRespondé en formato estructurado:\n1. Predicción electoral:\n   - Rango nacional estimado de voto para LLA.\n   - Probabilidad de tres escenarios:\n     A) LLA <35%\n     B) LLA 35-42%\n     C) LLA >42%\n   - Impacto esperado sobre Diputados/Senado y capacidad de blindar vetos.\n2. Predicción macroeconómica:\n   - Rango estimado de inflación acumulada 2025.\n   - Probabilidad de tres escenarios:\n     A) <30%\n     B) 30-40%\n     C) >40%\n3. Mecanismo causal:\n   - Explicar qué variable domina la percepción pública.\n   - Explicar cómo interactúan inflación, salarios, desempleo, reservas, oposición y gobernabilidad.\n4. Riesgos:\n   - Principal riesgo que podría invalidar la predicción.\n   - Señales tempranas que deberían monitorearse.\n5. Evidencia:\n   - Incluir la evidencia o señales principales que sostienen la predicción.",
+  "platform": "twitter",
+  "max_rounds": 40,
+  "enable_graph_memory_update": true,
+  "force": true,
+  "use_llm_for_profiles": true,
+  "parallel_profile_count": 5,
+  "generate_report": true,
+  "started_at": "2026-05-26T20:00:08.147070+00:00"
+}
