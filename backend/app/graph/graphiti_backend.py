@@ -7,17 +7,143 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import re
 import threading
+import time
+import typing
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+import openai
 from pydantic import BaseModel, Field, create_model
 
 from ..config import Config
 from .base import GraphBackend
 
 logger = logging.getLogger(__name__)
+
+
+def _make_mirofish_graphiti_client(OpenAIGenericClient):
+    """Factory that creates a robust Graphiti client subclass after the import is available."""
+
+    class MiroFishGraphitiClient(OpenAIGenericClient):
+        """Graphiti LLM client that strips thought tags and fixes JSON-array responses."""
+
+        def __init__(self, config=None, cache=False, client=None, max_tokens=16384):
+            super().__init__(config=config, cache=cache, client=client, max_tokens=max_tokens)
+            # Replace client with one that has a longer read timeout (default httpx is too short)
+            if client is None:
+                import httpx
+                from openai import AsyncOpenAI
+                self.client = AsyncOpenAI(
+                    api_key=config.api_key if config else None,
+                    base_url=config.base_url if config else None,
+                    timeout=httpx.Timeout(connect=10.0, read=600.0, write=30.0, pool=10.0),
+                )
+
+        async def _generate_response(
+            self,
+            messages,
+            response_model=None,
+            max_tokens=16384,
+            model_size=None,
+        ) -> dict[str, typing.Any]:
+            from openai.types.chat import ChatCompletionMessageParam
+            openai_messages: list[ChatCompletionMessageParam] = []
+            for m in messages:
+                m.content = self._clean_input(m.content)
+                if m.role == "user":
+                    openai_messages.append({"role": "user", "content": m.content})
+                elif m.role == "system":
+                    openai_messages.append({"role": "system", "content": m.content})
+
+            # Use json_schema when a response model is provided — enforces exact field names
+            if response_model is not None:
+                try:
+                    schema = response_model.model_json_schema()
+                    schema_name = schema.get("title", "structured_response").replace(" ", "_")
+                    response_format: dict[str, Any] = {
+                        "type": "json_schema",
+                        "json_schema": {
+                            "name": schema_name,
+                            "schema": schema,
+                            "strict": False,
+                        },
+                    }
+                except Exception:
+                    response_format = {"type": "json_object"}
+            else:
+                response_format = {"type": "json_object"}
+
+            max_attempts = 8
+            base_wait = 20.0
+            current_response_format = response_format
+            for attempt in range(max_attempts):
+                try:
+                    response = await self.client.chat.completions.create(
+                        model=self.model,
+                        messages=openai_messages,
+                        temperature=self.temperature,
+                        max_tokens=self.max_tokens,
+                        response_format=current_response_format,
+                    )
+                    result = response.choices[0].message.content or ""
+                    # Strip thought/think tags emitted by some models
+                    result = re.sub(
+                        r"<think(?:ing)?>[\s\S]*?</think(?:ing)?>|<thought>[\s\S]*?</thought>",
+                        "",
+                        result,
+                    ).strip()
+                    parsed = json.loads(result)
+                    # If model returned a JSON array, wrap it in the expected dict key
+                    if isinstance(parsed, list) and response_model is not None:
+                        schema = response_model.model_json_schema()
+                        list_fields = [
+                            k for k, v in schema.get("properties", {}).items()
+                            if v.get("type") == "array" or "items" in v
+                        ]
+                        if list_fields:
+                            parsed = {list_fields[0]: parsed}
+                    return parsed
+                except openai.InternalServerError as e:
+                    # 500 from Google can mean json_schema is too complex — fall back to json_object
+                    if current_response_format.get("type") == "json_schema":
+                        logger.warning(f"Graphiti LLM 500 with json_schema, falling back to json_object (attempt {attempt+1})")
+                        current_response_format = {"type": "json_object"}
+                        await asyncio.sleep(5)
+                        continue
+                    if attempt < max_attempts - 1:
+                        await asyncio.sleep(base_wait)
+                        continue
+                    raise
+                except (openai.RateLimitError, openai.APITimeoutError) as e:
+                    if attempt < max_attempts - 1:
+                        wait = base_wait * (attempt + 1)
+                        kind = "rate limit" if isinstance(e, openai.RateLimitError) else "timeout"
+                        logger.warning(f"Graphiti LLM {kind} (attempt {attempt+1}/{max_attempts}), waiting {wait:.0f}s...")
+                        await asyncio.sleep(wait)
+                        continue
+                    if isinstance(e, openai.RateLimitError):
+                        from graphiti_core.llm_client.errors import RateLimitError
+                        raise RateLimitError from e
+                    raise
+                except Exception as e:
+                    # httpx.ReadTimeout can sometimes propagate unwrapped in async context
+                    try:
+                        import httpx as _httpx
+                        if isinstance(e, _httpx.ReadTimeout):
+                            if attempt < max_attempts - 1:
+                                wait = base_wait * (attempt + 1)
+                                logger.warning(f"Graphiti LLM httpx.ReadTimeout (attempt {attempt+1}/{max_attempts}), waiting {wait:.0f}s...")
+                                await asyncio.sleep(wait)
+                                continue
+                    except ImportError:
+                        pass
+                    logger.error(f"MiroFish Graphiti LLM error: {e}")
+                    raise
+
+    return MiroFishGraphitiClient
 
 
 @dataclass
@@ -158,9 +284,11 @@ class GraphitiBackend(GraphBackend):
             embedding_dim=Config.GRAPHITI_EMBEDDER_DIM,
         )
 
+        MiroFishGraphitiClient = _make_mirofish_graphiti_client(OpenAIGenericClient)
+
         llm_client_mode = (Config.GRAPHITI_LLM_CLIENT_MODE or "openai").lower()
         if llm_client_mode == "generic":
-            llm_client = OpenAIGenericClient(
+            llm_client = MiroFishGraphitiClient(
                 config=llm_config,
                 max_tokens=Config.GRAPHITI_LLM_MAX_TOKENS,
             )
