@@ -1,0 +1,21 @@
+{
+  "base_url": "http://localhost:5001",
+  "flow_provenance": "frontend_replay_backend_api",
+  "project_name": "MiroFish Headless Benchmark",
+  "files": [
+    {
+      "path": "cases/CASE-B1-BTC-ETF-JAN2024/input_pack_pre_x/seed_bundle.md",
+      "sha256": "e624d823679edac2466d33070be4f92715dd4848dbb55255568874d3d4916d6b",
+      "bytes": 6468
+    }
+  ],
+  "simulation_requirement": "Usando exclusivamente los documentos provistos fechados hasta el 9 de enero de 2024, analiza la situación del mercado de Bitcoin y responde en formato estructurado:\n\n1. Predicción Δ1 (1 día — 10 enero 2024):\n   - Precio específico estimado para BTC el 10 de enero.\n   - Dirección: alcista / bajista / neutro.\n\n2. Predicción Δ2 (3 días — 12 enero 2024):\n   - Rango de precio estimado: $low – $high.\n   - Dirección dominante esperada.\n\n3. Predicción Δ3 (1 semana — 17 enero 2024):\n   - Dirección esperada.\n   - Bucket de magnitud: plano (±5%), caída/subida moderada (5–15%), movimiento fuerte (>15%).\n\n4. Predicción Δ4 (1 mes — 9 febrero 2024):\n   - Sentimiento de mercado: alcista / neutro / bajista.\n   - Una razón clave que sustente la predicción.\n\n5. Mecanismo causal:\n   - ¿Qué dinámica social o de mercado domina la expectativa?\n   - ¿Qué riesgo principal podría invalidar la predicción?\n\n6. Evidencia:\n   - Cada claim importante debe citar el source_id del documento usado.\n   - No usar información posterior al 9/01/2024.",
+  "platform": "parallel",
+  "max_rounds": 10,
+  "enable_graph_memory_update": true,
+  "force": true,
+  "use_llm_for_profiles": true,
+  "parallel_profile_count": 5,
+  "generate_report": true,
+  "started_at": "2026-05-26T17:52:26.766828+00:00"
+}

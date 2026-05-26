@@ -7,8 +7,12 @@ Install Prompture for multi-provider support: pip install prompture
 """
 
 import json
+import logging
 import re
+import time
 from typing import Optional, Dict, Any, List
+
+logger = logging.getLogger(__name__)
 
 from ..config import Config
 
@@ -126,13 +130,13 @@ class LLMClient:
         else:
             content = self._chat_openai(messages, temperature, max_tokens, response_format)
             # Fallback: strip think tags with regex when Prompture is not available
-            return re.sub(r'<think>[\s\S]*?</think>', '', content).strip()
+            return re.sub(r'<think(?:ing)?>[\s\S]*?</think(?:ing)?>|<thought>[\s\S]*?</thought>', '', content).strip()
 
     def chat_json(
         self,
         messages: List[Dict[str, str]],
         temperature: float = 0.3,
-        max_tokens: int = 4096,
+        max_tokens: int = 8192,
     ) -> Dict[str, Any]:
         """
         发送聊天请求并返回JSON
@@ -154,7 +158,7 @@ class LLMClient:
                 messages, temperature, max_tokens
             )
             # Fallback cleaning when Prompture is not available
-            cleaned = re.sub(r'<think>[\s\S]*?</think>', '', response).strip()
+            cleaned = re.sub(r'<think(?:ing)?>[\s\S]*?</think(?:ing)?>|<thought>[\s\S]*?</thought>', '', response).strip()
             cleaned = re.sub(r'^```(?:json)?\s*\n?', '', cleaned, flags=re.IGNORECASE)
             cleaned = re.sub(r'\n?```\s*$', '', cleaned)
             cleaned = cleaned.strip()
@@ -205,5 +209,17 @@ class LLMClient:
         if response_format:
             kwargs["response_format"] = response_format
 
-        response = self.client.chat.completions.create(**kwargs)
-        return response.choices[0].message.content
+        import openai
+        max_attempts = 6
+        base_wait = 15.0
+        for attempt in range(max_attempts):
+            try:
+                response = self.client.chat.completions.create(**kwargs)
+                return response.choices[0].message.content
+            except openai.RateLimitError as e:
+                if attempt < max_attempts - 1:
+                    wait = base_wait * (attempt + 1)
+                    logger.warning(f"LLM 429 rate limit (attempt {attempt+1}/{max_attempts}), waiting {wait:.0f}s...")
+                    time.sleep(wait)
+                else:
+                    raise
