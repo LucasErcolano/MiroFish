@@ -1,0 +1,48 @@
+# =============================================================================
+# V1 Smoke Experimental — Experimental memory mode with Gemini backend
+# =============================================================================
+# Use this smoke when validating the real simulation path only. It disables
+# Report Agent generation so report-time failures/dependencies cannot overwrite
+# otherwise-successful 1-round MiroFish/OASIS simulation evidence.
+case_id: v1_smoke
+variant: experimental
+seed: 1
+memory_mode: experimental
+
+# Minimal rounds for smoke test
+max_rounds: 1
+platform: parallel
+parallel_profile_count: 3
+
+# Cheap Gemini model via OpenAI-compatible endpoint
+model: gemini-2.5-flash-lite
+llm_base_url: https://generativelanguage.googleapis.com/v1beta/openai/
+llm_api_key_env: GEMINI_API_KEY
+
+# Simulation requirement — short and focused for smoke
+simulation_requirement: |
+  Analyze the Argentine presidential election of 2023.
+  Given the available evidence, assess the most likely outcome and
+  explain the causal mechanisms driving voter behavior.
+
+# Seed documents
+seed_documents:
+  - path: runs/headless/PILOT-ARG-2025-Q1-input/seed_bundle.md
+    alias: seed_bundle_smoke
+
+# Prompts
+prompts:
+  - path: runs/headless/PILOT-ARG-2025-Q1-input/prompt.md
+    alias: main_question
+
+# Graph memory enabled
+enable_graph_memory_update: true
+generate_report: false
+force: true
+use_llm_for_profiles: true
+poll_timeout_seconds: 900
+
+extra_env:
+  MEMORY_MODE: experimental
+
+runs_root: runs

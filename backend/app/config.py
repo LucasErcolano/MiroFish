@@ -110,7 +110,10 @@ class Config:
     REPORT_AGENT_MAX_REFLECTION_ROUNDS = int(os.environ.get('REPORT_AGENT_MAX_REFLECTION_ROUNDS', '2'))
     REPORT_AGENT_TEMPERATURE = float(os.environ.get('REPORT_AGENT_TEMPERATURE', '0.5'))
     
-    # Experimental Memory (Spike S1)
+    # Memory Mode (Spike S2)
+    # MEMORY_MODE takes precedence over legacy USE_EXPERIMENTAL_MEMORY.
+    # Values: "baseline" (default) or "experimental".
+    MEMORY_MODE = os.environ.get('MEMORY_MODE', '').strip().lower()
     USE_EXPERIMENTAL_MEMORY = os.environ.get('USE_EXPERIMENTAL_MEMORY', 'False').lower() == 'true'
     DATA_DIR = os.path.join(os.path.dirname(__file__), '../data')
 
@@ -239,3 +242,19 @@ class Config:
             errors.append("LLM_API_KEY 未配置")
         errors.extend(cls.get_graph_backend_config_errors())
         return errors
+
+    @classmethod
+    def get_memory_mode(cls):
+        """Resolve the active memory mode from configuration.
+
+        Priority:
+        1. MEMORY_MODE env var if set (explicit 'baseline' or 'experimental')
+        2. USE_EXPERIMENTAL_MEMORY=true for backward compat -> experimental
+        3. Default -> baseline
+        """
+        from .services.memory_mode import MemoryMode
+        if cls.MEMORY_MODE:
+            return MemoryMode.from_string(cls.MEMORY_MODE)
+        if cls.USE_EXPERIMENTAL_MEMORY:
+            return MemoryMode.EXPERIMENTAL
+        return MemoryMode.BASELINE
