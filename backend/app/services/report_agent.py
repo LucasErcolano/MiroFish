@@ -21,7 +21,11 @@ from enum import Enum
 from ..config import Config
 from ..utils.llm_client import LLMClient
 from ..utils.logger import get_logger
-from ..utils.locale import get_language_instruction, t
+from ..utils.locale import (
+    get_language_instruction,
+    get_locale,
+    t,
+)
 from .zep_tools import (
     ZepToolsService, 
     SearchResult, 
@@ -31,6 +35,15 @@ from .zep_tools import (
 )
 
 logger = get_logger('mirofish.report_agent')
+
+
+def _safe_text(value: Any) -> str:
+    """Normalize nullable/non-string LLM and tool payloads to loggable text."""
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value
+    return str(value)
 
 
 class ReportLogger:
@@ -195,6 +208,7 @@ class ReportLogger:
         iteration: int
     ):
         """记录工具调用结果（完整内容，不截断）"""
+        result = _safe_text(result)
         self.log(
             action="tool_result",
             stage="generating",
@@ -219,6 +233,7 @@ class ReportLogger:
         has_final_answer: bool
     ):
         """记录 LLM 响应（完整内容，不截断）"""
+        response = _safe_text(response)
         self.log(
             action="llm_response",
             stage="generating",
@@ -242,6 +257,7 @@ class ReportLogger:
         tool_calls_count: int
     ):
         """记录章节内容生成完成（仅记录内容，不代表整个章节完成）"""
+        content = _safe_text(content)
         self.log(
             action="section_content",
             stage="generating",
@@ -266,6 +282,7 @@ class ReportLogger:
 
         前端应监听此日志来判断一个章节是否真正完成，并获取完整内容
         """
+        full_content = _safe_text(full_content)
         self.log(
             action="section_complete",
             stage="generating",
@@ -644,7 +661,15 @@ SECTION_SYSTEM_PROMPT_TEMPLATE = """\
    - 你正在以「上帝视角」观察未来的预演
    - 所有内容必须来自模拟世界中发生的事件和Agent言行
    - 禁止使用你自己的知识来编写报告内容
-   - 每个章节至少调用3次工具（最多5次）来观察模拟的世界，它代表了未来
+   - 每个章节至少调用1次工具（最多5次）来观察模拟的世界，它代表了未来
+   - ⚠️ 硬性规则：如果第一次回复就以 "Final Answer:" 开头而没有先调用工具，
+     该章节会被自动判定为无效，整个报告会失败。
+     你必须先调用工具，等到收到工具结果后，再写 Final Answer。
+   - ⚠️ Hard rule (multilingual restate, do not skip):
+     If your FIRST response in this section starts with "Final Answer:" before
+     ANY <tool_call>, the section will be rejected and the whole report will fail.
+     You MUST issue at least one <tool_call> first, read its tool result, and
+     only THEN emit "Final Answer:".
 
 2. 【必须引用Agent的原始言行】
    - Agent的发言和行为是对未来人群行为的预测
@@ -766,6 +791,33 @@ SECTION_SYSTEM_PROMPT_TEMPLATE = """\
 6. 【避免重复】仔细阅读下方已完成的章节内容，不要重复描述相同的信息
 7. 【再次强调】不要添加任何标题！用**粗体**代替小节标题"""
 
+
+# ============================================================================
+# Locale-aware section prompt templates.
+# Native MiroFish prompts (Chinese) live below as ``SECTION_*_TEMPLATE``.
+# Translated copies live in ``report_agent_native_locales`` and are imported
+# here so the selector below can pick the right pair per locale.
+# Hermes-added quality guards (parser, validator, scrubber,
+# OASIS-down fallback) live in
+# ``report_agent_quality_guards`` and are imported below.
+# ============================================================================
+from .report_agent_native_locales import (
+    PLAN_SYSTEM_PROMPT_ES,
+    PLAN_USER_PROMPT_TEMPLATE_ES,
+    SECTION_SYSTEM_PROMPT_TEMPLATE_ES,
+    SECTION_USER_PROMPT_TEMPLATE_ES,
+    OUTLINE_FALLBACK_TRANSLATIONS,
+    PREVIOUS_CONTENT_FIRST_SECTION_PLACEHOLDER,
+    TOOL_RESULT_HEADER_TRANSLATIONS,
+    localize_tool_result as _nl_localize_tool_result,
+)
+from .report_agent_quality_guards import (
+    parse_tool_calls as _qg_parse_tool_calls,
+    validate_section_content as _qg_validate_section_content,
+    clean_final_answer as _qg_clean_final_answer,
+    is_interview_agents_unavailable as _qg_is_interview_agents_unavailable,
+)
+
 SECTION_USER_PROMPT_TEMPLATE = """\
 已完成的章节内容（请仔细阅读，避免重复）：
 {previous_content}
@@ -862,6 +914,30 @@ CHAT_OBSERVATION_SUFFIX = "\n\n请简洁回答问题。"
 # ═══════════════════════════════════════════════════════════════
 
 
+def _get_section_prompts_for_locale():
+    """Return the (system_template, user_template) pair matching the active locale.
+
+    Falls back to the Chinese originals for locales without a translated version
+    (zh, and any unsupported locale).
+    """
+    locale = get_locale()
+    if locale == 'es':
+        return SECTION_SYSTEM_PROMPT_TEMPLATE_ES, SECTION_USER_PROMPT_TEMPLATE_ES
+    return SECTION_SYSTEM_PROMPT_TEMPLATE, SECTION_USER_PROMPT_TEMPLATE
+
+
+def _get_plan_prompts_for_locale():
+    """Return the (system_prompt, user_template) pair for the planning step.
+
+    Falls back to the Chinese originals for locales without a translated version
+    (zh, and any unsupported locale).
+    """
+    locale = get_locale()
+    if locale == 'es':
+        return PLAN_SYSTEM_PROMPT_ES, PLAN_USER_PROMPT_TEMPLATE_ES
+    return PLAN_SYSTEM_PROMPT, PLAN_USER_PROMPT_TEMPLATE
+
+
 class ReportAgent:
     """
     Report Agent - 模拟报告生成Agent
@@ -956,6 +1032,11 @@ class ReportAgent:
             }
         }
     
+    # Tool-result header translation table and the localizer function both
+    # live in ``report_agent_native_locales`` (translation of upstream strings).
+    def _localize_tool_result(self, text: str) -> str:
+        return _nl_localize_tool_result(text, get_locale())
+
     def _execute_tool(self, tool_name: str, parameters: Dict[str, Any], report_context: str = "") -> str:
         """
         执行工具调用
@@ -980,7 +1061,7 @@ class ReportAgent:
                     simulation_requirement=self.simulation_requirement,
                     report_context=ctx
                 )
-                return result.to_text()
+                return self._localize_tool_result(result.to_text())
             
             elif tool_name == "panorama_search":
                 # 广度搜索 - 获取全貌
@@ -993,7 +1074,7 @@ class ReportAgent:
                     query=query,
                     include_expired=include_expired
                 )
-                return result.to_text()
+                return self._localize_tool_result(result.to_text())
             
             elif tool_name == "quick_search":
                 # 简单搜索 - 快速检索
@@ -1006,7 +1087,7 @@ class ReportAgent:
                     query=query,
                     limit=limit
                 )
-                return result.to_text()
+                return self._localize_tool_result(result.to_text())
             
             elif tool_name == "interview_agents":
                 # 深度采访 - 调用真实的OASIS采访API获取模拟Agent的回答（双平台）
@@ -1021,7 +1102,32 @@ class ReportAgent:
                     simulation_requirement=self.simulation_requirement,
                     max_agents=max_agents
                 )
-                return result.to_text()
+                result_text = result.to_text()
+                # If the OASIS simulation environment is offline the interview
+                # API returns a "采访失败 / Interview failed" body. Surfacing that
+                # to the LLM causes it to leak the error text into the report.
+                # Degrade gracefully by re-routing to insight_forge with the
+                # same topic so the agent still gets grounded data instead of a
+                # transient infrastructure error.
+                interview_failure_markers = [
+                    "采访失败",
+                    "模拟环境未运行",
+                    "OASIS环境正在运行",
+                    "interview failed",
+                    "simulation environment is not running",
+                ]
+                if any(m in result_text for m in interview_failure_markers):
+                    logger.warning(
+                        "interview_agents unavailable (OASIS down). "
+                        "Falling back to insight_forge for topic: %s",
+                        interview_topic,
+                    )
+                    return self._execute_tool(
+                        "insight_forge",
+                        {"query": interview_topic, "report_context": report_context},
+                        report_context,
+                    )
+                return self._localize_tool_result(result_text)
             
             # ========== 向后兼容的旧工具（内部重定向到新工具） ==========
             
@@ -1064,69 +1170,6 @@ class ReportAgent:
             logger.error(t('report.toolExecFailed', toolName=tool_name, error=str(e)))
             return f"工具执行失败: {str(e)}"
     
-    # 合法的工具名称集合，用于裸 JSON 兜底解析时校验
-    VALID_TOOL_NAMES = {"insight_forge", "panorama_search", "quick_search", "interview_agents"}
-
-    def _parse_tool_calls(self, response: str) -> List[Dict[str, Any]]:
-        """
-        从LLM响应中解析工具调用
-
-        支持的格式（按优先级）：
-        1. <tool_call>{"name": "tool_name", "parameters": {...}}</tool_call>
-        2. 裸 JSON（响应整体或单行就是一个工具调用 JSON）
-        """
-        tool_calls = []
-
-        # 格式1: XML风格（标准格式）
-        xml_pattern = r'<tool_call>\s*(\{.*?\})\s*</tool_call>'
-        for match in re.finditer(xml_pattern, response, re.DOTALL):
-            try:
-                call_data = json.loads(match.group(1))
-                tool_calls.append(call_data)
-            except json.JSONDecodeError:
-                pass
-
-        if tool_calls:
-            return tool_calls
-
-        # 格式2: 兜底 - LLM 直接输出裸 JSON（没包 <tool_call> 标签）
-        # 只在格式1未匹配时尝试，避免误匹配正文中的 JSON
-        stripped = response.strip()
-        if stripped.startswith('{') and stripped.endswith('}'):
-            try:
-                call_data = json.loads(stripped)
-                if self._is_valid_tool_call(call_data):
-                    tool_calls.append(call_data)
-                    return tool_calls
-            except json.JSONDecodeError:
-                pass
-
-        # 响应可能包含思考文字 + 裸 JSON，尝试提取最后一个 JSON 对象
-        json_pattern = r'(\{"(?:name|tool)"\s*:.*?\})\s*$'
-        match = re.search(json_pattern, stripped, re.DOTALL)
-        if match:
-            try:
-                call_data = json.loads(match.group(1))
-                if self._is_valid_tool_call(call_data):
-                    tool_calls.append(call_data)
-            except json.JSONDecodeError:
-                pass
-
-        return tool_calls
-
-    def _is_valid_tool_call(self, data: dict) -> bool:
-        """校验解析出的 JSON 是否是合法的工具调用"""
-        # 支持 {"name": ..., "parameters": ...} 和 {"tool": ..., "params": ...} 两种键名
-        tool_name = data.get("name") or data.get("tool")
-        if tool_name and tool_name in self.VALID_TOOL_NAMES:
-            # 统一键名为 name / parameters
-            if "tool" in data:
-                data["name"] = data.pop("tool")
-            if "params" in data and "parameters" not in data:
-                data["parameters"] = data.pop("params")
-            return True
-        return False
-    
     def _get_tools_description(self) -> str:
         """生成工具描述文本"""
         desc_parts = ["可用工具："]
@@ -1136,38 +1179,60 @@ class ReportAgent:
             if params_desc:
                 desc_parts.append(f"  参数: {params_desc}")
         return "\n".join(desc_parts)
-    
+
+    # Whitelist used by the (delegating) parser and validator. Kept here so
+    # backward-compat consumers of ``self.VALID_TOOL_NAMES`` still work.
+    VALID_TOOL_NAMES = {"insight_forge", "panorama_search", "quick_search", "interview_agents"}
+
+    # Tool-call parser and JSON validator are implemented in
+    # ``report_agent_quality_guards``. These thin wrappers preserve the
+    # ``self.``-bound API expected by the rest of the agent and tests.
+    def _parse_tool_calls(self, response):
+        return _qg_parse_tool_calls(response, self.VALID_TOOL_NAMES)
+
+    def _is_valid_tool_call(self, data):  # legacy hook kept for tests
+        from .report_agent_quality_guards import _coerce_to_valid_tool_call
+        return _coerce_to_valid_tool_call(dict(data), self.VALID_TOOL_NAMES) is not None
+
+    # Validation & scrubbing are delegated to ``report_agent_quality_guards``.
+    def _validate_section_content(self, content, tool_calls_count, forced=False):
+        _qg_validate_section_content(
+            content,
+            tool_calls_count=tool_calls_count,
+            forced=forced,
+            locale=get_locale(),
+            simulation_requirement=self.simulation_requirement,
+        )
+
+    def _clean_final_answer(self, text):
+        return _qg_clean_final_answer(text)
+
     def plan_outline(
         self, 
         progress_callback: Optional[Callable] = None
     ) -> ReportOutline:
         """
-        规划报告大纲
-        
-        使用LLM分析模拟需求，规划报告的目录结构
-        
-        Args:
-            progress_callback: 进度回调函数
-            
-        Returns:
-            ReportOutline: 报告大纲
+        规划报告大纲 / Plan the report outline.
+
+        Uses the LLM to analyze the simulation requirement and design the report
+        structure, selecting localized planning prompts when available.
         """
         logger.info(t('report.startPlanningOutline'))
-        
+
         if progress_callback:
             progress_callback("planning", 0, t('progress.analyzingRequirements'))
-        
-        # 首先获取模拟上下文
+
         context = self.zep_tools.get_simulation_context(
             graph_id=self.graph_id,
             simulation_requirement=self.simulation_requirement
         )
-        
+
         if progress_callback:
             progress_callback("planning", 30, t('progress.generatingOutline'))
-        
-        system_prompt = f"{PLAN_SYSTEM_PROMPT}\n\n{get_language_instruction()}"
-        user_prompt = PLAN_USER_PROMPT_TEMPLATE.format(
+
+        plan_system_prompt, plan_user_template = _get_plan_prompts_for_locale()
+        system_prompt = f"{plan_system_prompt}\n\n{get_language_instruction()}"
+        user_prompt = plan_user_template.format(
             simulation_requirement=self.simulation_requirement,
             total_nodes=context.get('graph_statistics', {}).get('total_nodes', 0),
             total_edges=context.get('graph_statistics', {}).get('total_edges', 0),
@@ -1184,43 +1249,44 @@ class ReportAgent:
                 ],
                 temperature=0.3
             )
-            
+
             if progress_callback:
                 progress_callback("planning", 80, t('progress.parsingOutline'))
-            
-            # 解析大纲
+
             sections = []
             for section_data in response.get("sections", []):
                 sections.append(ReportSection(
                     title=section_data.get("title", ""),
                     content=""
                 ))
-            
+
             outline = ReportOutline(
                 title=response.get("title", "模拟分析报告"),
                 summary=response.get("summary", ""),
                 sections=sections
             )
-            
+
             if progress_callback:
                 progress_callback("planning", 100, t('progress.outlinePlanComplete'))
-            
+
             logger.info(t('report.outlinePlanDone', count=len(sections)))
             return outline
-            
+
         except Exception as e:
             logger.error(t('report.outlinePlanFailed', error=str(e)))
-            # 返回默认大纲（3个章节，作为fallback）
-            return ReportOutline(
-                title="未来预测报告",
-                summary="基于模拟预测的未来趋势与风险分析",
-                sections=[
-                    ReportSection(title="预测场景与核心发现"),
-                    ReportSection(title="人群行为预测分析"),
-                    ReportSection(title="趋势展望与风险提示")
-                ]
+            # Locale-aware fallback outline (Hermes addition). Translations live in
+            # report_agent_native_locales.OUTLINE_FALLBACK_TRANSLATIONS.
+            fallback = OUTLINE_FALLBACK_TRANSLATIONS.get(
+                get_locale(),
+                OUTLINE_FALLBACK_TRANSLATIONS['zh'],
             )
-    
+            return ReportOutline(
+                title=fallback['title'],
+                summary=fallback['summary'],
+                sections=[ReportSection(title=s) for s in fallback['sections']],
+            )
+
+
     def _generate_section_react(
         self, 
         section: ReportSection,
@@ -1255,7 +1321,8 @@ class ReportAgent:
         if self.report_logger:
             self.report_logger.log_section_start(section.title, section_index)
         
-        system_prompt = SECTION_SYSTEM_PROMPT_TEMPLATE.format(
+        section_system_template, section_user_template = _get_section_prompts_for_locale()
+        system_prompt = section_system_template.format(
             report_title=outline.title,
             report_summary=outline.summary,
             simulation_requirement=self.simulation_requirement,
@@ -1273,9 +1340,12 @@ class ReportAgent:
                 previous_parts.append(truncated)
             previous_content = "\n\n---\n\n".join(previous_parts)
         else:
-            previous_content = "（这是第一个章节）"
+            previous_content = PREVIOUS_CONTENT_FIRST_SECTION_PLACEHOLDER.get(
+                get_locale(),
+                PREVIOUS_CONTENT_FIRST_SECTION_PLACEHOLDER['zh'],
+            )
         
-        user_prompt = SECTION_USER_PROMPT_TEMPLATE.format(
+        user_prompt = section_user_template.format(
             previous_content=previous_content,
             section_title=section.title,
         )
@@ -1288,7 +1358,7 @@ class ReportAgent:
         # ReACT循环
         tool_calls_count = 0
         max_iterations = 5  # 最大迭代轮数
-        min_tool_calls = 3  # 最少工具调用次数
+        min_tool_calls = 1  # 最少真实工具调用次数；避免为凑数量把模型推向无关示例
         conflict_retries = 0  # 工具调用与Final Answer同时出现的连续冲突次数
         used_tools = set()  # 记录已调用过的工具名
         all_tools = {"insight_forge", "panorama_search", "quick_search", "interview_agents"}
@@ -1393,6 +1463,8 @@ class ReportAgent:
 
                 # 正常结束
                 final_answer = response.split("Final Answer:")[-1].strip()
+                final_answer = self._clean_final_answer(final_answer)
+                self._validate_section_content(final_answer, tool_calls_count=tool_calls_count, forced=False)
                 logger.info(t('report.sectionGenDone', title=section.title, count=tool_calls_count))
 
                 if self.report_logger:
@@ -1491,7 +1563,8 @@ class ReportAgent:
             # 工具调用已足够，LLM 输出了内容但没带 "Final Answer:" 前缀
             # 直接将这段内容作为最终答案，不再空转
             logger.info(t('report.sectionNoPrefix', title=section.title, count=tool_calls_count))
-            final_answer = response.strip()
+            final_answer = self._clean_final_answer(response.strip())
+            self._validate_section_content(final_answer, tool_calls_count=tool_calls_count, forced=False)
 
             if self.report_logger:
                 self.report_logger.log_section_content(
@@ -1518,8 +1591,10 @@ class ReportAgent:
             final_answer = t('report.sectionGenFailedContent')
         elif "Final Answer:" in response:
             final_answer = response.split("Final Answer:")[-1].strip()
+            final_answer = self._clean_final_answer(final_answer)
         else:
-            final_answer = response
+            final_answer = self._clean_final_answer(response)
+        self._validate_section_content(final_answer, tool_calls_count=tool_calls_count, forced=True)
         
         # 记录章节内容生成完成日志
         if self.report_logger:
@@ -1639,6 +1714,14 @@ class ReportAgent:
             for i, section in enumerate(outline.sections):
                 section_num = i + 1
                 base_progress = 20 + int((i / total_sections) * 70)
+
+                existing_section_content = ReportManager.get_section_content(report_id, section_num, section.title)
+                if existing_section_content:
+                    section.content = existing_section_content
+                    generated_sections.append(f"## {section.title}\n\n{existing_section_content}")
+                    completed_section_titles.append(section.title)
+                    logger.info(t('report.sectionSaved', reportId=report_id, sectionNum=f"{section_num:02d}"))
+                    continue
                 
                 # 更新进度
                 ReportManager.update_progress(
@@ -1656,18 +1739,35 @@ class ReportAgent:
                     )
                 
                 # 生成主章节内容
-                section_content = self._generate_section_react(
-                    section=section,
-                    outline=outline,
-                    previous_sections=generated_sections,
-                    progress_callback=lambda stage, prog, msg:
-                        progress_callback(
-                            stage, 
-                            base_progress + int(prog * 0.7 / total_sections),
-                            msg
-                        ) if progress_callback else None,
-                    section_index=section_num
-                )
+                try:
+                    section_content = self._generate_section_react(
+                        section=section,
+                        outline=outline,
+                        previous_sections=generated_sections,
+                        progress_callback=lambda stage, prog, msg:
+                            progress_callback(
+                                stage,
+                                base_progress + int(prog * 0.7 / total_sections),
+                                msg
+                            ) if progress_callback else None,
+                        section_index=section_num
+                    )
+                except Exception as section_error:
+                    error_message = str(section_error)
+                    logger.error(t('report.reportGenFailed', error=f"{section.title}: {error_message}"))
+                    if self.report_logger:
+                        self.report_logger.log_error(error_message, "failed", section.title)
+                    ReportManager.save_failed_section(report_id, section_num, section.title, error_message)
+                    report.status = ReportStatus.FAILED
+                    report.error = f"Section {section_num} ({section.title}) failed: {error_message}"
+                    ReportManager.save_report(report)
+                    ReportManager.update_progress(
+                        report_id, "failed", -1, t('progress.reportFailed', error=error_message),
+                        current_section=section.title,
+                        completed_sections=completed_section_titles
+                    )
+                    return report
+                section_content = _safe_text(section_content)
                 
                 section.content = section_content
                 generated_sections.append(f"## {section.title}\n\n{section_content}")
@@ -1838,6 +1938,7 @@ class ReportAgent:
             
             if not tool_calls:
                 # 没有工具调用，直接返回响应
+                response = _safe_text(response)
                 clean_response = re.sub(r'<tool_call>.*?</tool_call>', '', response, flags=re.DOTALL)
                 clean_response = re.sub(r'\[TOOL_CALL\].*?\)', '', clean_response)
                 
@@ -1852,7 +1953,7 @@ class ReportAgent:
             for call in tool_calls[:1]:  # 每轮最多执行1次工具调用
                 if len(tool_calls_made) >= self.MAX_TOOL_CALLS_PER_CHAT:
                     break
-                result = self._execute_tool(call["name"], call.get("parameters", {}))
+                result = _safe_text(self._execute_tool(call["name"], call.get("parameters", {})))
                 tool_results.append({
                     "tool": call["name"],
                     "result": result[:1500]  # 限制结果长度
@@ -1874,6 +1975,7 @@ class ReportAgent:
         )
         
         # 清理响应
+        final_response = _safe_text(final_response)
         clean_response = re.sub(r'<tool_call>.*?</tool_call>', '', final_response, flags=re.DOTALL)
         clean_response = re.sub(r'\[TOOL_CALL\].*?\)', '', clean_response)
         
@@ -1947,6 +2049,26 @@ class ReportManager:
         """获取章节Markdown文件路径"""
         return os.path.join(cls._get_report_folder(report_id), f"section_{section_index:02d}.md")
     
+    @classmethod
+    def get_section_content(cls, report_id: str, section_index: int, section_title: str = "") -> str:
+        """Read a previously saved section body for report retry/resume."""
+        path = cls._get_section_path(report_id, section_index)
+        if not os.path.exists(path):
+            return ""
+        with open(path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        if not content.strip():
+            return ""
+
+        lines = content.splitlines()
+        if lines and lines[0].strip().startswith('##'):
+            title_text = lines[0].lstrip('#').strip()
+            if not section_title or title_text == section_title:
+                lines = lines[1:]
+                while lines and lines[0].strip() == "":
+                    lines = lines[1:]
+        return "\n".join(lines).strip()
+
     @classmethod
     def _get_agent_log_path(cls, report_id: str) -> str:
         """获取 Agent 日志文件路径"""
@@ -2131,6 +2253,21 @@ class ReportManager:
         logger.info(t('report.sectionFileSaved', reportId=report_id, fileSuffix=file_suffix))
         return file_path
     
+    @classmethod
+    def save_failed_section(cls, report_id: str, section_index: int, section_title: str, error_message: str) -> str:
+        """Persist a failed section marker without overwriting completed section files."""
+        cls._ensure_report_folder(report_id)
+        file_suffix = f"section_{section_index:02d}.failed.md"
+        file_path = os.path.join(cls._get_report_folder(report_id), file_suffix)
+        md_content = (
+            f"## {section_title}\n\n"
+            f"> Section generation failed and can be retried without regenerating completed sections.\n\n"
+            f"Error: {_safe_text(error_message)}\n"
+        )
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(md_content)
+        return file_path
+
     @classmethod
     def _clean_section_content(cls, content: str, section_title: str) -> str:
         """
