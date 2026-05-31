@@ -14,6 +14,7 @@ from queue import Queue, Empty
 
 from ..config import Config
 from ..graph import get_graph_backend
+from .memory_mode import MemoryMode
 from ..utils.logger import get_logger
 from ..utils.locale import get_locale, set_locale
 
@@ -255,7 +256,9 @@ class ZepGraphMemoryUpdater:
         self.backend = getattr(self.provider, 'backend', None)
         
         if self.exp_memory:
-            logger.info(f"实验性记忆已启用 (Provider 模式): simulation_id={simulation_id}")
+            logger.info(f"memory_mode=experimental: experimental memory active (simulation_id={simulation_id})")
+        else:
+            logger.info(f"memory_mode=baseline: Zep memory active (graph_id={graph_id})")
         
         # 活动队列
         self._activity_queue: Queue = Queue()
@@ -473,11 +476,11 @@ class ZepGraphMemoryUpdater:
         with self._buffer_lock:
             buffer_sizes = {p: len(b) for p, b in self._platform_buffers.items()}
         
-        mode = "bypass" if os.getenv("USE_EXPERIMENTAL_MEMORY") == "true" else "zep"
+        mode = "experimental" if self.exp_memory is not None else "baseline"
         
         stats = {
             "mode": mode,
-            "graph_id": self.graph_id if mode == "zep" else "N/A (Experimental)",
+            "graph_id": self.graph_id,
             "batch_size": self.BATCH_SIZE,
             "total_activities": self._total_activities,  # 添加到队列的活动总数
             "batches_sent": self._total_sent,            # 成功发送的批次数

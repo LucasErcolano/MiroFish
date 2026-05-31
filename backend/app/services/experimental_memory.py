@@ -195,12 +195,43 @@ class ExperimentalMemoryService(MemoryProvider):
         self.add_memories([{"text": text, "metadata": meta}])
 
     def retrieve(self, query: str, k: int = 5) -> Dict[str, Any]:
-        """Retrieve context from both Core and Archival memory."""
+        """Retrieve context from both Core and Archival memory.
+
+        Records a structured retrieval log and metrics entry via MemoryMetrics.
+        """
+        from .memory_mode import MemoryMode, get_metrics
+
+        start = time.time()
         archival_results = self._retrieve_archival(query, k)
-        return {
+        latency_ms = (time.time() - start) * 1000.0
+
+        result = {
             "core_memory": self.core_memory,
-            "archival_memory": archival_results
+            "archival_memory": archival_results,
+            "_meta": {
+                "mode": "experimental",
+                "results_count": len(archival_results) if archival_results else 0,
+                "latency_ms": round(latency_ms, 2),
+            },
         }
+
+        # Record metrics
+        get_metrics().record_retrieval(
+            agent_name=None,
+            round_num=None,
+            mode=MemoryMode.EXPERIMENTAL,
+            results_count=len(archival_results) if archival_results else 0,
+            latency_ms=latency_ms,
+            provider_class="ExperimentalMemoryService",
+            query=query,
+        )
+
+        logger.info(
+            "ExperimentalMemory.retrieve: query='%.80s' k=%d results=%d latency=%.1fms",
+            query, k, len(archival_results) if archival_results else 0, latency_ms,
+        )
+
+        return result
 
     def _retrieve_archival(self, query: str, k: int) -> List[str]:
         if not self.collection:

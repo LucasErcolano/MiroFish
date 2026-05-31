@@ -1,0 +1,26 @@
+# Python/cache artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.token-savior-cache.json
+
+# Local environment/secrets
+.env
+.env.*
+
+# Runtime logs
+*.log
+log/
+logs/
+backend/log/
+backend/logs/
+
+# Generated runtime state and uploads
+runs/
+backend/uploads/
+backend/data/cache/
+backend/backend/
+
+# Local backup/temp files
+*.localbak.*
+=0.4.0

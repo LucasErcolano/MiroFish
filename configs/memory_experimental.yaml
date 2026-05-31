@@ -1,0 +1,39 @@
+# =============================================================================
+# S2 Memory Config — Experimental (ChromaDB dual-layer)
+# =============================================================================
+# This config activates the experimental memory system (ChromaDB dual-layer).
+# MEMORY_MODE=experimental triggers ExperimentalMemoryService.
+#
+# Usage:
+#   python scripts/run_experiment.py --config configs/memory_experimental.yaml --dry-run
+# =============================================================================
+
+# Same case_id as baseline for easy comparison:
+#   python scripts/run_experiment.py --compare --case memory_smoke_test
+case_id: memory_smoke_test
+variant: experimental
+seed: 1
+memory_mode: experimental
+
+max_rounds: 3
+platform: parallel
+parallel_profile_count: 3
+
+simulation_requirement: |
+  Smoke test for experimental memory mode.
+  Same scenario as baseline to enable direct comparison.
+
+seed_documents: []
+prompts: []
+
+enable_graph_memory_update: false  # Experimental memory doesn't use Zep graph
+generate_report: true
+force: true
+use_llm_for_profiles: true
+poll_timeout_seconds: 1800
+
+extra_env:
+  MEMORY_MODE: experimental
+  USE_EXPERIMENTAL_MEMORY: "true"
+
+runs_root: runs
