@@ -12,6 +12,7 @@ from . import report_bp
 from ..config import Config
 from ..services.report_agent import ReportAgent, ReportManager, ReportStatus
 from ..services.simulation_manager import SimulationManager
+from ..services.wiki_memory import build_wiki_context_for_report
 from ..models.project import ProjectManager
 from ..models.task import TaskManager, TaskStatus
 from ..utils.logger import get_logger
@@ -136,10 +137,24 @@ def generate_report():
                 )
                 
                 # 创建Report Agent
+                
+                # Build wiki audit context (optional — gracefully degrades
+                # if no wiki data exists for this simulation).
+                try:
+                    wiki_context = build_wiki_context_for_report(simulation_id)
+                except Exception as wiki_exc:
+                    logger.warning(
+                        "Wiki context build failed for %s (non-fatal): %s",
+                        simulation_id,
+                        wiki_exc,
+                    )
+                    wiki_context = None
+                
                 agent = ReportAgent(
                     graph_id=graph_id,
                     simulation_id=simulation_id,
-                    simulation_requirement=simulation_requirement
+                    simulation_requirement=simulation_requirement,
+                    wiki_context=wiki_context,
                 )
                 
                 # 进度回调
@@ -541,11 +556,23 @@ def chat_with_report_agent():
         
         simulation_requirement = project.simulation_requirement or ""
         
+        # Build wiki audit context (optional — gracefully degrades)
+        try:
+            wiki_context = build_wiki_context_for_report(simulation_id)
+        except Exception as wiki_exc:
+            logger.warning(
+                "Wiki context build failed for chat %s (non-fatal): %s",
+                simulation_id,
+                wiki_exc,
+            )
+            wiki_context = None
+        
         # 创建Agent并进行对话
         agent = ReportAgent(
             graph_id=graph_id,
             simulation_id=simulation_id,
-            simulation_requirement=simulation_requirement
+            simulation_requirement=simulation_requirement,
+            wiki_context=wiki_context,
         )
         
         result = agent.chat(message=message, chat_history=chat_history)
