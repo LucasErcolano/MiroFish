@@ -31,6 +31,10 @@ class Config:
     LLM_API_KEY = os.environ.get('LLM_API_KEY')
     LLM_BASE_URL = os.environ.get('LLM_BASE_URL', 'https://api.openai.com/v1')
     LLM_MODEL_NAME = os.environ.get('LLM_MODEL_NAME', 'gpt-4o-mini')
+    LLM_REQUEST_TIMEOUT_SECONDS = max(30.0, float(os.environ.get('LLM_REQUEST_TIMEOUT_SECONDS', '600')))
+    LLM_REQUEST_MIN_INTERVAL_SECONDS = max(0.0, float(os.environ.get('LLM_REQUEST_MIN_INTERVAL_SECONDS', '0')))
+    LLM_REQUEST_MAX_RETRIES = max(0, int(os.environ.get('LLM_REQUEST_MAX_RETRIES', '2')))
+    LLM_REQUEST_RETRY_BACKOFF_SECONDS = max(0.0, float(os.environ.get('LLM_REQUEST_RETRY_BACKOFF_SECONDS', '8')))
     
     # Zep配置
     ZEP_MODE = os.environ.get('ZEP_MODE', 'cloud').lower()
@@ -72,6 +76,7 @@ class Config:
     GRAPHITI_LLM_SMALL_MODEL = os.environ.get('GRAPHITI_LLM_SMALL_MODEL') or GRAPHITI_LLM_MODEL
     GRAPHITI_LLM_CLIENT_MODE = os.environ.get('GRAPHITI_LLM_CLIENT_MODE', 'openai').lower()
     GRAPHITI_LLM_MAX_TOKENS = max(1024, int(os.environ.get('GRAPHITI_LLM_MAX_TOKENS', '16384')))
+    GRAPHITI_ENABLE_NODE_ATTRIBUTES = os.environ.get('GRAPHITI_ENABLE_NODE_ATTRIBUTES', 'false').lower() in ('true', '1', 'yes', 'on')
     GRAPHITI_EMBEDDER_API_KEY = os.environ.get('GRAPHITI_EMBEDDER_API_KEY') or GRAPHITI_LLM_API_KEY
     GRAPHITI_EMBEDDER_BASE_URL = os.environ.get('GRAPHITI_EMBEDDER_BASE_URL') or GRAPHITI_LLM_BASE_URL
     GRAPHITI_EMBEDDER_MODEL = os.environ.get('GRAPHITI_EMBEDDER_MODEL', 'qwen3-embedding:8b')
