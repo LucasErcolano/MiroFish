@@ -51,6 +51,35 @@ The point of the case is not only whether the final answer is correct. The usefu
 | `T2_gemma_probe` | `report_8b7869068e03` | `quiroga_gana` | `0` | `7.02` | `18.06` | `0` |
 | `T3_gemma_probe` | `report_def4b871bbf2` | `quiroga_gana` | `0` | `7.687` | `18.06` | `0` |
 
+## Issue #17 Acceptance Checklist
+
+The core ask of issue #17 is answered, but there are two small presentation/configuration caveats worth calling out before closing it.
+
+| Requirement from issue #17 | Status | Evidence / Notes |
+| --- | --- | --- |
+| `case_card.md` | Done | `case_card.md` documents event, hypotheses, cutoff, primary model target, and complexity gate. |
+| `manifest.csv` with dates/sources | Done | `manifest.csv` lists all 8 sources with package, date, source, type, role, status, URL, and notes. |
+| `seed_T0/T1/T2/T3` | Functionally done, naming differs | The package artifacts are `assembled_T0.md`, `assembled_T1.md`, `assembled_T2.md`, and `assembled_T3.md`. If strict naming is required, we should add alias files or rename/copy them to `seed_T0.md` through `seed_T3.md`. |
+| `question.md` identical except available evidence | Done | One shared `question.md` is used across all T packages; only the uploaded evidence changes. |
+| `ground_truth_private.md` | Done | Ground truth is separated from input and not uploaded to MiroFish. |
+| `eval_objective.py` or `eval.md` | Done | `eval_objective.py` scores winner, vote shares, margin, parse errors, and leakage flags. |
+| 1 pilot baseline run | Done | `T0_gemma_probe` is the baseline/early-evidence pilot; all four temporal runs were also completed. |
+| 3 or 4 temporal evidence packages | Done | We produced and ran T0, T1, T2, and T3. |
+| Measure whether MiroFish updates beliefs vs rewrites narratives | Done | The results show a real update from invalid T0 to correct T1, then degradation from T2/T3 due to late/salient pro-Quiroga evidence. |
+| Complexity gate: minimum 6 docs | Done | 8 input documents. |
+| Complexity gate: minimum 3 documentary dates | Done | Sources span August 15/16/18, October 8/13/15/17. |
+| Complexity gate: minimum 3 source types | Done | Policy analysis, polling, wire/news, official statement, sports/noise. |
+| Complexity gate: minimum 2 competing causal hypotheses | Done | Paz moderation/coalition vs Quiroga stabilization/anti-MAS hard-opposition path, plus polling/territorial-error hypothesis. |
+| Complexity gate: 1 valid distractor/noise document | Done | `source-08-football-noise.md`. |
+| Complexity gate: 20 extractable entities | Done in practice | Completed graphs/reports produced entity-rich runs; the T0 run notes alone show the report flow over a populated graph. |
+| Ground truth outside input | Done | Ground truth was kept in `ground_truth_private.md`. |
+| Event after model cutoff | Done | Event is October 19, 2025; target primary model cutoff in the case card is March 31, 2025. |
+| Metric defined before execution | Done | Rubric/evaluator existed before scoring the saved reports. |
+| Fixed primary model policy | Partially done / needs note | The case card targets `qwen/qwen3-8b`, but saved run folders are named `*_gemma_probe` and the run notes describe a Gemma probe setup. The evaluator metadata says `primary_fixed_qwen3_8b`, so before final closure we should either normalize the documentation or rerun one clean primary-policy pass if the issue owner requires strict model-policy evidence. |
+| Model ladder | Not completed in this branch | Issue text says the model ladder is separate calibration. We focused on the temporal line with one completed run per T, not on Qwen vs Gemma vs Llama comparisons. |
+
+Practical closure assessment: this branch answers the temporal-update experiment requested by the issue. The only items I would clean up before marking the issue fully closed are naming the seed artifacts exactly as requested (`seed_T0.md` etc., or documenting that `assembled_T*` are the seed packages) and resolving the model-policy naming ambiguity around `gemma_probe` vs `qwen/qwen3-8b`.
+
 ## What Happened In Each Temporal Package
 
 ### T0: Pre-First-Round Context
