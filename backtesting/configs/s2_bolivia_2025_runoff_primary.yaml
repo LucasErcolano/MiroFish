@@ -1,0 +1,46 @@
+case_id: bolivia_2025_runoff_s2
+issue: 17
+variant: temporal_update_primary
+seed: 1
+
+model_policy:
+  name: primary_fixed_qwen3_8b
+  provider: openrouter
+  base_url: https://openrouter.ai/api/v1
+  model: qwen/qwen3-8b
+  model_cutoff: 2025-03-31
+  temperature: 0
+  fallback_enabled: false
+  max_retries: 3
+  retry_backoff_seconds: 12
+  min_interval_seconds: 7
+
+graph:
+  backend: graphiti
+  llm_client_mode: generic
+  llm_model: openai/gpt-4o-mini
+  small_model: openai/gpt-4o-mini
+  max_coroutines: 1
+  note: Graphiti extraction uses a stable structured-output model; the evaluated forecasting model remains qwen/qwen3-8b.
+
+inputs:
+  manifest: backtesting/case-b-s2-bolivia-2025-runoff/manifest.csv
+  question: backtesting/case-b-s2-bolivia-2025-runoff/question.md
+  packages:
+    - id: T0
+      cutoff: 2025-08-16
+    - id: T1
+      cutoff: 2025-08-18
+    - id: T2
+      cutoff: 2025-10-10
+    - id: T3
+      cutoff: 2025-10-17
+
+evaluation:
+  ground_truth_private: backtesting/case-b-s2-bolivia-2025-runoff/ground_truth_private.md
+  objective_eval: backtesting/case-b-s2-bolivia-2025-runoff/eval_objective.py
+  rubric: backtesting/case-b-s2-bolivia-2025-runoff/rubric.md
+  primary_metric: paz_wins_runoff
+  secondary_metrics:
+    - mae_vote_share
+    - margin_abs_error
