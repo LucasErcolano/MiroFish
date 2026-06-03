@@ -1,0 +1,48 @@
+# MiroFish Phase 2 (S2) - Line 5 Configuration Matrix (PRODUCTION)
+# Goal: Benchmark Depth (Rounds) vs Density (Temporal Frequency)
+# Case: Argentina IPC Inflation 2025
+
+experiment_metadata:
+  phase: "S2"
+  target_case: "CASE-B2-ARG-IPC-2025"
+  project_id: "proj_arg_ipc_2025" # Replace with actual simulation project_id
+  primary_metric: "MAE"
+
+# Pricing Table (USD per 1M tokens)
+pricing:
+  "openrouter/qwen/qwen3-8b": {input: 0.05, output: 0.40}
+  "deepinfra/google/gemma-3-27b-it": {input: 0.08, output: 0.16}
+  "deepinfra/meta-llama/Llama-3.3-70B-Instruct": {input: 0.10, output: 0.32}
+
+baseline_model: "deepinfra/meta-llama/Llama-3.3-70B-Instruct"
+
+model_ladder:
+  - "openrouter/qwen/qwen3-8b"
+  - "deepinfra/google/gemma-3-27b-it"
+  - "deepinfra/meta-llama/Llama-3.3-70B-Instruct"
+
+line5_conditions:
+  - id: "R10-D2"
+    rounds: 10
+    density: 2
+    label: "Low Depth"
+    
+  - id: "R40-D2"
+    rounds: 40
+    density: 2
+    label: "Baseline (Standard)"
+    
+  - id: "R80-D2"
+    rounds: 80
+    density: 2
+    label: "Saturation Test (High Depth)"
+    
+  - id: "R40-D1"
+    rounds: 40
+    density: 1
+    label: "High Density (Frequent updates)"
+    
+  - id: "R40-D3"
+    rounds: 40
+    density: 3
+    label: "Low Density (Sparse jumps)"

@@ -1604,6 +1604,55 @@ class ReportAgent:
         
         return final_answer
     
+    def generate_quantitative_verdict(self, report_id: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Generates a quantitative verdict (S2 Phase) for Argentina IPC.
+        Uses the specialized S2 prompt fragment.
+        """
+        from .report_agent_s2_verdict import get_s2_verdict_prompt
+        
+        logger.info(t('report.generatingQuantitativeVerdict', simId=self.simulation_id))
+        
+        # 1. Gather context from simulation
+        # Using insight_forge to get a summary of all relevant events
+        context_result = self.zep_tools.insight_forge(
+            graph_id=self.graph_id,
+            query="Resumen de tendencias inflacionarias y comportamiento de agentes para el cálculo de IPC",
+            simulation_requirement=self.simulation_requirement
+        )
+        
+        system_prompt = get_s2_verdict_prompt()
+        user_prompt = f"SIMULATION DATA SUMMARY:\n{context_result.to_text()}\n\nBased on this data, provide the quantitative JSON verdict."
+        
+        # 2. Call LLM for structured output
+        try:
+            response = self.llm.chat_json(
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                temperature=0.2
+            )
+            
+            # 3. Save as verdict.json in the report folder
+            if not report_id:
+                import uuid
+                report_id = f"verdict_{uuid.uuid4().hex[:8]}"
+            
+            report_folder = ReportManager._get_report_folder(report_id)
+            os.makedirs(report_folder, exist_ok=True)
+            
+            verdict_path = os.path.join(report_folder, "verdict.json")
+            with open(verdict_path, "w", encoding="utf-8") as f:
+                json.dump(response, f, indent=2, ensure_ascii=False)
+            
+            logger.info(f"Quantitative verdict saved to {verdict_path}")
+            return response
+            
+        except Exception as e:
+            logger.error(f"Failed to generate quantitative verdict: {e}")
+            raise
+
     def generate_report(
         self, 
         progress_callback: Optional[Callable[[str, int, str], None]] = None,

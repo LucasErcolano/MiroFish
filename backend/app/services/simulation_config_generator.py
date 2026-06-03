@@ -434,6 +434,7 @@ class SimulationConfigGenerator:
     def _call_llm_with_retry(self, prompt: str, system_prompt: str) -> Dict[str, Any]:
         """带重试的LLM调用，包含JSON修复逻辑"""
         import re
+        import json
         
         max_attempts = 3
         last_error = None
@@ -446,39 +447,45 @@ class SimulationConfigGenerator:
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": prompt}
                     ],
-                    response_format={"type": "json_object"},
                     temperature=0.7 - (attempt * 0.1)  # 每次重试降低温度
-                    # 不设置max_tokens，让LLM自由发挥
                 )
                 
                 content = response.choices[0].message.content
-                finish_reason = response.choices[0].finish_reason
                 
-                # 检查是否被截断
-                if finish_reason == 'length':
-                    logger.warning(f"LLM输出被截断 (attempt {attempt+1})")
-                    content = self._fix_truncated_json(content)
-                
-                # 尝试解析JSON
+                # 1. 尝试直接解析
                 try:
                     return json.loads(content)
-                except json.JSONDecodeError as e:
-                    logger.warning(f"JSON解析失败 (attempt {attempt+1}): {str(e)[:80]}")
-                    
-                    # 尝试修复JSON
-                    fixed = self._try_fix_config_json(content)
-                    if fixed:
-                        return fixed
-                    
-                    last_error = e
-                    
+                except json.JSONDecodeError as je:
+                    # 2. 尝试修复控制字符 (Qwen常见问题)
+                    try:
+                        sanitized = re.sub(r'[\x00-\x1f\x7f-\x9f]', ' ', content)
+                        return json.loads(sanitized)
+                    except json.JSONDecodeError:
+                        # 3. 尝试提取{}之间的内容
+                        match = re.search(r'(\{[\s\S]*\})', content)
+                        if match:
+                            extracted = match.group(1)
+                            try:
+                                return json.loads(extracted)
+                            except json.JSONDecodeError:
+                                # 4. 提取并清理
+                                try:
+                                    sanitized_ext = re.sub(r'[\x00-\x1f\x7f-\x9f]', ' ', extracted)
+                                    return json.loads(sanitized_ext)
+                                except json.JSONDecodeError as e:
+                                    logger.warning(f"JSON解析失败 (attempt {attempt+1}): {e}")
+                                    last_error = e
+                        else:
+                            logger.warning(f"未能从输出中提取JSON (attempt {attempt+1})")
+                            last_error = je
             except Exception as e:
-                logger.warning(f"LLM调用失败 (attempt {attempt+1}): {str(e)[:80]}")
+                logger.warning(f"LLM调用失败 (attempt {attempt+1}): {e}")
                 last_error = e
                 import time
-                time.sleep(2 * (attempt + 1))
+                time.sleep(2)
         
-        raise last_error or Exception("LLM调用失败")
+        logger.error(f"生成配置失败: {last_error}")
+        return {}
     
     def _fix_truncated_json(self, content: str) -> str:
         """修复被截断的JSON"""
