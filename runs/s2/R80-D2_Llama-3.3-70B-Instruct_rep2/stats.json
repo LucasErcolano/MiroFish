@@ -1,0 +1,8 @@
+{
+  "simulation_id": "sim_2fc235003527",
+  "model": "deepinfra/meta-llama/Llama-3.3-70B-Instruct",
+  "rounds": 80,
+  "density": 2,
+  "duration_sec": 485.36,
+  "cost_usd": 0.1712
+}
