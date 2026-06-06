@@ -1,48 +1,50 @@
-# MiroFish Phase 2 (S2) - Line 5 Configuration Matrix (PRODUCTION)
-# Goal: Benchmark Depth (Rounds) vs Density (Temporal Frequency)
-# Case: Argentina IPC Inflation 2025
+# MiroFish Phase 2 (S2) - Line 5 Configuration Matrix (FINAL)
+# Closes #18, Resolves #11, Resolves #22
 
 experiment_metadata:
   phase: "S2"
   target_case: "CASE-B2-ARG-IPC-2025"
-  project_id: "proj_arg_ipc_2025" # Replace with actual simulation project_id
-  primary_metric: "MAE"
+  project_id: "proj_arg_ipc_2025"
+  primary_metric: "MAE (Mean Absolute Error)"
 
-# Pricing Table (USD per 1M tokens)
-pricing:
-  "openrouter/qwen/qwen3-8b": {input: 0.05, output: 0.40}
-  "deepinfra/google/gemma-3-27b-it": {input: 0.08, output: 0.16}
-  "deepinfra/meta-llama/Llama-3.3-70B-Instruct": {input: 0.10, output: 0.32}
+# Primary Fixed Model (To avoid Data Leakage found in Gemini)
+baseline_model: "meta-llama/llama-3.3-70b-instruct"
 
-baseline_model: "deepinfra/meta-llama/Llama-3.3-70B-Instruct"
-
+# Model Ladder (Calibration Only - Separate from Line 5 Experiment)
 model_ladder:
-  - "openrouter/qwen/qwen3-8b"
-  - "deepinfra/google/gemma-3-27b-it"
-  - "deepinfra/meta-llama/Llama-3.3-70B-Instruct"
+  - "qwen/qwen-2.5-7b-instruct"
+  - "gemma/gemma-2-27b-it"
 
+# Experimental Conditions (Line 5: Depth & Density)
 line5_conditions:
   - id: "R10-D2"
     rounds: 10
     density: 2
     label: "Low Depth"
-    
-  - id: "R40-D2"
+  - id: "R40-D2" # BASELINE
     rounds: 40
     density: 2
-    label: "Baseline (Standard)"
-    
-  - id: "R80-D2"
+    label: "Standard Depth"
+  - id: "R80-D2" # BEST CONDITION FOUND
     rounds: 80
     density: 2
-    label: "Saturation Test (High Depth)"
-    
+    label: "High Depth (Saturation Test)"
   - id: "R40-D1"
     rounds: 40
     density: 1
-    label: "High Density (Frequent updates)"
-    
+    label: "High Density"
   - id: "R40-D3"
     rounds: 40
     density: 3
-    label: "Low Density (Sparse jumps)"
+    label: "Low Density"
+
+# Robustness Requirement
+best_condition_replicas: 3
+best_condition_id: "R80-D2"
+
+# Pricing Table (USD per 1M tokens)
+pricing:
+  "meta-llama/llama-3.3-70b-instruct": {input: 0.10, output: 0.32}
+  "google/gemini-flash-1.5": {input: 0.1, output: 0.4}
+  "qwen/qwen-2.5-7b-instruct": {input: 0.05, output: 0.4}
+  "gemma/gemma-2-27b-it": {input: 0.08, output: 0.16}
