@@ -1,0 +1,8 @@
+{
+  "model": "Llama",
+  "rounds": 40,
+  "density": 1,
+  "mae": 2.45,
+  "cost_usd": 0.32,
+  "status": "completed"
+}

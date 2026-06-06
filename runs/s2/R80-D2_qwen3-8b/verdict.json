@@ -1,0 +1,21 @@
+{
+  "narrative_summary": "The 30% annual inflation projection by BBVA reflects herd behavior among institutions, driven by monetary base expansion (12% real growth) and market bets on FMI recapitalization. Saturation in service price hikes (4.4% monthly) and exchange rate depreciation (1400 ARS/USD) amplified causal shocks, creating a feedback loop between currency devaluation and import-cost-driven inflation.",
+  "predictions": {
+    "delta_1_feb": {
+      "min_pct": 6.5,
+      "max_pct": 8.5
+    },
+    "delta_2_apr": {
+      "min_pct": 7.5,
+      "max_pct": 9.5
+    },
+    "delta_3_jul": {
+      "min_pct": 8.0,
+      "max_pct": 10.0
+    },
+    "delta_4_dec": {
+      "min_pct": 5.5,
+      "max_pct": 7.5
+    }
+  }
+}

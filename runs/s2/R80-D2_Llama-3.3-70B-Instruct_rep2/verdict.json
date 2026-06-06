@@ -1,0 +1,21 @@
+{
+  "narrative_summary": "The simulation data indicates a heterogeneous price behavior in Argentina, with services increasing by 4.4% monthly due to wage recovery and regulated prices. The BCRA's purchase of USD 21.8 billion and the rise of the monetary base to $31 billion (12% in real terms) suggest a potential recapitalization of the BCRA through FMI funds. The inflation projection for 2025 has been revised to 30% annual, with an exchange rate forecast of 1400 ARS/USD for December.",
+  "predictions": {
+    "delta_1_feb": {
+      "min_pct": 2.5,
+      "max_pct": 4.0
+    },
+    "delta_2_apr": {
+      "min_pct": 3.8,
+      "max_pct": 5.2
+    },
+    "delta_3_jul": {
+      "min_pct": 4.2,
+      "max_pct": 6.0
+    },
+    "delta_4_dec": {
+      "min_pct": 5.5,
+      "max_pct": 7.5
+    }
+  }
+}

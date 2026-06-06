@@ -1,0 +1,21 @@
+{
+  "narrative_summary": "The simulation data indicates a heterogeneous price behavior in Argentina's IPC, with services increasing due to wage recovery and regulated prices. The BCRA's monetary base expansion and potential recapitalization via FMI funds may influence inflation. The forecasted annual inflation rate for 2025 is 30%, with an exchange rate of 1400 ARS/USD by December. Herd behavior among economic agents, such as consumers and producers, is expected to respond to changes in the IPC, driven by factors like supply and demand, monetary policy, and international prices.",
+  "predictions": {
+    "delta_1_feb": {
+      "min_pct": 2.5,
+      "max_pct": 4.0
+    },
+    "delta_2_apr": {
+      "min_pct": 3.8,
+      "max_pct": 5.2
+    },
+    "delta_3_jul": {
+      "min_pct": 4.2,
+      "max_pct": 6.0
+    },
+    "delta_4_dec": {
+      "min_pct": 5.5,
+      "max_pct": 7.5
+    }
+  }
+}

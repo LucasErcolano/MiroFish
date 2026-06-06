@@ -1,0 +1,8 @@
+{
+  "model": "Qwen3",
+  "rounds": 40,
+  "density": 2,
+  "mae": 3.45,
+  "cost_usd": 0.21,
+  "status": "completed"
+}

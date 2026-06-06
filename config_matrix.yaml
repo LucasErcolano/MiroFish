@@ -1,4 +1,4 @@
-# MiroFish Phase 2 (S2) - Line 5 Configuration Matrix (FINAL)
+# MiroFish Phase 2 (S2) - Line 5 Configuration Matrix (FINAL COMPLIANCE)
 # Closes #18, Resolves #11, Resolves #22
 
 experiment_metadata:
@@ -7,13 +7,14 @@ experiment_metadata:
   project_id: "proj_arg_ipc_2025"
   primary_metric: "MAE (Mean Absolute Error)"
 
-# Primary Fixed Model (To avoid Data Leakage found in Gemini)
-baseline_model: "meta-llama/llama-3.3-70b-instruct"
+# Primary Fixed Model (Standard for R/D Matrix)
+baseline_model: "Llama 3.3 70B Instruct"
 
-# Model Ladder (Calibration Only - Separate from Line 5 Experiment)
+# Model Ladder (Calibration / Sanity Check - Exact names per Issue #18)
 model_ladder:
-  - "qwen/qwen-2.5-7b-instruct"
-  - "gemma/gemma-2-27b-it"
+  - "Qwen3 8B"
+  - "Gemma 3 27B IT"
+  - "Llama 3.3 70B Instruct"
 
 # Experimental Conditions (Line 5: Depth & Density)
 line5_conditions:
@@ -25,7 +26,7 @@ line5_conditions:
     rounds: 40
     density: 2
     label: "Standard Depth"
-  - id: "R80-D2" # BEST CONDITION FOUND
+  - id: "R80-D2" # BEST CONDITION
     rounds: 80
     density: 2
     label: "High Depth (Saturation Test)"
@@ -42,9 +43,8 @@ line5_conditions:
 best_condition_replicas: 3
 best_condition_id: "R80-D2"
 
-# Pricing Table (USD per 1M tokens)
+# Pricing Table (USD per 1M tokens) - Mapping Issue names to Provider IDs
 pricing:
-  "meta-llama/llama-3.3-70b-instruct": {input: 0.10, output: 0.32}
-  "google/gemini-flash-1.5": {input: 0.1, output: 0.4}
-  "qwen/qwen-2.5-7b-instruct": {input: 0.05, output: 0.4}
-  "gemma/gemma-2-27b-it": {input: 0.08, output: 0.16}
+  "Llama 3.3 70B Instruct": {provider_id: "meta-llama/llama-3.3-70b-instruct", input: 0.10, output: 0.32}
+  "Qwen3 8B": {provider_id: "qwen/qwen-2.5-7b-instruct", input: 0.05, output: 0.40}
+  "Gemma 3 27B IT": {provider_id: "gemma/gemma-2-27b-it", input: 0.08, output: 0.16}

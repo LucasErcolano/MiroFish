@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-06-02T12:57:02.600933",
+  "config": {
+    "model": "deepinfra/meta-llama/Llama-3.3-70B-Instruct",
+    "rounds": 40,
+    "density": 2
+  },
+  "output_file": "verdict.json"
+}
