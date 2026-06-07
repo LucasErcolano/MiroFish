@@ -311,7 +311,8 @@ def _check_simulation_prepared(simulation_id: str) -> tuple:
         # - completed: 运行完成，说明准备早就完成了
         # - stopped: 已停止，说明准备早就完成了
         # - failed: 运行失败（但准备是完成的）
-        prepared_statuses = ["ready", "preparing", "running", "completed", "stopped", "failed"]
+        # "paused" is produced by the stop endpoint; prepared files are still reusable.
+        prepared_statuses = ["ready", "preparing", "running", "completed", "paused", "stopped", "failed"]
         if status in prepared_statuses and config_generated:
             # 获取文件统计信息
             profiles_file = os.path.join(simulation_dir, "reddit_profiles.json")
@@ -1508,6 +1509,8 @@ def start_simulation():
         force = data.get('force', False)  # 可选：强制重新开始
 
         # 验证 max_rounds 参数
+        no_wait = data.get('no_wait', False)
+
         if max_rounds is not None:
             try:
                 max_rounds = int(max_rounds)
@@ -1609,7 +1612,8 @@ def start_simulation():
             platform=platform,
             max_rounds=max_rounds,
             enable_graph_memory_update=enable_graph_memory_update,
-            graph_id=graph_id
+            graph_id=graph_id,
+            no_wait=no_wait
         )
         
         # 更新模拟状态

@@ -23,6 +23,7 @@ from ..utils.logger import get_logger
 from ..utils.locale import get_locale, set_locale
 from .zep_graph_memory_updater import ZepGraphMemoryManager
 from .simulation_ipc import SimulationIPCClient, CommandType, IPCResponse
+from .simulation_manager import SimulationManager, SimulationStatus
 
 logger = get_logger('mirofish.simulation_runner')
 
@@ -308,6 +309,25 @@ class SimulationRunner:
             json.dump(data, f, ensure_ascii=False, indent=2)
         
         cls._run_states[state.simulation_id] = state
+
+    @classmethod
+    def _sync_simulation_status(
+        cls,
+        simulation_id: str,
+        status: SimulationStatus,
+        error: Optional[str] = None,
+    ) -> None:
+        try:
+            manager = SimulationManager()
+            sim_state = manager.get_simulation(simulation_id)
+            if not sim_state:
+                return
+            sim_state.status = status
+            sim_state.error = error
+            sim_state.updated_at = datetime.now().isoformat()
+            manager._save_simulation_state(sim_state)
+        except Exception as exc:
+            logger.warning(f"同步模拟状态失败: {simulation_id}, status={status}, error={exc}")
     
     @classmethod
     def start_simulation(
@@ -316,7 +336,8 @@ class SimulationRunner:
         platform: str = "parallel",  # twitter / reddit / parallel
         max_rounds: int = None,  # 最大模拟轮数（可选，用于截断过长的模拟）
         enable_graph_memory_update: bool = False,  # 是否将活动更新到Zep图谱
-        graph_id: str = None  # Zep图谱ID（启用图谱更新时必需）
+        graph_id: str = None,  # Zep图谱ID（启用图谱更新时必需）
+        no_wait: bool = False,
     ) -> SimulationRunState:
         """
         启动模拟
@@ -422,6 +443,8 @@ class SimulationRunner:
             # 如果指定了最大轮数，添加到命令行参数
             if max_rounds is not None and max_rounds > 0:
                 cmd.extend(["--max-rounds", str(max_rounds)])
+            if no_wait:
+                cmd.append("--no-wait")
             
             # 创建主日志文件，避免 stdout/stderr 管道缓冲区满导致进程阻塞
             main_log_path = os.path.join(sim_dir, "simulation.log")
@@ -527,6 +550,7 @@ class SimulationRunner:
             if exit_code == 0:
                 state.runner_status = RunnerStatus.COMPLETED
                 state.completed_at = datetime.now().isoformat()
+                cls._sync_simulation_status(simulation_id, SimulationStatus.COMPLETED)
                 logger.info(f"模拟完成: {simulation_id}")
             else:
                 state.runner_status = RunnerStatus.FAILED
@@ -1136,6 +1160,7 @@ class SimulationRunner:
         files_to_delete = [
             "run_state.json",
             "simulation.log",
+            "scheduled_events_fired.jsonl",
             "stdout.log",
             "stderr.log",
             "twitter_simulation.db",  # Twitter 平台数据库

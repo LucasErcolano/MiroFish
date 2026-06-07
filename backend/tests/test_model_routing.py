@@ -156,6 +156,26 @@ def test_validate_rejects_unknown_provider():
         validate_model_map(m)
 
 
+def test_validate_accepts_s2_hosted_providers():
+    m = _base_map()
+    m["default"].update({
+        "provider": "openrouter",
+        "model": "qwen/qwen3-8b",
+        "base_url_env": "OPENROUTER_BASE_URL",
+        "api_key_env": "OPENROUTER_API_KEY",
+    })
+    m["by_agent_id"] = {
+        1: {
+            "provider": "deepinfra",
+            "model": "google/gemma-3-27b-it",
+            "base_url_env": "DEEPINFRA_BASE_URL",
+            "api_key_env": "DEEPINFRA_API_KEY",
+        }
+    }
+
+    validate_model_map(m)
+
+
 # --------------------------------------------------------------------------- #
 # Temperature / seed propagation
 # --------------------------------------------------------------------------- #
