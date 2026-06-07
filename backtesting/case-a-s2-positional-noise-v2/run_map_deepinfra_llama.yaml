@@ -1,0 +1,6 @@
+v2-baseline-control: llama/v2-baseline-control-12
+v2-signal-strong-mid: llama/v2-signal-strong-mid-12
+v2-signal-weak-mid: llama/v2-signal-weak-mid-12
+v2-counter-colombia-mid: llama/v2-counter-colombia-mid-12
+v2-noise-near-mid: llama/v2-noise-near-mid-12
+v2-noise-off-mid: llama/v2-noise-off-mid-12

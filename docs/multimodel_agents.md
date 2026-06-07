@@ -98,7 +98,7 @@ fields — any other key is a validation error:
 
 | Field | Meaning |
 |-------|---------|
-| `provider` | OpenAI-compatible provider name. Known: `openai`, `vllm`, `lmstudio`, `groq`. Unknown names are rejected by validation (add to `PROVIDERS` in `model_router.py` if intended). Defaults to `openai`. |
+| `provider` | OpenAI-compatible provider name. Known: `openai`, `vllm`, `lmstudio`, `groq`, `openrouter`, `deepinfra`. Unknown names are rejected by validation (add to `PROVIDERS` in `model_router.py` if intended). Defaults to `openai`. |
 | `model` | Model identifier passed to the provider. Required on `default`. |
 | `base_url` | Literal base URL. Takes precedence over `base_url_env`. |
 | `base_url_env` | Name of an env var holding the base URL. Used when `base_url` is absent. |
@@ -126,7 +126,7 @@ All providers are routed through CAMEL's OpenAI-compatible backend
 (`ModelFactory.create(model_platform=ModelPlatformType.OPENAI, ...)`). The
 `provider` name is primarily for documentation, validation, and conventional
 default env-var selection (see `PROVIDERS` in `model_router.py`). This means any
-OpenAI-compatible server — hosted OpenAI, vLLM, LM Studio, Groq — works with the
+OpenAI-compatible server — hosted OpenAI, vLLM, LM Studio, Groq, OpenRouter, DeepInfra — works with the
 same code path; you only change `base_url` / `model` / keys.
 
 The CAMEL import is **lazy** (only in `build_backend`), so the map
