@@ -1,0 +1,39 @@
+{
+  "run_mode": "adapted_repo_direct_llm_equivalent",
+  "case_id": "PILOT-ARG-2025-Q1",
+  "started_at": "2026-05-22T00:47:57.058871+00:00",
+  "repo_commit": "5c824b66a638b454aeb3d972315dbeb94a2425f3",
+  "model": "gemini-2.5-flash-lite",
+  "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+  "knowledge_cutoff_claim": "2025-01",
+  "web_access": false,
+  "rag_external": false,
+  "memory_persistent": false,
+  "clear_previous_memory": true,
+  "temperature": 0.2,
+  "top_p": 0.8,
+  "seed": 20250131,
+  "num_runs": 3,
+  "platform_mode": "direct_llm_single_packet_logged",
+  "output_format": "markdown_plus_json",
+  "require_citations_to_input_ids": true,
+  "forbid_post_cutoff_facts": true,
+  "deviations_from_requested_mirofish_cli": [
+    "No `mirofish` CLI is present in this repository/PATH.",
+    "No OASIS Twitter/Reddit social simulation is executed by this adapted runner.",
+    "No Zep/Graphiti memory graph is built or queried.",
+    "All evidence is passed as one local pre-cutoff packet to an OpenAI-compatible chat completion endpoint.",
+    "This runner is an auditable fallback, not a claimed equivalent of the full interactive MiroFish UI workflow."
+  ],
+  "unsupported_or_not_used_parameters": {
+    "num_agents": "not applicable in direct LLM fallback",
+    "num_rounds": "not applicable in direct LLM fallback",
+    "social_interaction_simulation": "not executed",
+    "persistent_memory_clear": "not needed because no persistent memory used",
+    "seed_http_parameter": "omitted for Gemini OpenAI-compatible endpoint because Google rejects unknown field seed"
+  },
+  "input_packet_sha256": "5bb3455b683faa5d762c660f6928642bc384974b88d019b864346c0b18560b48",
+  "prompt_sha256": "25f80a94cb31a1aacae284c2840991957d937bf4c4d11683efd5ab4285ad7058",
+  "validation_status": "PASS",
+  "validation_errors": []
+}

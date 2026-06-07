@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "reason": "Native MiroFish/OASIS Twitter runner completed exactly one configured round with Gemini OpenAI-compatible endpoint; outputs exported with hashes.",
+  "is_model_output": true,
+  "is_real_mirofish_system": true,
+  "real_mirofish_flow_invoked": true,
+  "flow_invoked": "backend/scripts/run_twitter_simulation.py native OASIS Twitter runner",
+  "num_rounds_or_epochs": 1,
+  "num_rounds_or_epochs_requested": 1,
+  "num_agents": 2,
+  "num_agents_configured": 2,
+  "model": "gemini-2.5-flash-lite",
+  "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+  "web_access": false,
+  "rag_external": false,
+  "memory_persistent": false,
+  "oasis_used": true,
+  "zep_graphiti_used": false,
+  "report_agent_used": false,
+  "trace_rows": 8,
+  "artifacts": {
+    "run_config": "run_config.json",
+    "stdout": "stdout.log",
+    "stderr": "stderr.log",
+    "raw_report": "mirofish_report_raw.md",
+    "simulation_config": "artifacts/oasis_twitter_minimal_sim/simulation_config.json",
+    "twitter_profiles": "artifacts/oasis_twitter_minimal_sim/twitter_profiles.csv",
+    "sqlite_db": "artifacts/oasis_twitter_minimal_sim/twitter_simulation.db",
+    "db_summary": "artifacts/db_export/db_summary.json",
+    "trace_all": "artifacts/db_export/trace_all.json",
+    "exit_code": "artifacts/exit_code.txt"
+  },
+  "temporal_contamination_scan": {
+    "status": "PASS",
+    "matches": {}
+  },
+  "secret_leak_scan": {
+    "status": "PASS",
+    "paths": [],
+    "note": "Scanned artifacts for Google API-key shaped secrets and explicit LLM API key assignments; no secret values found. Pattern names intentionally not stored to avoid false-positive self-matches."
+  }
+}

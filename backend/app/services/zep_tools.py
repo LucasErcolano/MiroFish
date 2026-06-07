@@ -22,6 +22,7 @@ from ..utils.embedding_client import EmbeddingClient
 from ..utils.reranker_client import RerankerClient
 from ..utils.logger import get_logger
 from ..utils.llm_client import LLMClient
+from ..utils.locale import t
 
 logger = get_logger('mirofish.zep_tools')
 
@@ -424,17 +425,31 @@ class ZepToolsService:
     MAX_RETRIES = 3
     RETRY_DELAY = 2.0
     
-    def __init__(self, api_key: Optional[str] = None, llm_client: Optional[LLMClient] = None):
+    def __init__(self, api_key: Optional[str] = None, llm_client: Optional[LLMClient] = None, simulation_id: Optional[str] = None):
         self.api_key = Config.ZEP_API_KEY if api_key is None else api_key
-        errors = Config.get_graph_backend_config_errors(api_key=self.api_key)
-        if errors:
-            raise ValueError("; ".join(errors))
+        self.simulation_id = simulation_id
         
-        self.backend = get_graph_backend(api_key=self.api_key)
+        # Centralized Memory Strategy
+        from .memory_factory import MemoryFactory
+        self.provider = MemoryFactory.create_provider(
+            simulation_id=simulation_id or "default",
+            graph_id="default_read_graph", # In a full system, this would be passed down
+            api_key=self.api_key
+        )
+        
+        # Fallbacks for legacy code that directly access these
+        from .experimental_memory import ExperimentalMemoryService
+        self.exp_memory = self.provider if isinstance(self.provider, ExperimentalMemoryService) else None
+        self.backend = getattr(self.provider, 'backend', None)
+
+        if self.exp_memory:
+            logger.info(f"实验性记忆已在 ZepToolsService 中启用 (Provider 模式): simulation_id={simulation_id}")
+        
         # LLM客户端用于InsightForge生成子问题
         self._llm_client = llm_client
         self._search_embedder_client = None
         self._search_reranker_client = None
+            
         logger.info("ZepToolsService 初始化完成")
     
     @property
@@ -979,6 +994,26 @@ class ZepToolsService:
         当前实现会优先召回边，再按配置补充节点摘要，避免只拿到零散 fact
         或在 OpenZep 上完全退化到本地关键词搜索。
         """
+        # 实验性记忆逻辑 (Spike S1)
+        if self.exp_memory:
+            logger.info(f"使用实验性记忆进行搜索: query={query[:50]}...")
+            exp_results = self.exp_memory.retrieve(query, k=limit)
+            
+            facts = exp_results["archival_memory"]
+            core = exp_results["core_memory"]
+            
+            # 将 Core Memory 也转化为 facts 供后续使用
+            core_fact = f"[CORE MEMORY] Persona: {core.get('persona', 'N/A')}. Objectives: {', '.join(core.get('objectives', []))}"
+            facts.insert(0, core_fact)
+            
+            return SearchResult(
+                facts=facts,
+                edges=[], # 实验性记忆暂不支持边
+                nodes=[], # 实验性记忆暂不支持节点
+                query=query,
+                total_count=len(facts)
+            )
+
         logger.info(f"图谱搜索: graph_id={graph_id}, query={query[:50]}...")
 
         query_normalized = self._normalize_text(query)

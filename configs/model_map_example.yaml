@@ -1,0 +1,43 @@
+# MiroFish multi-model agent routing map (Issue #21).
+#
+# Resolution precedence (highest wins): by_agent_id > by_role > default.
+# Each layer is shallow-merged on top of `default`, so a role/agent entry only
+# needs to override the fields that differ.
+#
+# Secrets policy: API keys are NEVER written here. Use `api_key_env` to name an
+# environment variable that holds the key. `base_url` may be a literal URL or be
+# resolved from `base_url_env`. validate_model_map() rejects literal `api_key`.
+
+version: 1
+
+# Applied to every agent unless a more specific layer overrides it.
+default:
+  provider: openai          # OpenAI-compatible provider (openai/vllm/lmstudio/groq/...)
+  model: gpt-4o-mini
+  base_url_env: LLM_BASE_URL # env var name; omit `base_url` to use the provider default
+  api_key_env: LLM_API_KEY   # env var name holding the key
+  temperature: 0.7
+  seed: null                 # null = non-deterministic; set an int for reproducibility
+
+# Fallback to `default` when a per-agent backend fails to build.
+# Disabled by default (Issue #21 requirement): a routing error is loud, not silent.
+fallback:
+  enabled: false
+
+# Route by the agent's entity_type / role (from agent_configs[].entity_type).
+by_role:
+  FinancialInstitution:
+    provider: vllm
+    model: qwen2.5-7b-instruct-awq
+    base_url: http://127.0.0.1:8000/v1
+    api_key_env: LOCAL_LLM_API_KEY
+
+# Route by explicit agent_id (overrides by_role and default).
+by_agent_id:
+  0:
+    provider: vllm
+    model: mistral-7b-instruct-v0.3-awq
+    base_url: http://127.0.0.1:8001/v1
+    api_key_env: LOCAL_LLM_API_KEY
+    temperature: 0.5
+    seed: 42

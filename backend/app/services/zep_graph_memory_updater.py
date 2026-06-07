@@ -228,22 +228,34 @@ class ZepGraphMemoryUpdater:
     MAX_RETRIES = 3
     RETRY_DELAY = 2  # 秒
     
-    def __init__(self, graph_id: str, api_key: Optional[str] = None):
+    def __init__(self, graph_id: str, api_key: Optional[str] = None, simulation_id: Optional[str] = None):
         """
         初始化更新器
         
         Args:
             graph_id: Zep图谱ID
             api_key: Zep API Key（可选，默认从配置读取）
+            simulation_id: 模拟ID（用于实验性记忆）
         """
         self.graph_id = graph_id
+        self.simulation_id = simulation_id
         self.api_key = Config.ZEP_API_KEY if api_key is None else api_key
         
-        errors = Config.get_graph_backend_config_errors(api_key=self.api_key)
-        if errors:
-            raise ValueError("; ".join(errors))
+        # Centralized Memory Strategy
+        from .memory_factory import MemoryFactory
+        from .experimental_memory import ExperimentalMemoryService
+        self.provider = MemoryFactory.create_provider(
+            simulation_id=simulation_id or "default",
+            graph_id=graph_id,
+            api_key=self.api_key
+        )
         
-        self.backend = get_graph_backend(api_key=self.api_key)
+        # Fallback for stats and logs (legacy compatibility)
+        self.exp_memory = self.provider if isinstance(self.provider, ExperimentalMemoryService) else None
+        self.backend = getattr(self.provider, 'backend', None)
+        
+        if self.exp_memory:
+            logger.info(f"实验性记忆已启用 (Provider 模式): simulation_id={simulation_id}")
         
         # 活动队列
         self._activity_queue: Queue = Queue()
@@ -395,7 +407,7 @@ class ZepGraphMemoryUpdater:
     
     def _send_batch_activities(self, activities: List[AgentActivity], platform: str):
         """
-        批量发送活动到Zep图谱（合并为一条文本）
+        批量发送活动到图谱或实验性记忆
         
         Args:
             activities: Agent活动列表
@@ -403,33 +415,33 @@ class ZepGraphMemoryUpdater:
         """
         if not activities:
             return
+
+        display_name = self._get_platform_display_name(platform)
         
-        # 将多条活动合并为一条文本，用换行分隔
-        episode_texts = [activity.to_episode_text() for activity in activities]
-        combined_text = "\n".join(episode_texts)
-        
-        # 带重试的发送
-        for attempt in range(self.MAX_RETRIES):
-            try:
-                self.backend.add_text(
-                    graph_id=self.graph_id,
-                    data=combined_text
-                )
+        try:
+            # Polymorphic call: The provider (Zep or Experimental) handles its own formatting and storage
+            activities_dict = []
+            for activity in activities:
+                activities_dict.append({
+                    "text": activity.to_episode_text(),
+                    "metadata": {
+                        "platform": activity.platform,
+                        "agent_id": activity.agent_id,
+                        "agent_name": activity.agent_name,
+                        "round": activity.round_num,
+                        "action": activity.action_type
+                    }
+                })
                 
-                self._total_sent += 1
-                self._total_items_sent += len(activities)
-                display_name = self._get_platform_display_name(platform)
-                logger.info(f"成功批量发送 {len(activities)} 条{display_name}活动到图谱 {self.graph_id}")
-                logger.debug(f"批量内容预览: {combined_text[:200]}...")
-                return
-                
-            except Exception as e:
-                if attempt < self.MAX_RETRIES - 1:
-                    logger.warning(f"批量发送到Zep失败 (尝试 {attempt + 1}/{self.MAX_RETRIES}): {e}")
-                    time.sleep(self.RETRY_DELAY * (attempt + 1))
-                else:
-                    logger.error(f"批量发送到Zep失败，已重试{self.MAX_RETRIES}次: {e}")
-                    self._failed_count += 1
+            self.provider.add_memories(activities_dict)
+            
+            self._total_sent += 1
+            self._total_items_sent += len(activities)
+            logger.info(f"成功批量发送 {len(activities)} 条{display_name}活动 (Engine: {self.provider.__class__.__name__})")
+            
+        except Exception as e:
+            self._failed_count += 1
+            logger.error(f"批量发送失败: {e}")
     
     def _flush_remaining(self):
         """发送队列和缓冲区中剩余的活动"""
@@ -461,8 +473,11 @@ class ZepGraphMemoryUpdater:
         with self._buffer_lock:
             buffer_sizes = {p: len(b) for p, b in self._platform_buffers.items()}
         
-        return {
-            "graph_id": self.graph_id,
+        mode = "bypass" if os.getenv("USE_EXPERIMENTAL_MEMORY") == "true" else "zep"
+        
+        stats = {
+            "mode": mode,
+            "graph_id": self.graph_id if mode == "zep" else "N/A (Experimental)",
             "batch_size": self.BATCH_SIZE,
             "total_activities": self._total_activities,  # 添加到队列的活动总数
             "batches_sent": self._total_sent,            # 成功发送的批次数
@@ -473,6 +488,11 @@ class ZepGraphMemoryUpdater:
             "buffer_sizes": buffer_sizes,                # 各平台缓冲区大小
             "running": self._running,
         }
+
+        if self.exp_memory:
+            stats["experimental_stats"] = self.exp_memory.get_stats()
+            
+        return stats
 
 
 class ZepGraphMemoryManager:
@@ -502,7 +522,7 @@ class ZepGraphMemoryManager:
             if simulation_id in cls._updaters:
                 cls._updaters[simulation_id].stop()
             
-            updater = ZepGraphMemoryUpdater(graph_id)
+            updater = ZepGraphMemoryUpdater(graph_id, simulation_id=simulation_id)
             updater.start()
             cls._updaters[simulation_id] = updater
             
