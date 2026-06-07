@@ -1,0 +1,14 @@
+{
+  "condition": "v2-signal-strong-mid",
+  "predicted_winner": "Argentina",
+  "confidence": 0.9,
+  "main_evidence": [
+    "Opta Preview assigned Argentina 50.9% chance to win in 90 minutes",
+    "Argentina was model favorite with 63.0% chance of lifting trophy",
+    "Colombia had 25.4% chance to win in 90 minutes"
+  ],
+  "used_injected_document": true,
+  "noise_contamination": "none",
+  "difference_vs_baseline": "Injected document increased Argentina mentions (15 vs 7) and added explicit probability metrics",
+  "notes": "Prediction stabilized by injected signal document containing explicit probability weights"
+}

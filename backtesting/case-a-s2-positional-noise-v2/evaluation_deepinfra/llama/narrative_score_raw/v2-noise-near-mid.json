@@ -1,0 +1,14 @@
+{
+  "condition": "v2-noise-near-mid",
+  "predicted_winner": "Argentina",
+  "confidence": 0.5,
+  "main_evidence": [
+    "Opta Preview Summary analysis",
+    "Argentina's experience and depth",
+    "James Rodriguez's influence on Colombia"
+  ],
+  "used_injected_document": false,
+  "noise_contamination": "medium",
+  "difference_vs_baseline": "Reduced discussion of Messi, increased focus on social media and fan discourse",
+  "notes": "The injected document introduced noise related to fan discourse and social media attention, but did not directly influence the top-discussed posts or comments."
+}

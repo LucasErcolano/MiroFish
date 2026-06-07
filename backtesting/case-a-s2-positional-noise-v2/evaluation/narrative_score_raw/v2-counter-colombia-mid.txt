@@ -1,0 +1,14 @@
+{
+  "condition": "v2-counter-colombia-mid",
+  "predicted_winner": "Colombia",
+  "confidence": 0.5,
+  "main_evidence": [
+    "Colombia's 28-match unbeaten streak (22 wins, 6 draws)",
+    "James Rodriguez's 6 assists (most in Copa America since 2011)",
+    "Colombia's defensive stability (0.25 goals conceded per game)"
+  ],
+  "used_injected_document": true,
+  "noise_contamination": "none",
+  "difference_vs_baseline": "Colombia mentions increased from 5 to 13, Argentina mentions increased from 7 to 8; injected document shifted focus to Colombia's form and James Rodriguez's impact",
+  "notes": "Ambiguity persists between Argentina's experience and Colombia's recent form; injected document provided specific statistical evidence altering narrative from baseline"
+}
