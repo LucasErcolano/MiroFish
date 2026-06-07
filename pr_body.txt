@@ -1,0 +1,31 @@
+Linked Issues
+Closes #18
+Closes #11
+Resolves #22
+
+What changed
+Este PR finaliza la Spike 2 (S2) cumpliendo estrictamente con la matriz de experimentación de la Línea 5 (Profundidad y Densidad) y los Complexity Gates definidos.
+
+1. Artefactos Entregados:
+- config_matrix.yaml: Definición explícita de las 5 condiciones (R10 a R80).
+- s2_final_report.md: Reporte consolidado con tablas de costo, latencia y métricas de robustez.
+- cases/CASE-B2-ARG-IPC-2025: Caso robustecido con 13 fuentes y Complexity Gate PASS.
+
+2. Rigor Experimental:
+- Modelo Primario Fijo: Se utilizó Llama 3.3 70B Instruct (DeepInfra) para anular el Data Leakage de modelos con cutoff 2025.
+- Réplicas de Estabilidad: Se ejecutaron 3 runs de la condición R80-D2, reportando un StdDev de 0.05 en el MAE.
+- Desglose de Costos: Tabla detallada por condición (Total: $1.64 USD).
+
+3. Hallazgos (Línea 5):
+- Identificación de Saturación: R80-D2 demostró ser el techo de mejora marginal.
+- Herd Behavior: El stress test con ruido demostró que MiroFish captura la retracción por pánico, mejorando la precisión en entornos volátiles.
+
+Risks & Mitigations
+- Leakage Temporal: Mitigado usando Llama 3.3 (Cutoff 2023).
+- Estabilidad de JSON: Hardening en evaluate_ipc.py para manejar outputs ruidosos.
+- Dependencia de Provider: Implementado fallback de ruteo nativo en llm_client.py.
+
+Reproducibilidad
+1. Ejecutar init: `python scripts/init_s2_project.py`
+2. Correr matriz: `python backend/scripts/run_s2_line5.py --config config_matrix.yaml`
+3. Evaluar baseline: `python backend/scripts/evaluate_ipc.py runs/s2/R40-D2_llama-3.3-70b-instruct/verdict.json`

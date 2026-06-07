@@ -45,6 +45,6 @@ best_condition_id: "R80-D2"
 
 # Pricing Table (USD per 1M tokens) - Mapping Issue names to Provider IDs
 pricing:
-  "Llama 3.3 70B Instruct": {provider_id: "meta-llama/llama-3.3-70b-instruct", input: 0.10, output: 0.32}
-  "Qwen3 8B": {provider_id: "qwen/qwen-2.5-7b-instruct", input: 0.05, output: 0.40}
-  "Gemma 3 27B IT": {provider_id: "gemma/gemma-2-27b-it", input: 0.08, output: 0.16}
+  "Llama 3.3 70B Instruct": {provider_id: "meta-llama/Llama-3.3-70B-Instruct", input: 0.10, output: 0.32}
+  "Qwen3 8B": {provider_id: "qwen/qwen3-8b", input: 0.05, output: 0.40}
+  "Gemma 3 27B IT": {provider_id: "google/gemma-3-27b-it", input: 0.08, output: 0.16}
