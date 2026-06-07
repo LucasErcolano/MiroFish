@@ -1,8 +1,0 @@
-{
-  "model": "Gemma",
-  "rounds": 40,
-  "density": 2,
-  "mae": 2.67,
-  "cost_usd": 0.28,
-  "status": "completed"
-}
