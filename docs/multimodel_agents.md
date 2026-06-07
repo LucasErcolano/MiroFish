@@ -220,6 +220,24 @@ See `runs/smoke_multimodel/README.md` for prerequisites, the run command, and th
 acceptance check (agent 0 and agent 1 must use different models in
 `model_routing_audit.jsonl`).
 
+## Scope & limitations
+
+**Runner coverage.** Routing + telemetry are wired into
+`backend/scripts/run_reddit_simulation.py` (the single-platform Reddit runner
+used by the simulation pipeline). `backend/scripts/run_parallel_simulation.py`
+(dual Twitter+Reddit) is **not** wired: it builds **one model per platform**
+(`create_model`, optionally split via `LLM_BOOST_*` env vars) and runs both
+platforms concurrently with `asyncio.gather` — a single shared
+`sink.current_round` would be racy across platforms, so wiring it requires
+per-platform sinks and round contexts. Until then, parallel runs are
+single-model per platform and produce **no** `llm_telemetry.jsonl`.
+
+**Retries.** Provider-SDK retries (e.g. the OpenAI client's internal retry
+loop) happen **below** the instrumented `run()`/`arun()`. Telemetry records
+one row per top-level call: the final usage on success, or the final exception
+in `error` (then re-raised). Individual retry attempts are not separately
+counted, and `latency_ms` includes time spent in internal retries.
+
 ## Testing
 
 ```bash
