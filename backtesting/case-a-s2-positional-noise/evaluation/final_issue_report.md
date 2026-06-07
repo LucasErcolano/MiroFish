@@ -89,7 +89,7 @@ This is not an agreement-rate measurement. It measures output/narrative variatio
 
 ## Evidence Files
 
-Primary evidence:
+Committed evidence:
 
 - `impact_table.md`
 - `impact_table.csv`
@@ -99,8 +99,28 @@ Primary evidence:
 - `narrative_scores.csv`
 - `narrative_scores.md`
 - `narrative_score_raw/*.json`
+
+Local reproducibility evidence, not committed:
+
 - `runs/s2_issue19/*/simulation_artifacts/scheduled_events_fired.jsonl`
 - `runs/s2_issue19/*/simulation_artifacts/reddit_simulation.db`
+
+The `runs/` artifacts contain copied SQLite databases and logs. They were used to generate the committed summaries and metrics, but are intentionally kept local.
+
+## S3 Blind Evaluation Plan
+
+The issue accepts either two human evaluators or a blind plan for S3. This S2 PR provides the blind plan.
+
+Plan:
+
+- anonymize each condition summary and remove condition names, run paths, and injected-document labels;
+- randomize packet order using opaque IDs such as `P01`, `P02`, `P03`;
+- keep a private key mapping packet ID to condition;
+- have two human evaluators score predicted winner, confidence, narrative impact, noise contamination, evidence discipline, and rationale;
+- compute agreement on winner, confidence deltas, narrative-impact deltas, and contamination deltas;
+- adjudicate any winner mismatch, confidence delta greater than `0.30`, narrative-impact delta greater than `1`, or contamination delta greater than one level.
+
+The full checklist and blind-evaluation protocol are in `../ISSUE_RESPONSE.md`.
 
 Reproducible commands:
 
@@ -128,7 +148,6 @@ uv run --frozen python ../backtesting/case-a-s2-positional-noise/evaluation/scor
 Only optional polish remains:
 
 - run ReportAgent per condition after verifying it reads the intended condition state;
-- rerun the 7-condition matrix with a second model/provider for robustness;
-- commit and open PR.
+- run the S3 blind human evaluation plan.
 
 The issue's core implementation, matrix evidence, and narrative scoring are complete.

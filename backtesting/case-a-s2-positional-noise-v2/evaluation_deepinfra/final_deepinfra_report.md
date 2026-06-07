@@ -149,20 +149,22 @@ Llama matches this pattern most closely. Gemma preserves the technical injection
 
 ## Evidence
 
-Primary run artifacts:
+Local run artifacts, not committed:
 
 - `runs/s2_issue19_deepinfra/gemma/*/simulation_artifacts/`
 - `runs/s2_issue19_deepinfra/llama/*/simulation_artifacts/`
 - `runs/s2_issue19_deepinfra/gemma/_model_metadata.json`
 - `runs/s2_issue19_deepinfra/llama/_model_metadata.json`
 
-Primary evaluation artifacts:
+Committed evaluation artifacts:
 
 - `backtesting/case-a-s2-positional-noise-v2/evaluation_deepinfra/gemma/condition_summary_metrics.csv`
 - `backtesting/case-a-s2-positional-noise-v2/evaluation_deepinfra/gemma/narrative_scores.csv`
 - `backtesting/case-a-s2-positional-noise-v2/evaluation_deepinfra/llama/condition_summary_metrics.csv`
 - `backtesting/case-a-s2-positional-noise-v2/evaluation_deepinfra/llama/narrative_scores.csv`
 - `backtesting/case-a-s2-positional-noise-v2/evaluation_deepinfra/combined_deepinfra_scores.csv`
+
+The committed evaluation artifacts are derived from the local run artifacts. The `runs/` directory is intentionally not committed because it contains copied SQLite databases and logs.
 
 ## Conclusion
 

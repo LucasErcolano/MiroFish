@@ -64,6 +64,7 @@ Implemented behavior:
 - `evaluation/narrative_score_raw/*.json`: normalized per-condition evaluator outputs.
 - `evaluation/technical_report.md`: concise technical report for the current matrix.
 - `evaluation/final_issue_report.md`: final issue-level interpretation.
+- `ISSUE_RESPONSE.md`: issue acceptance checklist, evidence policy, and S3 blind evaluation plan.
 
 ## Rebuild Evaluation Summaries
 
@@ -105,5 +106,4 @@ uv run --frozen python ../backtesting/case-a-s2-positional-noise/evaluation/scor
 Only optional polish remains:
 
 - verify and use ReportAgent per condition if the issue explicitly requires ReportAgent output;
-- rerun the matrix with a second model/provider for robustness;
-- commit and open PR.
+- execute the S3 blind human evaluation plan from `ISSUE_RESPONSE.md`.
