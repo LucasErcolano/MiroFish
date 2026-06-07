@@ -52,22 +52,25 @@ Conditions:
 
 ## Evidence
 
-The strongest evidence is in copied artifacts under `runs/s2_issue19/<condition>/simulation_artifacts/`:
-
-- `reddit_simulation.db`: posts, comments, traces;
-- `scheduled_events_fired.jsonl`: fired scheduled event audit;
-- `run_state.json`: subprocess runner status.
-
-The compact technical table is maintained in:
+Committed evidence:
 
 - `impact_table.md`
 - `impact_table.csv`
 - `condition_summary_metrics.csv`
 - `condition_summary_metrics.json`
-
-Per-condition readable summaries are in:
-
 - `condition_summaries/*.md`
+- `narrative_scores.csv`
+- `narrative_scores.md`
+- `narrative_score_raw/*.json`
+- `final_issue_report.md`
+
+Local reproducibility evidence, not committed:
+
+- `runs/s2_issue19/<condition>/simulation_artifacts/reddit_simulation.db`: posts, comments, traces;
+- `runs/s2_issue19/<condition>/simulation_artifacts/scheduled_events_fired.jsonl`: fired scheduled event audit;
+- `runs/s2_issue19/<condition>/simulation_artifacts/run_state.json`: subprocess runner status.
+
+The local `runs/` artifacts were used to generate the committed summaries, metrics, narrative scores, and final reports. They are intentionally not part of the PR because they contain copied SQLite databases and run logs.
 
 ## Result Highlights
 
