@@ -951,7 +951,9 @@ class OasisProfileGenerator:
                 return idx, fallback_profile, str(e)
         
         logger.info(f"开始并行生成 {total} 个Agent人设（并行数: {parallel_count}）...")
-        logger.info(f"开始生成Agent人设 - 共 {total} 个实体，并行数: {parallel_count}")
+        print(f"\n{'='*60}")
+        print(f"开始生成Agent人设 - 共 {total} 个实体，并行数: {parallel_count}")
+        print(f"{'='*60}\n")
         
         # 使用线程池并行执行
         with concurrent.futures.ThreadPoolExecutor(max_workers=parallel_count) as executor:
@@ -1005,7 +1007,9 @@ class OasisProfileGenerator:
                     # 实时写入文件（即使是备用人设）
                     save_profiles_realtime()
         
-        logger.info(f"人设生成完成！共生成 {len([p for p in profiles if p])} 个Agent")
+        print(f"\n{'='*60}")
+        print(f"人设生成完成！共生成 {len([p for p in profiles if p])} 个Agent")
+        print(f"{'='*60}\n")
         
         return profiles
     
@@ -1037,7 +1041,8 @@ class OasisProfileGenerator:
         
         output = "\n".join(output_lines)
         
-        logger.debug(f"Generated profile: {output}")
+        # 只输出到控制台（避免重复，logger不再输出完整内容）
+        print(output)
     
     def save_profiles(
         self,

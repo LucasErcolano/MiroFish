@@ -217,19 +217,29 @@ class TestWikiSmokeEndToEnd(unittest.TestCase):
             f"Expected at least 1 claim .md file, got: {claim_files}"
         )
 
-        # 8. Verify wiki_compile_log.jsonl exists and is parseable
-        log_path = os.path.join(wiki_dir, "wiki_compile_log.jsonl")
-        self.assertTrue(
-            os.path.exists(log_path),
-            f"wiki_compile_log.jsonl not found at {log_path}"
-        )
-        with open(log_path) as f:
+        # 8. Verify wiki_compile_log.jsonl exists at run root (issue #20)
+        #    and inside wiki/ for copyable wiki-only artifacts.
+        run_dir = os.path.dirname(wiki_dir)
+        root_log_path = os.path.join(run_dir, "wiki_compile_log.jsonl")
+        wiki_log_path = os.path.join(wiki_dir, "wiki_compile_log.jsonl")
+        for log_path in (root_log_path, wiki_log_path):
+            self.assertTrue(
+                os.path.exists(log_path),
+                f"wiki_compile_log.jsonl not found at {log_path}"
+            )
+        with open(root_log_path) as f:
             log_lines = f.readlines()
         self.assertGreaterEqual(len(log_lines), 1)
         log_entry = json.loads(log_lines[0])
         self.assertEqual(log_entry["simulation_id"], self.sim_id)
         self.assertIn("pages_updated", log_entry)
         self.assertIsNotNone(log_entry.get("latency_ms"))
+
+        context_artifact_path = os.path.join(run_dir, "wiki_context.md")
+        self.assertTrue(
+            os.path.exists(context_artifact_path),
+            f"wiki_context.md not found at {context_artifact_path}"
+        )
 
         # 9. Verify index page was written (it's stored as agents.md but
         #    compilations produce multiple AGENTS-typed pages; they share name)

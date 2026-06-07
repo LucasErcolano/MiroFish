@@ -226,10 +226,11 @@ class WikiCompiler:
             pass
 
         # ------------------------------------------------------------------
-        # 4. Persist compile log
+        # 4. Persist compile log and report context artifacts
         # ------------------------------------------------------------------
         result.latency_ms = int((time.monotonic() - t0) * 1000)
         self._append_compile_log(simulation_id, result.to_dict())
+        self._write_wiki_context_artifact(simulation_id)
 
         return result
 
@@ -912,17 +913,36 @@ class WikiCompiler:
     # ------------------------------------------------------------------
 
     def _append_compile_log(self, simulation_id: str, entry: Dict[str, Any]) -> str:
-        """Append a JSON-line entry to ``wiki_compile_log.jsonl``.
+        """Append JSONL audit entries at run root and inside ``wiki/``.
 
-        Returns the log file path.
+        Issue #20 expects ``runs/<case>/<variant>/<seed>/wiki_compile_log.jsonl``
+        alongside ``wiki_context.md``.  The wiki-local copy is kept for
+        convenience when a generated wiki directory is copied by itself.
         """
         wiki_dir = self.store._sim_wiki_dir(simulation_id)
+        run_dir = os.path.dirname(wiki_dir)
         os.makedirs(wiki_dir, exist_ok=True)
-        log_path = os.path.join(wiki_dir, "wiki_compile_log.jsonl")
         line = json.dumps(entry, ensure_ascii=False, sort_keys=True) + "\n"
-        with open(log_path, "a", encoding="utf-8") as fh:
-            fh.write(line)
-        return log_path
+
+        root_log_path = os.path.join(run_dir, "wiki_compile_log.jsonl")
+        wiki_log_path = os.path.join(wiki_dir, "wiki_compile_log.jsonl")
+        for log_path in (root_log_path, wiki_log_path):
+            with open(log_path, "a", encoding="utf-8") as fh:
+                fh.write(line)
+        return root_log_path
+
+    def _write_wiki_context_artifact(self, simulation_id: str) -> Optional[str]:
+        """Write ``wiki_context.md`` next to the compile log for reproducibility."""
+        context = self.store.compile_wiki_context(simulation_id, max_chars=8000)
+        if not context:
+            return None
+        wiki_dir = self.store._sim_wiki_dir(simulation_id)
+        run_dir = os.path.dirname(wiki_dir)
+        os.makedirs(run_dir, exist_ok=True)
+        context_path = os.path.join(run_dir, "wiki_context.md")
+        with open(context_path, "w", encoding="utf-8") as fh:
+            fh.write(context)
+        return context_path
 
 
 # ------------------------------------------------------------------

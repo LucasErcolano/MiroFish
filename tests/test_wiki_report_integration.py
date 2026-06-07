@@ -69,6 +69,10 @@ class TestBuildWikiContextForReport(unittest.TestCase):
             wiki_root=self.wiki_root,
         )
         self.assertIsNone(result)
+        self.assertFalse(
+            os.path.exists(os.path.join(self.wiki_root, "sim_nonexistent")),
+            "baseline fallback should not create wiki directories when no data exists",
+        )
 
     def test_returns_context_from_existing_pages(self):
         """Existing wiki pages → helper assembles and returns context."""
