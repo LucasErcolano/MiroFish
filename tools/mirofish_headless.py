@@ -462,29 +462,8 @@ class MiroFishHeadlessRunner:
         if not task_id:
             raise MiroFishRunnerError("graph/build did not return task_id")
         deadline = time.time() + timeout
-        consecutive_404s = 0
         while time.time() < deadline:
-            try:
-                resp = self.client.request_json("GET", f"/api/graph/task/{task_id}")
-                consecutive_404s = 0  # reset on successful fetch
-            except MiroFishRunnerError as exc:
-                # Backend may clean up completed task records quickly, giving 404.
-                # If we see repeated 404s after previously observing progress,
-                # treat it as completion rather than failure.
-                if "404" in str(exc):
-                    consecutive_404s += 1
-                    if consecutive_404s >= 3:
-                        # Task record gone — likely completed and cleaned up.
-                        # Return a synthetic completed status so the flow continues.
-                        import logging as _logging
-                        _logging.getLogger(__name__).warning(
-                            "Graph task %s returned 404 %d times; assuming completed and cleaned up.",
-                            task_id, consecutive_404s,
-                        )
-                        return {"status": "completed", "task_id": task_id}
-                    time.sleep(self.poll_interval)
-                    continue
-                raise
+            resp = self.client.request_json("GET", f"/api/graph/task/{task_id}")
             task = resp.get("data", {})
             status = task.get("status")
             if status in TERMINAL_TASK_STATUSES:

@@ -88,10 +88,10 @@ def build_wiki_context_for_report(
 
     try:
         store = WikiStore(wiki_root=wiki_root)
-        store.initialize(simulation_id)
 
-        # Try to read existing compiled wiki context first.
-        # If pages exist, compile_wiki_context assembles them.
+        # Try to read an existing compiled wiki first, without creating any
+        # filesystem state. Report generation must remain a no-op when the
+        # simulation has no wiki/run artifacts yet.
         context = store.compile_wiki_context(simulation_id, max_chars=max_chars)
 
         if context:

@@ -10,18 +10,6 @@ from datetime import datetime
 from logging.handlers import RotatingFileHandler
 
 
-class _SafeStreamHandler(logging.StreamHandler):
-    """Stream handler that drops broken-pipe console writes instead of crashing."""
-
-    def emit(self, record):  # type: ignore[override]
-        try:
-            super().emit(record)
-        except BrokenPipeError:
-            # Background/pipe-launched servers can lose their console reader.
-            # Drop the console log rather than letting a request fail.
-            return
-
-
 def _ensure_utf8_stdout():
     """
     确保 stdout/stderr 使用 UTF-8 编码
@@ -89,7 +77,7 @@ def setup_logger(name: str = 'mirofish', level: int = logging.DEBUG) -> logging.
     # 2. 控制台处理器 - 简洁日志（INFO及以上）
     # 确保 Windows 下使用 UTF-8 编码，避免中文乱码
     _ensure_utf8_stdout()
-    console_handler = _SafeStreamHandler(sys.stdout)
+    console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(simple_formatter)
     

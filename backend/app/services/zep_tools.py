@@ -442,14 +442,8 @@ class ZepToolsService:
         self.exp_memory = self.provider if isinstance(self.provider, ExperimentalMemoryService) else None
         self.backend = getattr(self.provider, 'backend', None)
 
-        # Determine active memory mode for logging
-        from .memory_mode import MemoryMode
-        self._memory_mode = Config.get_memory_mode()
-
         if self.exp_memory:
-            logger.info(f"memory_mode={self._memory_mode.value}: experimental memory active in ZepToolsService (simulation_id={simulation_id})")
-        else:
-            logger.info(f"memory_mode={self._memory_mode.value}: baseline (Zep) memory in ZepToolsService")
+            logger.info(f"实验性记忆已在 ZepToolsService 中启用 (Provider 模式): simulation_id={simulation_id}")
         
         # LLM客户端用于InsightForge生成子问题
         self._llm_client = llm_client
