@@ -4,11 +4,35 @@ Validates the multi-model feature end-to-end against two real OpenAI-compatible
 endpoints, producing an auditable `model_routing_audit.jsonl` and per-call
 `llm_telemetry.jsonl`.
 
-> Status: the real 2-model run is **deferred** (no GPU/endpoints in CI). This
-> directory is the reproducible recipe; the unit suite
-> (`backend/tests/test_model_routing.py`) covers the logic with mock providers.
+> Status: **DONE** (2026-06-06). Executed against the Gemini OpenAI-compatible
+> endpoint with two real models — no GPU needed (see "Variant: no GPU" below).
+> Committed artifacts: `llm_telemetry.jsonl`, `model_routing_audit.jsonl`,
+> `telemetry.csv`, `telemetry_summary.jsonl`. Result: 18 calls, 9 per model,
+> agents 0–9 → `gemini-2.5-flash-lite` (by_agent_id), default →
+> `gemini-3.1-flash-lite`, every call traceable to (model, provider, tokens,
+> cost, round). `cost_usd_est` is 0.0 + `cost_unknown_model` flag because the
+> gemini models have no entry in `configs/model_prices.yaml` — the documented
+> auditable-not-silent behavior.
 
-## Prerequisites
+## Variant: no GPU (any multi-model OpenAI-compatible endpoint)
+
+A single OpenAI-compatible endpoint that serves several models (Gemini,
+OpenRouter, Groq, ...) satisfies the "2 real models" requirement without local
+servers. Use `agent_model_map.gemini.yaml` (resolves `LLM_BASE_URL` /
+`LLM_API_KEY` from env):
+
+```bash
+cd backend
+env -u PYTHONPATH .venv/bin/python scripts/run_reddit_simulation.py \
+  --config <sim_dir>/simulation_config.json \
+  --model-map ../runs/smoke_multimodel/agent_model_map.gemini.yaml \
+  --max-rounds 12 --no-wait
+```
+
+> Use enough rounds to reach the agents' `active_hours` (1 round = 1 simulated
+> hour with `minutes_per_round: 60`; agents are typically active from hour 8).
+
+## Prerequisites (original local-GPU variant)
 
 Two OpenAI-compatible servers, e.g. vLLM on a single RTX 3090:
 
