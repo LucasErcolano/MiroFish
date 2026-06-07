@@ -133,6 +133,14 @@ except ImportError as e:
     print("请先安装: pip install oasis-ai camel-ai")
     sys.exit(1)
 
+# Multi-model routing + observability (Issue #21).
+from app.services.model_router import ModelRouter, ModelRoutingError, build_backend
+from app.services.llm_telemetry import (
+    TelemetrySink,
+    instrument_backend,
+    load_prices,
+)
+
 
 # IPC相关常量
 IPC_COMMANDS_DIR = "ipc_commands"
@@ -405,18 +413,27 @@ class RedditSimulationRunner:
         ActionType.MUTE,
     ]
     
-    def __init__(self, config_path: str, wait_for_commands: bool = True):
+    def __init__(
+        self,
+        config_path: str,
+        wait_for_commands: bool = True,
+        model_map_path: Optional[str] = None,
+    ):
         """
         初始化模拟运行器
-        
+
         Args:
             config_path: 配置文件路径 (simulation_config.json)
             wait_for_commands: 模拟完成后是否等待命令（默认True）
+            model_map_path: 多模型路由配置 (agent_model_map.yaml)，可选
         """
         self.config_path = config_path
         self.config = self._load_config()
         self.simulation_dir = os.path.dirname(config_path)
         self.wait_for_commands = wait_for_commands
+        # Per-agent model routing map (Issue #21). CLI flag wins over config.
+        self.model_map_path = model_map_path or self.config.get("model_map_path")
+        self.telemetry_sink = None
         self.env = None
         self.agent_graph = None
         self.ipc_handler = None
@@ -469,66 +486,57 @@ class RedditSimulationRunner:
             model_type=llm_model,
         )
 
-    def _has_per_agent_llm_config(self) -> bool:
-        """Return whether any agent declares an explicit LLM route."""
-        for cfg in self.config.get("agent_configs", []):
-            if any(key in cfg for key in ("llm_model", "llm_base_url", "llm_api_key")):
-                return True
-        return False
+    # --- Multi-model routing + observability (Issue #21) ------------------- #
 
-    def _create_openai_model(self, model_name: str, base_url: str, api_key: str):
-        """Create one OpenAI-compatible CAMEL model with explicit client config."""
-        if not api_key:
-            raise ValueError("Missing LLM API key for per-agent model routing")
+    def _roles_by_agent_id(self) -> Dict[int, Optional[str]]:
+        """Map agent_id -> entity_type (role) from agent_configs."""
+        roles: Dict[int, Optional[str]] = {}
+        for idx, cfg in enumerate(self.config.get("agent_configs", [])):
+            roles[cfg.get("agent_id", idx)] = cfg.get("entity_type")
+        return roles
 
-        return ModelFactory.create(
-            model_platform=ModelPlatformType.OPENAI,
-            model_type=model_name,
-            api_key=api_key,
-            url=base_url or None,
+    def _build_routed_models(self, agent_count: int):
+        """
+        Build a deterministic agent_id -> instrumented model backend map from
+        the model map (agent_model_map.yaml), with per-call telemetry.
+
+        Returns (agent_models, routes). Raises ModelRoutingError on a bad route
+        unless fallback is enabled in the map, in which case the agent falls
+        back to the map's `default` policy.
+        """
+        router = ModelRouter.from_file(self.model_map_path)
+        prices_path = os.path.join(_project_root, "configs", "model_prices.yaml")
+        self.telemetry_sink = TelemetrySink(
+            path=os.path.join(self.simulation_dir, "llm_telemetry.jsonl"),
+            prices=load_prices(prices_path),
         )
 
-    def _create_agent_models(self, agent_count: int):
-        """
-        Build a deterministic agent_id -> model backend map.
+        roles = self._roles_by_agent_id()
+        agent_models: Dict[int, Any] = {}
+        routes: List[Dict[str, Any]] = []
 
-        Default behavior is intentionally not handled here; callers only use
-        this path when at least one agent has explicit llm_* fields.
-        """
-        global_api_key = os.environ.get("LLM_API_KEY", "")
-        global_base_url = os.environ.get("LLM_BASE_URL", "") or self.config.get("llm_base_url", "")
-        global_model = (
-            os.environ.get("LLM_MODEL_NAME", "")
-            or self.config.get("llm_model", "gpt-4o-mini")
-        )
-
-        configs_by_id = {
-            cfg.get("agent_id", idx): cfg
-            for idx, cfg in enumerate(self.config.get("agent_configs", []))
-        }
-
-        agent_models = {}
-        routes = []
         for agent_id in range(agent_count):
-            cfg = configs_by_id.get(agent_id, {})
-            model_name = cfg.get("llm_model") or global_model
-            base_url = cfg.get("llm_base_url") or global_base_url
-            api_key = cfg.get("llm_api_key") or global_api_key
+            policy = router.resolve(agent_id, roles.get(agent_id))
+            try:
+                backend = build_backend(policy)
+            except ModelRoutingError:
+                if not router.fallback_enabled:
+                    raise
+                policy = router.resolve(agent_id, None)  # default layer
+                policy.source = "fallback_default"
+                backend = build_backend(policy)
 
-            agent_models[agent_id] = self._create_openai_model(
-                model_name=model_name,
-                base_url=base_url,
-                api_key=api_key,
+            agent_models[agent_id] = instrument_backend(
+                backend,
+                context={
+                    "agent_id": agent_id,
+                    "role": policy.role,
+                    "provider": policy.provider,
+                    "model": policy.model,
+                },
+                sink=self.telemetry_sink,
             )
-            routes.append({
-                "agent_id": agent_id,
-                "model": model_name,
-                "base_url": base_url,
-                "api_key_set": bool(api_key),
-                "source": "agent_configs" if any(
-                    key in cfg for key in ("llm_model", "llm_base_url", "llm_api_key")
-                ) else "global_default",
-            })
+            routes.append(policy.to_audit())
 
         return agent_models, routes
 
@@ -538,41 +546,33 @@ class RedditSimulationRunner:
         timestamp = datetime.now().isoformat()
         with open(audit_path, "w", encoding="utf-8") as f:
             for route in routes:
-                f.write(json.dumps({
-                    "timestamp": timestamp,
-                    **route,
-                }, ensure_ascii=False) + "\n")
+                f.write(json.dumps({"timestamp": timestamp, **route}, ensure_ascii=False) + "\n")
 
         print(f"Model routing audit: {audit_path}")
         for route in routes:
             print(
-                "  - agent_id={agent_id} model={model} base_url={base_url} "
-                "api_key_set={api_key_set}".format(**route)
+                "  - agent_id={agent_id} model={model} provider={provider} "
+                "source={source} api_key_set={api_key_set}".format(**route)
             )
 
     async def _generate_reddit_agent_graph_with_models(
         self,
         profile_path: str,
         agent_models: Dict[int, Any],
-    ) -> AgentGraph:
+    ) -> "AgentGraph":
         """
         Local copy of OASIS' Reddit graph construction with per-agent models.
 
-        OASIS 0.2.5's generate_reddit_agent_graph accepts one model argument
-        and passes that same object to every SocialAgent. Passing a list makes
-        every agent randomly schedule across that list, so it cannot pin
-        agent_id -> model deterministically.
+        OASIS' generate_reddit_agent_graph accepts one model argument and passes
+        that same object to every SocialAgent, so it cannot pin agent_id -> model
+        deterministically. This rebuilds the graph wiring agent_models[i].
         """
         agent_graph = AgentGraph()
         with open(profile_path, "r", encoding="utf-8") as file:
             agent_info = json.load(file)
 
         async def process_agent(i):
-            profile = {
-                "nodes": [],
-                "edges": [],
-                "other_info": {},
-            }
+            profile = {"nodes": [], "edges": [], "other_info": {}}
             profile["other_info"]["user_profile"] = agent_info[i]["persona"]
             profile["other_info"]["mbti"] = agent_info[i]["mbti"]
             profile["other_info"]["gender"] = agent_info[i]["gender"]
@@ -597,7 +597,7 @@ class RedditSimulationRunner:
 
         await asyncio.gather(*[process_agent(i) for i in range(len(agent_info))])
         return agent_graph
-    
+
     def _get_active_agents_for_round(
         self, 
         env, 
@@ -692,16 +692,19 @@ class RedditSimulationRunner:
             return
 
         print("\n初始化LLM模型...")
-        if self._has_per_agent_llm_config():
+        if self.model_map_path:
+            # Multi-model path (Issue #21): per-agent routing + telemetry.
             with open(profile_path, "r", encoding="utf-8") as f:
                 profile_count = len(json.load(f))
-            agent_models, routes = self._create_agent_models(profile_count)
+            print(f"使用多模型路由: {self.model_map_path}")
+            agent_models, routes = self._build_routed_models(profile_count)
             self._write_model_routing_audit(routes)
             self.agent_graph = await self._generate_reddit_agent_graph_with_models(
                 profile_path=profile_path,
                 agent_models=agent_models,
             )
         else:
+            # Default single-model path (unchanged).
             model = self._create_model()
             self.agent_graph = await generate_reddit_agent_graph(
                 profile_path=profile_path,
@@ -780,7 +783,11 @@ class RedditSimulationRunner:
                 agent: LLMAction()
                 for _, agent in active_agents
             }
-            
+
+            # Stamp telemetry records produced during this step with the round.
+            if self.telemetry_sink is not None:
+                self.telemetry_sink.current_round = round_num
+
             await self.env.step(actions)
             
             if (round_num + 1) % 10 == 0 or round_num == 0:
@@ -795,7 +802,17 @@ class RedditSimulationRunner:
         print(f"\n模拟循环完成!")
         print(f"  - 总耗时: {total_elapsed:.1f}秒")
         print(f"  - 数据库: {db_path}")
-        
+
+        # LLM telemetry summary (Issue #21).
+        if self.telemetry_sink is not None:
+            summary = self.telemetry_sink.summary()
+            print(f"  - LLM telemetry: {self.telemetry_sink.path}")
+            print(
+                "    calls={llm_calls} tokens_in={tokens_in} tokens_out={tokens_out} "
+                "cost_usd_est={cost_usd_est} parse_errors={parse_errors} "
+                "errors={errors}".format(**summary)
+            )
+
         # 是否进入等待命令模式
         if self.wait_for_commands:
             print("\n" + "=" * 60)
@@ -853,7 +870,13 @@ async def main():
         default=False,
         help='模拟完成后立即关闭环境，不进入等待命令模式'
     )
-    
+    parser.add_argument(
+        '--model-map',
+        type=str,
+        default=None,
+        help='多模型路由配置文件 (agent_model_map.yaml)，启用 per-agent 模型路由与遥测'
+    )
+
     args = parser.parse_args()
     
     # 在 main 函数开始时创建 shutdown 事件
@@ -870,7 +893,8 @@ async def main():
     
     runner = RedditSimulationRunner(
         config_path=args.config,
-        wait_for_commands=not args.no_wait
+        wait_for_commands=not args.no_wait,
+        model_map_path=args.model_map,
     )
     await runner.run(max_rounds=args.max_rounds)
 
