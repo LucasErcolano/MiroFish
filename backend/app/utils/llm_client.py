@@ -121,10 +121,10 @@ class LLMClient:
             模型响应文本
         """
         if _HAS_PROMPTURE:
-            content = self._chat_prompture(messages, temperature, max_tokens)
+            content = self._chat_prompture(messages, temperature, self._cap_max_tokens(max_tokens))
             return strip_think_tags(content)
         else:
-            content = self._chat_openai(messages, temperature, max_tokens, response_format)
+            content = self._chat_openai(messages, temperature, self._cap_max_tokens(max_tokens), response_format)
             # Fallback: strip think tags with regex when Prompture is not available
             return re.sub(r'<think>[\s\S]*?</think>', '', content).strip()
 
@@ -146,12 +146,12 @@ class LLMClient:
             解析后的JSON对象
         """
         if _HAS_PROMPTURE:
-            response = self._chat_prompture(messages, temperature, max_tokens)
+            response = self._chat_prompture(messages, temperature, self._cap_max_tokens(max_tokens))
             # Prompture's clean_json_text strips think tags + markdown fences
             cleaned = clean_json_text(response)
         else:
             response = self._chat_openai(
-                messages, temperature, max_tokens
+                messages, temperature, self._cap_max_tokens(max_tokens)
             )
             # Fallback cleaning when Prompture is not available
             cleaned = re.sub(r'<think>[\s\S]*?</think>', '', response).strip()
@@ -165,6 +165,9 @@ class LLMClient:
             raise ValueError(f"LLM返回的JSON格式无效: {cleaned}")
 
     # ── Private: Prompture path ────────────────────────────────────
+
+    def _cap_max_tokens(self, max_tokens: int) -> int:
+        return min(max_tokens, Config.LLM_MAX_TOKENS)
 
     def _chat_prompture(
         self,
@@ -202,8 +205,12 @@ class LLMClient:
             "temperature": temperature,
             "max_tokens": max_tokens,
         }
-        if response_format:
+        if response_format and not self._model_avoids_response_format():
             kwargs["response_format"] = response_format
 
         response = self.client.chat.completions.create(**kwargs)
         return response.choices[0].message.content
+
+    def _model_avoids_response_format(self) -> bool:
+        model = (self.model or "").lower()
+        return "qwen" in model

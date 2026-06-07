@@ -32,6 +32,8 @@ PROVIDERS: Dict[str, Dict[str, str]] = {
     "vllm": {"base_url_env": "LOCAL_LLM_BASE_URL", "api_key_env": "LOCAL_LLM_API_KEY"},
     "lmstudio": {"base_url_env": "LOCAL_LLM_BASE_URL", "api_key_env": "LOCAL_LLM_API_KEY"},
     "groq": {"base_url_env": "GROQ_BASE_URL", "api_key_env": "GROQ_API_KEY"},
+    "openrouter": {"base_url_env": "OPENROUTER_BASE_URL", "api_key_env": "OPENROUTER_API_KEY"},
+    "deepinfra": {"base_url_env": "DEEPINFRA_BASE_URL", "api_key_env": "DEEPINFRA_API_KEY"},
 }
 
 _POLICY_FIELDS = {

@@ -15,8 +15,10 @@ OASIS Reddit模拟预设脚本
 
 import argparse
 import asyncio
+import hashlib
 import json
 import logging
+import math
 import os
 import random
 import signal
@@ -437,6 +439,7 @@ class RedditSimulationRunner:
         self.env = None
         self.agent_graph = None
         self.ipc_handler = None
+        self._fired_scheduled_event_keys = set()
         
     def _load_config(self) -> Dict[str, Any]:
         """加载配置文件"""
@@ -451,6 +454,145 @@ class RedditSimulationRunner:
         """获取数据库路径"""
         return os.path.join(self.simulation_dir, "reddit_simulation.db")
     
+    @staticmethod
+    def _resolve_scheduled_round(event: Dict[str, Any], total_rounds: int) -> Optional[int]:
+        """Resolve a scheduled event to a zero-based round index."""
+        if total_rounds <= 0:
+            return None
+
+        if event.get("round_index") is not None:
+            try:
+                round_index = int(event["round_index"])
+            except (TypeError, ValueError):
+                return None
+        elif event.get("round") is not None:
+            try:
+                # User-facing explicit rounds are 1-based.
+                round_index = int(event["round"]) - 1
+            except (TypeError, ValueError):
+                return None
+        elif event.get("round_pct") is not None:
+            try:
+                pct = float(event["round_pct"])
+            except (TypeError, ValueError):
+                return None
+            round_index = math.ceil(pct * total_rounds) - 1
+        else:
+            return None
+
+        return max(0, min(total_rounds - 1, round_index))
+
+    def _scheduled_events_for_round(
+        self,
+        round_num: int,
+        total_rounds: int,
+    ) -> List[tuple[str, Dict[str, Any]]]:
+        event_config = self.config.get("event_config", {})
+        scheduled_events = event_config.get("scheduled_events", [])
+        if not isinstance(scheduled_events, list):
+            return []
+
+        due = []
+        for index, event in enumerate(scheduled_events):
+            if not isinstance(event, dict):
+                continue
+            key = str(event.get("id") or f"scheduled-{index}")
+            if key in self._fired_scheduled_event_keys:
+                continue
+            if self._resolve_scheduled_round(event, total_rounds) == round_num:
+                due.append((key, event))
+        return due
+
+    def _event_content(self, event: Dict[str, Any]) -> str:
+        content = event.get("content")
+        if isinstance(content, str) and content.strip():
+            return content.strip()
+
+        file_name = event.get("file")
+        if isinstance(file_name, str) and file_name.strip():
+            path = file_name
+            if not os.path.isabs(path):
+                path = os.path.join(self.simulation_dir, path)
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    return f.read().strip()
+            except OSError as exc:
+                print(f"  Warning: scheduled event file could not be read: {file_name}: {exc}")
+
+        return ""
+
+    def _build_scheduled_actions(
+        self,
+        scheduled_events: List[tuple[str, Dict[str, Any]]],
+    ) -> tuple[Dict[Any, Any], List[Dict[str, Any]]]:
+        actions: Dict[Any, Any] = {}
+        audit_events: List[Dict[str, Any]] = []
+
+        for key, event in scheduled_events:
+            target_platform = event.get("target_platform", "reddit")
+            action = event.get("action", "create_post")
+            if target_platform != "reddit" or action != "create_post":
+                print(f"  Warning: unsupported scheduled event skipped: id={key}")
+                self._fired_scheduled_event_keys.add(key)
+                continue
+
+            content = self._event_content(event)
+            if not content:
+                print(f"  Warning: scheduled event has no content: id={key}")
+                self._fired_scheduled_event_keys.add(key)
+                continue
+
+            agent_id = event.get("poster_agent_id", 0)
+            try:
+                agent = self.env.agent_graph.get_agent(agent_id)
+            except Exception as exc:
+                print(f"  Warning: scheduled event agent not found: id={key}, agent_id={agent_id}: {exc}")
+                self._fired_scheduled_event_keys.add(key)
+                continue
+
+            manual_action = ManualAction(
+                action_type=ActionType.CREATE_POST,
+                action_args={"content": content},
+            )
+            if agent in actions:
+                if not isinstance(actions[agent], list):
+                    actions[agent] = [actions[agent]]
+                actions[agent].append(manual_action)
+            else:
+                actions[agent] = manual_action
+
+            audit_events.append({
+                "id": key,
+                "poster_agent_id": agent_id,
+                "target_platform": target_platform,
+                "action": action,
+                "content_sha256": hashlib.sha256(content.encode("utf-8")).hexdigest(),
+                "content_preview": content[:160],
+            })
+            self._fired_scheduled_event_keys.add(key)
+
+        return actions, audit_events
+
+    def _log_scheduled_events(
+        self,
+        round_num: int,
+        total_rounds: int,
+        events: List[Dict[str, Any]],
+    ) -> None:
+        if not events:
+            return
+        path = os.path.join(self.simulation_dir, "scheduled_events_fired.jsonl")
+        with open(path, "a", encoding="utf-8") as f:
+            for event in events:
+                payload = {
+                    "timestamp": datetime.now().isoformat(),
+                    "round_index": round_num,
+                    "round": round_num + 1,
+                    "total_rounds": total_rounds,
+                    **event,
+                }
+                f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+
     def _create_model(self):
         """
         创建LLM模型
@@ -771,6 +913,17 @@ class RedditSimulationRunner:
             simulated_minutes = round_num * minutes_per_round
             simulated_hour = (simulated_minutes // 60) % 24
             simulated_day = simulated_minutes // (60 * 24) + 1
+
+            scheduled_events = self._scheduled_events_for_round(round_num, total_rounds)
+            if scheduled_events:
+                scheduled_actions, audit_events = self._build_scheduled_actions(scheduled_events)
+                if scheduled_actions:
+                    await self.env.step(scheduled_actions)
+                    self._log_scheduled_events(round_num, total_rounds, audit_events)
+                    print(
+                        f"  [Day {simulated_day}, {simulated_hour:02d}:00] "
+                        f"Scheduled events fired: {len(audit_events)}"
+                    )
             
             active_agents = self._get_active_agents_for_round(
                 self.env, simulated_hour, round_num
