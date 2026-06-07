@@ -137,12 +137,15 @@ The recommended next robust design is not to expand timing yet. First repeat thi
 
 ## Evidence
 
-Primary V2 artifacts:
+Committed V2 artifacts:
 
 - `backtesting/case-a-s2-positional-noise-v2/injection_plan_v2.yaml`
 - `backtesting/case-a-s2-positional-noise-v2/injections/*.md`
 - `backtesting/case-a-s2-positional-noise-v2/evaluation/condition_summary_metrics.csv`
 - `backtesting/case-a-s2-positional-noise-v2/evaluation/narrative_scores.csv`
 - `backtesting/case-a-s2-positional-noise-v2/evaluation/condition_summaries/*.md`
+
+Local reproducibility artifacts, not committed:
+
 - `runs/s2_issue19_v2/*/simulation_artifacts/scheduled_events_fired.jsonl`
 - `runs/s2_issue19_v2/*/simulation_artifacts/reddit_simulation.db`
