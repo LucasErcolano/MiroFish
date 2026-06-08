@@ -16,7 +16,7 @@ The goal is provider/model robustness, not a new injection design.
 - Injection plan: `backtesting/case-a-s2-positional-noise-v2/injection_plan_v2.yaml`.
 - Conditions: same six V2 conditions.
 - Rounds per run: 12.
-- ReportAgent: disabled.
+- ReportAgent: disabled during the simulation/scoring pass; artifact-only ReportAgent reports are generated separately in `evaluation_report_agent/`.
 - Graph memory update: disabled.
 
 ## Variable Element

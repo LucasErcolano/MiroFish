@@ -88,7 +88,7 @@ The main caveat is that simulated agents can generate unsupported numeric claims
 
 ## DeepInfra Extension
 
-The V2 matrix was also run with the two pending DeepInfra models:
+The V2 matrix was also run with the two remaining S2 DeepInfra models:
 
 - `google/gemma-3-27b-it`
 - `meta-llama/Llama-3.3-70B-Instruct-Turbo`
