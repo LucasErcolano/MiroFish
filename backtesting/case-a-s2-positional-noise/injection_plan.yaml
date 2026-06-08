@@ -1,0 +1,58 @@
+version: 1
+case_id: case-a-s2-positional-noise
+total_rounds: 40
+round_policy:
+  early_pct: 0.10
+  mid_pct: 0.50
+  late_pct: 0.90
+conditions:
+  baseline:
+    injections: []
+  signal-early:
+    injections:
+      - id: signal
+        file: signal_doc.md
+        round_pct: 0.10
+        target_platform: reddit
+        action: create_post
+        poster_agent_id: 0
+  signal-mid:
+    injections:
+      - id: signal
+        file: signal_doc.md
+        round_pct: 0.50
+        target_platform: reddit
+        action: create_post
+        poster_agent_id: 0
+  signal-late:
+    injections:
+      - id: signal
+        file: signal_doc.md
+        round_pct: 0.90
+        target_platform: reddit
+        action: create_post
+        poster_agent_id: 0
+  noise-early:
+    injections:
+      - id: noise
+        file: noise_doc.md
+        round_pct: 0.10
+        target_platform: reddit
+        action: create_post
+        poster_agent_id: 0
+  noise-mid:
+    injections:
+      - id: noise
+        file: noise_doc.md
+        round_pct: 0.50
+        target_platform: reddit
+        action: create_post
+        poster_agent_id: 0
+  noise-late:
+    injections:
+      - id: noise
+        file: noise_doc.md
+        round_pct: 0.90
+        target_platform: reddit
+        action: create_post
+        poster_agent_id: 0

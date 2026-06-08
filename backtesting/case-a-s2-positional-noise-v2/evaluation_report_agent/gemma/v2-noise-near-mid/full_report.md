@@ -1,0 +1,21 @@
+# Argentina Predicted to Win - v2-noise-near-mid
+
+> Argentina is predicted to win with 70% confidence, despite the introduction of near-topic noise related to fan engagement and media attention.
+
+---
+
+## Narrative Result
+
+The simulation predicts Argentina will win the Copa America 2024 final against Colombia with 70% confidence, despite the introduction of near-topic noise. This prediction is based on the narrative evidence that “Argentina is analyzed as the favorite with experience and depth,” and that “Argentina confides in its history of victories and solid defense.”
+
+The `v2-noise-near-mid` condition included a scheduled injection of a "noise-near" document (indicated by `injected_doc: "noise-near"` and `used_injected_document: "True"`). This document introduced noise relating to fan engagement, media attention, and logistical issues, resulting in a “medium” level of `noise_contamination`.  This is reflected in the keyword counts, showing an increase in ‘football_noise’ mentions to 6, compared to the baseline.  The injected post explicitly states that the document’s content is “about public attention and fan discourse, not direct match-performance evidence.”
+
+The injection led to an increase in the number of posts from 4 to 6 (`posts: "6"`).  While James Rodriguez received 8 mentions, compared to Messi’s 1 mention (`james_mentions: "8"`, `messi_mentions: "1"`), Argentina still received more overall mentions (8 vs 5, `argentina_mentions: "8"`, `colombia_mentions: "5"`). The simulation notes that the noise may “subtly shift focus away from purely tactical considerations,” but did not prevent the prediction of an Argentina win.  The simulation completed successfully (`status: "completed"`), firing the scheduled event in round 6 (`fired_round: "6"`).
+
+## Injection Effect
+
+The introduction of near-topic noise, via the `noise-near` document in the `v2-noise-near-mid` condition, had a measurable effect on the simulation. The `used_injected_document: "True"` flag confirms the injected document was utilized. This resulted in a “medium” level of `noise_contamination`, as indicated in the Narrative Score. The injected document focused on “public attention and fan discourse, not direct match-performance evidence,” specifically mentioning topics like “celebrity interest, fan travel to Miami, ticket resale complaints, stadium logistics,” and “debates over broadcast access.”
+
+This injection is reflected in the keyword counts; ‘football_noise’ increased to 6 mentions. The number of posts increased from 4 to 6 (`posts: "6"`), indicating increased discussion volume. Despite this increase in noise, the simulation still predicted Argentina would win. While James Rodriguez received a higher number of mentions (8) than Messi (1, `messi_mentions: "1"`), Argentina received more overall mentions (8 vs 5, `argentina_mentions: "8"`, `colombia_mentions: "5"`).
+
+The simulation notes that the injected document may have subtly shifted focus, potentially moving attention “away from purely tactical considerations.” However, the core narrative evidence – “Argentina is analyzed as the favorite with experience and depth” – remained influential, leading to the final prediction. The scheduled event fired successfully in round 6 (`fired_round: "6"`), and the simulation completed successfully (`status: "completed"`).

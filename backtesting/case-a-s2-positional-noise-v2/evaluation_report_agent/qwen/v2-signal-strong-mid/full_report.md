@@ -1,0 +1,24 @@
+# Argentina vs Colombia Copa America 2024 Prediction Analysis
+
+> Argentina is predicted to win the Copa America 2024 final against Colombia with 90% confidence based on injected signal document evidence.
+
+---
+
+## Narrative result
+
+**Narrative Result**
+
+
+Under the **v2-signal-strong-mid** condition, Argentina is predicted to defeat Colombia in the Copa America 2024 final with **90% confidence**, driven by explicit probability metrics from the injected document. The Opta Preview signal document explicitly states Argentina has a **50.9% chance to win in 90 minutes** and a **63.0% chance to lift the trophy overall**, while Colombia is assigned **25.4%** and **37.0%** respectively, with a **23.6% chance of the match extending beyond 90 minutes**. These figures stabilize the prediction, as noted in the narrative score, which attributes the confidence boost to the injected document’s **"explicit probability weights"**.
+
+Keyword analysis highlights Argentina’s dominance in discourse, with **15 mentions** versus Colombia’s **7**, reinforcing the narrative. The injected post emphasizes Argentina’s status as the **"model favorite"** and its historical advantage, including a **"stronger rec [record]"** against Colombia. James Rodríguez’s team is acknowledged as a threat, with **8 mentions** in the context, but the data underscores Argentina’s superior odds. The **"noise contamination"** flag remains **none**, ensuring the prediction’s purity.
+
+The injected document’s **"high-density pre-final signal"** and Argentina’s status as **defending Copa America champion** and **2022 World Cup champion** further solidify the narrative, aligning with the **"difference_vs_baseline"** metric of increased Argentina mentions and explicit probability metrics.
+
+## Injection effect
+
+Under the **v2-signal-strong-mid** condition, the injected document significantly amplified Argentina’s narrative dominance by introducing **explicit probability metrics** and increasing keyword frequency. The **Opta Preview signal document** explicitly assigned Argentina a **50.9% chance to win in 90 minutes** and a **63.0% chance to lift the trophy overall**, while Colombia was given **25.4%** and **37.0%** respectively, with a **23.6% chance of the match extending beyond 90 minutes**. These figures directly influenced the prediction’s confidence level, as noted in the narrative score, which credits the injected document for providing **"explicit probability weights"** that stabilized the outcome.
+
+The injection also skewed keyword mentions: **Argentina received 15 mentions** versus **Colombia’s 7**, a 114% increase, while **James Rodríguez’s name appeared 8 times**, reflecting heightened discourse around Colombia’s star player. However, Argentina’s mentions remained dominant, reinforcing its status as the **"model favorite"**. The injected post emphasized Argentina’s historical advantage, including its role as **"defending Copa America champion"** and **"2022 World Cup champion"**, alongside a **"stronger rec [record]"** against Colombia.
+
+Technical metrics show the injection triggered **6 posts**, **13 traces**, and **fired in round 6 (index 5)**, with no **noise contamination** detected. The **"difference_vs_baseline"** metric highlights the injection’s role in amplifying Argentina’s mentions and introducing probabilistic data, ensuring the prediction’s clarity and confidence level reached **90%**.

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PILOT-ARG-2025-Q1 verdict schema",
+  "type": "object",
+  "required": [
+    "electoral_prediction",
+    "macro_prediction",
+    "causal_mechanism",
+    "risks",
+    "evidence",
+    "temporal_integrity"
+  ],
+  "properties": {
+    "electoral_prediction": {
+      "type": "object"
+    },
+    "macro_prediction": {
+      "type": "object"
+    },
+    "causal_mechanism": {
+      "type": "string"
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "early_signals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "temporal_integrity": {
+      "type": "object"
+    }
+  }
+}

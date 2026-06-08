@@ -27,6 +27,8 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urljoin
 from urllib.request import Request, urlopen
 
+import yaml
+
 GEMINI_OPENAI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 DEFAULT_GEMINI_MODEL = "gemini-2.5-flash-lite"
 TERMINAL_TASK_STATUSES = {"completed", "failed", "cancelled", "error"}
@@ -105,6 +107,98 @@ def file_sha256(path: Path) -> str:
 def write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(sanitize_for_artifact(payload), ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def apply_injection_plan_to_simulation_config(
+    repo_root: Path,
+    simulation_id: str,
+    injection_plan: Path,
+    condition: str,
+) -> Dict[str, Any]:
+    """Apply a case condition's Reddit scheduled events to generated simulation_config.json."""
+    injection_plan = Path(injection_plan)
+    plan = yaml.safe_load(injection_plan.read_text(encoding="utf-8"))
+    conditions = plan.get("conditions", {})
+    if condition not in conditions:
+        raise MiroFishRunnerError(f"unknown injection condition {condition!r}; available={sorted(conditions)}")
+
+    sim_config_path = repo_root / "backend" / "uploads" / "simulations" / simulation_id / "simulation_config.json"
+    if not sim_config_path.exists():
+        raise MiroFishRunnerError(f"simulation config not found for injection: {sim_config_path}")
+
+    plan_dir = injection_plan.parent
+    scheduled_events = []
+    for index, event in enumerate(conditions[condition].get("injections", [])):
+        if event.get("target_platform", "reddit") != "reddit":
+            raise MiroFishRunnerError(f"condition {condition} contains non-Reddit injection: {event}")
+        if event.get("action", "create_post") != "create_post":
+            raise MiroFishRunnerError(f"condition {condition} contains unsupported action: {event}")
+
+        event_payload = dict(event)
+        event_payload["id"] = str(event_payload.get("id") or f"{condition}-{index}")
+        event_payload["condition"] = condition
+        file_name = event_payload.get("file")
+        if file_name:
+            event_payload["content"] = (plan_dir / file_name).read_text(encoding="utf-8").strip()
+        scheduled_events.append(event_payload)
+
+    config = json.loads(sim_config_path.read_text(encoding="utf-8"))
+    event_config = config.setdefault("event_config", {})
+    event_config["scheduled_events"] = scheduled_events
+    config["s2_condition"] = condition
+    config["s2_injection_plan"] = str(injection_plan)
+    write_json(sim_config_path, config)
+    return {
+        "condition": condition,
+        "scheduled_events_count": len(scheduled_events),
+        "simulation_config_path": str(sim_config_path),
+        "scheduled_event_ids": [event["id"] for event in scheduled_events],
+    }
+
+
+def count_jsonl_lines(path: Path) -> int:
+    if not path.exists():
+        return 0
+    return sum(1 for line in path.read_text(encoding="utf-8", errors="replace").splitlines() if line.strip())
+
+
+def summarize_reddit_db(repo_root: Path, simulation_id: str) -> Dict[str, Any]:
+    db_path = repo_root / "backend" / "uploads" / "simulations" / simulation_id / "reddit_simulation.db"
+    summary: Dict[str, Any] = {"path": str(db_path), "exists": db_path.exists()}
+    if not db_path.exists():
+        return summary
+
+    import sqlite3
+
+    conn = sqlite3.connect(db_path)
+    try:
+        cur = conn.cursor()
+        for table in ["post", "comment", "trace", "user"]:
+            try:
+                summary[f"{table}_count"] = cur.execute(f"select count(*) from {table}").fetchone()[0]
+            except sqlite3.Error:
+                summary[f"{table}_count"] = None
+        try:
+            summary["scheduled_signal_post_count"] = cur.execute(
+                "select count(*) from post where content like '%Signal Document%'"
+            ).fetchone()[0]
+            summary["scheduled_noise_post_count"] = cur.execute(
+                "select count(*) from post where content like '%Noise Document%'"
+            ).fetchone()[0]
+            summary["scheduled_counter_signal_post_count"] = cur.execute(
+                "select count(*) from post where content like '%Counter-Signal Document%'"
+            ).fetchone()[0]
+            summary["scheduled_injection_post_count"] = cur.execute(
+                "select count(*) from post where content like '# %Document%'"
+            ).fetchone()[0]
+        except sqlite3.Error:
+            summary["scheduled_signal_post_count"] = None
+            summary["scheduled_noise_post_count"] = None
+            summary["scheduled_counter_signal_post_count"] = None
+            summary["scheduled_injection_post_count"] = None
+    finally:
+        conn.close()
+    return summary
 
 
 @dataclass
@@ -288,12 +382,14 @@ class APIClient:
 class MiroFishHeadlessRunner:
     base_url: str = "http://localhost:5001"
     output_dir: Path = Path("runs/headless")
+    repo_root: Path = Path(".")
     poll_interval: float = 2.0
     timeout_seconds: int = 300
     accept_language: str = "zh"
 
     def __post_init__(self) -> None:
         self.output_dir = Path(self.output_dir)
+        self.repo_root = Path(self.repo_root)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.client = APIClient(
             base_url=self.base_url,
@@ -315,6 +411,9 @@ class MiroFishHeadlessRunner:
         parallel_profile_count: int = 5,
         generate_report: bool = True,
         poll_timeout_seconds: int = 60 * 60,
+        injection_plan: Optional[Path] = None,
+        condition: Optional[str] = None,
+        no_wait: bool = False,
     ) -> Dict[str, Any]:
         files = [Path(p) for p in files]
         for p in files:
@@ -335,6 +434,9 @@ class MiroFishHeadlessRunner:
             "use_llm_for_profiles": use_llm_for_profiles,
             "parallel_profile_count": parallel_profile_count,
             "generate_report": generate_report,
+            "injection_plan": str(injection_plan) if injection_plan else None,
+            "condition": condition,
+            "no_wait": no_wait,
             "started_at": started_at,
         }
         write_json(self.output_dir / "run_config.json", run_config)
@@ -387,11 +489,24 @@ class MiroFishHeadlessRunner:
             prepare = self.client.request_json("POST", "/api/simulation/prepare", prepare_payload, retry=True)
             self._wait_prepare(simulation_id, prepare.get("data", {}).get("task_id"), poll_timeout_seconds)
 
+            injection_metadata = None
+            if injection_plan or condition:
+                if not injection_plan or not condition:
+                    raise MiroFishRunnerError("--injection-plan and --condition must be provided together")
+                injection_metadata = apply_injection_plan_to_simulation_config(
+                    repo_root=self.repo_root,
+                    simulation_id=simulation_id,
+                    injection_plan=Path(injection_plan),
+                    condition=condition,
+                )
+                write_json(self.output_dir / "injection_applied.json", injection_metadata)
+
             start_payload: Dict[str, Any] = {
                 "simulation_id": simulation_id,
                 "platform": platform,
                 "force": force,
                 "enable_graph_memory_update": enable_graph_memory_update,
+                "no_wait": no_wait,
             }
             if max_rounds:
                 start_payload["max_rounds"] = max_rounds
@@ -425,6 +540,7 @@ class MiroFishHeadlessRunner:
                 "graph_id": graph_id,
                 "simulation_id": simulation_id,
                 "report_id": report_id,
+                "injection": injection_metadata,
                 "num_rounds_or_epochs_requested": max_rounds,
                 "num_rounds_or_epochs": completed_rounds,
                 "final_run_status": final_run,
@@ -455,6 +571,121 @@ class MiroFishHeadlessRunner:
                 encoding="utf-8",
             )
             write_json(self.output_dir / "verdict_raw.json", blocked)
+            self._write_hashes()
+            raise
+
+    def run_existing_simulation(
+        self,
+        simulation_id: str,
+        max_rounds: Optional[int] = None,
+        platform: str = "reddit",
+        enable_graph_memory_update: bool = False,
+        force: bool = True,
+        generate_report: bool = False,
+        poll_timeout_seconds: int = 60 * 60,
+        injection_plan: Optional[Path] = None,
+        condition: Optional[str] = None,
+        no_wait: bool = False,
+    ) -> Dict[str, Any]:
+        started_at = utc_now()
+        run_config = {
+            "base_url": self.base_url,
+            "flow_provenance": "existing_prepared_simulation_backend_api",
+            "simulation_id": simulation_id,
+            "platform": platform,
+            "max_rounds": max_rounds,
+            "enable_graph_memory_update": enable_graph_memory_update,
+            "force": force,
+            "generate_report": generate_report,
+            "injection_plan": str(injection_plan) if injection_plan else None,
+            "condition": condition,
+            "no_wait": no_wait,
+            "started_at": started_at,
+        }
+        write_json(self.output_dir / "run_config.json", run_config)
+
+        try:
+            simulation = self.client.request_json("GET", f"/api/simulation/{simulation_id}", retry=True)
+            simulation_data = simulation.get("data", {})
+            injection_metadata = None
+            if injection_plan or condition:
+                if not injection_plan or not condition:
+                    raise MiroFishRunnerError("--injection-plan and --condition must be provided together")
+                injection_metadata = apply_injection_plan_to_simulation_config(
+                    repo_root=self.repo_root,
+                    simulation_id=simulation_id,
+                    injection_plan=Path(injection_plan),
+                    condition=condition,
+                )
+                write_json(self.output_dir / "injection_applied.json", injection_metadata)
+
+            start_payload: Dict[str, Any] = {
+                "simulation_id": simulation_id,
+                "platform": platform,
+                "force": force,
+                "enable_graph_memory_update": enable_graph_memory_update,
+                "no_wait": no_wait,
+            }
+            if max_rounds:
+                start_payload["max_rounds"] = max_rounds
+            self.client.request_json("POST", "/api/simulation/start", start_payload, retry=True)
+            final_run = self._wait_run(simulation_id, poll_timeout_seconds)
+            self._capture_simulation_artifacts(simulation_id)
+
+            report_id = None
+            if generate_report:
+                report_resp = self.client.request_json(
+                    "POST",
+                    "/api/report/generate",
+                    {"simulation_id": simulation_id, "force_regenerate": True},
+                    retry=True,
+                )
+                report_id = report_resp.get("data", {}).get("report_id")
+                report_task_id = report_resp.get("data", {}).get("task_id")
+                report_status = self._wait_report(simulation_id, report_task_id, poll_timeout_seconds)
+                report_id = report_id or report_status.get("report_id")
+
+            sim_dir = self.repo_root / "backend" / "uploads" / "simulations" / simulation_id
+            scheduled_log = sim_dir / "scheduled_events_fired.jsonl"
+            reddit_summary = summarize_reddit_db(self.repo_root, simulation_id)
+            completed_rounds = self._extract_completed_rounds(final_run)
+            scheduled_events_fired_count = count_jsonl_lines(scheduled_log)
+            manifest = {
+                "status": "completed" if final_run.get("runner_status") == "completed" else final_run.get("runner_status"),
+                "flow_provenance": "existing_prepared_simulation_backend_api",
+                "is_model_output": True,
+                "is_real_mirofish_system": bool(final_run.get("runner_status") == "completed"),
+                "real_mirofish_flow_invoked": True,
+                "project_id": simulation_data.get("project_id"),
+                "graph_id": simulation_data.get("graph_id"),
+                "simulation_id": simulation_id,
+                "report_id": report_id,
+                "injection": injection_metadata,
+                "scheduled_events_fired_count": scheduled_events_fired_count,
+                "reddit_db_summary": reddit_summary,
+                "num_rounds_or_epochs_requested": max_rounds,
+                "num_rounds_or_epochs": completed_rounds,
+                "final_run_status": final_run,
+                "started_at": started_at,
+                "completed_at": utc_now(),
+            }
+            write_json(self.output_dir / "run_manifest.json", manifest)
+            self._write_hashes()
+            return manifest
+        except Exception as exc:  # noqa: BLE001
+            blocked = {
+                "status": "BLOCKED",
+                "reason": str(exc),
+                "is_model_output": False,
+                "is_real_mirofish_system": False,
+                "real_mirofish_flow_invoked": True,
+                "failure_stage": "existing_prepared_simulation_backend_api",
+                "num_rounds_or_epochs_requested": max_rounds,
+                "num_rounds_or_epochs": 0,
+                "started_at": started_at,
+                "completed_at": utc_now(),
+            }
+            write_json(self.output_dir / "run_manifest.json", blocked)
             self._write_hashes()
             raise
 
@@ -537,6 +768,22 @@ class MiroFishHeadlessRunner:
                 # These are post-run evidence endpoints; keep run valid if optional capture fails.
                 pass
 
+        sim_dir = self.repo_root / "backend" / "uploads" / "simulations" / simulation_id
+        artifact_dir = self.output_dir / "simulation_artifacts"
+        artifact_dir.mkdir(parents=True, exist_ok=True)
+        for name in [
+            "simulation_config.json",
+            "state.json",
+            "run_state.json",
+            "simulation.log",
+            "scheduled_events_fired.jsonl",
+            "reddit_profiles.json",
+            "reddit_simulation.db",
+        ]:
+            src = sim_dir / name
+            if src.exists() and src.is_file():
+                shutil.copy2(src, artifact_dir / name)
+
     @staticmethod
     def _extract_completed_rounds(run_status: Dict[str, Any]) -> int:
         candidates = [
@@ -587,8 +834,9 @@ def wait_for_backend(base_url: str, timeout: int = 60) -> None:
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="Replay the MiroFish frontend backend-API flow headlessly.")
     parser.add_argument("--base-url", default="http://localhost:5001")
-    parser.add_argument("--file", action="append", required=True, dest="files", help="Seed PDF/MD/TXT file. Repeat for multiple files.")
-    parser.add_argument("--requirement", required=True, help="Simulation requirement, same as frontend input.")
+    parser.add_argument("--file", action="append", dest="files", help="Seed PDF/MD/TXT file. Repeat for multiple files.")
+    parser.add_argument("--requirement", default=None, help="Simulation requirement, same as frontend input.")
+    parser.add_argument("--existing-simulation-id", default=None, help="Run an already prepared simulation, skipping ontology/graph/prepare.")
     parser.add_argument("--project-name", default="MiroFish Headless Benchmark")
     parser.add_argument("--max-rounds", type=int, default=None)
     parser.add_argument("--platform", default="parallel", choices=["twitter", "reddit", "parallel"])
@@ -598,6 +846,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--no-report", action="store_true")
     parser.add_argument("--no-graph-memory-update", action="store_true")
     parser.add_argument("--no-force", action="store_true")
+    parser.add_argument("--injection-plan", default=None, help="YAML injection plan for S2 scheduled Reddit events.")
+    parser.add_argument("--condition", default=None, help="Condition name from --injection-plan, e.g. signal-mid.")
+    parser.add_argument("--no-wait-after-run", action="store_true", help="Pass --no-wait to the simulation process.")
     parser.add_argument("--accept-language", default="zh")
     parser.add_argument("--start-backend", action="store_true", help="Start npm run backend with Gemini env before replaying.")
     parser.add_argument("--repo-root", default=str(Path(__file__).resolve().parents[1]))
@@ -623,20 +874,40 @@ def main(argv: Optional[List[str]] = None) -> int:
         runner = MiroFishHeadlessRunner(
             base_url=args.base_url,
             output_dir=out_dir,
+            repo_root=Path(args.repo_root),
             poll_interval=args.poll_interval,
             accept_language=args.accept_language,
         )
-        manifest = runner.run_full_flow(
-            files=[Path(f) for f in args.files],
-            simulation_requirement=args.requirement,
-            project_name=args.project_name,
-            max_rounds=args.max_rounds,
-            platform=args.platform,
-            enable_graph_memory_update=not args.no_graph_memory_update,
-            force=not args.no_force,
-            generate_report=not args.no_report,
-            poll_timeout_seconds=args.poll_timeout,
-        )
+        if args.existing_simulation_id:
+            manifest = runner.run_existing_simulation(
+                simulation_id=args.existing_simulation_id,
+                max_rounds=args.max_rounds,
+                platform=args.platform,
+                enable_graph_memory_update=not args.no_graph_memory_update,
+                force=not args.no_force,
+                generate_report=not args.no_report,
+                poll_timeout_seconds=args.poll_timeout,
+                injection_plan=Path(args.injection_plan) if args.injection_plan else None,
+                condition=args.condition,
+                no_wait=args.no_wait_after_run,
+            )
+        else:
+            if not args.files or not args.requirement:
+                parser.error("--file and --requirement are required unless --existing-simulation-id is used")
+            manifest = runner.run_full_flow(
+                files=[Path(f) for f in args.files],
+                simulation_requirement=args.requirement,
+                project_name=args.project_name,
+                max_rounds=args.max_rounds,
+                platform=args.platform,
+                enable_graph_memory_update=not args.no_graph_memory_update,
+                force=not args.no_force,
+                generate_report=not args.no_report,
+                poll_timeout_seconds=args.poll_timeout,
+                injection_plan=Path(args.injection_plan) if args.injection_plan else None,
+                condition=args.condition,
+                no_wait=args.no_wait_after_run,
+            )
         print(json.dumps(sanitize_for_artifact(manifest), ensure_ascii=False, indent=2))
         print(f"Artifacts: {out_dir.resolve()}")
         return 0

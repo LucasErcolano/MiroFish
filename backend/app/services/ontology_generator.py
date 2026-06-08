@@ -5,12 +5,16 @@
 
 import json
 import logging
+import os
 import re
 from typing import Dict, Any, List, Optional
 from ..utils.llm_client import LLMClient
 from ..utils.locale import get_language_instruction
 
 logger = logging.getLogger(__name__)
+
+MAX_ENTITY_TYPES = max(2, int(os.environ.get("ONTOLOGY_MAX_ENTITY_TYPES", "10")))
+MAX_EDGE_TYPES = max(1, int(os.environ.get("ONTOLOGY_MAX_EDGE_TYPES", "10")))
 
 
 def _to_pascal_case(name: str) -> str:
@@ -207,7 +211,13 @@ class OntologyGenerator:
         )
         
         lang_instruction = get_language_instruction()
-        system_prompt = f"{ONTOLOGY_SYSTEM_PROMPT}\n\n{lang_instruction}\nIMPORTANT: Entity type names MUST be in English PascalCase (e.g., 'PersonEntity', 'MediaOrganization'). Relationship type names MUST be in English UPPER_SNAKE_CASE (e.g., 'WORKS_FOR'). Attribute names MUST be in English snake_case. Only description fields and analysis_summary should use the specified language above."
+        size_instruction = (
+            f"IMPORTANT LOCAL LIMIT: Output at most {MAX_ENTITY_TYPES} entity types "
+            f"and at most {MAX_EDGE_TYPES} relationship types. Prefer concise JSON. "
+            "Include Person and Organization fallback entity types when possible. "
+            "Keep descriptions short and use only 1 attribute per type unless essential."
+        )
+        system_prompt = f"{ONTOLOGY_SYSTEM_PROMPT}\n\n{lang_instruction}\n{size_instruction}\nIMPORTANT: Entity type names MUST be in English PascalCase (e.g., 'PersonEntity', 'MediaOrganization'). Relationship type names MUST be in English UPPER_SNAKE_CASE (e.g., 'WORKS_FOR'). Attribute names MUST be in English snake_case. Only description fields and analysis_summary should use the specified language above."
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message}
@@ -271,7 +281,16 @@ class OntologyGenerator:
 4. 所有实体类型必须是现实中可以发声的主体，不能是抽象概念
 5. 属性名不能使用 name、uuid、group_id 等保留字，用 full_name、org_name 等替代
 """
-        
+        message += f"""
+
+LOCAL JSON SIZE OVERRIDE:
+1. Output at most {MAX_ENTITY_TYPES} entity types.
+2. Include Person and Organization as fallback entity types when possible.
+3. Output at most {MAX_EDGE_TYPES} relationship types.
+4. Keep every description concise.
+5. Use only 1 attribute per entity or relationship type unless another attribute is essential.
+"""
+
         return message
     
     def _validate_and_process(self, result: Dict[str, Any]) -> Dict[str, Any]:
@@ -351,8 +370,8 @@ class OntologyGenerator:
         result["edge_types"] = validated_edges
 
         # Zep API 限制：最多 10 个自定义实体类型，最多 10 个自定义边类型
-        MAX_ENTITY_TYPES = 10
-        MAX_EDGE_TYPES = 10
+        MAX_ENTITY_TYPES = globals()["MAX_ENTITY_TYPES"]
+        MAX_EDGE_TYPES = globals()["MAX_EDGE_TYPES"]
 
         # 兜底类型定义
         person_fallback = {

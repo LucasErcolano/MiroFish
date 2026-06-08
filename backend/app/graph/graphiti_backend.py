@@ -200,6 +200,29 @@ class GraphitiBackend(GraphBackend):
     def _run(self, coro):
         return self._bridge.run(coro)
 
+    @staticmethod
+    def _neo4j_property_value(value: Any) -> Any:
+        if value is None or isinstance(value, (str, int, float, bool)):
+            return value
+        if isinstance(value, datetime):
+            return value.isoformat()
+        if isinstance(value, list):
+            if all(item is None or isinstance(item, (str, int, float, bool)) for item in value):
+                return value
+            return json.dumps(value, ensure_ascii=False, default=str)
+        return json.dumps(value, ensure_ascii=False, default=str)
+
+    @classmethod
+    def _sanitize_neo4j_attributes(cls, records: List[Any]) -> None:
+        for record in records:
+            attributes = getattr(record, "attributes", None)
+            if not isinstance(attributes, dict):
+                continue
+            record.attributes = {
+                str(key): cls._neo4j_property_value(value)
+                for key, value in attributes.items()
+            }
+
     def _ensure_indices(self) -> None:
         if self.__class__._indices_ready:
             return
@@ -508,6 +531,8 @@ class GraphitiBackend(GraphBackend):
             entity_types,
             edges=new_edges,
         )
+        self._sanitize_neo4j_attributes(hydrated_nodes)
+        self._sanitize_neo4j_attributes(entity_edges)
         _, saved_episode = await self._graphiti._process_episode_data(
             episode,
             hydrated_nodes,

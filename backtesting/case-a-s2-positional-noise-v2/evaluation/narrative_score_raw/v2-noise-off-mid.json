@@ -1,0 +1,14 @@
+{
+  "condition": "v2-noise-off-mid",
+  "predicted_winner": "Argentina",
+  "confidence": 0.5,
+  "main_evidence": [
+    "Argentina's experience and defensive solidity highlighted in multiple posts",
+    "Colombia's offensive threat with James Rodriguez acknowledged but not dominant",
+    "Noise document about unrelated sports topics included but not referenced in top discussions"
+  ],
+  "used_injected_document": false,
+  "noise_contamination": "low",
+  "difference_vs_baseline": "argentina keyword count increased (8 vs 7), colombia decreased (4 vs 5), football_noise introduced",
+  "notes": "Noise document did not influence top discussions; prediction remains aligned with baseline"
+}
