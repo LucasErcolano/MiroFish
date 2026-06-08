@@ -34,6 +34,24 @@ agent responses. So `instrument_backend` monkeypatches the backend **instance**
 - keeps `isinstance(model, BaseModelBackend)` true (CAMEL's `ChatAgent` relies on it), and
 - intercepts every call OASIS routes through the model manager.
 
+## Canonical config file
+
+Issue #21 lists **two** YAML deliverables that coexist by design:
+
+| File | Role | Reuse? |
+|------|------|--------|
+| `configs/model_map_example.yaml` | Annotated **template** with every field documented. | Copy it — don't run it directly. |
+| `agent_model_map.yaml` (user-provided, any path) | The **canonical runtime config** for a real run. Passed to the runner via `--model-map <path>`. | This is the file you author and edit per experiment. |
+| `runs/smoke_multimodel/agent_model_map.yaml`, `agent_model_map.gemini.yaml` | **Frozen smoke evidence** for the 2-model run below. | Reference only — not a starting point. |
+
+The runner takes the map **path as an argument**, so the canonical
+`agent_model_map.yaml` lives wherever the researcher keeps it (alongside the
+case config is the convention). Start by copying the example:
+
+```bash
+cp configs/model_map_example.yaml agent_model_map.yaml   # then edit
+```
+
 ## Enabling it
 
 Pass a model map to the simulation runner:
@@ -175,6 +193,30 @@ Each LLM call appends one JSON line to `<sim_dir>/llm_telemetry.jsonl`:
 Prompts and responses are stored as **hashes only** — the schema is auditable
 without retaining message content.
 
+### Issue #21 required-field coverage
+
+Every telemetry field the issue mandates is present in `llm_telemetry.jsonl`
+**and** carried through to `telemetry.csv` by `export_telemetry.py`:
+
+| Issue #21 requirement | Field | Status |
+|-----------------------|-------|--------|
+| `agent_id` | `agent_id` | ✅ |
+| `role` | `role` | ✅ |
+| `provider` (exact) | `provider` | ✅ |
+| `model` (exact) | `model` | ✅ |
+| `prompt_hash` | `prompt_hash` | ✅ |
+| `response_hash` | `response_hash` | ✅ (null when the provider response carries no extractable content) |
+| Tokens in/out | `tokens_in`, `tokens_out` | ✅ |
+| Latencia | `latency_ms` | ✅ |
+| `round` | `round` | ✅ |
+| Costo estimado | `cost_usd_est` | ✅ |
+| Temperatura | `temperature` | ✅ |
+| Validación de output JSON | `output_valid_json` | ✅ |
+| Errores | `error` | ✅ |
+| **Retries** | — | **Not a separate field by design** — SDK-internal retries happen below the instrumented call (see "Scope & limitations"). Stable: one row per top-level call; `latency_ms` includes retry time. |
+| Leak flags | `leak_flags` | ✅ |
+| Export a CSV/JSONL | `export_telemetry.py` | ✅ (CSV columns mirror the JSONL fields above) |
+
 ## Cost estimation
 
 Costs are estimated from `configs/model_prices.yaml` (USD per **1,000** tokens,
@@ -213,12 +255,25 @@ mean_latency_ms, errors, parse_errors`) and a per-model breakdown.
 
 ## Smoke run
 
-`runs/smoke_multimodel/` is the reproducible recipe for an end-to-end 2-agent /
-2-model run against real OpenAI-compatible endpoints. The real run is **deferred**
-(needs 2 endpoints / a GPU); the unit suite covers the logic with mock providers.
-See `runs/smoke_multimodel/README.md` for prerequisites, the run command, and the
-acceptance check (agent 0 and agent 1 must use different models in
-`model_routing_audit.jsonl`).
+`runs/smoke_multimodel/` is the reproducible recipe **and the final S2 evidence**
+for an end-to-end multi-agent / 2-model run against real OpenAI-compatible
+endpoints. The real run was **executed** (2026-06-06) against the Gemini
+OpenAI-compatible endpoint — two real models, **no GPU required**: 18 calls,
+9 per model, every call traceable to `(model, provider, tokens, cost, round)`.
+
+The committed artifacts are the auditable record of that run:
+
+- `runs/smoke_multimodel/model_routing_audit.jsonl` — agent → model/provider/base_url.
+- `runs/smoke_multimodel/llm_telemetry.jsonl` — one line per LLM call.
+- `runs/smoke_multimodel/telemetry.csv` + `telemetry_summary.jsonl` — exported tables.
+
+`cost_usd_est` is `0.0` with a `cost_unknown_model` leak flag for the Gemini
+models (no entry in `configs/model_prices.yaml`) — the documented
+auditable-not-silent behavior, not a bug. The unit suite (`test_model_routing.py`)
+additionally covers the logic with mock providers. See
+`runs/smoke_multimodel/README.md` for prerequisites, the run command (both the
+local-GPU and no-GPU variants), and the acceptance check (agent 0 and agent 1
+must use different models in `model_routing_audit.jsonl`).
 
 ## Scope & limitations
 
