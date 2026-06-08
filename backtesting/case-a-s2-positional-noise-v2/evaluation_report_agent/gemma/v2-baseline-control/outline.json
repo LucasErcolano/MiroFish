@@ -1,0 +1,14 @@
+{
+  "title": "S2 Issue 19 V2 - Baseline Control Prediction",
+  "summary": "The baseline simulation predicts Argentina will win the Copa America 2024 final against Colombia with 70% confidence, citing Argentina's experience and squad depth.",
+  "sections": [
+    {
+      "title": "Narrative Result",
+      "content": "## Narrative Result\n\nThe simulation for condition `v2-baseline-control` predicts Argentina will win the Copa America 2024 final against Colombia with 70% confidence. This prediction is based on the assessment that “Argentina is analyzed as the favorite due to experience and squad depth.” The simulation generated 4 posts and 11 traces, with 4 mentions of “argentina” and 2 mentions of “colombia”. \n\nWhile acknowledging Colombia’s potential, the simulation highlights Argentina’s strengths, stating “Argentina trusts its history of victories and solid defense.”  The simulation notes Colombia “could surprise Argentina, but Argentina is still favored.”  \n\nNotably, James Rodriguez received significant attention, with 6 mentions, and is identified as a key factor in Colombia’s potential to upset Argentina, as noted in several posts. For example, one post states “La Colombia de hoy…podría sorprender a una Argentina que depende de su experiencia.”  However, the simulation did not use any injected document (`used_injected_document`: `False`) and experienced no noise contamination (`noise_contamination`: `none`). The simulation status is `completed` and no scheduled events were fired. The artifacts are stored in `runs/s2_issue19_deepinfra/gemma/v2-baseline-control-12`."
+    },
+    {
+      "title": "Injection Effect",
+      "content": "## Injection Effect\n\nThe `v2-baseline-control` condition did not involve any document injection. The `injected_doc` field is reported as “none” and `used_injected_document` is `False` in the Narrative Score. Consequently, there was no injection effect to analyze. The simulation proceeded without any externally provided information.\n\nThe simulation generated 4 posts and 11 traces, with keyword counts showing 4 mentions of “argentina”, 2 mentions of “colombia”, and notably, 6 mentions of “james”. This suggests a focus on James Rodriguez as a key player for Colombia, despite the overall prediction favoring Argentina. One post, attributed to `opta_preview_summary_427`, explicitly mentions James Rodriguez: “El Opta Preview Summary analiza a Argentina como favorita…aunque reconoce la peligrosidad de Colombia gracias a su forma y la influencia de James Rodriguez.” The simulation status is `completed` with `scheduled_events` set to `0`, indicating no scheduled injection-related events were triggered. No “football_noise” was detected, as indicated by a count of 0."
+    }
+  ]
+}

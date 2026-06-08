@@ -37,7 +37,7 @@ Run mode:
 - Reddit only;
 - 40 rounds per condition;
 - existing prepared simulation reused;
-- no ReportAgent generation in this pass;
+- no ReportAgent generation in the original V1 pass;
 - no graph-memory update after simulation.
 
 Conditions:
@@ -104,4 +104,8 @@ Final issue-level interpretation is in:
 
 - `final_issue_report.md`
 
-ReportAgent was intentionally not used as the per-condition scorer because it has not been verified to isolate each copied SQLite artifact. The final scoring path is summary-based and reproducible.
+ReportAgent was intentionally not used as the original per-condition scorer. A later V2 follow-up adds artifact-only ReportAgent generation so each report reads one condition-specific evidence bundle and avoids shared graph/tool state.
+
+See:
+
+- `../../case-a-s2-positional-noise-v2/evaluation_report_agent/`

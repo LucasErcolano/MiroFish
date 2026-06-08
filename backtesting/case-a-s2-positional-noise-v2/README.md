@@ -11,6 +11,7 @@ V1 proved scheduled injection and tested signal/noise timing. V2 tests richer va
 - `injections/*.md`: variable documents injected during the run.
 - `run_map_v2.yaml`: mapping from conditions to artifact directories.
 - `evaluation/`: generated summaries, metrics, and reports.
+- `evaluation_report_agent/`: artifact-only ReportAgent follow-up across Qwen, Gemma, and Llama.
 
 ## Important Rule
 
@@ -42,6 +43,7 @@ Current V2 pilot outputs:
 - `evaluation/condition_summary_metrics.csv`: compact technical metrics.
 - `evaluation/narrative_scores.csv`: evaluator scoring by condition.
 - `evaluation/final_v2_report.md`: final interpretation and next-run recommendation.
+- `evaluation_report_agent/report_agent_manifest.csv`: ReportAgent artifact-only status table.
 
 ## Rebuild Summaries
 
@@ -96,3 +98,20 @@ Artifacts:
 - `runs/s2_issue19_deepinfra/`
 - `evaluation_deepinfra/final_deepinfra_report.md`
 - `evaluation_deepinfra/combined_deepinfra_scores.csv`
+
+## ReportAgent Follow-Up
+
+The V2 summaries, metrics, and narrative scores were also rendered through ReportAgent in artifact-only mode. This avoids shared graph/tool state by giving ReportAgent one condition-specific evidence bundle at a time.
+
+Run from `backend/`:
+
+```powershell
+uv run --frozen python ../backtesting/case-a-s2-positional-noise-v2/evaluation_report_agent/run_report_agent_from_artifacts.py --models qwen,gemma,llama
+```
+
+Outputs:
+
+- `evaluation_report_agent/report_agent_manifest.csv`
+- `evaluation_report_agent/qwen/*/full_report.md`
+- `evaluation_report_agent/gemma/*/full_report.md`
+- `evaluation_report_agent/llama/*/full_report.md`

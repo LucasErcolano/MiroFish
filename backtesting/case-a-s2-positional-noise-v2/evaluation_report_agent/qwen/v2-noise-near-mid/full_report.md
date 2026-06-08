@@ -1,0 +1,30 @@
+# Argentina vs Colombia Copa America 2024 Prediction: Noise Impact Analysis
+
+> Argentina is predicted to win the Copa America 2024 final against Colombia with 70% confidence, influenced by medium-level noise emphasizing social media narratives but prioritizing performance-based analysis.
+
+---
+
+## Narrative result
+
+**Narrative Result**
+
+
+Argentina is predicted to win the Copa America 2024 final against Colombia with **70% confidence** under the **v2-noise-near-mid** condition, where **medium-level noise** shaped public discourse but did not override performance-based analysis. The injected document ("noise-near") amplified social media narratives around Lionel Messi’s global following (mentioned **2 times**) and James Rodriguez’s influence (mentioned **14 times**), yet the prediction prioritized tactical metrics over fan sentiment.
+
+Key evidence from the **Opta Preview Summary** (Post 1) positioned Argentina as favorites due to their "experience and squad depth," while acknowledging Colombia’s "offensive threat" via James Rodriguez. However, **comments** on the injected document explicitly cautioned against conflating social narratives with tactical reality: *"These signals may describe attention, fandom, and media pressure, but they should not be treated as tactical evidence"* (Post 5 comment).
+
+The **keyword counts** reflect the noise’s impact: Colombia and Argentina were mentioned **7** and **10** times respectively, with **14 mentions** of James Rodriguez, underscoring his role in Colombian narratives. Despite this, the **main_evidence** in the Narrative Score emphasized Argentina’s "defensive solidity" and "squad depth" as decisive factors, with comments highlighting how Colombia’s reliance on James Rodriguez’s "efficiency in dangerous situations" was secondary to Argentina’s "high press and rapid recovery."
+
+The **difference_vs_baseline** noted an increased focus on Messi’s "global following" in fan discourse, but the prediction remained anchored to performance metrics. As one comment stated: *"Los datos de rendimiento son la base de nuestras predicciones"* (Post 5 comment). The injected noise did not alter the outcome, as the model’s **confidence** in Argentina’s victory remained robust despite the elevated social media chatter.
+
+## Injection effect
+
+The **v2-noise-near-mid** condition introduced a **medium-level noise** injection ("noise-near") that amplified social media narratives around the Argentina vs Colombia Copa America 2024 final. This document emphasized public attention signals, such as **Lionel Messi’s global following** (mentioned **2 times**) and **James Rodriguez’s influence** (mentioned **14 times**), while explicitly noting that these signals pertained to **fan discourse and media pressure**, not direct match performance.
+
+The injected document’s **Post 5** by *opta_preview_summary_427* stated: *"These signals may describe attention, fandom, and media pressure, but they should not be treated as tactical evidence."* This aligns with the **main_evidence** in the Narrative Score, which highlighted that the model prioritized **performance-based analysis** over social media narratives.
+
+Keyword counts revealed the noise’s thematic focus: **Argentina** (10 mentions) and **Colombia** (7 mentions) dominated discourse, with **James Rodriguez** (14 mentions) becoming a central figure in Colombian narratives. However, the model’s prediction remained anchored to **Argentina’s defensive solidity** and **squad depth**, as noted in **Post 1** by *opta_preview_summary_427*: *"Argentina’s experience and squad depth"*.
+
+Comments on the injected document further clarified the noise’s limited impact. One remarked: *"Los datos de rendimiento son la base de nuestras predicciones"* (Post 5 comment), reinforcing that **performance metrics**—such as Colombia’s reliance on James Rodriguez’s "efficiency in dangerous situations" and Argentina’s "high press and rapid recovery"—were prioritized over fan sentiment.
+
+The **difference_vs_baseline** noted an increased focus on Messi’s "global following" in fan discourse, but the **confidence** in Argentina’s victory (**70%**) remained robust, as the injected noise did not override the model’s reliance on tactical execution and squad depth.

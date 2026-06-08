@@ -207,6 +207,7 @@ def validate_section_content(
     locale: str,
     simulation_requirement: str,
     cjk_threshold: float = 0.30,
+    allow_zero_tool_calls: bool = False,
 ) -> None:
     """Raise ``ValueError`` if a section is unfit to be published.
 
@@ -224,9 +225,9 @@ def validate_section_content(
     text = "" if content is None else str(content)
     lowered = text.lower()
 
-    if tool_calls_count <= 0:
+    if tool_calls_count <= 0 and not allow_zero_tool_calls:
         raise ValueError("invalid report section: no real tool calls")
-    if forced and tool_calls_count <= 0:
+    if forced and tool_calls_count <= 0 and not allow_zero_tool_calls:
         raise ValueError("invalid report section: forced generation without real tool calls")
     if any(marker in lowered for marker in _INVALID_MARKERS):
         raise ValueError("invalid self-reported tool failure in report section")

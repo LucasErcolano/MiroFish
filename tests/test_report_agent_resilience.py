@@ -42,6 +42,24 @@ class SequenceLLM:
         return {"title": "T", "summary": "S", "sections": []}
 
 
+class CapturingLLM:
+    def __init__(self):
+        self.chat_calls = []
+        self.chat_json_calls = []
+
+    def chat(self, *args, **kwargs):
+        self.chat_calls.append({"args": args, "kwargs": kwargs})
+        return "This section cites condition evidence: Argentina signal increased confidence."
+
+    def chat_json(self, *args, **kwargs):
+        self.chat_json_calls.append({"args": args, "kwargs": kwargs})
+        return {
+            "title": "Artifact Report",
+            "summary": "Condition-specific report",
+            "sections": [{"title": "Narrative impact"}],
+        }
+
+
 class DummyZepTools:
     pass
 
@@ -131,6 +149,62 @@ class ReportAgentResilienceTests(unittest.TestCase):
 
         self.assertEqual(report.status, ReportStatus.FAILED)
         self.assertIn("no real tool calls", report.error)
+
+    def test_artifact_only_plan_uses_condition_context_without_zep_tools(self):
+        llm = CapturingLLM()
+        agent = ReportAgent(
+            graph_id="artifact:qwen:v2-signal",
+            simulation_id="artifact-v2-signal",
+            simulation_requirement="Argentina vs Colombia benchmark",
+            llm_client=llm,
+            zep_tools=None,
+            artifact_context="CONDITION=v2-signal-strong-mid\nwinner=Argentina",
+            artifact_only=True,
+        )
+
+        outline = agent.plan_outline()
+
+        self.assertEqual(outline.title, "Artifact Report")
+        self.assertEqual(agent.zep_tools, None)
+        prompt_text = "\n".join(
+            msg["content"]
+            for call in llm.chat_json_calls
+            for msg in call["kwargs"]["messages"]
+        )
+        self.assertIn("CONDITION=v2-signal-strong-mid", prompt_text)
+        self.assertIn("authoritative evidence", prompt_text)
+
+    def test_artifact_only_section_generation_does_not_require_tool_calls(self):
+        llm = CapturingLLM()
+        agent = ReportAgent(
+            graph_id="artifact:qwen:v2-signal",
+            simulation_id="artifact-v2-signal",
+            simulation_requirement="Argentina vs Colombia benchmark",
+            llm_client=llm,
+            zep_tools=None,
+            artifact_context="CONDITION=v2-signal-strong-mid\nconfidence=0.90",
+            artifact_only=True,
+        )
+
+        content = agent._generate_section_react(
+            section=ReportSection("Narrative impact"),
+            outline=ReportOutline(
+                title="Artifact Report",
+                summary="Condition-specific report",
+                sections=[ReportSection("Narrative impact")],
+            ),
+            previous_sections=[],
+            section_index=1,
+        )
+
+        self.assertIn("Argentina signal", content)
+        self.assertEqual(len(llm.chat_calls), 1)
+        section_prompt = "\n".join(
+            msg["content"]
+            for msg in llm.chat_calls[0]["kwargs"]["messages"]
+        )
+        self.assertIn("CONDITION=v2-signal-strong-mid", section_prompt)
+        self.assertIn("Do not call tools", section_prompt)
 
     def test_report_section_validation_rejects_model_self_reported_tool_failure(self):
         agent = self.make_agent()
