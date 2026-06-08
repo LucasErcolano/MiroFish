@@ -81,10 +81,17 @@ Additional robustness runs:
 
 The DeepInfra extension confirmed the technical scheduled-injection behavior across both additional models. Llama reproduced the intended V2 narrative pattern more closely than Gemma.
 
+ReportAgent follow-up:
+
+- `ReportAgent` now has an explicit artifact-only mode for condition-isolated reporting;
+- the V2 matrix was rendered through ReportAgent for Qwen, Gemma, and Llama;
+- all 18 ReportAgent artifact-only reports completed without shared graph/tool reads.
+
 See:
 
 - `../case-a-s2-positional-noise-v2/evaluation/final_v2_report.md`
 - `../case-a-s2-positional-noise-v2/evaluation_deepinfra/final_deepinfra_report.md`
+- `../case-a-s2-positional-noise-v2/evaluation_report_agent/README.md`
 
 ## S3 Blind Evaluation Plan
 
@@ -175,8 +182,8 @@ Local reproducibility evidence:
 
 The `runs/` directory is intentionally not committed because it contains copied SQLite databases and run logs. The committed summaries and metrics are the compact PR evidence; local run artifacts can be regenerated with the commands in `README.md`.
 
-## Remaining Optional Work
+## ReportAgent Follow-Up Status
 
-ReportAgent was not used as the primary scorer because it has not yet been verified to isolate each condition-specific SQLite artifact from shared graph/tool context.
+ReportAgent was not used as the original primary scorer. That decision remains methodologically clean because the acceptance evidence is based on deterministic summaries and evaluator scoring.
 
-This is optional follow-up, not a blocker for Issue #19 acceptance.
+The follow-up is now complete: `ReportAgent` can run in artifact-only mode, receiving one condition-specific evidence bundle and avoiding shared graph/Zep tools. The completed V2 ReportAgent evidence is in `../case-a-s2-positional-noise-v2/evaluation_report_agent/`.

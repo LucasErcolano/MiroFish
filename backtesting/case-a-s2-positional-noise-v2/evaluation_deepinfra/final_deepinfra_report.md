@@ -27,7 +27,7 @@ Fixed elements:
 - injection plan: `backtesting/case-a-s2-positional-noise-v2/injection_plan_v2.yaml`;
 - injection timing: `round_pct=0.50`;
 - pilot length: 12 rounds;
-- ReportAgent: disabled;
+- ReportAgent: disabled in the original simulation/scoring pass, then run as artifact-only follow-up;
 - graph memory update: disabled.
 
 Variable element:
@@ -143,7 +143,7 @@ Llama matches this pattern most closely. Gemma preserves the technical injection
 ## Caveats
 
 - The backend Reddit `run_status` still reports `current_round=0` after runs, so round completion is not reliable from that field. The reliable evidence is the copied SQLite DB, traces, and `scheduled_events_fired.jsonl`.
-- ReportAgent was still disabled. This keeps results isolated to deterministic summaries plus evaluator scoring.
+- ReportAgent was disabled during the original scoring pass. A later artifact-only ReportAgent pass keeps isolation by using one condition-specific evidence bundle and no shared graph/Zep tools.
 - The same model was used to score its own summaries. This is useful for model-specific behavior, but a cross-model evaluator pass could be added later.
 - Gemma produced one inconsistent evaluator confidence value. The raw output is retained in `evaluation_deepinfra/gemma/narrative_score_raw/v2-signal-weak-mid.txt`.
 
@@ -166,6 +166,12 @@ Committed evaluation artifacts:
 
 The committed evaluation artifacts are derived from the local run artifacts. The `runs/` directory is intentionally not committed because it contains copied SQLite databases and logs.
 
+ReportAgent artifact-only evidence:
+
+- `backtesting/case-a-s2-positional-noise-v2/evaluation_report_agent/gemma/*/full_report.md`
+- `backtesting/case-a-s2-positional-noise-v2/evaluation_report_agent/llama/*/full_report.md`
+- `backtesting/case-a-s2-positional-noise-v2/evaluation_report_agent/report_agent_manifest.csv`
+
 ## Conclusion
 
 The DeepInfra extension is complete.
@@ -177,3 +183,5 @@ The issue's scheduled-injection behavior is confirmed on:
 - DeepInfra/Llama.
 
 The strongest cross-model result is technical: scheduled mid-run injection reliably fires and is auditable. The strongest narrative result is with Llama, which reproduces the intended V2 pattern most closely.
+
+The ReportAgent follow-up is also complete across the three requested models: Qwen, Gemma, and Llama all produced six artifact-only condition reports.

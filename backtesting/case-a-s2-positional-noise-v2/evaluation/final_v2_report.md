@@ -17,7 +17,7 @@ Fixed elements:
 - base seed/context: unchanged from V1;
 - injection timing: `round_pct=0.50`;
 - pilot length: 12 rounds;
-- no ReportAgent;
+- no ReportAgent in the original scoring pass;
 - no graph-memory update.
 
 Variable element:
@@ -149,3 +149,14 @@ Local reproducibility artifacts, not committed:
 
 - `runs/s2_issue19_v2/*/simulation_artifacts/scheduled_events_fired.jsonl`
 - `runs/s2_issue19_v2/*/simulation_artifacts/reddit_simulation.db`
+
+## ReportAgent Follow-Up
+
+After the deterministic/evaluator scoring pass, the V2 conditions were also rendered with ReportAgent in artifact-only mode.
+
+This follow-up used one condition-specific evidence bundle per report and disabled shared graph/Zep tool reads. The completed outputs are in:
+
+- `../evaluation_report_agent/qwen/*/full_report.md`
+- `../evaluation_report_agent/report_agent_manifest.csv`
+
+The same artifact-only runner also covers the DeepInfra Gemma and Llama runs documented in `../evaluation_deepinfra/final_deepinfra_report.md`.

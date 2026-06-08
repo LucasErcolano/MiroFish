@@ -963,7 +963,9 @@ class ReportAgent:
         simulation_id: str,
         simulation_requirement: str,
         llm_client: Optional[LLMClient] = None,
-        zep_tools: Optional[ZepToolsService] = None
+        zep_tools: Optional[ZepToolsService] = None,
+        artifact_context: Optional[str] = None,
+        artifact_only: bool = False,
     ):
         """
         初始化Report Agent
@@ -978,12 +980,19 @@ class ReportAgent:
         self.graph_id = graph_id
         self.simulation_id = simulation_id
         self.simulation_requirement = simulation_requirement
+        self.artifact_context = _safe_text(artifact_context).strip()
+        self.artifact_only = artifact_only
         
         self.llm = llm_client or LLMClient()
-        self.zep_tools = zep_tools or ZepToolsService(
-            llm_client=self.llm,
-            simulation_id=self.simulation_id
-        )
+        if zep_tools is not None:
+            self.zep_tools = zep_tools
+        elif self.artifact_only:
+            self.zep_tools = None
+        else:
+            self.zep_tools = ZepToolsService(
+                llm_client=self.llm,
+                simulation_id=self.simulation_id
+            )
         
         # 工具定义
         self.tools = self._define_tools()
@@ -994,6 +1003,21 @@ class ReportAgent:
         self.console_logger: Optional[ReportConsoleLogger] = None
         
         logger.info(t('report.agentInitDone', graphId=graph_id, simulationId=simulation_id))
+
+    def _get_artifact_context_block(self, max_chars: int = 12000) -> str:
+        """Return a bounded prompt block for condition-isolated report runs."""
+        if not self.artifact_context:
+            return ""
+        context = self.artifact_context
+        if len(context) > max_chars:
+            context = context[:max_chars] + "\n\n[artifact context truncated]"
+        return (
+            "\n\n[Condition-specific artifact context]\n"
+            "Use this block as the authoritative evidence for this report. "
+            "It belongs to exactly one experiment condition. Do not import facts "
+            "from other conditions, shared graph memory, or external knowledge.\n\n"
+            f"{context}"
+        )
     
     def _define_tools(self) -> Dict[str, Dict[str, Any]]:
         """定义可用工具"""
@@ -1171,6 +1195,12 @@ class ReportAgent:
             return f"工具执行失败: {str(e)}"
     
     def _get_tools_description(self) -> str:
+        """Generate tool description text."""
+        if self.artifact_only:
+            return (
+                "No external tools are available in artifact-only mode. "
+                "Use only the condition-specific artifact context supplied in the prompt."
+            )
         """生成工具描述文本"""
         desc_parts = ["可用工具："]
         for name, tool in self.tools.items():
@@ -1202,10 +1232,81 @@ class ReportAgent:
             forced=forced,
             locale=get_locale(),
             simulation_requirement=self.simulation_requirement,
+            allow_zero_tool_calls=self.artifact_only,
         )
 
     def _clean_final_answer(self, text):
         return _qg_clean_final_answer(text)
+
+    def _generate_section_artifact_only(
+        self,
+        section: ReportSection,
+        outline: ReportOutline,
+        previous_sections: List[str],
+        progress_callback: Optional[Callable] = None,
+        section_index: int = 0,
+    ) -> str:
+        """Generate one section from the supplied condition artifact bundle only."""
+        if progress_callback:
+            progress_callback("generating", 20, "Generating section from artifact context")
+
+        if previous_sections:
+            previous_content = "\n\n---\n\n".join(
+                sec[:4000] + "..." if len(sec) > 4000 else sec
+                for sec in previous_sections
+            )
+        else:
+            previous_content = "No previous sections."
+
+        system_prompt = (
+            "You are writing a condition-isolated simulation report. "
+            "Use only the condition-specific artifact context. "
+            "Do not call tools, do not mention unavailable tools, and do not use "
+            "facts from other experiment conditions."
+            f"\n\nReport title: {outline.title}"
+            f"\nReport summary: {outline.summary}"
+            f"\nSimulation requirement: {self.simulation_requirement}"
+            f"\nCurrent section: {section.title}"
+            f"{self._get_artifact_context_block()}"
+            f"\n\n{get_language_instruction()}"
+        )
+        user_prompt = (
+            f"Write the report section `{section.title}` in Markdown.\n"
+            "Ground every substantive claim in the artifact context. "
+            "Include concrete metrics, condition names, and short quoted evidence "
+            "when the context contains them.\n\n"
+            f"Previous sections:\n{previous_content}\n\n"
+            "Return only the section body. Do not use ReACT scaffolding."
+        )
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+        response = self.llm.chat(messages=messages, temperature=0.3, max_tokens=4096)
+        if self.report_logger:
+            self.report_logger.log_llm_response(
+                section_title=section.title,
+                section_index=section_index,
+                response=response,
+                iteration=1,
+                has_tool_calls=False,
+                has_final_answer="Final Answer:" in _safe_text(response),
+            )
+        final_answer = _safe_text(response)
+        if "Final Answer:" in final_answer:
+            final_answer = final_answer.split("Final Answer:")[-1].strip()
+        final_answer = self._clean_final_answer(final_answer.strip())
+        self._validate_section_content(final_answer, tool_calls_count=0, forced=False)
+
+        if self.report_logger:
+            self.report_logger.log_section_content(
+                section_title=section.title,
+                section_index=section_index,
+                content=final_answer,
+                tool_calls_count=0,
+            )
+        return final_answer
 
     def plan_outline(
         self, 
@@ -1222,10 +1323,17 @@ class ReportAgent:
         if progress_callback:
             progress_callback("planning", 0, t('progress.analyzingRequirements'))
 
-        context = self.zep_tools.get_simulation_context(
-            graph_id=self.graph_id,
-            simulation_requirement=self.simulation_requirement
-        )
+        if self.artifact_only:
+            context = {
+                'graph_statistics': {},
+                'total_entities': 0,
+                'related_facts': [],
+            }
+        else:
+            context = self.zep_tools.get_simulation_context(
+                graph_id=self.graph_id,
+                simulation_requirement=self.simulation_requirement
+            )
 
         if progress_callback:
             progress_callback("planning", 30, t('progress.generatingOutline'))
@@ -1240,6 +1348,27 @@ class ReportAgent:
             total_entities=context.get('total_entities', 0),
             related_facts_json=json.dumps(context.get('related_facts', [])[:10], ensure_ascii=False, indent=2),
         )
+        user_prompt = f"{user_prompt}{self._get_artifact_context_block()}"
+        if self.artifact_only:
+            system_prompt = (
+                "You plan condition-isolated simulation reports. "
+                "Return strict JSON only with keys title, summary, and sections. "
+                "Use two concise sections unless the artifact context clearly needs a third."
+            )
+            user_prompt = (
+                f"Simulation requirement: {self.simulation_requirement}\n"
+                f"{self._get_artifact_context_block()}\n\n"
+                "Create a report outline grounded only in that condition-specific artifact context.\n"
+                "Return this JSON shape exactly:\n"
+                "{\n"
+                '  "title": "short report title",\n'
+                '  "summary": "one sentence summary",\n'
+                '  "sections": [\n'
+                '    {"title": "Narrative result", "description": "winner and confidence"},\n'
+                '    {"title": "Injection effect", "description": "how the injected evidence or noise changed the discussion"}\n'
+                "  ]\n"
+                "}"
+            )
 
         try:
             response = self.llm.chat_json(
@@ -1316,6 +1445,15 @@ class ReportAgent:
             章节内容（Markdown格式）
         """
         logger.info(t('report.reactGenerateSection', title=section.title))
+
+        if self.artifact_only:
+            return self._generate_section_artifact_only(
+                section=section,
+                outline=outline,
+                previous_sections=previous_sections,
+                progress_callback=progress_callback,
+                section_index=section_index,
+            )
         
         # 记录章节开始日志
         if self.report_logger:

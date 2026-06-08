@@ -54,7 +54,9 @@ Round resolution over 40 rounds:
 
 ## Narrative Scores
 
-The final narrative scoring used deterministic condition summaries plus a hosted evaluator model. It did not call ReportAgent because ReportAgent appears graph/tool-centric and has not been verified to isolate each copied SQLite condition artifact.
+The final narrative scoring used deterministic condition summaries plus a hosted evaluator model. It did not call ReportAgent in the original scoring pass.
+
+A later ReportAgent follow-up verified the safer path for this benchmark: artifact-only ReportAgent generation from one condition-specific evidence bundle at a time, without shared graph/Zep tools. See `../../case-a-s2-positional-noise-v2/evaluation_report_agent/`.
 
 | condition | predicted_winner | confidence | used_injected_document | noise_contamination |
 |---|---|---:|---|---|
@@ -147,7 +149,6 @@ uv run --frozen python ../backtesting/case-a-s2-positional-noise/evaluation/scor
 
 Only optional polish remains:
 
-- run ReportAgent per condition after verifying it reads the intended condition state;
 - run the S3 blind human evaluation plan.
 
-The issue's core implementation, matrix evidence, and narrative scoring are complete.
+The issue's core implementation, matrix evidence, narrative scoring, and ReportAgent artifact-only follow-up are complete.
