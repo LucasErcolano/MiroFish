@@ -17,6 +17,7 @@ from ..utils.logger import get_logger
 from .zep_entity_reader import ZepEntityReader, FilteredEntities
 from .oasis_profile_generator import OasisProfileGenerator, OasisAgentProfile
 from .simulation_config_generator import SimulationConfigGenerator, SimulationParameters
+from .worldbuilding_trace import WorldbuildingTraceCapture
 from ..utils.locale import t
 
 logger = get_logger('mirofish.simulation')
@@ -441,6 +442,22 @@ class SimulationManager:
             # 更新状态
             state.status = SimulationStatus.READY
             self._save_simulation_state(state)
+
+            try:
+                WorldbuildingTraceCapture.save_trace(
+                    simulation_dir=sim_dir,
+                    state=state,
+                    filtered_entities=filtered,
+                    profiles=profiles,
+                    simulation_params=sim_params,
+                    simulation_requirement=simulation_requirement,
+                    document_text=document_text,
+                    defined_entity_types=defined_entity_types,
+                    use_llm_for_profiles=use_llm_for_profiles,
+                    parallel_profile_count=parallel_profile_count,
+                )
+            except Exception as trace_error:
+                logger.warning(f"Worldbuilding trace capture failed: {trace_error}")
             
             logger.info(f"模拟准备完成: {simulation_id}, "
                        f"entities={state.entities_count}, profiles={state.profiles_count}")
