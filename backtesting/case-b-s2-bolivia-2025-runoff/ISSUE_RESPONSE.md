@@ -25,6 +25,11 @@ The model was given only the temporal evidence package and `question.md`. It was
   - `assembled_T1.md`
   - `assembled_T2.md`
   - `assembled_T3.md`
+- Added strict issue-named seed aliases with identical package content:
+  - `seed_T0.md`
+  - `seed_T1.md`
+  - `seed_T2.md`
+  - `seed_T3.md`
 - Added a structured `question.md` so the report must name the competitive candidates, choose one winner, estimate percentages, state a margin, justify the prediction, and list uncertainty.
 - Added private ground truth and an objective evaluator.
 - Saved completed run outputs for `T0`, `T1`, `T2`, and `T3`.
@@ -44,6 +49,8 @@ The point of the case is not only whether the final answer is correct. The usefu
 
 ## Run Results
 
+The committed runs are explicitly `gemma_probe` runs. Their `eval_result.json` files are labeled with `model_policy: gemma_probe` so they are not confused with the pending primary fixed-model Qwen pass.
+
 | Run | Report id | Prediction | Winner score | MAE vote share | Margin abs error | Parse errors |
 | --- | --- | --- | ---: | ---: | ---: | ---: |
 | `T0_gemma_probe` | `report_c4f38b4b9b45` | no parseable Paz/Quiroga forecast | `0` | `null` | `5.06` | `2` |
@@ -51,15 +58,27 @@ The point of the case is not only whether the final answer is correct. The usefu
 | `T2_gemma_probe` | `report_8b7869068e03` | `quiroga_gana` | `0` | `7.02` | `18.06` | `0` |
 | `T3_gemma_probe` | `report_def4b871bbf2` | `quiroga_gana` | `0` | `7.687` | `18.06` | `0` |
 
+## Response To PR Review Comments
+
+The PR review correctly identified gaps between the current evidence and a strict closure of issue #17. The current state is:
+
+- PR hygiene: should be handled in the PR body with `## Linked issue` / `Closes #17` and `## How to test`.
+- `seed_T0/T1/T2/T3`: fixed in repo by adding `seed_T0.md` through `seed_T3.md`; `assembled_T*` remain as equivalent aliases.
+- Complexity gate: now documented explicitly in `case_card.md`, including the >20 extractable entities list.
+- Model policy: still pending for strict closure. The saved runs are `gemma_probe`, not the primary `qwen/qwen3-8b` pass.
+- Replicas / seeds: still pending if the S2 robustness rule is applied. The current evidence has one completed run per temporal package.
+- Model ladder: not part of the primary temporal comparison in this branch; if run later, it should stay separate from the primary fixed-model T0/T1/T2/T3 table.
+- Technical fixes: kept documented below because they were needed to complete the report flow.
+
 ## Issue #17 Acceptance Checklist
 
-The core ask of issue #17 is answered, but there are two small presentation/configuration caveats worth calling out before closing it.
+The temporal-update experiment is implemented and partially run. Strict issue closure still depends on completing the primary fixed-model pass and any required replicas.
 
 | Requirement from issue #17 | Status | Evidence / Notes |
 | --- | --- | --- |
 | `case_card.md` | Done | `case_card.md` documents event, hypotheses, cutoff, primary model target, and complexity gate. |
 | `manifest.csv` with dates/sources | Done | `manifest.csv` lists all 8 sources with package, date, source, type, role, status, URL, and notes. |
-| `seed_T0/T1/T2/T3` | Functionally done, naming differs | The package artifacts are `assembled_T0.md`, `assembled_T1.md`, `assembled_T2.md`, and `assembled_T3.md`. If strict naming is required, we should add alias files or rename/copy them to `seed_T0.md` through `seed_T3.md`. |
+| `seed_T0/T1/T2/T3` | Done | `seed_T0.md`, `seed_T1.md`, `seed_T2.md`, and `seed_T3.md` are versioned. `assembled_T0.md` through `assembled_T3.md` remain equivalent aliases. |
 | `question.md` identical except available evidence | Done | One shared `question.md` is used across all T packages; only the uploaded evidence changes. |
 | `ground_truth_private.md` | Done | Ground truth is separated from input and not uploaded to MiroFish. |
 | `eval_objective.py` or `eval.md` | Done | `eval_objective.py` scores winner, vote shares, margin, parse errors, and leakage flags. |
@@ -71,14 +90,15 @@ The core ask of issue #17 is answered, but there are two small presentation/conf
 | Complexity gate: minimum 3 source types | Done | Policy analysis, polling, wire/news, official statement, sports/noise. |
 | Complexity gate: minimum 2 competing causal hypotheses | Done | Paz moderation/coalition vs Quiroga stabilization/anti-MAS hard-opposition path, plus polling/territorial-error hypothesis. |
 | Complexity gate: 1 valid distractor/noise document | Done | `source-08-football-noise.md`. |
-| Complexity gate: 20 extractable entities | Done in practice | Completed graphs/reports produced entity-rich runs; the T0 run notes alone show the report flow over a populated graph. |
+| Complexity gate: 20 extractable entities | Done | `case_card.md` lists >20 expected extractable entities from the source pack. |
 | Ground truth outside input | Done | Ground truth was kept in `ground_truth_private.md`. |
 | Event after model cutoff | Done | Event is October 19, 2025; target primary model cutoff in the case card is March 31, 2025. |
 | Metric defined before execution | Done | Rubric/evaluator existed before scoring the saved reports. |
-| Fixed primary model policy | Partially done / needs note | The case card targets `qwen/qwen3-8b`, but saved run folders are named `*_gemma_probe` and the run notes describe a Gemma probe setup. The evaluator metadata says `primary_fixed_qwen3_8b`, so before final closure we should either normalize the documentation or rerun one clean primary-policy pass if the issue owner requires strict model-policy evidence. |
+| Fixed primary model policy | Pending for strict closure | The case card targets `qwen/qwen3-8b`, but saved run folders are `*_gemma_probe`. The evaluator metadata has been corrected to `model_policy: gemma_probe`. A clean Qwen primary pass is still required for strict closure. |
+| Seeds / replicas for best condition | Pending if required | Current evidence has one completed run per temporal package. If the S2 rule requires 3 runs for the best condition, add 3 Qwen runs and report mean, stdev, min/max, narrative stability, cost, failures and invalid parses. |
 | Model ladder | Not completed in this branch | Issue text says the model ladder is separate calibration. We focused on the temporal line with one completed run per T, not on Qwen vs Gemma vs Llama comparisons. |
 
-Practical closure assessment: this branch answers the temporal-update experiment requested by the issue. The only items I would clean up before marking the issue fully closed are naming the seed artifacts exactly as requested (`seed_T0.md` etc., or documenting that `assembled_T*` are the seed packages) and resolving the model-policy naming ambiguity around `gemma_probe` vs `qwen/qwen3-8b`.
+Practical closure assessment: this branch answers the temporal-update behavior question with Gemma probe evidence and now includes the strict `seed_T*` artifacts. It should not be marked as a strict final closure of #17 until the primary Qwen pass, and replicas if required, are added.
 
 ## What Happened In Each Temporal Package
 

@@ -20,6 +20,8 @@
 
 The model was given only the evidence package and `question.md`. It was not given `ground_truth_private.md`, rubrics, internal notes, outputs, or evaluation code.
 
+Model-policy note: the committed scored runs are `gemma_probe` runs. They validate the temporal protocol and produce useful S2 evidence, but they are not the strict primary-model pass. A clean `qwen/qwen3-8b` pass remains pending if issue #17 is closed under the strict primary fixed-model requirement.
+
 ## Score Summary
 
 | Run | Evidence | Prediction | Winner score | MAE vote share | Margin abs error | Notes |
@@ -28,6 +30,8 @@ The model was given only the evidence package and `question.md`. It was not give
 | `T1_gemma_probe` | sources 01-04 | `paz_gana` | 1 | 2.0 | 0.06 | Best run. First-round surprise and Doria Medina realignment supported Paz. |
 | `T2_gemma_probe` | sources 01-05 | `quiroga_gana` | 0 | 7.02 | 18.06 | Platform contrast pushed the report toward Quiroga's pro-market / IMF-stabilization framing. |
 | `T3_gemma_probe` | sources 01-08 | `quiroga_gana` | 0 | 7.687 | 18.06 | Late poll favoring Quiroga dominated the forecast; football noise did not appear to affect the final reasoning. |
+
+All four `eval_result.json` files use `model_policy: gemma_probe` to avoid conflating these runs with the pending primary Qwen pass.
 
 ## Main Findings
 

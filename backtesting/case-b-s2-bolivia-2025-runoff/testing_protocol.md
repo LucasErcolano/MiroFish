@@ -20,6 +20,11 @@ Subir siempre:
 - documentos del paquete temporal correspondiente;
 - `question.md`.
 
+Los paquetes acumulativos versionados estan disponibles con dos nombres:
+
+- `seed_T0.md` a `seed_T3.md`: artefactos con el nombre pedido por la issue.
+- `assembled_T0.md` a `assembled_T3.md`: alias equivalentes con el mismo contenido.
+
 ## T0 - Antes de la primera vuelta
 
 Fecha maxima: `2025-08-16`

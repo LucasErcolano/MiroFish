@@ -1,4 +1,4 @@
-# Evidence package T0
+# Evidence package T1
 
 
 ---
@@ -50,3 +50,53 @@ The survey environment also reflected the difficulty of measuring a race shaped 
 Rodrigo Paz appeared in the race but was not consistently described as the principal frontrunner in the final pre-first-round coverage. The major polling question before election day was whether the visible opposition figures would consolidate support, whether left/MAS-linked candidates would retain enough votes to remain competitive, and how large the undecided or late-deciding electorate would be.
 
 The available polling context therefore described a race with high uncertainty, close leading candidates, no first-round majority scenario and a likely second-round contest. It also established a baseline in which pre-election expectations were anchored more around Quiroga and Doria Medina than around a clear Paz-led race.
+
+---
+
+# Bolivia heads to presidential runoff
+
+Source URL: https://apnews.com/article/bolivia-election-7d24bfd2bc87e4f312d574663aee9f5d
+
+Published at: 2025-08-18
+
+Source type: wire news
+
+AP reported on August 18 that Bolivia was headed to an unprecedented presidential runoff after the August 17 first-round vote. Rodrigo Paz, a center-right lawmaker from a prominent political family, finished first and was set to face former president Jorge "Tuto" Quiroga in the October 19 runoff. The runoff would be the first presidential second round under Bolivia's current constitutional system.
+
+The first-round result differed sharply from much of the pre-election polling narrative. Paz had lagged in polls before the vote, but AP reported him winning roughly 32% of votes cast. Quiroga received just over 26%. Candidates associated with the Movement Toward Socialism (MAS) performed very poorly, each below 10%, leaving the governing party outside the runoff.
+
+Paz was described as a center-right senator and former mayor from Tarija, with a family name tied to Bolivian politics through his father, former president Jaime Paz Zamora. His ticket also included Edman Lara, a former police officer with an anti-corruption message and a direct style that drew attention during the campaign. Lara presented himself as new and different from professional politicians, and his message resonated with some voters cynical about corruption and the justice system.
+
+The Paz-Lara campaign framed itself as a challenge not only to MAS rule but also to older political elites. AP quoted campaign language focused on rejecting "the same old people" from both left and right. The campaign's appeal included anti-corruption themes, frustration with political insiders, and dissatisfaction with the economic situation.
+
+The report also placed the result in a broader context of economic pain. Bolivia faced inflation, fuel scarcity and shortages of dollars needed for imports. Voters who had once benefited from MAS-era prosperity were now confronting a weaker economy and a governing party divided by internal conflict. In that environment, the first round produced a runoff between two candidates outside MAS.
+
+The result changed the structure of the election. Instead of a runoff between the best-known opposition figures from the pre-election polls, the second round would be between Paz and Quiroga. The first round also showed that some voter preferences had not been fully captured by pre-election expectations.
+
+---
+
+# MAS defeat and runoff realignment
+
+Source URLs:
+
+- https://www.investing.com/news/world-news/explainerwho-are-bolivias-presidential-runoff-contenders-promising-economic-overhaul-4197574
+- https://www.reuters.com/world/americas/official-bolivia-presidential-count-shows-centrist-rodrigo-paz-surprise-lead-2025-08-17/
+- https://apnews.com/article/bolivia-election-7d24bfd2bc87e4f312d574663aee9f5d
+
+Published at: 2025-08-18
+
+Source type: wire news / runoff explainer
+
+Reuters described the runoff as a significant political shift after the worst electoral defeat for MAS in two decades. The first round created a second-round contest between centrist senator Rodrigo Paz and conservative former president Jorge "Tuto" Quiroga. With no candidate securing a first-round victory, the October 19 runoff would depend in part on which finalist could win over supporters of eliminated rivals.
+
+AP similarly framed the vote as the end of an era for MAS, which had governed Bolivia almost uninterrupted since Evo Morales came to power in the mid-2000s. The ruling party's poor result left no MAS presidential candidate in the second round. Voters who had previously supported MAS, left-wing alternatives, protest options or other opposition candidates became central to the next phase of the race.
+
+The first-round results showed Paz in first place, Quiroga in second, and Samuel Doria Medina in third. Doria Medina later endorsed Paz. That endorsement mattered because Doria Medina had been one of the prominent opposition figures before the first round and had drawn support from voters seeking economic change and a break from MAS rule.
+
+The social geography of the vote was also important. AP reported frustration in places associated with MAS strength, including El Alto. Economic crisis, inflation, fuel scarcity and disillusionment with the governing party weakened old loyalties. Some voters in historically pro-MAS areas expressed fatigue with the party and anger over corruption, economic decline and the erosion of public trust.
+
+Paz's running mate Edman Lara was part of that story. Lara's anti-corruption message and outsider style appealed to voters who felt that the justice system and political class were compromised. His presence gave the Paz ticket a different profile from older establishment opposition figures.
+
+Quiroga, by contrast, entered the runoff as a former president and a better-known conservative figure with a pro-market orientation. His campaign emphasized change after MAS rule and a more forceful break with the outgoing political-economic model. The runoff therefore brought together two anti-MAS options with different styles, biographies and potential voter coalitions.
+
+The campaign after August 18 was no longer only about punishing MAS. It was also about which non-MAS candidate could assemble a majority from a fragmented electorate: first-round Paz voters, Quiroga voters, Doria Medina supporters, other opposition voters, former MAS voters and citizens who had abstained or cast protest votes.

@@ -99,6 +99,7 @@ def main() -> int:
     parser.add_argument("--report", required=True, help="Path to a MiroFish report markdown file")
     parser.add_argument("--case-id", default="bolivia_2025_runoff_s2")
     parser.add_argument("--variant", default="unknown")
+    parser.add_argument("--model-policy", default="unknown")
     parser.add_argument("--seed", type=int, default=1)
     args = parser.parse_args()
 
@@ -125,7 +126,7 @@ def main() -> int:
     result = {
         "case_id": args.case_id,
         "variant": args.variant,
-        "model_policy": "primary_fixed_qwen3_8b",
+        "model_policy": args.model_policy,
         "seed": args.seed,
         "prediction": prediction,
         "ground_truth": "paz_gana",
