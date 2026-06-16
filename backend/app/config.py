@@ -112,6 +112,10 @@ class Config:
     
     # Experimental Memory (Spike S1)
     USE_EXPERIMENTAL_MEMORY = os.environ.get('USE_EXPERIMENTAL_MEMORY', 'False').lower() == 'true'
+    
+    # Worldbuilding Planning & Capture (Spike S3)
+    PLANNING_CAPTURE_ENABLED = os.environ.get('PLANNING_CAPTURE_ENABLED', 'True').lower() == 'true'
+    
     DATA_DIR = os.path.join(os.path.dirname(__file__), '../data')
 
     @classmethod
