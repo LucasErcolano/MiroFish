@@ -1,7 +1,7 @@
 {
   "case_id": "bolivia_2025_runoff_s2",
   "variant": "T2_gemma_probe",
-  "model_policy": "primary_fixed_qwen3_8b",
+  "model_policy": "gemma_probe",
   "seed": 1,
   "prediction": "quiroga_gana",
   "ground_truth": "paz_gana",

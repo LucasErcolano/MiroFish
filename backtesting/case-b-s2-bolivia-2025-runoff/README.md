@@ -41,6 +41,8 @@ Qwen3 8B tiene cutoff reportado el 31 de marzo de 2025. La eleccion y todos los 
 
 Nota operativa: Graphiti usa `openai/gpt-4o-mini` para extraccion estructurada del grafo porque Qwen3 8B no siempre devuelve JSON valido para Graphiti. El modelo evaluado para la prediccion sigue siendo `qwen/qwen3-8b`.
 
+Estado actual de este PR: los outputs versionados son `*_gemma_probe`. No deben mezclarse con la politica primaria `qwen/qwen3-8b`; quedan como prueba de protocolo temporal y corrida end-to-end. Para cierre estricto de la issue falta ejecutar y guardar la pasada primaria Qwen, y replicas si se exige la regla S2 de robustez.
+
 ## Paquetes temporales
 
 - `T0`: contexto de crisis economica, desgaste del MAS y favoritos previos a la primera vuelta.
@@ -48,13 +50,18 @@ Nota operativa: Graphiti usa `openai/gpt-4o-mini` para extraccion estructurada d
 - `T2`: campania de balotaje, clivaje moderacion vs ajuste, voto anti-MAS.
 - `T3`: encuesta cercana que da ventaja a Quiroga mas senales finales contradictorias.
 
+Artefactos de input:
+
+- `seed_T0.md`, `seed_T1.md`, `seed_T2.md`, `seed_T3.md`: nombres estrictos pedidos por la issue.
+- `assembled_T0.md`, `assembled_T1.md`, `assembled_T2.md`, `assembled_T3.md`: alias equivalentes generados con el mismo contenido.
+
 ## Armar inputs
 
 ```bash
 python backtesting/scripts/assemble_temporal_package.py \
   --manifest backtesting/case-b-s2-bolivia-2025-runoff/manifest.csv \
   --package T0 \
-  --out backtesting/case-b-s2-bolivia-2025-runoff/assembled_T0.md \
+  --out backtesting/case-b-s2-bolivia-2025-runoff/seed_T0.md \
   --cutoff 2025-08-16
 ```
 
