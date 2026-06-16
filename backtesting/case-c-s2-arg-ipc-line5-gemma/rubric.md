@@ -39,8 +39,8 @@ Campos minimos recomendados:
 ```json
 {
   "case_id": "case-c-s2-arg-ipc-line5-gemma",
-  "variant": "gemma_R40_D2",
-  "model_policy": "gemma_line5",
+  "variant": "gemma_T3_R40_D2",
+  "model_policy": "gemma_temporal_probe",
   "delta_1": {"prediction": null, "pass": null},
   "delta_2": {"range": null, "pass": null},
   "delta_3": {"bucket": null, "pass": null},

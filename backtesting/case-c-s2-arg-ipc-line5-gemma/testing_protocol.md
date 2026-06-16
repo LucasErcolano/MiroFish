@@ -1,28 +1,27 @@
-# Testing Protocol - Gemma Line 5
+# Testing Protocol - IPC Temporal Packages
 
-Este archivo documenta como correr el caso IPC en MiroFish para probar profundidad de simulacion / cantidad de rondas.
+Este archivo documenta como correr el caso IPC en MiroFish para probar como cambia la prediccion cuando se agrega informacion nueva.
 
 ## Regla general
 
 Mantener fijo:
 
-- evidencia: `input/seed_bundle.md`
 - pregunta: `question.md`
 - restricciones: `system_constraints.md`
 - modelo evaluado: `google/gemma-3-27b-it`
-- cutoff de informacion: `2025-01-31`
+- rondas: `40`
+- density: `2`, si el flujo lo permite
 
 Cambiar solo:
 
-- cantidad de rondas
-- densidad/interacciones si el flujo de simulacion lo permite
-- metadatos de variante
+- paquete temporal: `seed_T0.md`, `seed_T1.md`, `seed_T2.md`, `seed_T3.md`
+- metadatos de run
 
 ## Inputs a subir
 
 Subir:
 
-- `input/seed_bundle.md`
+- uno de los paquetes `seed_T0.md` a `seed_T3.md`
 - `question.md`
 - `system_constraints.md`
 
@@ -31,20 +30,20 @@ No subir:
 - `ground_truth_private.md`
 - `rubric.md`
 - `manifest.csv`
+- `config_matrix.yaml`
 - `config_matrix_source.yaml`
 - cualquier archivo dentro de `output/`
 
-## Variantes propuestas
+## Paquetes temporales
 
-| Variant | Rounds | Density | Objetivo |
-| --- | ---: | ---: | --- |
-| `gemma_R10_D2` | 10 | 2 | baja profundidad |
-| `gemma_R40_D2` | 40 | 2 | baseline comparable |
-| `gemma_R80_D2` | 80 | 2 | profundidad alta |
-| `gemma_R40_D1` | 40 | 1 | menor densidad de interaccion |
-| `gemma_R40_D3` | 40 | 3 | mayor densidad de interaccion |
+| Variant | Input | Max date | Objetivo |
+| --- | --- | --- | --- |
+| `gemma_T0_R40_D2` | `seed_T0.md` | `2024-12-31` | prediccion con contexto social/macro inicial |
+| `gemma_T1_R40_D2` | `seed_T1.md` | `2025-01-10` | agrega expectativas REM e IMF constraints |
+| `gemma_T2_R40_D2` | `seed_T2.md` | `2025-01-14` | agrega IPC oficial diciembre y framing politico |
+| `gemma_T3_R40_D2` | `seed_T3.md` | `2025-01-31` | paquete completo pre-cutoff |
 
-Si MiroFish todavia no expone `density`, registrar la variante igual y marcar `density_applied=false` en las notas de corrida.
+Los `assembled_T0.md` a `assembled_T3.md` son copias equivalentes para mantener el mismo naming que Bolivia.
 
 ## Artefactos por corrida
 
@@ -65,10 +64,10 @@ Comando de evaluacion:
 
 ```bash
 python3 backtesting/case-c-s2-arg-ipc-line5-gemma/eval_objective.py \
-  --report backtesting/case-c-s2-arg-ipc-line5-gemma/output/gemma_R40_D2/report.md \
-  --variant gemma_R40_D2 \
-  --model-policy gemma_line5 \
-  > backtesting/case-c-s2-arg-ipc-line5-gemma/output/gemma_R40_D2/eval_result.json
+  --report backtesting/case-c-s2-arg-ipc-line5-gemma/output/gemma_T3_R40_D2/report.md \
+  --variant gemma_T3_R40_D2 \
+  --model-policy gemma_temporal_probe \
+  > backtesting/case-c-s2-arg-ipc-line5-gemma/output/gemma_T3_R40_D2/eval_result.json
 ```
 
 ## Comparacion final
@@ -85,3 +84,14 @@ La tabla final debe comparar:
 - parse errors o fallas operativas;
 - costo/latencia;
 - ruta al `worldbuilding_trace.json`.
+
+## Sweep de profundidad opcional
+
+Despues de completar `T0-T3`, se puede volver sobre `T3` y correr variantes de rondas/density:
+
+- `gemma_T3_R10_D2`
+- `gemma_T3_R80_D2`
+- `gemma_T3_R40_D1`
+- `gemma_T3_R40_D3`
+
+Ese sweep es secundario. La primera comparacion de esta issue es temporal.
