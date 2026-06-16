@@ -109,6 +109,12 @@ class Config:
     REPORT_AGENT_MAX_TOOL_CALLS = int(os.environ.get('REPORT_AGENT_MAX_TOOL_CALLS', '5'))
     REPORT_AGENT_MAX_REFLECTION_ROUNDS = int(os.environ.get('REPORT_AGENT_MAX_REFLECTION_ROUNDS', '2'))
     REPORT_AGENT_TEMPERATURE = float(os.environ.get('REPORT_AGENT_TEMPERATURE', '0.5'))
+
+    # Planning / worldbuilding capture
+    PLANNING_CAPTURE_ENABLED = os.environ.get('PLANNING_CAPTURE_ENABLED', 'true').lower() == 'true'
+    PLANNING_CAPTURE_MODE = os.environ.get('PLANNING_CAPTURE_MODE', 'capture_only')
+    PLANNING_CAPTURE_SAVE_RAW_ARTIFACTS = os.environ.get('PLANNING_CAPTURE_SAVE_RAW_ARTIFACTS', 'true').lower() == 'true'
+    PLANNING_CAPTURE_REDACT_SECRETS = os.environ.get('PLANNING_CAPTURE_REDACT_SECRETS', 'true').lower() == 'true'
     
     # Experimental Memory (Spike S1)
     USE_EXPERIMENTAL_MEMORY = os.environ.get('USE_EXPERIMENTAL_MEMORY', 'False').lower() == 'true'
