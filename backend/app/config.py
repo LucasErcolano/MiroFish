@@ -31,6 +31,10 @@ class Config:
     LLM_API_KEY = os.environ.get('LLM_API_KEY')
     LLM_BASE_URL = os.environ.get('LLM_BASE_URL', 'https://api.openai.com/v1')
     LLM_MODEL_NAME = os.environ.get('LLM_MODEL_NAME', 'gpt-4o-mini')
+    LLM_REQUEST_TIMEOUT_SECONDS = float(os.environ.get('LLM_REQUEST_TIMEOUT_SECONDS', '120'))
+    LLM_REQUEST_MIN_INTERVAL_SECONDS = float(os.environ.get('LLM_REQUEST_MIN_INTERVAL_SECONDS', '0'))
+    LLM_REQUEST_MAX_RETRIES = max(1, int(os.environ.get('LLM_REQUEST_MAX_RETRIES', '3')))
+    LLM_REQUEST_RETRY_BACKOFF_SECONDS = float(os.environ.get('LLM_REQUEST_RETRY_BACKOFF_SECONDS', '8'))
     
     # Zep配置
     ZEP_MODE = os.environ.get('ZEP_MODE', 'cloud').lower()
