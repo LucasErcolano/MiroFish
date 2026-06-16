@@ -5,11 +5,11 @@
 - Case id local: `case-c-s2-arg-ipc-line5-gemma`
 - Caso fuente: `CASE-B2-ARG-IPC-2025`
 - Issue fuente: `#11`
-- Linea experimental: Linea 5 - profundidad de simulacion / cantidad de rondas
+- Linea experimental: inclusion temporal de informacion, con Gemma como probe
 - Dominio: macroeconomia cuantitativa, inflacion mensual Argentina
 - Fecha de corte: `2025-01-31`
 
-## Horizonte
+## Horizontes de prediccion
 
 - `Delta 1`: febrero 2025
 - `Delta 2`: abril 2025
@@ -19,6 +19,15 @@
 ## Pregunta central
 
 Usando exclusivamente documentos fechados hasta el `2025-01-31`, predecir la variacion mensual del IPC argentino para cada horizonte y explicar la trayectoria de desinflacion con evidencia por `source_id`.
+
+## Paquetes temporales
+
+- `T0`: evidencia social, institucional y macro disponible hasta fines de 2024.
+- `T1`: agrega expectativas REM diciembre 2024 e IMF constraints publicados hasta `2025-01-10`.
+- `T2`: agrega IPC oficial diciembre 2024 y framing politico publicados hasta `2025-01-14`.
+- `T3`: agrega crawling peg, cierre fiscal, monetary report y World Bank hasta `2025-01-31`.
+
+La corrida recomendada es acumulativa para observar si MiroFish corrige o estabiliza sus predicciones a medida que entra informacion nueva.
 
 ## Complexity Gate
 
@@ -34,13 +43,13 @@ Usando exclusivamente documentos fechados hasta el `2025-01-31`, predecir la var
 
 ## Politica de modelos
 
-El PR fuente usaba otro modelo primario. En esta rama, el objetivo es una expansion Gemma para medir profundidad:
+El PR fuente usaba otro modelo primario. En esta rama, el objetivo es una prueba temporal con Gemma:
 
 ```text
 google/gemma-3-27b-it
 ```
 
-Las corridas Gemma no deben mezclarse con la politica primaria del PR fuente. Deben etiquetarse como `gemma_line5`.
+Las corridas Gemma no deben mezclarse con la politica primaria del PR fuente. Deben etiquetarse como `gemma_temporal_probe`.
 
 ## Leakage
 

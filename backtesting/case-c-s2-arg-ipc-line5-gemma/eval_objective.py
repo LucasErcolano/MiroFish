@@ -166,7 +166,7 @@ def main() -> int:
     parser.add_argument("--report", required=True, help="Path to a MiroFish report markdown file")
     parser.add_argument("--case-id", default="case-c-s2-arg-ipc-line5-gemma")
     parser.add_argument("--variant", default="unknown")
-    parser.add_argument("--model-policy", default="gemma_line5")
+    parser.add_argument("--model-policy", default="gemma_temporal_probe")
     parser.add_argument("--seed", type=int, default=1)
     args = parser.parse_args()
 
