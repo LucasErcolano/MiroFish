@@ -17,6 +17,9 @@ from ..utils.logger import get_logger
 from .zep_entity_reader import ZepEntityReader, FilteredEntities
 from .oasis_profile_generator import OasisProfileGenerator, OasisAgentProfile
 from .simulation_config_generator import SimulationConfigGenerator, SimulationParameters
+from .simulation_planning_workflow import SimulationPlanningWorkflow
+from .simulation_plan_verifier import SimulationPlanVerifier
+from .worldbuilding_capture import WorldbuildingCapture
 from ..utils.locale import t
 
 logger = get_logger('mirofish.simulation')
@@ -268,6 +271,22 @@ class SimulationManager:
             self._save_simulation_state(state)
             
             sim_dir = self._get_simulation_dir(simulation_id)
+            
+            # ========== Spike S3: Worldbuilding Capture & Planning ==========
+            capture = None
+            if Config.PLANNING_CAPTURE_ENABLED:
+                capture = WorldbuildingCapture(simulation_id, sim_dir)
+                capture.capture_input({
+                    "simulation_requirement": simulation_requirement,
+                    "document_text_len": len(document_text),
+                    "project_id": state.project_id,
+                    "graph_id": state.graph_id,
+                    "defined_entity_types": defined_entity_types,
+                    "use_llm_for_profiles": use_llm_for_profiles
+                })
+            
+            # TODO: Integrar SimulationPlanningWorkflow y SimulationPlanVerifier en el flujo de ejecución
+            # Estas clases están disponibles como stubs para sentar las bases de la Spike 3
             
             # ========== 阶段1: 读取并过滤实体 ==========
             if progress_callback:
