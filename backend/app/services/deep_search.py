@@ -34,24 +34,56 @@ class DeepSearchService:
         logger.info(f"Starting Gemini Deep Search for theme: {theme}")
         
         try:
-            # Use Gemini 1.5 Pro or Flash which support tools
-            # Search Grounding is a 'tool' in Gemini API
-            model = genai.GenerativeModel(
-                model_name='gemini-1.5-flash', # Or gemini-1.5-pro for deeper research
-                tools=[{ "google_search_retrieval": {} }]
-            )
+            # List of models found in the 2026 environment list
+            potential_models = [
+                'models/gemini-2.0-flash-lite', # Lighter models often have more quota
+                'models/gemini-2.5-flash',
+                'models/gemini-flash-latest'
+            ]
             
-            prompt = f"""
-            Perform a deep research on the following topic for a social simulation: "{theme}"
-            Gather key facts, dates, main actors, and specific events.
-            Provide a comprehensive summary based on current search results.
-            Cite your sources if possible.
-            """
+            response = None
             
-            response = model.generate_content(prompt)
+            for model_name in potential_models:
+                try:
+                    logger.info(f"Trying Gemini model: {model_name} with google_search tool...")
+                    # In newer Gemini versions, the tool name is often just 'google_search'
+                    model = genai.GenerativeModel(
+                        model_name=model_name,
+                        tools=[{ "google_search": {} }]
+                    )
+                    
+                    prompt = f"""
+                    Perform a deep research on the following topic for a social simulation: "{theme}"
+                    Gather key facts, dates, main actors, and specific events.
+                    Provide a comprehensive summary based on current search results.
+                    Cite your sources if possible.
+                    """
+                    
+                    response = model.generate_content(prompt)
+                    if response:
+                        logger.info(f"Success with model: {model_name}")
+                        break
+                except Exception as e:
+                    # If google_search fails, try google_search_retrieval as fallback tool name
+                    try:
+                        logger.info(f"Retrying {model_name} with google_search_retrieval tool name...")
+                        model = genai.GenerativeModel(
+                            model_name=model_name,
+                            tools=[{ "google_search_retrieval": {} }]
+                        )
+                        response = model.generate_content(prompt)
+                        if response:
+                            break
+                    except:
+                        logger.warning(f"Model {model_name} failed both tool attempts: {e}")
+                        continue
             
-            # The response will contain the grounded content
-            # Gemini handles the queries, search, and synthesis internally
+            if not response:
+                # Final fallback: no tools
+                logger.warning("All grounding attempts failed, trying gemini-flash-latest as final fallback (no grounding)...")
+                model = genai.GenerativeModel('models/gemini-flash-latest')
+                response = model.generate_content(prompt)
+            
             research_content = response.text
             
             logger.info(f"Gemini Deep Search complete. Content length: {len(research_content)}")
