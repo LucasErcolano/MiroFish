@@ -20,6 +20,7 @@ from .simulation_config_generator import SimulationConfigGenerator, SimulationPa
 from .simulation_planning_workflow import SimulationPlanningWorkflow
 from .simulation_plan_verifier import SimulationPlanVerifier
 from .worldbuilding_capture import WorldbuildingCapture
+from .deep_search import DeepSearchService
 from ..utils.locale import t
 
 logger = get_logger('mirofish.simulation')
@@ -286,8 +287,29 @@ class SimulationManager:
                 })
             
             # TODO: Integrar SimulationPlanningWorkflow y SimulationPlanVerifier en el flujo de ejecución
-            # Estas clases están disponibles como stubs para sentar las bases de la Spike 3
             
+            # ========== Spike S3: Deep Search ==========
+            if Config.ENABLE_DEEP_SEARCH and simulation_requirement:
+                if progress_callback:
+                    progress_callback("research", 0, t('progress.startingDeepSearch'))
+                
+                try:
+                    deep_search = DeepSearchService()
+                    research_content = deep_search.perform_research(simulation_requirement)
+                    
+                    if research_content:
+                        document_text = research_content + "\n\n" + (document_text or "")
+                        # Save research results for audit
+                        research_path = os.path.join(sim_dir, "deep_search_result.txt")
+                        with open(research_path, 'w', encoding='utf-8') as f:
+                            f.write(research_content)
+                        logger.info(f"Deep Search research saved to {research_path}")
+                except Exception as e:
+                    logger.error(f"Deep Search failed: {e}")
+                
+                if progress_callback:
+                    progress_callback("research", 100, t('progress.deepSearchComplete'))
+
             # ========== 阶段1: 读取并过滤实体 ==========
             if progress_callback:
                 progress_callback("reading", 0, t('progress.connectingZepGraph'))
@@ -303,6 +325,22 @@ class SimulationManager:
                 enrich_with_edges=True
             )
             
+            # ========== Spike S3: Semantic Deduplication ==========
+            if Config.SIMILARITY_THRESHOLD > 0:
+                if progress_callback:
+                    progress_callback("deduplication", 0, t('progress.deduplicatingAgents'))
+                
+                generator = OasisProfileGenerator()
+                unique_entities = generator.deduplicate_entities(
+                    filtered.entities, 
+                    threshold=Config.SIMILARITY_THRESHOLD
+                )
+                filtered.entities = unique_entities
+                filtered.filtered_count = len(unique_entities)
+                
+                if progress_callback:
+                    progress_callback("deduplication", 100, f"Deduplication complete. {len(unique_entities)} unique agents identified.")
+
             state.entities_count = filtered.filtered_count
             state.entity_types = list(filtered.entity_types)
             
