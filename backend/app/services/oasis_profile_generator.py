@@ -211,6 +211,60 @@ class OasisProfileGenerator:
                 self.zep_backend = get_graph_backend(api_key=self.zep_api_key)
             except Exception as e:
                 logger.warning(f"图谱客户端初始化失败: {e}")
+
+    def deduplicate_entities(self, entities: List[EntityNode], threshold: float = 0.85) -> List[EntityNode]:
+        """
+        [Spike S3] Deduplicate entities based on semantic similarity of their summaries.
+        Uses cosine similarity of embeddings to find redundant agents.
+        """
+        if not entities or len(entities) <= 1:
+            return entities
+
+        logger.info(f"Starting semantic deduplication for {len(entities)} entities (threshold={threshold})...")
+        
+        # Initialize embedder
+        embedder = EmbeddingClient(
+            api_key=Config.GRAPHITI_EMBEDDER_API_KEY,
+            base_url=Config.GRAPHITI_EMBEDDER_BASE_URL,
+            model=Config.GRAPHITI_EMBEDDER_MODEL
+        )
+
+        summaries = [e.summary or e.name for e in entities]
+        try:
+            embeddings_list = embedder.embed_texts(summaries)
+            embeddings = [np.array(e) for e in embeddings_list]
+        except Exception as e:
+            logger.error(f"Failed to generate embeddings for deduplication: {e}")
+            return entities
+        
+        unique_entities = []
+        unique_embeddings = []
+        
+        for i, entity in enumerate(entities):
+            embedding = embeddings[i]
+            is_redundant = False
+            
+            for j, unique_emb in enumerate(unique_embeddings):
+                # Cosine similarity
+                norm_i = np.linalg.norm(embedding)
+                norm_j = np.linalg.norm(unique_emb)
+                
+                if norm_i == 0 or norm_j == 0:
+                    continue
+                    
+                sim = np.dot(embedding, unique_emb) / (norm_i * norm_j)
+                
+                if sim > threshold:
+                    logger.info(f"Deduplication: Entity '{entity.name}' is redundant with '{unique_entities[j].name}' (sim={sim:.4f}). Skipping...")
+                    is_redundant = True
+                    break
+            
+            if not is_redundant:
+                unique_entities.append(entity)
+                unique_embeddings.append(embedding)
+        
+        logger.info(f"Deduplication complete: {len(entities)} -> {len(unique_entities)} (Reduced: {len(entities) - len(unique_entities)})")
+        return unique_entities
     
     def generate_profile_from_entity(
         self, 
