@@ -120,7 +120,8 @@ class Config:
     # Deep Search (Spike S3)
     ENABLE_DEEP_SEARCH = os.environ.get('ENABLE_DEEP_SEARCH', 'False').lower() == 'true'
     DEEP_SEARCH_API_KEY = os.environ.get('DEEP_SEARCH_API_KEY', '')
-    DEEP_SEARCH_PROVIDER = os.environ.get('DEEP_SEARCH_PROVIDER', 'duckduckgo')
+    DEEP_SEARCH_PROVIDER = os.environ.get('DEEP_SEARCH_PROVIDER', 'gemini')
+    GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
     
     DATA_DIR = os.path.join(os.path.dirname(__file__), '../data')
 
