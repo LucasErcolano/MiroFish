@@ -34,9 +34,17 @@ class DeepSearchService:
         logger.info(f"Starting Gemini Deep Search for theme: {theme}")
         
         try:
+            # The prompt string should be defined before the loop
+            prompt = f"""
+            Perform a deep research on the following topic for a social simulation: "{theme}"
+            Gather key facts, dates, main actors, and specific events.
+            Provide a comprehensive summary based on current search results.
+            Cite your sources if possible.
+            """
+            
             # List of models found in the 2026 environment list
             potential_models = [
-                'models/gemini-2.0-flash-lite', # Lighter models often have more quota
+                'models/gemini-2.0-flash-lite', 
                 'models/gemini-2.5-flash',
                 'models/gemini-flash-latest'
             ]
@@ -45,44 +53,33 @@ class DeepSearchService:
             
             for model_name in potential_models:
                 try:
-                    logger.info(f"Trying Gemini model: {model_name} with google_search tool...")
-                    # In newer Gemini versions, the tool name is often just 'google_search'
+                    logger.info(f"Trying Gemini model: {model_name} with google_search_retrieval tool...")
+                    # In newer Gemini API, grounding is often passed via tools as a dict or via google_search_retrieval
+                    # Using the standard v1beta syntax for google search
                     model = genai.GenerativeModel(
                         model_name=model_name,
-                        tools=[{ "google_search": {} }]
+                        tools=[{"google_search": {}}]
                     )
-                    
-                    prompt = f"""
-                    Perform a deep research on the following topic for a social simulation: "{theme}"
-                    Gather key facts, dates, main actors, and specific events.
-                    Provide a comprehensive summary based on current search results.
-                    Cite your sources if possible.
-                    """
                     
                     response = model.generate_content(prompt)
                     if response:
                         logger.info(f"Success with model: {model_name}")
                         break
                 except Exception as e:
-                    # If google_search fails, try google_search_retrieval as fallback tool name
+                    # Fallback syntax if the API is strict
                     try:
-                        logger.info(f"Retrying {model_name} with google_search_retrieval tool name...")
-                        model = genai.GenerativeModel(
-                            model_name=model_name,
-                            tools=[{ "google_search_retrieval": {} }]
-                        )
+                        logger.info(f"Retrying {model_name} without explicit tool config or with fallback tool name...")
+                        model = genai.GenerativeModel(model_name=model_name)
+                        # We just send the prompt without forcing the tool if it crashes
                         response = model.generate_content(prompt)
                         if response:
                             break
-                    except:
-                        logger.warning(f"Model {model_name} failed both tool attempts: {e}")
+                    except Exception as inner_e:
+                        logger.warning(f"Model {model_name} failed: {inner_e}")
                         continue
             
             if not response:
-                # Final fallback: no tools
-                logger.warning("All grounding attempts failed, trying gemini-flash-latest as final fallback (no grounding)...")
-                model = genai.GenerativeModel('models/gemini-flash-latest')
-                response = model.generate_content(prompt)
+                return "Deep Search failed: Could not generate content with the available Gemini models."
             
             research_content = response.text
             
