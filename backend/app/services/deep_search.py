@@ -1,12 +1,14 @@
 """
 Deep Search Service for MiroFish.
-Autonomously researches topics using Gemini's Google Search Grounding.
+Autonomously researches topics using DuckDuckGo + BeautifulSoup + LLM Orchestration.
 """
 
 import logging
 import os
+import json
+import requests
 from typing import List, Dict, Any, Optional
-import google.generativeai as genai
+from bs4 import BeautifulSoup
 from ..config import Config
 
 logger = logging.getLogger(__name__)
@@ -14,93 +16,167 @@ logger = logging.getLogger(__name__)
 class DeepSearchService:
     """
     Agente Orquestador de Research.
-    Uses Gemini with Google Search Grounding to research topics and build seed documents.
+    Uses DDG Search + LLM to research topics and build seed documents.
     """
     
     def __init__(self, api_key: Optional[str] = None):
-        self.api_key = api_key or Config.GEMINI_API_KEY
-        if not self.api_key:
-            logger.warning("GEMINI_API_KEY not configured. Deep Search might fail.")
-        else:
-            genai.configure(api_key=self.api_key)
+        from openai import OpenAI
+        self.client = OpenAI(api_key=Config.LLM_API_KEY, base_url=Config.LLM_BASE_URL)
         
-    def perform_research(self, theme: str, max_results: int = 5) -> str:
+    def perform_research(self, theme: str, max_results: int = 3) -> str:
         """
-        Main entry point for autonomous research using Gemini Grounding.
+        Main entry point for autonomous research.
         """
-        if not self.api_key:
-            return "Deep Search failed: GEMINI_API_KEY not configured."
-
-        logger.info(f"Starting Gemini Deep Search for theme: {theme}")
+        logger.info(f"Starting Deep Search for theme: {theme}")
         
         try:
-            # The prompt string should be defined before the loop
+            # 1. Expand Queries
+            queries = self.expand_queries(theme)
+            logger.info(f"Expanded queries: {queries}")
+            
+            # 2. Search and Scrape
+            scraped_data = []
+            visited_urls = set()
+            
+            for query in queries:
+                urls = self.search(query, limit=2)
+                for url in urls:
+                    if url in visited_urls:
+                        continue
+                    visited_urls.add(url)
+                    content = self.scrape(url)
+                    if content:
+                        scraped_data.append(f"Source: {url}\n{content[:2000]}") # Keep it bounded
+            
+            if not scraped_data:
+                logger.warning("Scraping failed (possibly blocked). Falling back to LLM internal knowledge for research...")
+                fallback_prompt = f"""
+                You are an Expert Research Agent. The web search failed, but I need you to generate a detailed briefing document based on your internal knowledge regarding the topic: "{theme}".
+                
+                Please synthesize all the relevant facts, figures, dates, and actors into a clean, comprehensive briefing document.
+                Keep it factual, detailed, and structure it as if it were a scraped research report.
+                """
+                response = self.client.chat.completions.create(
+                    model=Config.LLM_MODEL_NAME,
+                    messages=[
+                        {"role": "system", "content": "You are a professional research analyst."},
+                        {"role": "user", "content": fallback_prompt}
+                    ],
+                    temperature=0.3
+                )
+                research_content = response.choices[0].message.content
+                logger.info(f"Deep Search (LLM Fallback) complete. Content length: {len(research_content)}")
+                return f"--- AUTONOMOUS DEEP SEARCH (LLM INTERNAL) RESEARCH: {theme} ---\n\n{research_content}\n"
+                
+            raw_text = "\n\n---\n\n".join(scraped_data)
+            
+            # 3. Consolidate and Summarize using LLM
+            logger.info("Consolidating search results via LLM...")
             prompt = f"""
-            Perform a deep research on the following topic for a social simulation: "{theme}"
-            Gather key facts, dates, main actors, and specific events.
-            Provide a comprehensive summary based on current search results.
-            Cite your sources if possible.
+            You are a Research Assistant preparing a seed document for a social simulation.
+            I have scraped several web sources regarding the topic: "{theme}".
+            
+            Please synthesize all the relevant facts, figures, dates, and actors into a clean, comprehensive briefing document.
+            Keep it factual and detailed.
+            
+            RAW SCRAPED DATA:
+            {raw_text}
             """
             
-            # List of models found in the 2026 environment list
-            potential_models = [
-                'models/gemini-2.0-flash-lite', 
-                'models/gemini-2.5-flash',
-                'models/gemini-flash-latest'
+            messages = [
+                {"role": "system", "content": "You are a professional research analyst."},
+                {"role": "user", "content": prompt}
             ]
             
-            response = None
+            response = self.client.chat.completions.create(
+                model=Config.LLM_MODEL_NAME,
+                messages=messages,
+                temperature=0.3
+            )
             
-            for model_name in potential_models:
-                try:
-                    logger.info(f"Trying Gemini model: {model_name} with google_search_retrieval tool...")
-                    # In newer Gemini API, grounding is often passed via tools as a dict or via google_search_retrieval
-                    # Using the standard v1beta syntax for google search
-                    model = genai.GenerativeModel(
-                        model_name=model_name,
-                        tools=[{"google_search": {}}]
-                    )
-                    
-                    response = model.generate_content(prompt)
-                    if response:
-                        logger.info(f"Success with model: {model_name}")
-                        break
-                except Exception as e:
-                    # Fallback syntax if the API is strict
-                    try:
-                        logger.info(f"Retrying {model_name} without explicit tool config or with fallback tool name...")
-                        model = genai.GenerativeModel(model_name=model_name)
-                        # We just send the prompt without forcing the tool if it crashes
-                        response = model.generate_content(prompt)
-                        if response:
-                            break
-                    except Exception as inner_e:
-                        logger.warning(f"Model {model_name} failed: {inner_e}")
-                        continue
+            research_content = response.choices[0].message.content
             
-            if not response:
-                return "Deep Search failed: Could not generate content with the available Gemini models."
-            
-            research_content = response.text
-            
-            logger.info(f"Gemini Deep Search complete. Content length: {len(research_content)}")
-            
-            # Optionally add a header to indicate this is grounded content
-            full_report = f"--- GEMINI GROUNDED RESEARCH: {theme} ---\n\n{research_content}\n"
-            
+            logger.info(f"Deep Search complete. Content length: {len(research_content)}")
+            full_report = f"--- AUTONOMOUS DEEP SEARCH RESEARCH: {theme} ---\n\n{research_content}\n"
             return full_report
             
         except Exception as e:
-            logger.error(f"Gemini Deep Search failed: {e}")
+            logger.error(f"Deep Search failed: {e}")
             return f"Deep Search failed due to an error: {str(e)}"
 
-    # The original methods expand_queries, search, and scrape are now handled by Gemini Grounding
-    # We keep them (or stubs) if we ever want to revert or use hybrid search
     def expand_queries(self, theme: str) -> List[str]:
-        return [theme]
+        """
+        Uses LLM to generate orthogonal sub-queries.
+        """
+        try:
+            prompt = f"""Generate exactly 3 short search engine queries to research the following topic: "{theme}".
+            Return ONLY a valid JSON list of strings."""
+            
+            response = self.client.chat.completions.create(
+                model=Config.LLM_MODEL_NAME,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.3
+            )
+            content = response.choices[0].message.content
+            if "```json" in content:
+                content = content.split("```json")[1].split("```")[0]
+            queries = json.loads(content)
+            return queries[:3] if isinstance(queries, list) else [theme]
+        except Exception as e:
+            logger.error(f"Query expansion failed: {e}")
+            return [theme]
 
-    def search(self, query: str, limit: int = 5) -> List[str]:
-        return []
+    def search(self, query: str, limit: int = 2) -> List[str]:
+        """
+        DuckDuckGo HTML fallback search using lite version.
+        """
+        try:
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+            url = f"https://html.duckduckgo.com/html/?q={query}"
+            response = requests.get(url, headers=headers, timeout=10)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            links = []
+            for a in soup.find_all('a', class_='result__snippet', href=True):
+                href = a['href']
+                if 'duckduckgo.com/l/?' in href:
+                    href = href.split('uddg=')[1].split('&')[0]
+                    from urllib.parse import unquote
+                    href = unquote(href)
+                links.append(href)
+                if len(links) >= limit:
+                    break
+            
+            # If standard class fails, try fallback
+            if not links:
+                for a in soup.find_all('a', class_='result__url', href=True):
+                    href = a['href']
+                    if 'duckduckgo.com/l/?' in href:
+                        href = href.split('uddg=')[1].split('&')[0]
+                        from urllib.parse import unquote
+                        href = unquote(href)
+                    links.append(href)
+                    if len(links) >= limit:
+                        break
+            
+            return links
+        except Exception as e:
+            logger.error(f"DDG search failed: {e}")
+            return []
 
     def scrape(self, url: str) -> Optional[str]:
-        return None
+        """
+        Scrapes and cleans content from a URL.
+        """
+        try:
+            headers = {'User-Agent': 'Mozilla/5.0'}
+            response = requests.get(url, headers=headers, timeout=10)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            for script in soup(["script", "style", "nav", "footer", "header"]):
+                script.decompose()
+                
+            lines = [line.strip() for line in soup.get_text(separator='\n').splitlines() if len(line.strip()) > 30]
+            return "\n".join(lines)
+        except:
+            return None
