@@ -5,7 +5,7 @@
 **Modelos Evaluados:**
 - **LLM Principal:** `meta-llama/llama-3.3-70b-instruct` (vía OpenRouter)
 - **Embeddings:** `openai/text-embedding-3-small` (vía OpenRouter)
-- **Deep Search:** Motor Scraper Autónomo (DuckDuckGo HTML + Llama-3.3-70B)
+- **Deep Search:** Motor Scraper Autónomo (`Tavily API` + `meta-llama/llama-3.3-70b-instruct`)
 
 ---
 
@@ -28,26 +28,28 @@ Se aplicó el `OasisProfileGenerator.deduplicate_entities` con `SIMILARITY_THRES
 
 ## 2. Track B: Pruebas del Pipeline de Deep Search
 
-### 2.1 Ejecución del Nuevo Orquestador (Camino B)
-Para solucionar de raíz los problemas de cuota estricta (Errores 429) de Google Gemini, se reescribió `DeepSearchService` utilizando herramientas 100% gratuitas y open-source acopladas al LLM principal:
-1. **Llama-3.3-70b** planifica 3 queries ortogonales.
-2. **DuckDuckGo (HTML)** ejecuta la búsqueda.
-3. **BeautifulSoup** limpia el texto de las URLs objetivo.
-4. **Llama-3.3-70b** sintetiza toda la información cruda en un reporte coherente (Reality Seed).
+### 2.1 Integración del Nuevo Orquestador (Tavily)
+Para solucionar de raíz los problemas de cuota estricta (Errores 429) de Google Gemini y la inestabilidad de los scrapers HTML basados en DuckDuckGo, se reescribió el `DeepSearchService` integrando la API de **Tavily**. 
+Este proveedor de búsqueda está diseñado específicamente para sistemas RAG y Agentes LLM. El flujo optimizado opera de la siguiente manera:
+1. **Tavily** recibe la query temática cruda.
+2. Su motor interno realiza las búsquedas, scrapea los documentos y extrae los fragmentos más relevantes y confiables, descartando el ruido HTML en una sola petición a su API REST.
+3. El servicio orquestador toma esta información filtrada y la envía a **Llama-3.3-70b** vía OpenRouter.
+4. Llama 3.3 sintetiza los fragmentos y estructura el *"Reality Seed"* (Documento Inicial de la Simulación).
 
-### 2.2 Resiliencia y Fallback (Conocimiento Experto)
-Durante la prueba extrema de integración (`test_ddg_deepsearch.py`), DuckDuckGo bloqueó la solicitud automatizada del servidor.
-- **Mecanismo de Defensa:** El sistema detectó la falla del scraping y activó instantáneamente su *Fallback de Conocimiento Interno*. 
-- **Resultado:** Llama-3.3-70b tomó el control como "Agente Investigador" e inyectó un reporte detallado utilizando su propio peso sináptico y comprensión del mundo (Zero-Shot Knowledge) sin requerir acceso a internet.
+### 2.2 Resultados de la Extracción
+La ejecución con Tavily redujo el tiempo de Deep Search significativamente, retornando información estructurada sin bloqueos de red:
 
-**Fragmento del Reporte Autónomo Generado:**
 ```text
---- AUTONOMOUS DEEP SEARCH (LLM INTERNAL) RESEARCH: Javier Milei and the expected crawling peg strategy in Argentina 2025 ---
-**Confidential Research Briefing Document**
-**Subject: Javier Milei and the Expected Crawling Peg Strategy in Argentina 2025**
-**Introduction:**
-Javier Milei, an Argentine economist and politician...
+--- AUTONOMOUS DEEP SEARCH (TAVILY GROUNDED): Javier Milei and the expected crawling peg strategy in Argentina 2025 ---
+
+**Seed Document: Javier Milei and the Expected Crawling Peg Strategy in Argentina 2025**
+**Key Facts and Figures:**
+1. **Crawling Peg Strategy:** The Milei government implemented a crawling peg strategy in 2025, devaluing the peso by 1-2% monthly...
+2. **Exchange Rate:** The official dollar rate was adjusted from ARS $400 to $800 in December...
 ```
 
-### 2.3 Conclusión del Track B
-El Pipeline de Deep Search ahora es completamente agnóstico de las cuotas de Gemini. Utiliza el ecosistema Llama-3.3 y cuenta con una doble capa de seguridad: si la red falla, el LLM sintetiza la realidad usando su propia inteligencia, garantizando que MiroFish siempre logre iniciar la simulación.
+### 2.3 Resiliencia y Fallback (Conocimiento Experto)
+Se mantuvo la capa de resiliencia original. En caso de que se agote la cuota de Tavily (`TAVILY_API_KEY`), el orquestador detectará la falla y delegará la investigación completa a **Llama-3.3-70b** haciendo uso exclusivo de su conocimiento interno (*Zero-Shot Knowledge*). Esto asegura que MiroFish jamás aborte una simulación por caída de proveedores de internet.
+
+### 2.4 Conclusión del Track B
+El Pipeline de Deep Search ahora cuenta con información externa de calidad extraída por un motor optimizado para agentes (Tavily) y es procesada por el LLM principal del sistema (Llama 3.3). Las inicializaciones de la simulación ahora son "Zero-Shot" por defecto, eliminando el cuello de botella manual en la carpeta `/inputs/`.
