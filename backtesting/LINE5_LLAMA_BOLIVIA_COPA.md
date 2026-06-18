@@ -25,8 +25,11 @@ The model policy follows PR #22:
 
 | Case | Config | Evidence package | Evaluator |
 |---|---|---|---|
-| Bolivia runoff | `backtesting/case-b-s2-bolivia-2025-runoff/config_line5_llama.yaml` | `seed_T3.md` | report markdown evaluator |
+| Bolivia runoff | `backtesting/case-b-s2-bolivia-2025-runoff/config_line5_llama.yaml` | `seed_T3_clean.md` | report markdown evaluator |
 | Copa America | `backtesting/case-d-s2-copa-america-line5-gemma/config_line5_llama.yaml` | `seed_T3.md` | structured JSON evaluator |
+
+For Bolivia, `seed_T3_clean.md` keeps the full pre-cutoff electoral evidence
+package and removes the football-noise block from `seed_T3.md`.
 
 ## Backend Requirement
 

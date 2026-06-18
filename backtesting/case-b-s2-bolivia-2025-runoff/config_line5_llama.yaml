@@ -31,9 +31,9 @@ fixed_simulation_config:
 
 line5_package:
   id: "T3"
-  label: "full pre-cutoff Bolivia runoff evidence package"
+  label: "full pre-cutoff Bolivia runoff evidence package without football noise"
   max_document_date: "2025-10-17"
-  input_file: "seed_T3.md"
+  input_file: "seed_T3_clean.md"
   sources:
     - "pre_first_round_context"
     - "first_round_poll_context"
@@ -42,36 +42,35 @@ line5_package:
     - "runoff_policy_contrast"
     - "late_poll_quiroga_lead"
     - "us_relations_signal"
-    - "football_noise"
 
 run_matrix:
   - id: "llama_T3_R10_D2"
     package: "T3"
-    input_file: "seed_T3.md"
+    input_file: "seed_T3_clean.md"
     rounds: 10
     density: 2
     label: "Low Depth"
   - id: "llama_T3_R40_D2"
     package: "T3"
-    input_file: "seed_T3.md"
+    input_file: "seed_T3_clean.md"
     rounds: 40
     density: 2
     label: "Standard Depth"
   - id: "llama_T3_R80_D2"
     package: "T3"
-    input_file: "seed_T3.md"
+    input_file: "seed_T3_clean.md"
     rounds: 80
     density: 2
     label: "High Depth"
   - id: "llama_T3_R40_D1"
     package: "T3"
-    input_file: "seed_T3.md"
+    input_file: "seed_T3_clean.md"
     rounds: 40
     density: 1
     label: "Density D1"
   - id: "llama_T3_R40_D3"
     package: "T3"
-    input_file: "seed_T3.md"
+    input_file: "seed_T3_clean.md"
     rounds: 40
     density: 3
     label: "Density D3"
