@@ -8,9 +8,8 @@
 
 ## Medium range
 
-- Add compact scoring summaries for smoke outputs.
 - Decide whether to add artifact-only ReportAgent reports after smoke.
-- Decide whether to execute the full 42-row matrix.
+- Decide whether to add artifact-only ReportAgent reports after full matrix.
 
 ## Short range
 
@@ -29,3 +28,5 @@
 - Verified package validation and smoke dry-run locally.
 - Executed 12/12 smoke rows successfully across football, Bolivia, and IPC with Gemma and Llama.
 - Generated `evaluation/smoke_summary.*` with committed evidence derived from local `runs/`.
+- Executed the full 42-row V3 matrix successfully.
+- Generated `evaluation/full_summary.*`, `condition_summary_metrics.*`, and `final_s3_report.md`.

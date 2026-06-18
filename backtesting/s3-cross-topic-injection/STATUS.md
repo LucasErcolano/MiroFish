@@ -2,7 +2,7 @@
 
 Last update: 2026-06-18
 
-Current phase: smoke complete, ready for analysis/full matrix decision.
+Current phase: full matrix complete, deterministic analysis complete.
 
 Completed:
 
@@ -16,6 +16,9 @@ Completed:
 - Smoke summary generated in `evaluation/smoke_summary.md`, `.csv`, and `.json`.
 - All baselines fired 0 scheduled events; all `signal-mid` rows fired exactly 1 scheduled event.
 - Prepared simulation reuse is working: each topic/model pair reuses one prepared simulation across baseline and signal-mid.
+- Full 42-row matrix completed and summarized in `evaluation/full_summary.*`.
+- Deterministic condition metrics generated in `evaluation/condition_summary_metrics.*`.
+- Final S3 report written in `evaluation/final_s3_report.md`.
 
 In progress:
 
@@ -23,10 +26,8 @@ In progress:
 
 Not started:
 
-- Full 42-row matrix execution against DeepInfra.
-- Result scoring.
-- ReportAgent artifact-only pass.
-- Commit.
+- Artifact-only ReportAgent pass.
+- Commit latest analysis artifacts.
 
 Known risks:
 
@@ -36,3 +37,4 @@ Known risks:
 - Backend progress counters can be stale/zero even after a real OASIS run. Use artifact evidence from `simulation_artifacts/`.
 - `--no-wait-after-run` is required for autonomous headless S3 runs; disabling it can leave Reddit waiting for IPC commands.
 - Llama is kept as simulation model for Llama rows, but Graphiti extraction uses Gemma to avoid schema drift in `ExtractedEntities`.
+- Deterministic metrics count injected documents when they are posted; use them for directional pressure, not as a semantic final judge.
