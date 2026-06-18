@@ -1,0 +1,234 @@
+[system]
+你是舆论分析专家。返回纯JSON格式。注意 poster_type 必须精确匹配可用实体类型。
+
+请使用中文回答。
+IMPORTANT: The 'poster_type' field value MUST be in English PascalCase exactly matching the available entity types. Only 'content', 'narrative_direction', 'hot_topics' and 'reasoning' fields should use the specified language.
+
+[user]
+基于以下模拟需求，生成事件配置。
+
+模拟需求: # Prompt
+
+Con la informacion disponible hasta el 13 de julio de 2024, predecir quien ganara la final de la Copa America 2024 entre Argentina y Colombia.
+
+Responder exclusivamente en espanol.
+
+La respuesta debe:
+
+- elegir un unico ganador esperado;
+- justificar la prediccion usando solo evidencia del contexto entregado;
+- mencionar los principales factores de incertidumbre;
+- no usar informacion posterior al 13 de julio de 2024.
+
+Formato esperado:
+
+Ganador predicho: Argentina o Colombia
+
+Justificacion:
+- evidencia 1
+- evidencia 2
+- evidencia 3
+
+Incertidumbre:
+- factor 1
+- factor 2
+
+Tambien devolver una salida estructurada JSON con:
+
+- `predicted_winner`: Argentina o Colombia.
+- `confidence`: numero entre 0 y 1.
+- `winner_probability_point`: probabilidad puntual del ganador elegido.
+- `winner_probability_range`: rango estrecho para el ganador elegido, con `winner_min` y `winner_max`.
+- `predicted_goal_margin`: diferencia esperada de goles para el ganador, con valor puntual y rango.
+- `probability_calibration`: explicacion breve de como se eligieron la confianza y los rangos.
+- `probability_drivers`: factores que suben o bajan la probabilidad de cada equipo, con `source_id`.
+- `justification`: claims con `source_id`.
+- `uncertainty`: factores con `source_id`.
+- `evidence`: claims principales con `source_id`.
+
+Reglas de calibracion:
+
+- No usar un rango generico fijo para todas las corridas.
+- El rango de probabilidad del ganador debe ser estrecho: `winner_max - winner_min <= 0.05`.
+- `winner_probability_point` debe caer dentro de ese rango.
+- Si no hay odds/modelos probabilisticos directos, expresar la incertidumbre bajando la confianza y explicandola, no usando un rango enorme.
+- Si aparecen odds, modelos o mercados, anclar el punto medio a esa evidencia.
+- La confianza debe cambiar cuando cambia la evidencia temporal.
+- Evitar valores redondos repetidos salvo que esten justificados por las fuentes.
+- La diferencia de goles debe ser una prediccion pre-partido, no el resultado real.
+
+## 模拟需求
+# Prompt
+
+Con la informacion disponible hasta el 13 de julio de 2024, predecir quien ganara la final de la Copa America 2024 entre Argentina y Colombia.
+
+Responder exclusivamente en espanol.
+
+La respuesta debe:
+
+- elegir un unico ganador esperado;
+- justificar la prediccion usando solo evidencia del contexto entregado;
+- mencionar los principales factores de incertidumbre;
+- no usar informacion posterior al 13 de julio de 2024.
+
+Formato esperado:
+
+Ganador predicho: Argentina o Colombia
+
+Justificacion:
+- evidencia 1
+- evidencia 2
+- evidencia 3
+
+Incertidumbre:
+- factor 1
+- factor 2
+
+Tambien devolver una salida estructurada JSON con:
+
+- `predicted_winner`: Argentina o Colombia.
+- `confidence`: numero entre 0 y 1.
+- `winner_probability_point`: probabilidad puntual del ganador elegido.
+- `winner_probability_range`: rango estrecho para el ganador elegido, con `winner_min` y `winner_max`.
+- `predicted_goal_margin`: diferencia esperada de goles para el ganador, con valor puntual y rango.
+- `probability_calibration`: explicacion breve de como se eligieron la confianza y los rangos.
+- `probability_drivers`: factores que suben o bajan la probabilidad de cada equipo, con `source_id`.
+- `justification`: claims con `source_id`.
+- `uncertainty`: factores con `source_id`.
+- `evidence`: claims principales con `source_id`.
+
+Reglas de calibracion:
+
+- No usar un rango generico fijo para todas las corridas.
+- El rango de probabilidad del ganador debe ser estrecho: `winner_max - winner_min <= 0.05`.
+- `winner_probability_point` debe caer dentro de ese rango.
+- Si no hay odds/modelos probabilisticos directos, expresar la incertidumbre bajando la confianza y explicandola, no usando un rango enorme.
+- Si aparecen odds, modelos o mercados, anclar el punto medio a esa evidencia.
+- La confianza debe cambiar cuando cambia la evidencia temporal.
+- Evitar valores redondos repetidos salvo que esten justificados por las fuentes.
+- La diferencia de goles debe ser una prediccion pre-partido, no el resultado real.
+
+## 实体信息 (27个)
+
+### FootballTeam (5个)
+- Colombia: Argentina and Colombia were the finalists of the 2024 CONMEBOL Copa America.
+Colombia was a finalist in the 2024 CONMEBOL Copa America.
+Colombia had one Copa America title.
+Colombia won the Copa America in 2001.
+Argentina and Colombia had faced each other 15 times in Copa America history before the ...
+- Argentina: Argentina and Colombia were the finalists of the 2024 CONMEBOL Copa America.
+Argentina was a finalist in the 2024 CONMEBOL Copa America.
+Argentina was the defending Copa America champion before the final.
+Argentina was the reigning World Cup champion before the final.
+Argentina had 15 Copa America t...
+- Ecuador: Argentina competed against Ecuador in a quarter-final match.
+- Canada: Argentina beat Canada 2-0 in a match on July 9, 2024.
+- Uruguay: Argentina was tied with Uruguay for the historical record of Copa America titles.
+Colombia beat Uruguay 1-0.
+Colombia defeated Uruguay in the semifinal.
+
+### FootballPlayer (18个)
+- Jhon Arias: Jhon Arias is a core player for Colombia.
+- Camilo Vargas: Camilo Vargas is a core player for Colombia.
+- Luis Diaz: Luis Diaz is a core player for Colombia.
+- Daniel Munoz: Daniel Munoz was sent off while playing for Colombia.
+- Richard Rios: Richard Rios is a core player for Colombia.
+- Julian Alvarez: Julian Alvarez is a core player for Argentina.
+Julian Alvarez scored a goal while playing for Argentina.
+- Enzo Fernandez: Enzo Fernandez is a core player for Argentina.
+- Angel Di Maria: Angel Di Maria is a core player for Argentina.
+- James Rodriguez: James Rodriguez is a core player for Colombia.
+Jefferson Lerma scored from a James Rodriguez corner.
+James Rodriguez's set-piece delivery created a goal for Colombia.
+- Lautaro Martinez: Lautaro Martinez is a core player for Argentina.
+- Emiliano Martinez: Emiliano Martinez is a core player for Argentina.
+Argentina needed Emiliano Martinez and a penalty shootout to advance.
+- Jhon Cordoba: Jhon Cordoba is a core player for Colombia.
+- Cristian Romero: Cristian Romero is a core player for Argentina.
+- Davinson Sanchez: Davinson Sanchez is a core player for Colombia.
+- Rodrigo De Paul: Rodrigo De Paul is a core player for Argentina.
+- Lionel Messi: Lionel Messi is a core player for Argentina.
+Lionel Messi scored a goal while playing for Argentina.
+Messi played the full 90 minutes for Argentina.
+- Alexis Mac Allister: Alexis Mac Allister is a core player for Argentina.
+- Jefferson Lerma: Jefferson Lerma is a core player for Colombia.
+Jefferson Lerma scored for Colombia.
+
+### Person (2个)
+- Florida: Miami Gardens is located in Florida.
+- Miami Gardens: Hard Rock Stadium is located in Miami Gardens, Florida.
+Miami Gardens is located in Florida.
+
+### FootballStadium (1个)
+- Hard Rock Stadium: The final of the 2024 CONMEBOL Copa America was scheduled to be held at Hard Rock Stadium.
+Hard Rock Stadium is located in Miami Gardens, Florida.
+
+### Organization (1个)
+- CONMEBOL Copa America: Argentina was a finalist in the 2024 CONMEBOL Copa America.
+Colombia was a finalist in the 2024 CONMEBOL Copa America.
+The final of the 2024 CONMEBOL Copa America was scheduled to be held at Hard Rock Stadium.
+Argentina was the defending Copa America champion before the final.
+Argentina had 15 Copa ...
+
+## 原始文档内容
+
+
+=== seed_T1.md ===
+# Seed T1 - T0 + semifinales y forma reciente
+
+Cutoff: 2024-07-13.
+
+No usar informacion posterior al cutoff. No usar el marcador ni el desenlace de la final.
+
+## BASE_03 - Match information
+
+Argentina and Colombia were the finalists of the 2024 CONMEBOL Copa America. The final was scheduled for Sunday, July 14, 2024 at Hard Rock Stadium in Miami Gardens, Florida. It was the first time Argentina and Colombia would decide a Copa America title against each other.
+
+## HIST_01 - Titles and head-to-head context
+
+Argentina entered the final as defending Copa America champion and reigning World Cup champion. Before this final, Argentina had 15 Copa America titles and was tied with Uruguay for the historical record. Colombia had one Copa America title, won at home in 2001.
+
+In Copa America history before the final, Argentina and Colombia had faced each other 15 times: 7 Argentina wins, 3 Colombia wins and 5 draws. Outside group-stage contexts, Argentina was unbeaten against Colombia in five Copa America knockout-stage meetings, including matches decided by penalty shootouts.
+
+## SQUAD_01 - Key player context
+
+The Argentine squad's core included experienced players from recent title cycles, including Lionel Messi, Angel Di Maria, Emiliano Martinez, Cristian Romero, Rodrigo De Paul, Alexis Mac Allister, Enzo Fernandez, Julian Alvarez and Lautaro Martinez. Colombia's core included James Rodriguez, Luis Diaz, Jhon Cordoba, Camilo Vargas, Davinson Sanchez, Jefferson Lerma, Richard Rios and Jhon Arias.
+
+The match profile before adding later evidence can be described structurally as a final between Argentina's recent championship core and Colombia's attempt to convert a strong generation into a second continental title.
+
+## FORM_01 - Argentina semifinal: Argentina 2-0 Canada
+
+Argentina reached the final after beating Canada 2-0 on July 9, 2024. Lionel Messi scored his first goal of the tournament and Julian Alvarez had opened the scoring. The report described Argentina as the tournament favorite and noted that Argentina improved from its quarter-final performance, while still implying that a harder test awaited in the final.
+
+Argentina's semifinal also mattered because Messi played the full 90 minutes after recent concern around an adductor issue. The match report noted that Messi looked brighter and fitter than in the quarter-final against Ecuador, where Argentina had needed Emiliano Martinez and a penalty shootout to advance.
+
+## FORM_02 - Colombia semifinal: Colombia 1-0 Uruguay
+
+Colombia reached the final by beating Uruguay 1-0 on July 10, 2024. Jefferson Lerma scored from a James Rodriguez corner. Colombia played more than half the mat
+
+## 可用实体类型及示例
+- FootballTeam: Colombia, Argentina, Ecuador
+- FootballPlayer: Jhon Arias, Camilo Vargas, Luis Diaz
+- Person: Florida, Miami Gardens
+- FootballStadium: Hard Rock Stadium
+- Organization: CONMEBOL Copa America
+
+## 任务
+请生成事件配置JSON：
+- 提取热点话题关键词
+- 描述舆论发展方向
+- 设计初始帖子内容，**每个帖子必须指定 poster_type（发布者类型）**
+
+**重要**: poster_type 必须从上面的"可用实体类型"中选择，这样初始帖子才能分配给合适的 Agent 发布。
+例如：官方声明应由 Official/University 类型发布，新闻由 MediaOutlet 发布，学生观点由 Student 发布。
+
+返回JSON格式（不要markdown）：
+{
+    "hot_topics": ["关键词1", "关键词2", ...],
+    "narrative_direction": "<舆论发展方向描述>",
+    "initial_posts": [
+        {"content": "帖子内容", "poster_type": "实体类型（必须从可用类型中选择）"},
+        ...
+    ],
+    "reasoning": "<简要说明>"
+}

@@ -21,6 +21,7 @@ from openai import OpenAI
 from ..config import Config
 from ..utils.logger import get_logger
 from ..utils.locale import get_language_instruction, t
+from .capture_artifacts import LLMCallRecorder
 from .zep_entity_reader import EntityNode, ZepEntityReader
 
 logger = get_logger('mirofish.simulation_config')
@@ -226,7 +227,8 @@ class SimulationConfigGenerator:
         self,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
-        model_name: Optional[str] = None
+        model_name: Optional[str] = None,
+        capture_base_dir: Optional[str] = None,
     ):
         self.api_key = api_key or Config.LLM_API_KEY
         self.base_url = base_url or Config.LLM_BASE_URL
@@ -238,6 +240,9 @@ class SimulationConfigGenerator:
         self.client = OpenAI(
             api_key=self.api_key,
             base_url=self.base_url
+        )
+        self.llm_call_recorder = LLMCallRecorder(
+            capture_base_dir if Config.PLANNING_CAPTURE_SAVE_RAW_ARTIFACTS else None
         )
     
     def generate_config(
@@ -431,7 +436,7 @@ class SimulationConfigGenerator:
         
         return "\n".join(lines)
     
-    def _call_llm_with_retry(self, prompt: str, system_prompt: str) -> Dict[str, Any]:
+    def _call_llm_with_retry(self, prompt: str, system_prompt: str, stage: str) -> Dict[str, Any]:
         """带重试的LLM调用，包含JSON修复逻辑"""
         import re
         
@@ -453,6 +458,17 @@ class SimulationConfigGenerator:
                 
                 content = response.choices[0].message.content
                 finish_reason = response.choices[0].finish_reason
+                self.llm_call_recorder.record(
+                    stage=stage,
+                    model=self.model_name,
+                    system_prompt=system_prompt,
+                    user_prompt=prompt,
+                    output_text=content or "",
+                    extra={
+                        "attempt": attempt + 1,
+                        "finish_reason": finish_reason,
+                    },
+                )
                 
                 # 检查是否被截断
                 if finish_reason == 'length':
@@ -589,7 +605,7 @@ class SimulationConfigGenerator:
         system_prompt = f"{system_prompt}\n\n{get_language_instruction()}"
 
         try:
-            return self._call_llm_with_retry(prompt, system_prompt)
+            return self._call_llm_with_retry(prompt, system_prompt, "config_time")
         except Exception as e:
             logger.warning(f"时间配置LLM生成失败: {e}, 使用默认配置")
             return self._get_default_time_config(num_entities)
@@ -706,7 +722,7 @@ class SimulationConfigGenerator:
         system_prompt = f"{system_prompt}\n\n{get_language_instruction()}\nIMPORTANT: The 'poster_type' field value MUST be in English PascalCase exactly matching the available entity types. Only 'content', 'narrative_direction', 'hot_topics' and 'reasoning' fields should use the specified language."
 
         try:
-            return self._call_llm_with_retry(prompt, system_prompt)
+            return self._call_llm_with_retry(prompt, system_prompt, "config_event")
         except Exception as e:
             logger.warning(f"事件配置LLM生成失败: {e}, 使用默认配置")
             return {
@@ -870,7 +886,7 @@ class SimulationConfigGenerator:
         system_prompt = f"{system_prompt}\n\n{get_language_instruction()}\nIMPORTANT: The 'stance' field value MUST be one of the English strings: 'supportive', 'opposing', 'neutral', 'observer'. All JSON field names and numeric values must remain unchanged. Only natural language text fields should use the specified language."
 
         try:
-            result = self._call_llm_with_retry(prompt, system_prompt)
+            result = self._call_llm_with_retry(prompt, system_prompt, "config_agents")
             llm_configs = {cfg["agent_id"]: cfg for cfg in result.get("agent_configs", [])}
         except Exception as e:
             logger.warning(f"Agent配置批次LLM生成失败: {e}, 使用规则生成")
@@ -988,4 +1004,3 @@ class SimulationConfigGenerator:
                 "influence_weight": 1.0
             }
     
-

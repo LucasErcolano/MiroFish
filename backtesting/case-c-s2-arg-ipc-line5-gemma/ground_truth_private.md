@@ -6,7 +6,7 @@
 |---|-----|--------------|
 | Δ1 | Feb 2025 | 2.4% |
 | Δ2 | Abr 2025 | 3.7% |
-| Δ3 | Jul 2025 | ~3.0% (confirmar con INDEC al ejecutar) |
+| Δ3 | Jul 2025 | ~3.0% |
 | Δ4 | Dic 2025 | 2.8% |
 
 Inflación acumulada 2025: 31.5% (INDEC, publicado enero 2026).
@@ -21,5 +21,6 @@ La desinflación fue real pero no lineal. Febrero fue baja (2.4%), hubo repuntes
 |---|---------|-------------|
 | Δ1 | Error absoluto sobre valor puntual | ≤1.5pp (ej: predice 2.4±1.5) |
 | Δ2 | ¿Real cae en rango predicho? | Rango ≤ 4pp de ancho |
-| Δ3 | Bucket correcto (2–4% = moderada) | Correcto/incorrecto |
-| Δ4 | Acumulada 2025 en rango correcto (30–40%) | Rango hit |
+| Δ3 | ¿Real cae en rango predicho? | Rango ≤ 4pp de ancho |
+| Δ4 | ¿Real mensual diciembre cae en rango predicho? | Rango ≤ 4pp de ancho |
+| Acumulada 2025 | Acumulada 2025 en rango correcto (30–40%) | Rango hit |

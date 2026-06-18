@@ -1,0 +1,111 @@
+{
+  "predicted_winner": "Argentina",
+  "confidence": 0.75,
+  "winner_probability_point": 0.625,
+  "winner_probability_range": {
+    "winner_min": 0.575,
+    "winner_max": 0.675
+  },
+  "predicted_goal_margin": {
+    "winner_goals_margin_point": 1.0,
+    "winner_goals_margin_min": 0.5,
+    "winner_goals_margin_max": 1.5,
+    "rationale": "Given Argentina's recent championship form and historical dominance in the Copa America (15 titles), a narrow win is predicted. The goal margin reflects a likely competitive match but with Argentina having a slight edge."
+  },
+  "probability_calibration": {
+    "method": "Expert judgment based on available evidence",
+    "confidence_rationale": "The confidence level of 0.75 reflects Argentina's stronger recent performance and title history, but acknowledges the competitive nature of a final match. The lack of specific odds or model probabilities necessitates a more conservative confidence score.",
+    "range_rationale": "The narrow probability range (0.575-0.675) reflects the relatively balanced nature of the matchup, despite Argentina's historical advantage. It acknowledges the potential for an upset but favors Argentina's overall strength."
+  },
+  "probability_drivers": [
+    {
+      "factor": "Historical Titles",
+      "direction": "Argentina",
+      "source_id": [
+        "HIST_01"
+      ]
+    },
+    {
+      "factor": "Recent Form",
+      "direction": "Argentina",
+      "source_id": [
+        "HIST_01"
+      ]
+    },
+    {
+      "factor": "Defending Champion",
+      "direction": "Argentina",
+      "source_id": [
+        "HIST_01"
+      ]
+    },
+    {
+      "factor": "Head-to-Head Record",
+      "direction": "Argentina",
+      "source_id": [
+        "HIST_01"
+      ]
+    }
+  ],
+  "justification": [
+    {
+      "claim": "Argentina has a significantly higher number of Copa America titles (15) compared to Colombia (1).",
+      "source_id": [
+        "HIST_01"
+      ]
+    },
+    {
+      "claim": "Argentina entered the final as the defending Copa America champion and reigning World Cup champion.",
+      "source_id": [
+        "HIST_01"
+      ]
+    },
+    {
+      "claim": "Argentina is unbeaten against Colombia in five Copa America knockout-stage meetings.",
+      "source_id": [
+        "HIST_01"
+      ]
+    }
+  ],
+  "uncertainty": [
+    {
+      "factor": "Final match unpredictability",
+      "source_id": [
+        "BASE_03"
+      ]
+    },
+    {
+      "factor": "Potential for individual brilliance from Colombian players",
+      "source_id": [
+        "SQUAD_01"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "claim": "Argentina has 15 Copa America titles, demonstrating a strong historical performance in the tournament.",
+      "source_id": [
+        "HIST_01"
+      ]
+    },
+    {
+      "claim": "Argentina is the reigning World Cup champion, indicating a high level of current form.",
+      "source_id": [
+        "HIST_01"
+      ]
+    },
+    {
+      "claim": "Argentina has a favorable head-to-head record against Colombia in Copa America knockout stages.",
+      "source_id": [
+        "HIST_01"
+      ]
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2024-07-13",
+    "temporal_package": "T0",
+    "model": "google/gemma-3-27b-it",
+    "simulation_id": "sim_1ee9ce94e898",
+    "graph_id": "mirofish_585e56a25f7841f6"
+  }
+}

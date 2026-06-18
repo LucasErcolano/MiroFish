@@ -48,6 +48,7 @@ class Project:
     simulation_requirement: Optional[str] = None
     chunk_size: int = 500
     chunk_overlap: int = 50
+    metadata: Dict[str, Any] = field(default_factory=dict)
     
     # 错误信息
     error: Optional[str] = None
@@ -69,6 +70,7 @@ class Project:
             "simulation_requirement": self.simulation_requirement,
             "chunk_size": self.chunk_size,
             "chunk_overlap": self.chunk_overlap,
+            "metadata": self.metadata,
             "error": self.error
         }
     
@@ -94,6 +96,7 @@ class Project:
             simulation_requirement=data.get('simulation_requirement'),
             chunk_size=data.get('chunk_size', 500),
             chunk_overlap=data.get('chunk_overlap', 50),
+            metadata=data.get('metadata', {}),
             error=data.get('error')
         )
 
@@ -302,4 +305,3 @@ class ProjectManager:
             for f in os.listdir(files_dir) 
             if os.path.isfile(os.path.join(files_dir, f))
         ]
-

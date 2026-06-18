@@ -17,13 +17,13 @@ Cambiar solo:
 - paquete temporal: `seed_T0.md`, `seed_T1.md`, `seed_T2.md`, `seed_T3.md`
 - metadatos de run
 
-## Inputs a subir
+## Inputs del runner
 
-Subir:
+El runner automatizado usa:
 
-- uno de los paquetes `seed_T0.md` a `seed_T3.md`
-- `question.md`
-- `system_constraints.md`
+- `seed_T*.md` como evidencia documental;
+- `question.md` como `simulation_requirement`;
+- `system_constraints.md` como contexto adicional y metadato de cutoff.
 
 No subir:
 
@@ -44,6 +44,7 @@ No subir:
 | `gemma_T3_R40_D2` | `seed_T3.md` | `2025-01-31` | paquete completo pre-cutoff |
 
 Los `assembled_T0.md` a `assembled_T3.md` son copias equivalentes para mantener el mismo naming que Bolivia.
+Cada paquete temporal ya contiene toda la evidencia acumulada hasta ese punto; no hay que subir `T0 + T1`, sino solo `seed_T1.md`.
 
 ## Artefactos por corrida
 
@@ -53,18 +54,28 @@ Guardar cada corrida en:
 output/<variant>/
 ```
 
-Archivos recomendados:
+Archivos canónicos:
 
-- `run_notes.md`: fecha, modelo, config, si density fue aplicada, costo/latencia si existe.
-- `report.md`: reporte final de MiroFish.
-- `worldbuilding_trace.json`: snapshot de planificacion/perfiles/config.
-- `eval_result.json`: evaluacion con la rubrica.
+- `structured_answer.json`
+- `eval_result.json`
+- `worldbuilding_trace.json`
+- `simulation_config.json`
+- `state.json`
+- `run_state.json`
+- `report.md`
+- `run_notes.md`
 
-Comando de evaluacion:
+Comando principal:
+
+```bash
+python3 backtesting/case-c-s2-arg-ipc-line5-gemma/run_temporal_matrix.py --variant gemma_T3_R40_D2 --force
+```
+
+Evaluación manual opcional:
 
 ```bash
 python3 backtesting/case-c-s2-arg-ipc-line5-gemma/eval_objective.py \
-  --report backtesting/case-c-s2-arg-ipc-line5-gemma/output/gemma_T3_R40_D2/report.md \
+  --structured-answer backtesting/case-c-s2-arg-ipc-line5-gemma/output/gemma_T3_R40_D2/structured_answer.json \
   --variant gemma_T3_R40_D2 \
   --model-policy gemma_temporal_probe \
   > backtesting/case-c-s2-arg-ipc-line5-gemma/output/gemma_T3_R40_D2/eval_result.json
@@ -78,8 +89,9 @@ La tabla final debe comparar:
 - PASS/FAIL por delta;
 - error de Delta 1;
 - si Delta 2 cae en rango;
-- bucket Delta 3;
-- rango acumulado Delta 4;
+- si Delta 3 cae en rango;
+- si Delta 4 diciembre cae en rango;
+- rango acumulado 2025;
 - leakage;
 - parse errors o fallas operativas;
 - costo/latencia;

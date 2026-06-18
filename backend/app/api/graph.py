@@ -3,6 +3,7 @@
 采用项目上下文机制，服务端持久化状态
 """
 
+import json
 import os
 import traceback
 import threading
@@ -154,6 +155,7 @@ def generate_ontology():
         simulation_requirement = request.form.get('simulation_requirement', '')
         project_name = request.form.get('project_name', 'Unnamed Project')
         additional_context = request.form.get('additional_context', '')
+        project_metadata_json = request.form.get('project_metadata_json', '')
         
         logger.debug(f"项目名称: {project_name}")
         logger.debug(f"模拟需求: {simulation_requirement[:100]}...")
@@ -175,6 +177,15 @@ def generate_ontology():
         # 创建项目
         project = ProjectManager.create_project(name=project_name)
         project.simulation_requirement = simulation_requirement
+        if project_metadata_json:
+            try:
+                project.metadata = json.loads(project_metadata_json)
+            except json.JSONDecodeError as exc:
+                ProjectManager.delete_project(project.project_id)
+                return jsonify({
+                    "success": False,
+                    "error": f"project_metadata_json 无效: {exc}"
+                }), 400
         logger.info(f"创建项目: {project.project_id}")
         
         # 保存文件并提取文本
@@ -191,6 +202,9 @@ def generate_ontology():
                 )
                 project.files.append({
                     "filename": file_info["original_filename"],
+                    "original_filename": file_info["original_filename"],
+                    "saved_filename": file_info["saved_filename"],
+                    "path": file_info["path"],
                     "size": file_info["size"]
                 })
                 

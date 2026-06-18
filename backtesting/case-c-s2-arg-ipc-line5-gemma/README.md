@@ -16,8 +16,8 @@ Con documentos fechados hasta el `2025-01-31`, predecir:
 
 - `Delta 1`: IPC mensual febrero 2025, valor puntual y rango.
 - `Delta 2`: IPC mensual abril 2025, rango y tendencia.
-- `Delta 3`: IPC mensual julio 2025, bucket de inflacion.
-- `Delta 4`: IPC mensual diciembre 2025 y rango de inflacion acumulada 2025.
+- `Delta 3`: IPC mensual julio 2025, rango y tendencia.
+- `Delta 4`: IPC mensual diciembre 2025, estabilidad del programa y rango de inflacion acumulada 2025.
 - mecanismo causal, variable dominante y riesgo principal.
 
 La pregunta completa esta en `question.md`.
@@ -44,6 +44,7 @@ Tambien hay documentos excluidos en `manifest.csv`; no se usan porque son post-c
 - `T3`: agrega crawling peg 1%, cierre fiscal 2024, monetary report y World Bank. Max document date: `2025-01-31`.
 
 El paquete es acumulativo: `T1` incluye `T0`, `T2` incluye `T1`, y `T3` incluye todo el input valido pre-cutoff.
+Cada `seed_T*.md` ya es autosuficiente: no hay que combinar varios archivos para una corrida temporal.
 
 ## Estructura
 
@@ -64,11 +65,12 @@ El paquete es acumulativo: `T1` incluye `T0`, `T2` incluye `T1`, y `T3` incluye 
 
 ## Regla de inputs
 
-Subir a MiroFish:
+En el flujo automatizado nuevo:
 
-- uno de `seed_T0.md`, `seed_T1.md`, `seed_T2.md`, `seed_T3.md`
-- `question.md`
-- `system_constraints.md` si el flujo permite agregar restricciones de sistema
+- el documento de evidencia es uno de `seed_T0.md`, `seed_T1.md`, `seed_T2.md`, `seed_T3.md`;
+- `question.md` pasa como `simulation_requirement`;
+- `system_constraints.md` pasa como contexto adicional y metadato de corrida;
+- el output canónico ya no es `report.md`, sino `structured_answer.json`.
 
 No subir:
 
@@ -80,6 +82,25 @@ No subir:
 - `testing_protocol.md`
 - outputs previos
 
-## Estado
+## Runner
 
-Este directorio todavia no contiene corridas nuevas. El siguiente paso es ejecutar Gemma para `T0`, `T1`, `T2` y `T3`, y guardar cada resultado en `output/<variant>/`.
+Con backend levantado en `http://127.0.0.1:5001`:
+
+```bash
+python3 backtesting/case-c-s2-arg-ipc-line5-gemma/run_temporal_matrix.py --variant gemma_T0_R40_D2 --force
+```
+
+Sin `--variant`, corre toda la matriz `T0-T3`.
+
+## Outputs canónicos
+
+Cada corrida deja en `output/<variant>/`:
+
+- `structured_answer.json`
+- `eval_result.json`
+- `worldbuilding_trace.json`
+- `simulation_config.json`
+- `state.json`
+- `run_state.json`
+- `report.md`
+- `run_notes.md`
