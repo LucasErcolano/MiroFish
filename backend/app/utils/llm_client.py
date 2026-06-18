@@ -413,8 +413,56 @@ class LLMClient:
     
     @staticmethod
     def _clean_json_response(content: str) -> str:
-        """清理 LLM 响应中的 markdown 代码块标记"""
+        """Clean LLM response: strip think tags, markdown fences, and extract
+        the first balanced JSON object/array if the model prepended prose.
+        Handles responses from Fusion/other multi-model routers that may
+        prefix deliberation text before the JSON payload."""
         cleaned = content.strip()
+
+        # Strip think tags (some models emit them)
+        cleaned = re.sub(r'<think>[\s\S]*?</think>', '', cleaned).strip()
+
+        # Strip markdown code fences
         cleaned = re.sub(r'^```(?:json)?\s*\n?', '', cleaned, flags=re.IGNORECASE)
         cleaned = re.sub(r'\n?```\s*$', '', cleaned)
-        return cleaned.strip()
+        cleaned = cleaned.strip()
+
+        # If still not starting with { or [, extract the first balanced JSON
+        # block. Fusion models often prepend deliberation prose before the JSON.
+        if cleaned and not cleaned.startswith('{') and not cleaned.startswith('['):
+            # Find whichever of { or [ appears first in the string
+            candidates = []
+            for opener, closer in (('{', '}'), ('[', ']')):
+                pos = cleaned.find(opener)
+                if pos >= 0:
+                    candidates.append((pos, opener, closer))
+            for pos, opener, closer in sorted(candidates):
+                depth = 0
+                in_str = False
+                esc = False
+                for i in range(pos, len(cleaned)):
+                    c = cleaned[i]
+                    if esc:
+                        esc = False
+                        continue
+                    if c == '\\' and in_str:
+                        esc = True
+                        continue
+                    if c == '"' and not esc:
+                        in_str = not in_str
+                        continue
+                    if in_str:
+                        continue
+                    if c == opener:
+                        depth += 1
+                    elif c == closer:
+                        depth -= 1
+                        if depth == 0:
+                            candidate = cleaned[pos:i + 1]
+                            try:
+                                json.loads(candidate)
+                                return candidate
+                            except json.JSONDecodeError:
+                                break
+
+        return cleaned

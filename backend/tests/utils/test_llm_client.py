@@ -66,11 +66,28 @@ class TestCleanJsonResponse:
     def test_empty_string(self):
         assert self.client._clean_json_response("") == ""
 
-    def test_does_not_strip_think_tags(self):
-        """think-tag stripping es responsabilidad de _chat_raw, no de _clean_json_response."""
+    def test_strips_think_tags(self):
+        """_clean_json_response strips think tags and extracts JSON."""
         raw = '<think>reasoning</think>{"a": 1}'
-        # _clean_json_response NO toca think tags (pr-600 los separó)
-        assert self.client._clean_json_response(raw) == raw
+        # _clean_json_response now strips think tags + extracts JSON
+        assert self.client._clean_json_response(raw) == '{"a": 1}'
+
+    def test_extracts_json_from_prose(self):
+        """Fusion models may prepend deliberation prose before JSON."""
+        raw = 'I will research best practices.\n\n```json\n{"answer": 42}\n```'
+        assert self.client._clean_json_response(raw) == '{"answer": 42}'
+
+    def test_extracts_json_array_from_prose(self):
+        """Balanced bracket extraction for array responses."""
+        raw = 'Let me analyze this.\n[{"a": 1}, {"b": 2}]'
+        assert self.client._clean_json_response(raw) == '[{"a": 1}, {"b": 2}]'
+
+    def test_prose_with_invalid_json_falls_through(self):
+        """If prose has unbalanced braces, return cleaned text as-is."""
+        raw = 'Some text {incomplete json here'
+        result = self.client._clean_json_response(raw)
+        # Should return cleaned text even if no valid JSON found
+        assert 'Some text' in result
 
 
 # ---------------------------------------------------------------------------
