@@ -7,6 +7,7 @@ Install Prompture for multi-provider support: pip install prompture
 """
 
 import json
+import os
 import re
 from typing import Optional, Dict, Any, List
 
@@ -97,7 +98,24 @@ class LLMClient:
     def _init_openai(self):
         if not self.api_key:
             raise ValueError("LLM_API_KEY 未配置")
-        self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
+        # Some OpenAI-compatible providers (notably OpenRouter) reject or
+        # 500 on requests with User-Agent starting with "OpenAI/Python",
+        # which the openai SDK injects unconditionally. Adding an event_hook
+        # to rewrite the header is the cleanest way to avoid that without
+        # forking or downgrading the SDK.
+        import httpx
+
+        def _rewrite_ua(request: "httpx.Request") -> None:
+            ua = request.headers.get("user-agent", "")
+            if ua.startswith("OpenAI/Python"):
+                request.headers["user-agent"] = "curl/7.88.1"
+
+        http_client = httpx.Client(event_hooks={"request": [_rewrite_ua]})
+        self.client = OpenAI(
+            api_key=self.api_key,
+            base_url=self.base_url,
+            http_client=http_client,
+        )
 
     # ── Public API ─────────────────────────────────────────────────
 
@@ -204,6 +222,48 @@ class LLMClient:
         }
         if response_format:
             kwargs["response_format"] = response_format
+
+        # OpenRouter Fusion requires a `plugins` array in the request body to
+        # activate the multi-model deliberation. The OpenAI SDK does not
+        # expose `plugins` as a first-class kwarg, so we use `extra_body` to
+        # forward it.
+        #
+        # Two presets via the `preset` field:
+        #   - "general-high" (Quality, default) — Opus + others, ~$0.008/call
+        #   - "general-budget" (Budget) — cheaper models, but currently 500
+        #
+        # Custom panel via `analysis_models` (the models that deliberate) +
+        # `model` (the judge that synthesizes). If the panel is empty or
+        # `model` is missing, OpenRouter falls back to the Opus default,
+        # which is expensive and defeats the purpose. So we always set
+        # `model` to the cheapest judge we trust.
+        #
+        # Override via OPENROUTER_FUSION_PRESET (preset slug, e.g.
+        # "general-high") and OPENROUTER_FUSION_PANEL (comma-separated
+        # analysis_models) in the .env if needed. Default is a Budget-tier
+        # panel + cheap judge for cost-conscious runs.
+        if self.model.startswith("openrouter/fusion"):
+            preset = os.environ.get("OPENROUTER_FUSION_PRESET")
+            panel_str = os.environ.get("OPENROUTER_FUSION_PANEL", "")
+            plugin: Dict[str, Any] = {"id": "fusion"}
+            if preset:
+                plugin["preset"] = preset
+            if panel_str:
+                panel = [m.strip() for m in panel_str.split(",") if m.strip()]
+                if panel:
+                    plugin["analysis_models"] = panel
+                    # When using a custom panel, the judge must be explicit,
+                    # otherwise OpenRouter falls back to Opus and 500s.
+                    plugin["model"] = os.environ.get(
+                        "OPENROUTER_FUSION_JUDGE", "openai/gpt-4o-mini"
+                    )
+            kwargs["extra_body"] = {"plugins": [plugin]}
+            # Cap max_tokens to keep the multi-model call within budget.
+            # Without this, Graphiti's 16K default for the judge request
+            # alone exceeds typical top-up balances. The judge only needs
+            # room for a structured JSON answer; 4K is plenty.
+            if kwargs.get("max_tokens", 0) > 4096:
+                kwargs["max_tokens"] = 4096
 
         response = self.client.chat.completions.create(**kwargs)
         return response.choices[0].message.content
