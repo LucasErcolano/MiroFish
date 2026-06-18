@@ -31,6 +31,17 @@ The model policy follows PR #22:
 For Bolivia, `seed_T3_clean.md` keeps the full pre-cutoff electoral evidence
 package and removes the football-noise block from `seed_T3.md`.
 
+## Slim Mode
+
+The slim mode mirrors the practical setup used in PR #22 more closely: it keeps
+the same R/D matrix, but uses a short fixed evidence packet and reuses one graph
+project across all variants in a single runner execution.
+
+| Case | Config | Evidence package | Output directory |
+|---|---|---|---|
+| Bolivia runoff slim | `config_line5_llama_slim.yaml` | `seed_T3_line5_slim.md` | `output_llama_line5_slim/` |
+| Copa America slim | `config_line5_llama_slim.yaml` | `seed_T3_line5_slim.md` | `output_llama_line5_slim/` |
+
 ## Backend Requirement
 
 The runner cannot hot-swap the model of an already-running backend. Start the
@@ -58,6 +69,20 @@ python3 backtesting/scripts/run_line5_llama_matrix.py \
   --dry-run
 ```
 
+Slim dry runs:
+
+```bash
+python3 backtesting/scripts/run_line5_llama_matrix.py \
+  --case-dir backtesting/case-b-s2-bolivia-2025-runoff \
+  --config config_line5_llama_slim.yaml \
+  --dry-run
+
+python3 backtesting/scripts/run_line5_llama_matrix.py \
+  --case-dir backtesting/case-d-s2-copa-america-line5-gemma \
+  --config config_line5_llama_slim.yaml \
+  --dry-run
+```
+
 ## Execute One Smoke Variant
 
 ```bash
@@ -69,6 +94,22 @@ python3 backtesting/scripts/run_line5_llama_matrix.py \
 python3 backtesting/scripts/run_line5_llama_matrix.py \
   --case-dir backtesting/case-d-s2-copa-america-line5-gemma \
   --variant llama_T3_R10_D2 \
+  --force
+```
+
+Slim smoke variants:
+
+```bash
+python3 backtesting/scripts/run_line5_llama_matrix.py \
+  --case-dir backtesting/case-b-s2-bolivia-2025-runoff \
+  --config config_line5_llama_slim.yaml \
+  --variant llama_T3_slim_R10_D2 \
+  --force
+
+python3 backtesting/scripts/run_line5_llama_matrix.py \
+  --case-dir backtesting/case-d-s2-copa-america-line5-gemma \
+  --config config_line5_llama_slim.yaml \
+  --variant llama_T3_slim_R10_D2 \
   --force
 ```
 
@@ -84,9 +125,25 @@ python3 backtesting/scripts/run_line5_llama_matrix.py \
   --force
 ```
 
+Slim full matrices:
+
+```bash
+python3 backtesting/scripts/run_line5_llama_matrix.py \
+  --case-dir backtesting/case-b-s2-bolivia-2025-runoff \
+  --config config_line5_llama_slim.yaml \
+  --force
+
+python3 backtesting/scripts/run_line5_llama_matrix.py \
+  --case-dir backtesting/case-d-s2-copa-america-line5-gemma \
+  --config config_line5_llama_slim.yaml \
+  --force
+```
+
 Outputs are written under each case's `output_llama_line5/` directory. Each run
 keeps `worldbuilding_trace.json`, `worldbuilding_artifacts/llm_calls`,
 `simulation_config.json`, `run_state.json`, report artifacts and `eval_result.json`.
+Slim outputs use `output_llama_line5_slim/` and additionally write a
+`_shared_graph_T3_slim.json` cache when the shared graph build completes.
 
 Note: as in PR #22, `density` is recorded as an experimental condition. The
 current backend enforces the round count through `max_rounds`; density is not yet

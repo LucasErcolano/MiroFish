@@ -212,7 +212,132 @@ def evaluate(case_dir: Path, config: Dict[str, Any], output_dir: Path, variant_i
     return json.loads(result.stdout)
 
 
-def run_variant(base_url: str, case_dir: Path, config: Dict[str, Any], variant_id: str, force: bool) -> Path:
+def shared_graph_cache_key(config: Dict[str, Any], seed_path: Path) -> str:
+    experiment = config["experiment_metadata"]
+    package = config["line5_package"]
+    return "|".join(
+        [
+            experiment["case_id"],
+            package["id"],
+            seed_path.name,
+            sha256_file(seed_path) or "",
+        ]
+    )
+
+
+def shared_graph_cache_path(case_dir: Path, config: Dict[str, Any]) -> Path:
+    experiment = config["experiment_metadata"]
+    package = config["line5_package"]
+    output_base = case_dir / experiment.get("output_dir", "output_llama_line5")
+    return output_base / f"_shared_graph_{package['id']}.json"
+
+
+def validate_shared_graph(base_url: str, cached: Dict[str, Any]) -> bool:
+    project_id = cached.get("project_id")
+    graph_id = cached.get("graph_id")
+    if not project_id or not graph_id:
+        return False
+    try:
+        payload = json_request(base_url, "GET", f"/api/graph/project/{project_id}")
+    except Exception:
+        return False
+    if not payload.get("success"):
+        return False
+    project = payload.get("data", {})
+    return project.get("graph_id") == graph_id and project.get("status") == "graph_completed"
+
+
+def build_or_reuse_graph(
+    *,
+    base_url: str,
+    case_dir: Path,
+    config: Dict[str, Any],
+    run_entry: Dict[str, Any],
+    seed_path: Path,
+    question_text: str,
+    system_constraints_text: str,
+    project_metadata: Dict[str, Any],
+    force: bool,
+    project_cache: Dict[str, Dict[str, Any]],
+) -> Dict[str, Any]:
+    package = config["line5_package"]
+    reuse_graph = bool(package.get("reuse_graph_project"))
+    cache_key = shared_graph_cache_key(config, seed_path)
+    cache_file = shared_graph_cache_path(case_dir, config)
+
+    if reuse_graph:
+        cached = project_cache.get(cache_key)
+        if cached:
+            return cached
+        if not force and cache_file.exists():
+            cached = read_json(cache_file)
+            if cached.get("cache_key") == cache_key and validate_shared_graph(base_url, cached):
+                project_cache[cache_key] = cached
+                return cached
+
+    project_name = (
+        f"{config['experiment_metadata']['case_id']}_{package['id']}_shared_graph"
+        if reuse_graph
+        else run_entry["id"]
+    )
+    metadata = dict(project_metadata)
+    metadata["line5_condition"] = run_entry["id"]
+    metadata["shared_graph_project"] = reuse_graph
+
+    upload_response = multipart_request(
+        base_url,
+        "/api/graph/ontology/generate",
+        fields={
+            "project_name": project_name,
+            "simulation_requirement": question_text,
+            "additional_context": system_constraints_text,
+            "project_metadata_json": json.dumps(metadata, ensure_ascii=False),
+        },
+        file_paths=[seed_path],
+    )
+    if not upload_response.get("success", False):
+        raise RuntimeError(f"Ontology generation failed: {upload_response}")
+    project_id = upload_response["data"]["project_id"]
+
+    build_response = json_request(
+        base_url,
+        "POST",
+        "/api/graph/build",
+        {"project_id": project_id, "graph_name": project_name, "force": force},
+    )
+    if not build_response.get("success", False):
+        raise RuntimeError(f"Graph build start failed: {build_response}")
+    build_task = poll_task(
+        base_url,
+        f"/api/graph/task/{build_response['data']['task_id']}",
+        success_statuses={"completed"},
+        timeout_seconds=7200,
+    )
+    graph_id = build_task.get("result", {}).get("graph_id") or build_task.get("graph_id")
+    built = {
+        "cache_key": cache_key,
+        "project_id": project_id,
+        "graph_id": graph_id,
+        "build_task_id": build_response["data"]["task_id"],
+        "project_name": project_name,
+        "input_file": seed_path.name,
+        "input_sha256": sha256_file(seed_path),
+        "created_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+    }
+    if reuse_graph:
+        project_cache[cache_key] = built
+        write_json(cache_file, built)
+    return built
+
+
+def run_variant(
+    base_url: str,
+    case_dir: Path,
+    config: Dict[str, Any],
+    variant_id: str,
+    force: bool,
+    project_cache: Dict[str, Dict[str, Any]],
+) -> Path:
     experiment = config["experiment_metadata"]
     package = config["line5_package"]
     run_entry = next((item for item in config["run_matrix"] if item["id"] == variant_id), None)
@@ -270,36 +395,20 @@ def run_variant(base_url: str, case_dir: Path, config: Dict[str, Any], variant_i
         ],
     }
 
-    upload_response = multipart_request(
-        base_url,
-        "/api/graph/ontology/generate",
-        fields={
-            "project_name": variant_id,
-            "simulation_requirement": question_text,
-            "additional_context": system_constraints_text,
-            "project_metadata_json": json.dumps(project_metadata, ensure_ascii=False),
-        },
-        file_paths=[seed_path],
+    graph_context = build_or_reuse_graph(
+        base_url=base_url,
+        case_dir=case_dir,
+        config=config,
+        run_entry=run_entry,
+        seed_path=seed_path,
+        question_text=question_text,
+        system_constraints_text=system_constraints_text,
+        project_metadata=project_metadata,
+        force=force,
+        project_cache=project_cache,
     )
-    if not upload_response.get("success", False):
-        raise RuntimeError(f"Ontology generation failed: {upload_response}")
-    project_id = upload_response["data"]["project_id"]
-
-    build_response = json_request(
-        base_url,
-        "POST",
-        "/api/graph/build",
-        {"project_id": project_id, "graph_name": variant_id, "force": force},
-    )
-    if not build_response.get("success", False):
-        raise RuntimeError(f"Graph build start failed: {build_response}")
-    build_task = poll_task(
-        base_url,
-        f"/api/graph/task/{build_response['data']['task_id']}",
-        success_statuses={"completed"},
-        timeout_seconds=7200,
-    )
-    graph_id = build_task.get("result", {}).get("graph_id") or build_task.get("graph_id")
+    project_id = graph_context["project_id"]
+    graph_id = graph_context["graph_id"]
 
     create_sim_response = json_request(
         base_url,
@@ -446,6 +555,7 @@ def build_run_notes(
         f"- schema_id: {report_data.get('schema_id')}",
         f"- eval_score: {eval_result.get('score')}/{eval_result.get('max_score')}",
         f"- parse_errors: {eval_result.get('parse_errors')}",
+        f"- shared_graph_project: {package.get('reuse_graph_project', False)}",
         "",
         "## Sources",
         *[f"- {source_id}" for source_id in package.get("sources", [])],
@@ -474,11 +584,14 @@ def main() -> int:
             "model_policy": config["model_policy"],
             "variants": variants,
             "output_dir": config["experiment_metadata"].get("output_dir", "output_llama_line5"),
+            "reuse_graph_project": bool(config["line5_package"].get("reuse_graph_project")),
+            "input_file": config["line5_package"].get("input_file"),
         }, ensure_ascii=False, indent=2))
         return 0
 
+    project_cache: Dict[str, Dict[str, Any]] = {}
     for variant_id in variants:
-        output_dir = run_variant(args.base_url, case_dir, config, variant_id, args.force)
+        output_dir = run_variant(args.base_url, case_dir, config, variant_id, args.force, project_cache)
         print(f"[done] {variant_id} -> {output_dir}")
     return 0
 

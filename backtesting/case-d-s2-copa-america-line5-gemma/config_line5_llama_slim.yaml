@@ -1,0 +1,86 @@
+experiment_metadata:
+  phase: "S2"
+  issue_source: "#18"
+  source_pr: "#22"
+  case_id: "case-d-s2-copa-america-line5-llama-slim"
+  source_case: "case-d-s2-copa-america-line5-gemma"
+  line_focus: "Linea 5 - profundidad de simulacion / densidad"
+  question_file: "question.md"
+  system_constraints_file: "system_constraints.md"
+  primary_metric: "winner correctness, probability width, goal margin"
+  output_dir: "output_llama_line5_slim"
+  eval_script: "eval_objective.py"
+  eval_artifact: "structured_answer_json"
+
+model_policy:
+  label: "Llama 3.3 70B Instruct"
+  provider_id: "meta-llama/Llama-3.3-70B-Instruct"
+  model_policy: "llama_line5_probe_slim"
+  required_backend_base_url: "https://openrouter.ai/api/v1"
+  note: "Start backend with Llama before running; the runner cannot change a live backend model."
+
+fixed_simulation_config:
+  seed: 20240713
+  temperature: 0
+  output_mode: "structured_json"
+  schema_id: "copa_america_winner_v1"
+  platform: "parallel"
+  use_llm_for_profiles: true
+  parallel_profile_count: 5
+  enable_graph_memory_update: false
+
+line5_package:
+  id: "T3_slim"
+  label: "slim pre-final Copa America evidence package"
+  max_document_date: "2024-07-13"
+  input_file: "seed_T3_line5_slim.md"
+  reuse_graph_project: true
+  sources:
+    - "COPA_T3_SLIM_01"
+    - "COPA_T3_SLIM_02"
+    - "COPA_T3_SLIM_03"
+    - "COPA_T3_SLIM_04"
+
+run_matrix:
+  - id: "llama_T3_slim_R10_D2"
+    package: "T3_slim"
+    input_file: "seed_T3_line5_slim.md"
+    rounds: 10
+    density: 2
+    label: "Low Depth"
+  - id: "llama_T3_slim_R40_D2"
+    package: "T3_slim"
+    input_file: "seed_T3_line5_slim.md"
+    rounds: 40
+    density: 2
+    label: "Standard Depth"
+  - id: "llama_T3_slim_R80_D2"
+    package: "T3_slim"
+    input_file: "seed_T3_line5_slim.md"
+    rounds: 80
+    density: 2
+    label: "High Depth"
+  - id: "llama_T3_slim_R40_D1"
+    package: "T3_slim"
+    input_file: "seed_T3_line5_slim.md"
+    rounds: 40
+    density: 1
+    label: "Density D1"
+  - id: "llama_T3_slim_R40_D3"
+    package: "T3_slim"
+    input_file: "seed_T3_line5_slim.md"
+    rounds: 40
+    density: 3
+    label: "Density D3"
+
+do_not_upload:
+  - "ground_truth_private.md"
+  - "eval_objective.py"
+  - "README.md"
+  - "rubric.md"
+  - "manifest.csv"
+  - "config_matrix.yaml"
+  - "run_temporal_matrix.py"
+  - "output/"
+  - "output_llama_line5/"
+  - "output_llama_line5_slim/"
