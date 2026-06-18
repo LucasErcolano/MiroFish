@@ -432,6 +432,20 @@ class SimulationRunner:
             env = os.environ.copy()
             env['PYTHONUTF8'] = '1'  # Python 3.7+ 支持，让所有 open() 默认使用 UTF-8
             env['PYTHONIOENCODING'] = 'utf-8'  # 确保 stdout/stderr 使用 UTF-8
+
+            # Separación de fase: la simulación interactiva (OASIS subprocess)
+            # puede usar una API key / modelo distinto al resto del pipeline
+            # (graph/ontology, profile gen, report agent). Si SIMULATION_LLM_*
+            # está configurado en Config, se inyecta al env del subproceso; los
+            # scripts hijos (run_*_simulation.py) leen LLM_API_KEY etc. del env
+            # directamente. Si no, fallback silencioso a las globales — el env
+            # del padre ya las trae vía os.environ.copy().
+            if Config.SIMULATION_LLM_API_KEY:
+                env['LLM_API_KEY'] = Config.SIMULATION_LLM_API_KEY
+            if Config.SIMULATION_LLM_BASE_URL:
+                env['LLM_BASE_URL'] = Config.SIMULATION_LLM_BASE_URL
+            if Config.SIMULATION_LLM_MODEL_NAME:
+                env['LLM_MODEL_NAME'] = Config.SIMULATION_LLM_MODEL_NAME
             
             # 设置工作目录为模拟目录（数据库等文件会生成在此）
             # 使用 start_new_session=True 创建新的进程组，确保可以通过 os.killpg 终止所有子进程
