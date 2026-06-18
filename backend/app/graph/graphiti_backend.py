@@ -20,6 +20,44 @@ from .base import GraphBackend
 logger = logging.getLogger(__name__)
 
 
+def _is_neo4j_property_scalar(value: Any) -> bool:
+    return value is None or isinstance(value, (str, int, float, bool))
+
+
+def _sanitize_neo4j_property_value(value: Any) -> Any:
+    if _is_neo4j_property_scalar(value):
+        return value
+    if isinstance(value, datetime):
+        return value.isoformat()
+    if isinstance(value, list):
+        if all(_is_neo4j_property_scalar(item) for item in value):
+            return value
+        return json.dumps(value, ensure_ascii=False, default=str)
+    if isinstance(value, tuple):
+        items = list(value)
+        if all(_is_neo4j_property_scalar(item) for item in items):
+            return items
+        return json.dumps(items, ensure_ascii=False, default=str)
+    return json.dumps(value, ensure_ascii=False, default=str)
+
+
+def _sanitize_neo4j_attributes(attributes: Any) -> Dict[str, Any]:
+    if not isinstance(attributes, dict):
+        return {}
+    return {
+        str(key): _sanitize_neo4j_property_value(value)
+        for key, value in attributes.items()
+    }
+
+
+def _sanitize_graphiti_items_for_neo4j(items: List[Any]) -> None:
+    for item in items or []:
+        if hasattr(item, "attributes"):
+            item.attributes = _sanitize_neo4j_attributes(
+                getattr(item, "attributes", {}) or {}
+            )
+
+
 @dataclass
 class _CompatEpisode:
     uuid: str
@@ -508,6 +546,8 @@ class GraphitiBackend(GraphBackend):
             entity_types,
             edges=new_edges,
         )
+        _sanitize_graphiti_items_for_neo4j(hydrated_nodes)
+        _sanitize_graphiti_items_for_neo4j(entity_edges)
         _, saved_episode = await self._graphiti._process_episode_data(
             episode,
             hydrated_nodes,
@@ -632,7 +672,9 @@ class GraphitiBackend(GraphBackend):
             name=getattr(node, "name", "") or "",
             labels=list(getattr(node, "labels", []) or []),
             summary=getattr(node, "summary", "") or "",
-            attributes=dict(getattr(node, "attributes", {}) or {}),
+            attributes=_sanitize_neo4j_attributes(
+                getattr(node, "attributes", {}) or {}
+            ),
             created_at=getattr(node, "created_at", None),
         )
 
@@ -650,7 +692,9 @@ class GraphitiBackend(GraphBackend):
             target_node_uuid=getattr(edge, "target_node_uuid", "") or "",
             source_node_name=source_node_name,
             target_node_name=target_node_name,
-            attributes=dict(getattr(edge, "attributes", {}) or {}),
+            attributes=_sanitize_neo4j_attributes(
+                getattr(edge, "attributes", {}) or {}
+            ),
             episodes=list(getattr(edge, "episodes", []) or []),
             created_at=getattr(edge, "created_at", None),
             valid_at=getattr(edge, "valid_at", None),
