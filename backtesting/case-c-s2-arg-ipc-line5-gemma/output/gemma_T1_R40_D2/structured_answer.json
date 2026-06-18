@@ -1,0 +1,63 @@
+{
+  "delta_1": {
+    "point_estimate": 1.8,
+    "range_min": 1.5,
+    "range_max": 2.2
+  },
+  "delta_2": {
+    "range_min": 1.5,
+    "range_max": 2.5,
+    "trend": "estable"
+  },
+  "delta_3": {
+    "range_min": 1.2,
+    "range_max": 2.0,
+    "trend": "desacelerando",
+    "reason": "The BCRA REM for December 2024 points to expected 2025 inflation around 25.9%, suggesting a gradual deceleration throughout the year. [MACRO_03]"
+  },
+  "delta_4": {
+    "point_estimate": 1.5,
+    "range_min": 1.0,
+    "range_max": 2.0,
+    "program_stability": "incierto",
+    "accumulated_2025_range_min": 20.0,
+    "accumulated_2025_range_max": 30.0
+  },
+  "causal_mechanism": {
+    "dominant_variable": "Fiscal adjustment and exchange-rate management",
+    "main_risk": "Social stress and congressional fragility"
+  },
+  "evidence": [
+    {
+      "claim": "The BCRA REM for December 2024 gives a market expectation of 25.9% inflation for 2025. [MACRO_03]",
+      "source_id": [
+        "MACRO_03"
+      ]
+    },
+    {
+      "claim": "The BCRA issued a forecast for 2025 growth around 4.5% and inflation around 25.9%. [MACRO_03]",
+      "source_id": [
+        "MACRO_03"
+      ]
+    },
+    {
+      "claim": "Argentina enters 2025 with severe social stress. [SOCIAL_01]",
+      "source_id": [
+        "SOCIAL_01"
+      ]
+    },
+    {
+      "claim": "The IMF adds external constraints, including reserves, exchange-rate normalization, and fiscal consistency. [GEO_01]",
+      "source_id": [
+        "GEO_01"
+      ]
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2025-01-10",
+    "temporal_package": "T1",
+    "model": "google/gemma-3-27b-it",
+    "simulation_id": "sim_a54996994596",
+    "graph_id": "mirofish_abb7c4222e194352"
+  }
+}

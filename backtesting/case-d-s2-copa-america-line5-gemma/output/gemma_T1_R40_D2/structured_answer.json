@@ -1,0 +1,111 @@
+{
+  "predicted_winner": "Argentina",
+  "confidence": 0.75,
+  "winner_probability_point": 0.65,
+  "winner_probability_range": {
+    "winner_min": 0.6,
+    "winner_max": 0.7
+  },
+  "predicted_goal_margin": {
+    "winner_goals_margin_point": 1.0,
+    "winner_goals_margin_min": 0.5,
+    "winner_goals_margin_max": 1.5,
+    "rationale": "Argentina has a stronger recent performance and a history of success in the Copa America, suggesting a likely win by a single goal."
+  },
+  "probability_calibration": {
+    "method": "Expert judgment based on available evidence",
+    "confidence_rationale": "Confidence is set at 0.75 due to Argentina's historical performance and recent form, but acknowledging the inherent uncertainty in a final match.",
+    "range_rationale": "The probability range is relatively narrow (0.60-0.70) reflecting a moderate degree of certainty, but allowing for the possibility of an upset."
+  },
+  "probability_drivers": [
+    {
+      "factor": "Historical performance",
+      "direction": "Argentina",
+      "source_id": [
+        "HIST_01"
+      ]
+    },
+    {
+      "factor": "Recent form",
+      "direction": "Argentina",
+      "source_id": [
+        "FORM_01"
+      ]
+    },
+    {
+      "factor": "Key player availability",
+      "direction": "Argentina",
+      "source_id": [
+        "SQUAD_01"
+      ]
+    },
+    {
+      "factor": "Defensive resilience",
+      "direction": "Colombia",
+      "source_id": [
+        "FORM_02"
+      ]
+    }
+  ],
+  "justification": [
+    {
+      "claim": "Argentina entered the final as the defending Copa America champion.",
+      "source_id": [
+        "HIST_01"
+      ]
+    },
+    {
+      "claim": "Argentina beat Canada 2-0 in their previous match.",
+      "source_id": [
+        "FORM_01"
+      ]
+    },
+    {
+      "claim": "Argentina has a strong core of experienced players.",
+      "source_id": [
+        "SQUAD_01"
+      ]
+    }
+  ],
+  "uncertainty": [
+    {
+      "factor": "Colombia's defensive resilience",
+      "source_id": [
+        "FORM_02"
+      ]
+    },
+    {
+      "factor": "Potential for a close match",
+      "source_id": [
+        "HIST_01"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "claim": "Argentina and Colombia were the finalists of the 2024 CONMEBOL Copa America.",
+      "source_id": [
+        "BASE_03"
+      ]
+    },
+    {
+      "claim": "Argentina was the defending Copa America champion.",
+      "source_id": [
+        "HIST_01"
+      ]
+    },
+    {
+      "claim": "Argentina beat Canada 2-0 in their semifinal match.",
+      "source_id": [
+        "FORM_01"
+      ]
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2024-07-13",
+    "temporal_package": "T1",
+    "model": "google/gemma-3-27b-it",
+    "simulation_id": "sim_69300ed4e575",
+    "graph_id": "mirofish_4bf91948612a4daf"
+  }
+}

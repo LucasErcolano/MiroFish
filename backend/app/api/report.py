@@ -11,6 +11,7 @@ from flask import request, jsonify, send_file
 from . import report_bp
 from ..config import Config
 from ..services.report_agent import ReportAgent, ReportManager, ReportStatus
+from ..services.structured_report_agent import StructuredReportAgent
 from ..services.simulation_manager import SimulationManager
 from ..models.project import ProjectManager
 from ..models.task import TaskManager, TaskStatus
@@ -58,6 +59,9 @@ def generate_report():
             }), 400
 
         force_regenerate = data.get('force_regenerate', False)
+        output_mode = data.get('output_mode', 'narrative')
+        schema_id = data.get('schema_id')
+        report_context = data.get('report_context') or {}
         
         # 获取模拟信息
         manager = SimulationManager()
@@ -72,7 +76,11 @@ def generate_report():
         # 检查是否已有报告
         if not force_regenerate:
             existing_report = ReportManager.get_report_by_simulation(simulation_id)
-            if existing_report and existing_report.status == ReportStatus.COMPLETED:
+            if (
+                existing_report
+                and existing_report.status == ReportStatus.COMPLETED
+                and existing_report.output_mode == output_mode
+            ):
                 return jsonify({
                     "success": True,
                     "data": {
@@ -106,6 +114,12 @@ def generate_report():
                 "error": t('api.missingSimRequirement')
             }), 400
         
+        project_metadata = getattr(project, "metadata", {}) or {}
+        merged_report_context = {
+            **project_metadata,
+            **report_context,
+        }
+
         # 提前生成 report_id，以便立即返回给前端
         import uuid
         report_id = f"report_{uuid.uuid4().hex[:12]}"
@@ -117,7 +131,9 @@ def generate_report():
             metadata={
                 "simulation_id": simulation_id,
                 "graph_id": graph_id,
-                "report_id": report_id
+                "report_id": report_id,
+                "output_mode": output_mode,
+                "schema_id": schema_id,
             }
         )
         
@@ -135,12 +151,20 @@ def generate_report():
                     message=t('api.initReportAgent')
                 )
                 
-                # 创建Report Agent
-                agent = ReportAgent(
-                    graph_id=graph_id,
-                    simulation_id=simulation_id,
-                    simulation_requirement=simulation_requirement
-                )
+                if output_mode == "structured_json":
+                    agent = StructuredReportAgent(
+                        graph_id=graph_id,
+                        simulation_id=simulation_id,
+                        simulation_requirement=simulation_requirement,
+                        schema_id=schema_id or "structured_json_v1",
+                        report_context=merged_report_context,
+                    )
+                else:
+                    agent = ReportAgent(
+                        graph_id=graph_id,
+                        simulation_id=simulation_id,
+                        simulation_requirement=simulation_requirement
+                    )
                 
                 # 进度回调
                 def progress_callback(stage, progress, message):
@@ -228,23 +252,21 @@ def get_generate_status():
         task_id = data.get('task_id')
         simulation_id = data.get('simulation_id')
         
-        # 如果提供了simulation_id，先检查是否已有完成的报告
-        if simulation_id:
-            existing_report = ReportManager.get_report_by_simulation(simulation_id)
-            if existing_report and existing_report.status == ReportStatus.COMPLETED:
-                return jsonify({
-                    "success": True,
-                    "data": {
-                        "simulation_id": simulation_id,
-                        "report_id": existing_report.report_id,
-                        "status": "completed",
-                        "progress": 100,
-                        "message": t('api.reportGenerated'),
-                        "already_completed": True
-                    }
-                })
-        
         if not task_id:
+            if simulation_id:
+                existing_report = ReportManager.get_report_by_simulation(simulation_id)
+                if existing_report and existing_report.status == ReportStatus.COMPLETED:
+                    return jsonify({
+                        "success": True,
+                        "data": {
+                            "simulation_id": simulation_id,
+                            "report_id": existing_report.report_id,
+                            "status": "completed",
+                            "progress": 100,
+                            "message": t('api.reportGenerated'),
+                            "already_completed": True
+                        }
+                    })
             return jsonify({
                 "success": False,
                 "error": t('api.requireTaskOrSimId')

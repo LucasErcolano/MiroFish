@@ -1,0 +1,166 @@
+[system]
+你是社交媒体行为分析专家。返回纯JSON，配置需符合模拟场景中目标用户群体的作息习惯。
+
+请使用中文回答。
+IMPORTANT: The 'stance' field value MUST be one of the English strings: 'supportive', 'opposing', 'neutral', 'observer'. All JSON field names and numeric values must remain unchanged. Only natural language text fields should use the specified language.
+
+[user]
+基于以下信息，为每个实体生成社交媒体活动配置。
+
+模拟需求: Usando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:
+
+Regla obligatoria de estimación:
+- Debes responder siempre con una estimación numérica para los cuatro horizontes pedidos, aunque la evidencia sea incompleta o incierta.
+- No uses `null`, "no disponible" ni abstenciones en los campos de predicción.
+- Si falta evidencia directa para un mes, infiere el mejor rango posible usando la evidencia disponible sobre tendencia, inflación anual esperada, inflación mensual reciente, política cambiaria/fiscal, riesgos y contexto social.
+- Expresa la incertidumbre ampliando el rango y explica la razón principal.
+
+1. Predicción Δ1 (febrero 2025 — variación mensual IPC):
+   - Valor puntual estimado (ej: 2.5%).
+   - Rango: entre X% y Y%.
+
+2. Predicción Δ2 (abril 2025 — variación mensual IPC):
+   - Rango estimado: entre X% y Y%.
+   - Dirección de tendencia: acelerando / estable / desacelerando.
+
+3. Predicción Δ3 (julio 2025 — variación mensual IPC):
+   - Rango estimado: entre X% y Y%.
+   - Dirección de tendencia esperada hacia julio: acelerando / estable / desacelerando.
+   - Razón principal.
+
+4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):
+   - Valor puntual estimado para IPC mensual de diciembre 2025.
+   - Rango estimado para IPC mensual de diciembre 2025: entre X% y Y%.
+   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.
+   - Rango de inflación acumulada 2025 esperada.
+
+5. Mecanismo causal:
+   - Variable dominante en la trayectoria de desinflación.
+   - Principal riesgo que podría revertir el proceso.
+
+6. Evidencia:
+   - Citar source_id por cada claim importante.
+   - No usar datos posteriores al 31/01/2025.
+
+## 实体列表
+```json
+[
+  {
+    "agent_id": 0,
+    "entity_name": "Observatorio Social de la UCA",
+    "entity_type": "Organization",
+    "summary": "UCA/ODSA published a subsistence and poverty report on 2024-12-05."
+  },
+  {
+    "agent_id": 1,
+    "entity_name": "Milei",
+    "entity_type": "Person",
+    "summary": "Americas Quarterly frames the 2025 legislative election as a political validation test for Milei's economic program."
+  },
+  {
+    "agent_id": 2,
+    "entity_name": "International Monetary Fund",
+    "entity_type": "InternationalOrganization",
+    "summary": "The International Monetary Fund published an ex-post evaluation that may relate to the BCRA REM December 2024 report.\nThe International Monetary Fund published an ex-post evaluation, and the World Bank released a January 2025 regional outlook.\nThe Instituto Nacional de Estadística y Censos published"
+  },
+  {
+    "agent_id": 3,
+    "entity_name": "Americas Quarterly",
+    "entity_type": "MediaOutlet",
+    "summary": "Americas Quarterly released a January 2025 political snapshot, and the International Monetary Fund published an ex-post evaluation.\nAmericas Quarterly frames the 2025 legislative election as a political validation test for Milei's economic program.\nAmericas Quarterly reports that the 2025 legislativ"
+  },
+  {
+    "agent_id": 4,
+    "entity_name": "national public sector",
+    "entity_type": "Organization",
+    "summary": "MECON reported that the national public sector registered an annual financial surplus for the first time since 2010.\nThe financial surplus of the national public sector tightens the political constraint, reducing the Executive's ability to respond to poverty.\nThe financial surplus of the national pu"
+  },
+  {
+    "agent_id": 5,
+    "entity_name": "Chequeado",
+    "entity_type": "MediaOutlet",
+    "summary": "Chequeado reported on a note from the Cámara de Diputados regarding a pension-law veto.\nChequeado corroborates the vote count reported by Diputados regarding the pension-law veto.\nThe Executive can sustain vetoes, depending on allies and negotiation, as initialized by information from INST_02.\nThe E"
+  },
+  {
+    "agent_id": 6,
+    "entity_name": "CB Consultora",
+    "entity_type": "PollingOrganization",
+    "summary": "CB Consultora conducted a national survey on 2024-12-06."
+  },
+  {
+    "agent_id": 7,
+    "entity_name": "Diputados",
+    "entity_type": "Legislator",
+    "summary": "Diputados reported on a pension-law veto.\nChequeado reported on a note from the Cámara de Diputados regarding a pension-law veto.\nDiputados reported on the pension-law veto attempt to Congress.\nChequeado corroborates the vote count reported by Diputados regarding the pension-law veto.\nThe Executive "
+  },
+  {
+    "agent_id": 8,
+    "entity_name": "Instituto Nacional de Estadística y Censos",
+    "entity_type": "Organization",
+    "summary": "The Instituto Nacional de Estadística y Censos published the December 2024 IPC, while the International Monetary Fund published an ex-post evaluation.\nThe Banco Central de la República Argentina published a December 2024 monetary report, while the Instituto Nacional de Estadística y Censos published"
+  },
+  {
+    "agent_id": 9,
+    "entity_name": "Universidad Católica Argentina",
+    "entity_type": "Organization",
+    "summary": "UCA/ODSA published a subsistence and poverty report on 2024-12-05.\nThe UCA/ODSA report records poverty in Argentina."
+  },
+  {
+    "agent_id": 10,
+    "entity_name": "BBVA Argentina",
+    "entity_type": "EconomicAnalyst",
+    "summary": "BBVA Argentina provided an economic outlook in December 2024 / 4Q24, which may relate to the BCRA REM December 2024 report.\nBBVA analyzes Argentina's economic situation, framing it in a recovery/desinflation scenario."
+  },
+  {
+    "agent_id": 11,
+    "entity_name": "MiroFish",
+    "entity_type": "Person",
+    "summary": "MiroFish balances disinflation anchors including December IPC data of 2.7%.\nMiroFish balances fragility channels including IMF constraints."
+  },
+  {
+    "agent_id": 12,
+    "entity_name": "Argentina",
+    "entity_type": "Organization",
+    "summary": "The UCA/ODSA report records poverty in Argentina.\nThe World Bank provides a regional outlook for Argentina.\nBBVA analyzes Argentina's economic situation, framing it in a recovery/desinflation scenario.\nThe Banco Central de la República Argentina's December 2024 monetary report adds context regarding"
+  },
+  {
+    "agent_id": 13,
+    "entity_name": "Banco Central de la República Argentina",
+    "entity_type": "CentralBankOfficial",
+    "summary": "BCRA published December 2024 monetary report with liquidity & credit data. REM report (published 2025-01-07) expects 4.5% growth & 25.9% inflation in 2025. Announced crawling peg change to 1% monthly from 2025-02-01."
+  },
+  {
+    "agent_id": 14,
+    "entity_name": "World Bank",
+    "entity_type": "InternationalOrganization",
+    "summary": "The International Monetary Fund published an ex-post evaluation, and the World Bank released a January 2025 regional outlook.\nThe World Bank released a January 2025 regional outlook, while the Instituto Nacional de Estadística y Censos published the December 2024 IPC.\nThe World Bank provides a regio"
+  }
+]
+```
+
+## 任务
+为每个实体生成活动配置，注意：
+- **时间符合目标用户群体作息**：以下为参考（东八区），请根据模拟场景调整
+- **官方机构**（University/GovernmentAgency）：活跃度低(0.1-0.3)，工作时间(9-17)活动，响应慢(60-240分钟)，影响力高(2.5-3.0)
+- **媒体**（MediaOutlet）：活跃度中(0.4-0.6)，全天活动(8-23)，响应快(5-30分钟)，影响力高(2.0-2.5)
+- **个人**（Student/Person/Alumni）：活跃度高(0.6-0.9)，主要晚间活动(18-23)，响应快(1-15分钟)，影响力低(0.8-1.2)
+- **公众人物/专家**：活跃度中(0.4-0.6)，影响力中高(1.5-2.0)
+
+返回JSON格式（不要markdown）：
+{
+    "agent_configs": [
+        {
+            "agent_id": <必须与输入一致>,
+            "activity_level": <0.0-1.0>,
+            "posts_per_hour": <发帖频率>,
+            "comments_per_hour": <评论频率>,
+            "active_hours": [<活跃小时列表，考虑中国人作息>],
+            "response_delay_min": <最小响应延迟分钟>,
+            "response_delay_max": <最大响应延迟分钟>,
+            "sentiment_bias": <-1.0到1.0>,
+            "stance": "<supportive/opposing/neutral/observer>",
+            "influence_weight": <影响力权重>
+        },
+        ...
+    ]
+}

@@ -1,0 +1,211 @@
+[system]
+你是社交媒体模拟专家。返回纯JSON格式，时间配置需符合模拟场景中目标用户群体的作息习惯。
+
+请使用中文回答。
+
+[user]
+基于以下模拟需求，生成时间模拟配置。
+
+## 模拟需求
+# Prompt
+
+Con la informacion disponible hasta el 13 de julio de 2024, predecir quien ganara la final de la Copa America 2024 entre Argentina y Colombia.
+
+Responder exclusivamente en espanol.
+
+La respuesta debe:
+
+- elegir un unico ganador esperado;
+- justificar la prediccion usando solo evidencia del contexto entregado;
+- mencionar los principales factores de incertidumbre;
+- no usar informacion posterior al 13 de julio de 2024.
+
+Formato esperado:
+
+Ganador predicho: Argentina o Colombia
+
+Justificacion:
+- evidencia 1
+- evidencia 2
+- evidencia 3
+
+Incertidumbre:
+- factor 1
+- factor 2
+
+Tambien devolver una salida estructurada JSON con:
+
+- `predicted_winner`: Argentina o Colombia.
+- `confidence`: numero entre 0 y 1.
+- `winner_probability_point`: probabilidad puntual del ganador elegido.
+- `winner_probability_range`: rango estrecho para el ganador elegido, con `winner_min` y `winner_max`.
+- `predicted_goal_margin`: diferencia esperada de goles para el ganador, con valor puntual y rango.
+- `probability_calibration`: explicacion breve de como se eligieron la confianza y los rangos.
+- `probability_drivers`: factores que suben o bajan la probabilidad de cada equipo, con `source_id`.
+- `justification`: claims con `source_id`.
+- `uncertainty`: factores con `source_id`.
+- `evidence`: claims principales con `source_id`.
+
+Reglas de calibracion:
+
+- No usar un rango generico fijo para todas las corridas.
+- El rango de probabilidad del ganador debe ser estrecho: `winner_max - winner_min <= 0.05`.
+- `winner_probability_point` debe caer dentro de ese rango.
+- Si no hay odds/modelos probabilisticos directos, expresar la incertidumbre bajando la confianza y explicandola, no usando un rango enorme.
+- Si aparecen odds, modelos o mercados, anclar el punto medio a esa evidencia.
+- La confianza debe cambiar cuando cambia la evidencia temporal.
+- Evitar valores redondos repetidos salvo que esten justificados por las fuentes.
+- La diferencia de goles debe ser una prediccion pre-partido, no el resultado real.
+
+## 实体信息 (29个)
+
+### FootballTeam (5个)
+- Canada: Argentina beat Canada 2-0 in a semifinal match.
+- Uruguay: Tied with Argentina for the historical record of 15 Copa America titles.
+Colombia beat Uruguay 1-0.
+Colombia defeated Uruguay in the semifinal.
+- Ecuador: Argentina competed against Ecuador in the quarter-final.
+- Argentina: Argentina was a finalist in the 2024 CONMEBOL Copa America, and the defending champion. They beat Canada 2-0 in the semifinal, with goals from Messi and Alvarez. Messi played the full 90 minutes after recovering from an adductor issue. Argentina has 15 Copa America titles (tied with Uruguay for the ...
+- Colombia: Colombia was a finalist in the 2024 CONMEBOL Copa America. Argentina and Colombia were the finalists who would decide the Copa America title against each other.
+Argentina and Colombia had faced each other 15 times in Copa America history before the final: 7 Argentina wins, 3 Colombia wins and 5 draw...
+
+### FootballPlayer (18个)
+- Julian Alvarez: Julian Alvarez was part of the Argentine squad's core
+Julian Alvarez scored a goal while playing for Argentina.
+- Rodrigo De Paul: Rodrigo De Paul was part of the Argentine squad's core
+- Jhon Arias: Jhon Arias was part of Colombia's core
+- Jhon Cordoba: Jhon Cordoba was part of Colombia's core
+- Richard Rios: Richard Rios was part of Colombia's core
+- Daniel Munoz: Daniel Munoz was sent off while playing for Colombia.
+- Luis Diaz: Luis Diaz was part of Colombia's core
+- Angel Di Maria: Angel Di Maria was part of the Argentine squad's core
+- Emiliano Martinez: Emiliano Martinez was part of the Argentine squad's core
+Argentina needed Emiliano Martinez and a penalty shootout to advance in the quarter-final.
+- Cristian Romero: Cristian Romero was part of the Argentine squad's core
+- James Rodriguez: James Rodriguez was part of Colombia's core
+Jefferson Lerma scored from a James Rodriguez corner.
+James Rodriguez's set-piece delivery created a goal for Colombia.
+- Enzo Fernandez: Enzo Fernandez was part of the Argentine squad's core
+- Jefferson Lerma: Jefferson Lerma was part of Colombia's core
+Jefferson Lerma scored for Colombia.
+- Lionel Messi: Lionel Messi was part of the Argentine squad's core
+Lionel Messi scored a goal while playing for Argentina.
+Messi played the full 90 minutes for Argentina in the semifinal match.
+- Lautaro Martinez: Lautaro Martinez was part of the Argentine squad's core
+- Alexis Mac Allister: Alexis Mac Allister was part of the Argentine squad's core
+- Davinson Sanchez: Davinson Sanchez was part of Colombia's core
+- Camilo Vargas: Camilo Vargas was part of Colombia's core
+
+### SportsOrganization (2个)
+- CONMEBOL Copa America: Argentina was a finalist in the 2024 CONMEBOL Copa America.
+Colombia was a finalist in the 2024 CONMEBOL Copa America.
+The 2024 CONMEBOL Copa America final was scheduled to be held at Hard Rock Stadium.
+Argentina was favored to win the Copa America tournament.
+Colombia had odds to win the Copa Ameri...
+- World Cup: Argentina is the reigning World Cup champion as of July 13, 2024.
+Argentina won the World Cup in 2022.
+
+### Stadium (1个)
+- Hard Rock Stadium: The 2024 CONMEBOL Copa America final was scheduled to be held at Hard Rock Stadium.
+Hard Rock Stadium is located in Miami Gardens, Florida.
+
+### Organization (3个)
+- MasseyRatings: MasseyRatings gave Argentina a 41 percent chance of winning.
+MasseyRatings gave Colombia a 31 percent chance of winning.
+- Opta: Opta predicted Argentina would win in 90 minutes with a 50.4 percent probability.
+Opta predicted Colombia would win in 90 minutes with a 25.4 percent probability.
+Opta analyzed Argentina as being in a golden era on July 13.
+Opta emphasized that Colombia had also reached a potentially historic moment...
+- FanDuel: FanDuel analyzed Argentina's probability of winning in 90 minutes as 50.4 percent.
+FanDuel analyzed Colombia's probability of winning in 90 minutes as 25.4 percent.
+
+## 原始文档内容
+
+
+=== seed_T2.md ===
+# Seed T2 - T1 + mercado, modelos y probabilidades
+
+Cutoff: 2024-07-13.
+
+No usar informacion posterior al cutoff. No usar el marcador ni el desenlace de la final.
+
+## BASE_03 - Match information
+
+Argentina and Colombia were the finalists of the 2024 CONMEBOL Copa America. The final was scheduled for Sunday, July 14, 2024 at Hard Rock Stadium in Miami Gardens, Florida. It was the first time Argentina and Colombia would decide a Copa America title against each other.
+
+## HIST_01 - Titles and head-to-head context
+
+Argentina entered the final as defending Copa America champion and reigning World Cup champion. Before this final, Argentina had 15 Copa America titles and was tied with Uruguay for the historical record. Colombia had one Copa America title, won at home in 2001.
+
+In Copa America history before the final, Argentina and Colombia had faced each other 15 times: 7 Argentina wins, 3 Colombia wins and 5 draws. Outside group-stage contexts, Argentina was unbeaten against Colombia in five Copa America knockout-stage meetings, including matches decided by penalty shootouts.
+
+## SQUAD_01 - Key player context
+
+The Argentine squad's core included experienced players from recent title cycles, including Lionel Messi, Angel Di Maria, Emiliano Martinez, Cristian Romero, Rodrigo De Paul, Alexis Mac Allister, Enzo Fernandez, Julian Alvarez and Lautaro Martinez. Colombia's core included James Rodriguez, Luis Diaz, Jhon Cordoba, Camilo Vargas, Davinson Sanchez, Jefferson Lerma, Richard Rios and Jhon Arias.
+
+The match profile before adding later evidence can be described structurally as a final between Argentina's recent championship core and Colombia's attempt to convert a strong generation into a second continental title.
+
+## FORM_01 - Argentina semifinal: Argentina 2-0 Canada
+
+Argentina reached the final after beating Canada 2-0 on July 9, 2024. Lionel Messi scored his first goal of the tournament and Julian Alvarez had opened the scoring. The report described Argentina as the tournament favorite and noted that Argentina improved from its quarter-final performance, while still implying that a harder test awaited in the final.
+
+Argentina's semifinal also mattered because Messi played the full 90 minutes after recent concern around an adductor issue. The match report noted that Messi looked brighter and fitter than in the quarter-final against Ecuador, where Argentina had needed Emiliano Martinez and a penalty shootout to advance.
+
+## FORM_02 - Colombia semifinal: Colombia 1-0 Uruguay
+
+Colombia reached the final by beating Uruguay 1-0 on July 10, 2024. Jefferson Lerma scored from a James Rodriguez corner. Colombia played more than half the match with 10 men after Daniel Munoz was sent off, but defended the lead under pressure.
+
+The semifinal showed both Colombia's attacking mechanism and its defensive resilience. James Rodriguez's set-piece delivery created the goal, while Colombia had to protect the lead under sustained Uruguay pressure after the red card. The result sent Colombia to the final against Argentina.
+
+## MARKET_01 - Market odds: Argentina favorite in final markets
+
+Pre-final betting markets listed Argentina as the 90-minute favorite at +105, Colombia as a +360 underdog, and the draw at +190. The same market made Argentina -200 to lift the trophy, with Colombia +170. This implies Argentina was expected to be more likely to win the title, even though the match itself could still be close.
+
+## MARKET_02 - Outright odds after semifinal
+
+Updated Copa America odds after the semifinal had Argentina favored to win the tournament at -170 and Colombia at +130. The same article noted that Argentina reached the final after defeating Canada 2-0 and that Colombia represented a tough physical challenge.
+
+## MARKET_03 - Model and market comparison
+
+FanDuel's pre-final analysis summarized multiple probability signals. It cited an Opta model with Argentina winning in 90 minutes 50.4 percent of the time, a draw at 23.6 percent, and Colombia winning in 90 minutes 25.4 perce
+
+## 任务
+请生成时间配置JSON。
+
+### 基本原则（仅供参考，需根据具体事件和参与群体灵活调整）：
+- 请根据模拟场景推断目标用户群体所在时区和作息习惯，以下为东八区(UTC+8)的参考示例
+- 凌晨0-5点几乎无人活动（活跃度系数0.05）
+- 早上6-8点逐渐活跃（活跃度系数0.4）
+- 工作时间9-18点中等活跃（活跃度系数0.7）
+- 晚间19-22点是高峰期（活跃度系数1.5）
+- 23点后活跃度下降（活跃度系数0.5）
+- 一般规律：凌晨低活跃、早间渐增、工作时段中等、晚间高峰
+- **重要**：以下示例值仅供参考，你需要根据事件性质、参与群体特点来调整具体时段
+  - 例如：学生群体高峰可能是21-23点；媒体全天活跃；官方机构只在工作时间
+  - 例如：突发热点可能导致深夜也有讨论，off_peak_hours 可适当缩短
+
+### 返回JSON格式（不要markdown）
+
+示例：
+{
+    "total_simulation_hours": 72,
+    "minutes_per_round": 60,
+    "agents_per_hour_min": 5,
+    "agents_per_hour_max": 50,
+    "peak_hours": [19, 20, 21, 22],
+    "off_peak_hours": [0, 1, 2, 3, 4, 5],
+    "morning_hours": [6, 7, 8],
+    "work_hours": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+    "reasoning": "针对该事件的时间配置说明"
+}
+
+字段说明：
+- total_simulation_hours (int): 模拟总时长，24-168小时，突发事件短、持续话题长
+- minutes_per_round (int): 每轮时长，30-120分钟，建议60分钟
+- agents_per_hour_min (int): 每小时最少激活Agent数（取值范围: 1-26）
+- agents_per_hour_max (int): 每小时最多激活Agent数（取值范围: 1-26）
+- peak_hours (int数组): 高峰时段，根据事件参与群体调整
+- off_peak_hours (int数组): 低谷时段，通常深夜凌晨
+- morning_hours (int数组): 早间时段
+- work_hours (int数组): 工作时段
+- reasoning (string): 简要说明为什么这样配置

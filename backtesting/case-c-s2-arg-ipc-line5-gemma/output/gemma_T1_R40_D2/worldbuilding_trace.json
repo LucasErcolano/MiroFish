@@ -1,0 +1,2592 @@
+{
+  "trace_version": 2,
+  "simulation_id": "sim_a54996994596",
+  "project_id": "proj_e4a731d3022b",
+  "graph_id": "mirofish_abb7c4222e194352",
+  "created_at": "2026-06-16T19:21:49.797974",
+  "capture": {
+    "enabled": true,
+    "mode": "capture_only",
+    "save_raw_artifacts": true,
+    "redact_secrets": true,
+    "behavior": "passive_capture_only"
+  },
+  "input_context": {
+    "original_prompt": "Usando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:\n\nRegla obligatoria de estimación:\n- Debes responder siempre con una estimación numérica para los cuatro horizontes pedidos, aunque la evidencia sea incompleta o incierta.\n- No uses `null`, \"no disponible\" ni abstenciones en los campos de predicción.\n- Si falta evidencia directa para un mes, infiere el mejor rango posible usando la evidencia disponible sobre tendencia, inflación anual esperada, inflación mensual reciente, política cambiaria/fiscal, riesgos y contexto social.\n- Expresa la incertidumbre ampliando el rango y explica la razón principal.\n\n1. Predicción Δ1 (febrero 2025 — variación mensual IPC):\n   - Valor puntual estimado (ej: 2.5%).\n   - Rango: entre X% y Y%.\n\n2. Predicción Δ2 (abril 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia: acelerando / estable / desacelerando.\n\n3. Predicción Δ3 (julio 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia esperada hacia julio: acelerando / estable / desacelerando.\n   - Razón principal.\n\n4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):\n   - Valor puntual estimado para IPC mensual de diciembre 2025.\n   - Rango estimado para IPC mensual de diciembre 2025: entre X% y Y%.\n   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.\n   - Rango de inflación acumulada 2025 esperada.\n\n5. Mecanismo causal:\n   - Variable dominante en la trayectoria de desinflación.\n   - Principal riesgo que podría revertir el proceso.\n\n6. Evidencia:\n   - Citar source_id por cada claim importante.\n   - No usar datos posteriores al 31/01/2025.",
+    "normalized_task_prompt": "Usando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:\n\nRegla obligatoria de estimación:\n- Debes responder siempre con una estimación numérica para los cuatro horizontes pedidos, aunque la evidencia sea incompleta o incierta.\n- No uses `null`, \"no disponible\" ni abstenciones en los campos de predicción.\n- Si falta evidencia directa para un mes, infiere el mejor rango posible usando la evidencia disponible sobre tendencia, inflación anual esperada, inflación mensual reciente, política cambiaria/fiscal, riesgos y contexto social.\n- Expresa la incertidumbre ampliando el rango y explica la razón principal.\n\n1. Predicción Δ1 (febrero 2025 — variación mensual IPC):\n   - Valor puntual estimado (ej: 2.5%).\n   - Rango: entre X% y Y%.\n\n2. Predicción Δ2 (abril 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia: acelerando / estable / desacelerando.\n\n3. Predicción Δ3 (julio 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia esperada hacia julio: acelerando / estable / desacelerando.\n   - Razón principal.\n\n4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):\n   - Valor puntual estimado para IPC mensual de diciembre 2025.\n   - Rango estimado para IPC mensual de diciembre 2025: entre X% y Y%.\n   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.\n   - Rango de inflación acumulada 2025 esperada.\n\n5. Mecanismo causal:\n   - Variable dominante en la trayectoria de desinflación.\n   - Principal riesgo que podría revertir el proceso.\n\n6. Evidencia:\n   - Citar source_id por cada claim importante.\n   - No usar datos posteriores al 31/01/2025.",
+    "task_objective": "Predict Argentina IPC 2025 under the allowed pre-cutoff evidence.",
+    "simulation_requirement": "Usando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:\n\nRegla obligatoria de estimación:\n- Debes responder siempre con una estimación numérica para los cuatro horizontes pedidos, aunque la evidencia sea incompleta o incierta.\n- No uses `null`, \"no disponible\" ni abstenciones en los campos de predicción.\n- Si falta evidencia directa para un mes, infiere el mejor rango posible usando la evidencia disponible sobre tendencia, inflación anual esperada, inflación mensual reciente, política cambiaria/fiscal, riesgos y contexto social.\n- Expresa la incertidumbre ampliando el rango y explica la razón principal.\n\n1. Predicción Δ1 (febrero 2025 — variación mensual IPC):\n   - Valor puntual estimado (ej: 2.5%).\n   - Rango: entre X% y Y%.\n\n2. Predicción Δ2 (abril 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia: acelerando / estable / desacelerando.\n\n3. Predicción Δ3 (julio 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia esperada hacia julio: acelerando / estable / desacelerando.\n   - Razón principal.\n\n4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):\n   - Valor puntual estimado para IPC mensual de diciembre 2025.\n   - Rango estimado para IPC mensual de diciembre 2025: entre X% y Y%.\n   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.\n   - Rango de inflación acumulada 2025 esperada.\n\n5. Mecanismo causal:\n   - Variable dominante en la trayectoria de desinflación.\n   - Principal riesgo que podría revertir el proceso.\n\n6. Evidencia:\n   - Citar source_id por cada claim importante.\n   - No usar datos posteriores al 31/01/2025.",
+    "system_constraints": "Eres un agente de simulación social. Tienes acceso exclusivamente a los documentos provistos fechados hasta el 31 de enero de 2025. No uses información posterior a esa fecha. Si no tienes evidencia para un claim, dilo explícitamente. Cita el source_id de cada documento que uses.",
+    "document_text_length": 4655,
+    "document_text_sha256": "828bec19385e92a8c1a5effcd6f9ac78cc300b95aa6fb0069c71410c63d80625",
+    "document_text_saved_raw": false,
+    "project_name": "gemma_T1_R40_D2",
+    "language": "en_US.UTF-8",
+    "enable_twitter": true,
+    "enable_reddit": true,
+    "defined_entity_types_requested": null,
+    "use_llm_for_profiles": true,
+    "parallel_profile_count": 5,
+    "cutoff_date": "2025-01-10",
+    "temporal_package": "T1",
+    "source_ids": [
+      "INST_01",
+      "INST_02",
+      "SOCIAL_01",
+      "POLL_01",
+      "MACRO_01",
+      "MACRO_03",
+      "GEO_01"
+    ],
+    "requested_model": "google/gemma-3-27b-it",
+    "requested_seed": 1,
+    "requested_rounds": 40,
+    "requested_density": 2,
+    "source_files": [
+      {
+        "original_filename": "seed_T1.md",
+        "saved_filename": "54735694.md",
+        "path": "projects/proj_e4a731d3022b/files/54735694.md",
+        "size_bytes": 4635,
+        "sha256": "b548fcc99a8a40252055c3c40bbad78002220e3a35ca72bc2b98f530755ea917",
+        "included": true
+      }
+    ],
+    "excluded_files": [
+      {
+        "path": "ground_truth_private.md",
+        "reason": "excluded_by_case_config",
+        "sha256": "6cfab7700455f1b22a79bdd79eeaa175e163fb8957337313a125a1d28fd6c5fa"
+      },
+      {
+        "path": "rubric.md",
+        "reason": "excluded_by_case_config",
+        "sha256": "d0893b6b5383689d31f3699e00359eb93343226e512821963d174211aec7db83"
+      },
+      {
+        "path": "manifest.csv",
+        "reason": "excluded_by_case_config",
+        "sha256": "78eef644b0ef5a8784457f53342a03de6a78667ebdf82ea54f64bd20f4c85318"
+      },
+      {
+        "path": "config_matrix.yaml",
+        "reason": "excluded_by_case_config",
+        "sha256": "eb54665765a4e4d66cf876039eba73625ec1669f833f59ae39d29e40d7d4e4c4"
+      },
+      {
+        "path": "config_matrix_source.yaml",
+        "reason": "excluded_by_case_config",
+        "sha256": "050ed57c244da4be85aba1030a1db64b5caa46e3b36fbb83411747d515c87bcf"
+      },
+      {
+        "path": "internal_notes.md",
+        "reason": "excluded_by_case_config",
+        "sha256": "fb4b7d4ede015c1c17e86915682501e7a20e6b24e2e595b73c1bd156db7704f9"
+      },
+      {
+        "path": "output/",
+        "reason": "excluded_by_case_config",
+        "sha256": null
+      }
+    ]
+  },
+  "source_snapshot": {
+    "graph_backend": "graphiti",
+    "graph_reused": true,
+    "graph_id": "mirofish_abb7c4222e194352",
+    "graph_build_status": "graph_completed",
+    "documents_ingested": 1,
+    "chunk_size": 500,
+    "chunk_overlap": 50,
+    "llm_model_for_graph": "google/gemma-3-27b-it",
+    "embedding_model": "nomic-embed-text",
+    "total_nodes_seen": 19,
+    "filtered_entities_count": 12,
+    "filtered_entity_types": [
+      "CentralBankOfficial",
+      "InternationalOrganization",
+      "MediaOutlet",
+      "Organization",
+      "PollingOrganization",
+      "ResearchInstitution"
+    ],
+    "graph_memory_enabled": true,
+    "experimental_memory_enabled": false,
+    "warnings": []
+  },
+  "prompt_snapshot": {
+    "original_user_prompt": "Usando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:\n\nRegla obligatoria de estimación:\n- Debes responder siempre con una estimación numérica para los cuatro horizontes pedidos, aunque la evidencia sea incompleta o incierta.\n- No uses `null`, \"no disponible\" ni abstenciones en los campos de predicción.\n- Si falta evidencia directa para un mes, infiere el mejor rango posible usando la evidencia disponible sobre tendencia, inflación anual esperada, inflación mensual reciente, política cambiaria/fiscal, riesgos y contexto social.\n- Expresa la incertidumbre ampliando el rango y explica la razón principal.\n\n1. Predicción Δ1 (febrero 2025 — variación mensual IPC):\n   - Valor puntual estimado (ej: 2.5%).\n   - Rango: entre X% y Y%.\n\n2. Predicción Δ2 (abril 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia: acelerando / estable / desacelerando.\n\n3. Predicción Δ3 (julio 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia esperada hacia julio: acelerando / estable / desacelerando.\n   - Razón principal.\n\n4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):\n   - Valor puntual estimado para IPC mensual de diciembre 2025.\n   - Rango estimado para IPC mensual de diciembre 2025: entre X% y Y%.\n   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.\n   - Rango de inflación acumulada 2025 esperada.\n\n5. Mecanismo causal:\n   - Variable dominante en la trayectoria de desinflación.\n   - Principal riesgo que podría revertir el proceso.\n\n6. Evidencia:\n   - Citar source_id por cada claim importante.\n   - No usar datos posteriores al 31/01/2025.",
+    "normalized_task_prompt": "Usando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:\n\nRegla obligatoria de estimación:\n- Debes responder siempre con una estimación numérica para los cuatro horizontes pedidos, aunque la evidencia sea incompleta o incierta.\n- No uses `null`, \"no disponible\" ni abstenciones en los campos de predicción.\n- Si falta evidencia directa para un mes, infiere el mejor rango posible usando la evidencia disponible sobre tendencia, inflación anual esperada, inflación mensual reciente, política cambiaria/fiscal, riesgos y contexto social.\n- Expresa la incertidumbre ampliando el rango y explica la razón principal.\n\n1. Predicción Δ1 (febrero 2025 — variación mensual IPC):\n   - Valor puntual estimado (ej: 2.5%).\n   - Rango: entre X% y Y%.\n\n2. Predicción Δ2 (abril 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia: acelerando / estable / desacelerando.\n\n3. Predicción Δ3 (julio 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia esperada hacia julio: acelerando / estable / desacelerando.\n   - Razón principal.\n\n4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):\n   - Valor puntual estimado para IPC mensual de diciembre 2025.\n   - Rango estimado para IPC mensual de diciembre 2025: entre X% y Y%.\n   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.\n   - Rango de inflación acumulada 2025 esperada.\n\n5. Mecanismo causal:\n   - Variable dominante en la trayectoria de desinflación.\n   - Principal riesgo que podría revertir el proceso.\n\n6. Evidencia:\n   - Citar source_id por cada claim importante.\n   - No usar datos posteriores al 31/01/2025.",
+    "system_constraints_text": "Eres un agente de simulación social. Tienes acceso exclusivamente a los documentos provistos fechados hasta el 31 de enero de 2025. No uses información posterior a esa fecha. Si no tienes evidencia para un claim, dilo explícitamente. Cita el source_id de cada documento que uses.",
+    "simulation_requirement": "Usando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:\n\nRegla obligatoria de estimación:\n- Debes responder siempre con una estimación numérica para los cuatro horizontes pedidos, aunque la evidencia sea incompleta o incierta.\n- No uses `null`, \"no disponible\" ni abstenciones en los campos de predicción.\n- Si falta evidencia directa para un mes, infiere el mejor rango posible usando la evidencia disponible sobre tendencia, inflación anual esperada, inflación mensual reciente, política cambiaria/fiscal, riesgos y contexto social.\n- Expresa la incertidumbre ampliando el rango y explica la razón principal.\n\n1. Predicción Δ1 (febrero 2025 — variación mensual IPC):\n   - Valor puntual estimado (ej: 2.5%).\n   - Rango: entre X% y Y%.\n\n2. Predicción Δ2 (abril 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia: acelerando / estable / desacelerando.\n\n3. Predicción Δ3 (julio 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia esperada hacia julio: acelerando / estable / desacelerando.\n   - Razón principal.\n\n4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):\n   - Valor puntual estimado para IPC mensual de diciembre 2025.\n   - Rango estimado para IPC mensual de diciembre 2025: entre X% y Y%.\n   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.\n   - Rango de inflación acumulada 2025 esperada.\n\n5. Mecanismo causal:\n   - Variable dominante en la trayectoria de desinflación.\n   - Principal riesgo que podría revertir el proceso.\n\n6. Evidencia:\n   - Citar source_id por cada claim importante.\n   - No usar datos posteriores al 31/01/2025.",
+    "llm_calls": [
+      {
+        "call_id": "profile_generation_001",
+        "stage": "profile_generation",
+        "model": "google/gemma-3-27b-it",
+        "input_hash": "7a13173fdab9dad13381b503a8f54ed49de6f09535eac8d92b03e014a5b6da1c",
+        "output_hash": "7a4cdd86e3db3109a89ec288e1b70496618e479275285bbd56a869db0e202f84",
+        "redacted_prompt_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_001.prompt.txt",
+        "redacted_output_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_001.output.json"
+      },
+      {
+        "call_id": "profile_generation_002",
+        "stage": "profile_generation",
+        "model": "google/gemma-3-27b-it",
+        "input_hash": "493928d1ae180dcd2f9c73d33105f61ef7317a6d22e1428fa2187a3d6a68c3a6",
+        "output_hash": "f10e393f5bfc3f870a2ae6a1ecdb94844342ae4832232fadc99be2df6628f06c",
+        "redacted_prompt_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_002.prompt.txt",
+        "redacted_output_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_002.output.json"
+      },
+      {
+        "call_id": "profile_generation_004",
+        "stage": "profile_generation",
+        "model": "google/gemma-3-27b-it",
+        "input_hash": "955af8c74da1e03c9f1b853fda7d7a6f3fbd50b1e0c19e6f62cfda09792b47a1",
+        "output_hash": "e807603da596c08aeaa49c6c1c526110fcb6c4a627aa14723245ef81586b2da0",
+        "redacted_prompt_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_004.prompt.txt",
+        "redacted_output_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_004.output.json"
+      },
+      {
+        "call_id": "profile_generation_003",
+        "stage": "profile_generation",
+        "model": "google/gemma-3-27b-it",
+        "input_hash": "5ba72ab1eab3b0c0b7d90143695ef1d323727d03eddaea8cb7371b0eaa792d28",
+        "output_hash": "6c5dee210a8db0cd359faf3cbb619541fc00c75af0b946bc9b69e268e260987c",
+        "redacted_prompt_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_003.prompt.txt",
+        "redacted_output_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_003.output.json"
+      },
+      {
+        "call_id": "profile_generation_005",
+        "stage": "profile_generation",
+        "model": "google/gemma-3-27b-it",
+        "input_hash": "a360166c8dd5be9b1b1b79f8ce0f93c2059b82cc033ab602b6a370ef41d419a4",
+        "output_hash": "c192d9dac3025f34001f23bcad40dabaa2558f540cb0df6de2a997652e1cf2bc",
+        "redacted_prompt_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_005.prompt.txt",
+        "redacted_output_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_005.output.json"
+      },
+      {
+        "call_id": "profile_generation_006",
+        "stage": "profile_generation",
+        "model": "google/gemma-3-27b-it",
+        "input_hash": "dbbbe1a562490273e7340a880aa30e8892485315a31bdfc0d2a9708d4cb19ed2",
+        "output_hash": "93b6b9ee7c54ba1a04b374364683f7981028ed524018baf6ae5aec1783f02d64",
+        "redacted_prompt_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_006.prompt.txt",
+        "redacted_output_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_006.output.json"
+      },
+      {
+        "call_id": "profile_generation_007",
+        "stage": "profile_generation",
+        "model": "google/gemma-3-27b-it",
+        "input_hash": "17566b69ed2718a98820bb861fbc2d3a7f4cdd3526523e53bef50fef361c88fe",
+        "output_hash": "f9f88c430b04471dd2f1f2e4552164f3eccadd0b342a108f672f51669d920ca7",
+        "redacted_prompt_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_007.prompt.txt",
+        "redacted_output_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_007.output.json"
+      },
+      {
+        "call_id": "profile_generation_008",
+        "stage": "profile_generation",
+        "model": "google/gemma-3-27b-it",
+        "input_hash": "52b01137541e3ca5801479ded20523a5077550f931be76f43d1cabb5003351d8",
+        "output_hash": "3ffbdc89bfa462f36a986ea67b9c244093a97b32ce925a67dc01531c49550a53",
+        "redacted_prompt_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_008.prompt.txt",
+        "redacted_output_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_008.output.json"
+      },
+      {
+        "call_id": "profile_generation_009",
+        "stage": "profile_generation",
+        "model": "google/gemma-3-27b-it",
+        "input_hash": "c2b33b4fb7d773ee0156403b2c149b8232157333690c4a63336aabf9a982ca01",
+        "output_hash": "56ef2e074ac4859fb5226e8f41e69b68fce1f001baef1c96b6f36b814fd5ac35",
+        "redacted_prompt_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_009.prompt.txt",
+        "redacted_output_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_009.output.json"
+      },
+      {
+        "call_id": "profile_generation_010",
+        "stage": "profile_generation",
+        "model": "google/gemma-3-27b-it",
+        "input_hash": "08dcef6faa8d45e412df940e45d1f4c128e7ab6f80dd391a8a2c873970bfb695",
+        "output_hash": "353c4d23903e74e00207485ef0865ca03e1b939af7f4b6e501d95288dc36d37d",
+        "redacted_prompt_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_010.prompt.txt",
+        "redacted_output_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_010.output.json"
+      },
+      {
+        "call_id": "profile_generation_011",
+        "stage": "profile_generation",
+        "model": "google/gemma-3-27b-it",
+        "input_hash": "cc6ebe129fa3a4a8611f71a4a56061e96403043c94333770ef363d6996f0d2c4",
+        "output_hash": "25756753659ff5f32c9e4316024f8fc4f6bdf76e0d5f033bd2363ea749d433db",
+        "redacted_prompt_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_011.prompt.txt",
+        "redacted_output_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_011.output.json"
+      },
+      {
+        "call_id": "profile_generation_012",
+        "stage": "profile_generation",
+        "model": "google/gemma-3-27b-it",
+        "input_hash": "4104f9b4c9c3b3f5974a5717e1ac87abece7f6281c4922047a7c338035b3bfc5",
+        "output_hash": "5e9d0913c71ee6a941c2f8f50f970f80631e52a01a2baf9a47f976a8791bd401",
+        "redacted_prompt_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_012.prompt.txt",
+        "redacted_output_path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_012.output.json"
+      },
+      {
+        "call_id": "config_time_001",
+        "stage": "config_time",
+        "model": "google/gemma-3-27b-it",
+        "input_hash": "6b34fefe61f40aecde41b405d2e292c97c2e19186b1fb12cbec7dd6092aa8151",
+        "output_hash": "bd91ec871f4d04cb1ccc45de68bfa3c4ae2495a4c984b79a2c81dc2014532016",
+        "redacted_prompt_path": "worldbuilding_artifacts/llm_calls/config_time/config_time_001.prompt.txt",
+        "redacted_output_path": "worldbuilding_artifacts/llm_calls/config_time/config_time_001.output.json"
+      },
+      {
+        "call_id": "config_event_002",
+        "stage": "config_event",
+        "model": "google/gemma-3-27b-it",
+        "input_hash": "2e23b44caa92aac7885919fd7e1432cfed3bae8c6c265c769a63860800d78188",
+        "output_hash": "7ceb9e4357947937f39bd10ab452f90f01ec28bf6374ee13378aef82cfe3eeb0",
+        "redacted_prompt_path": "worldbuilding_artifacts/llm_calls/config_event/config_event_002.prompt.txt",
+        "redacted_output_path": "worldbuilding_artifacts/llm_calls/config_event/config_event_002.output.json"
+      },
+      {
+        "call_id": "config_agents_003",
+        "stage": "config_agents",
+        "model": "google/gemma-3-27b-it",
+        "input_hash": "cd25be1e895a54660a3c1c62ca613048ab02a5e659e767847e5e8c73a7f8e3af",
+        "output_hash": "0114e6956ad8f791306c173c8ecbd8090457338fe06fbc9063e7f6f99a48470b",
+        "redacted_prompt_path": "worldbuilding_artifacts/llm_calls/config_agents/config_agents_003.prompt.txt",
+        "redacted_output_path": "worldbuilding_artifacts/llm_calls/config_agents/config_agents_003.output.json"
+      }
+    ],
+    "profile_generation_prompts_captured": true,
+    "config_generation_prompts_captured": true,
+    "note": "LLM prompts/outputs are referenced as secondary artifacts when capture is enabled."
+  },
+  "graph_snapshot": {
+    "filtered_entities": [
+      {
+        "uuid": "e94cc28d-cb4f-4ca8-8144-31f54c63794d",
+        "name": "POLL_01",
+        "labels": [
+          "Entity",
+          "PollingOrganization"
+        ],
+        "summary": "SOCIAL_01 and POLL_01 are both mentioned as factors that can weaken tolerance to adjustment.",
+        "attributes": {},
+        "related_edges": [
+          {
+            "direction": "incoming",
+            "edge_name": "MENTIONS",
+            "fact": "SOCIAL_01 and POLL_01 are both mentioned as factors that can weaken tolerance to adjustment.",
+            "source_node_uuid": "510dec01-12a6-41fe-94ac-5eee3f6a5838"
+          }
+        ],
+        "related_nodes": [
+          {
+            "uuid": "510dec01-12a6-41fe-94ac-5eee3f6a5838",
+            "name": "SOCIAL_01",
+            "labels": [
+              "Entity",
+              "Organization"
+            ],
+            "summary": "SOCIAL_01 and POLL_01 are both mentioned as factors that can weaken tolerance to adjustment.\nThe macro scenario, as described by MACRO_01, depends on social stress, as represented by SOCIAL_01."
+          }
+        ]
+      },
+      {
+        "uuid": "e1a752fb-f524-4e3d-91a9-acaf6cd93084",
+        "name": "Chequeado",
+        "labels": [
+          "Entity",
+          "MediaOutlet"
+        ],
+        "summary": "Diputados and Chequeado both published notes on the pension-law veto on September 11, 2024.\nChequeado corroborates the vote count reported by Diputados regarding the pension-law veto.\nChequeado corroborates information from INST_01 regarding the count and rule.",
+        "attributes": {
+          "outlet_type": "Media Outlet"
+        },
+        "related_edges": [
+          {
+            "direction": "outgoing",
+            "edge_name": "CORROBORATES",
+            "fact": "Chequeado corroborates the vote count reported by Diputados regarding the pension-law veto.",
+            "target_node_uuid": "3c40f1de-e98c-47ea-8c64-ed7057f0c1e6"
+          },
+          {
+            "direction": "incoming",
+            "edge_name": "MENTIONS",
+            "fact": "Diputados and Chequeado both published notes on the pension-law veto on September 11, 2024.",
+            "source_node_uuid": "3c40f1de-e98c-47ea-8c64-ed7057f0c1e6"
+          },
+          {
+            "direction": "outgoing",
+            "edge_name": "MENTIONS",
+            "fact": "Chequeado corroborates information from INST_01 regarding the count and rule.",
+            "target_node_uuid": "e9f66d71-87a9-4b36-8405-1854977ab2ab"
+          }
+        ],
+        "related_nodes": [
+          {
+            "uuid": "e9f66d71-87a9-4b36-8405-1854977ab2ab",
+            "name": "INST_01",
+            "labels": [
+              "Entity"
+            ],
+            "summary": "Chequeado corroborates information from INST_01 regarding the count and rule.\nINST_01 and INST_02 are referenced together in relation to a veto shield.\nThe Executive's ability to sustain vetoes depends on information from INST_01 regarding allies and negotiation.\nThe macro scenario, as described by MACRO_01, depends on congressional fragility, as represented by INST_01."
+          },
+          {
+            "uuid": "3c40f1de-e98c-47ea-8c64-ed7057f0c1e6",
+            "name": "Diputados",
+            "labels": [
+              "Entity",
+              "Organization"
+            ],
+            "summary": "Diputados issued a note on pension law in Argentina.\nDiputados and Chequeado both published notes on the pension-law veto on September 11, 2024.\nDiputados reported on the pension-law veto attempt to Congress.\nDiputados reported on the pension-law veto attempt to Congress.\nChequeado corroborates the vote count reported by Diputados regarding the pension-law veto.\nDiputados reported on the pension-law veto attempt to Congress.\nDiputados reported on the pension-law veto attempt to Congress.\nChequeado corroborates the vote count reported by Diputados regarding the pension-law veto."
+          }
+        ]
+      },
+      {
+        "uuid": "d4f8290e-2624-43fa-a8a2-5739456da769",
+        "name": "MACRO_01",
+        "labels": [
+          "Entity",
+          "Organization"
+        ],
+        "summary": "The macro scenario, as described by MACRO_01, depends on social stress, as represented by SOCIAL_01.\nThe macro scenario, as described by MACRO_01, depends on congressional fragility, as represented by INST_01.\nThe macro scenario, as described by MACRO_01, depends on congressional fragility, as represented by INST_02.",
+        "attributes": {},
+        "related_edges": [
+          {
+            "direction": "outgoing",
+            "edge_name": "MENTIONS",
+            "fact": "The macro scenario, as described by MACRO_01, depends on congressional fragility, as represented by INST_01.",
+            "target_node_uuid": "e9f66d71-87a9-4b36-8405-1854977ab2ab"
+          },
+          {
+            "direction": "outgoing",
+            "edge_name": "MENTIONS",
+            "fact": "The macro scenario, as described by MACRO_01, depends on social stress, as represented by SOCIAL_01.",
+            "target_node_uuid": "510dec01-12a6-41fe-94ac-5eee3f6a5838"
+          },
+          {
+            "direction": "outgoing",
+            "edge_name": "MENTIONS",
+            "fact": "The macro scenario, as described by MACRO_01, depends on congressional fragility, as represented by INST_02.",
+            "target_node_uuid": "73d8860c-f0bc-48dd-8070-1801ca024af2"
+          }
+        ],
+        "related_nodes": [
+          {
+            "uuid": "73d8860c-f0bc-48dd-8070-1801ca024af2",
+            "name": "INST_02",
+            "labels": [
+              "Entity"
+            ],
+            "summary": "INST_01 and INST_02 are referenced together in relation to a veto shield.\nThe Executive's ability to sustain vetoes depends on information from INST_02 regarding allies and negotiation.\nThe macro scenario, as described by MACRO_01, depends on congressional fragility, as represented by INST_02."
+          },
+          {
+            "uuid": "e9f66d71-87a9-4b36-8405-1854977ab2ab",
+            "name": "INST_01",
+            "labels": [
+              "Entity"
+            ],
+            "summary": "Chequeado corroborates information from INST_01 regarding the count and rule.\nINST_01 and INST_02 are referenced together in relation to a veto shield.\nThe Executive's ability to sustain vetoes depends on information from INST_01 regarding allies and negotiation.\nThe macro scenario, as described by MACRO_01, depends on congressional fragility, as represented by INST_01."
+          },
+          {
+            "uuid": "510dec01-12a6-41fe-94ac-5eee3f6a5838",
+            "name": "SOCIAL_01",
+            "labels": [
+              "Entity",
+              "Organization"
+            ],
+            "summary": "SOCIAL_01 and POLL_01 are both mentioned as factors that can weaken tolerance to adjustment.\nThe macro scenario, as described by MACRO_01, depends on social stress, as represented by SOCIAL_01."
+          }
+        ]
+      },
+      {
+        "uuid": "c4cea245-0aca-4469-b6d7-9951f1b27bad",
+        "name": "MiroFish",
+        "labels": [
+          "Entity",
+          "Organization"
+        ],
+        "summary": "MiroFish combines social and institutional fragility with a macro-program structure based on information from GEO_01.",
+        "attributes": {},
+        "related_edges": [
+          {
+            "direction": "outgoing",
+            "edge_name": "MENTIONS",
+            "fact": "MiroFish combines social and institutional fragility with a macro-program structure based on information from GEO_01.",
+            "target_node_uuid": "864819cc-35d1-4676-b95b-c7c7299de549"
+          }
+        ],
+        "related_nodes": [
+          {
+            "uuid": "864819cc-35d1-4676-b95b-c7c7299de549",
+            "name": "IMF",
+            "labels": [
+              "Entity",
+              "InternationalOrganization"
+            ],
+            "summary": "Focuses on economic constraints related to Argentina IPC 2025 expectations.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nThe International Monetary Fund influences the IPC trajectory by providing support that can improve confidence and reserves, but also through conditionality pushing toward policy consistency and eventual FX normalization.\nMiroFish combines social and institutional fragility with a macro-program structure based on information from GEO_01.\nIMF constraints make exchange-rate normalization and reserves more central to the inflation path.\nIMF constraints make exchange-rate normalization and reserves more central to the inflation path."
+          }
+        ]
+      },
+      {
+        "uuid": "aadf2c69-2cc1-417d-991b-785391a77d8f",
+        "name": "BBVA",
+        "labels": [
+          "Entity",
+          "Organization"
+        ],
+        "summary": "BBVA issued an outlook framing Argentina in a recovery/desinflation scenario.\nBBVA's outlook mentions Argentina's fiscal adjustment, exchange-rate management, reserves, and political sustainability.",
+        "attributes": {
+          "org_name": "BBVA Argentina Economic Outlook"
+        },
+        "related_edges": [
+          {
+            "direction": "outgoing",
+            "edge_name": "MENTIONS",
+            "fact": "BBVA's outlook mentions Argentina's fiscal adjustment, exchange-rate management, reserves, and political sustainability.",
+            "target_node_uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7"
+          },
+          {
+            "direction": "outgoing",
+            "edge_name": "ISSUES_FORECAST",
+            "fact": "BBVA issued an outlook framing Argentina in a recovery/desinflation scenario.",
+            "target_node_uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7"
+          }
+        ],
+        "related_nodes": [
+          {
+            "uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7",
+            "name": "Argentina",
+            "labels": [
+              "Entity",
+              "Organization"
+            ],
+            "summary": "Diputados issued a note on pension law in Argentina.\nUCA/ODSA and BBVA Argentina both published reports in December 2024.\nCB Consultora and BBVA Argentina both published reports in December 2024.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nUCA/ODSA and BBVA Argentina both published reports in December 2024.\nCB Consultora and BBVA Argentina both published reports in December 2024.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nThe UCA/ODSA report records a poverty rate of 49.9% in Argentina as of 3Q2024.\nArgentina experiences severe social stress, as reported by UCA/ODSA.\nBBVA issued an outlook framing Argentina in a recovery/desinflation scenario.\nBBVA's outlook mentions Argentina's fiscal adjustment, exchange-rate management, reserves, and political sustainability."
+          }
+        ]
+      },
+      {
+        "uuid": "a73f39d8-5914-446b-ac0e-9e4f70045e33",
+        "name": "BCRA",
+        "labels": [
+          "Entity",
+          "CentralBankOfficial"
+        ],
+        "summary": "The model has not yet received the official December 2024 IPC release from the BCRA.\nThe BCRA issued a forecast for 2025 growth around 4.5% and inflation around 25.9%.\nThe BCRA REM report introduces a clearer quantitative expectation baseline for the IPC trajectory.\nThe BCRA REM for December 2024 gives market-expectations.",
+        "attributes": {},
+        "related_edges": [
+          {
+            "direction": "incoming",
+            "edge_name": "ISSUES_FORECAST",
+            "fact": "The BCRA REM for December 2024 gives market-expectations.",
+            "source_node_uuid": "895ab6e9-2d3d-418f-8a2e-afc4f5f0ad9d"
+          },
+          {
+            "direction": "outgoing",
+            "edge_name": "MENTIONS",
+            "fact": "The BCRA REM report introduces a clearer quantitative expectation baseline for the IPC trajectory.",
+            "target_node_uuid": "2b7229a2-fd0d-4359-b6e0-aa42228a9d8c"
+          },
+          {
+            "direction": "outgoing",
+            "edge_name": "MENTIONS",
+            "fact": "The model has not yet received the official December 2024 IPC release from the BCRA.",
+            "target_node_uuid": "2b7229a2-fd0d-4359-b6e0-aa42228a9d8c"
+          },
+          {
+            "direction": "outgoing",
+            "edge_name": "ISSUES_FORECAST",
+            "fact": "The BCRA issued a forecast for 2025 growth around 4.5% and inflation around 25.9%.",
+            "target_node_uuid": "0c0377ce-9f66-4b84-a667-dae2801b73a2"
+          }
+        ],
+        "related_nodes": [
+          {
+            "uuid": "895ab6e9-2d3d-418f-8a2e-afc4f5f0ad9d",
+            "name": "December 2024",
+            "labels": [
+              "Entity"
+            ],
+            "summary": "The BCRA REM for December 2024 gives market-expectations."
+          },
+          {
+            "uuid": "0c0377ce-9f66-4b84-a667-dae2801b73a2",
+            "name": "2025",
+            "labels": [
+              "Entity"
+            ],
+            "summary": "The BCRA issued a forecast for 2025 growth around 4.5% and inflation around 25.9%."
+          },
+          {
+            "uuid": "2b7229a2-fd0d-4359-b6e0-aa42228a9d8c",
+            "name": "IPC",
+            "labels": [
+              "Entity"
+            ],
+            "summary": "The model has not yet received the official December 2024 IPC release from the BCRA.\nThe BCRA REM report introduces a clearer quantitative expectation baseline for the IPC trajectory."
+          }
+        ]
+      },
+      {
+        "uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7",
+        "name": "Argentina",
+        "labels": [
+          "Entity",
+          "Organization"
+        ],
+        "summary": "Diputados issued a note on pension law in Argentina.\nUCA/ODSA and BBVA Argentina both published reports in December 2024.\nCB Consultora and BBVA Argentina both published reports in December 2024.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nUCA/ODSA and BBVA Argentina both published reports in December 2024.\nCB Consultora and BBVA Argentina both published reports in December 2024.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nThe UCA/ODSA report records a poverty rate of 49.9% in Argentina as of 3Q2024.\nArgentina experiences severe social stress, as reported by UCA/ODSA.\nBBVA issued an outlook framing Argentina in a recovery/desinflation scenario.\nBBVA's outlook mentions Argentina's fiscal adjustment, exchange-rate management, reserves, and political sustainability.",
+        "attributes": {
+          "org_name": "Argentina"
+        },
+        "related_edges": [
+          {
+            "direction": "incoming",
+            "edge_name": "MENTIONS",
+            "fact": "UCA/ODSA and BBVA Argentina both published reports in December 2024.",
+            "source_node_uuid": "19766650-0bc5-41df-bc0d-d26a7ee8fa14"
+          },
+          {
+            "direction": "incoming",
+            "edge_name": "MENTIONS",
+            "fact": "Diputados issued a note on pension law in Argentina.",
+            "source_node_uuid": "3c40f1de-e98c-47ea-8c64-ed7057f0c1e6"
+          },
+          {
+            "direction": "incoming",
+            "edge_name": "REPORTS_ON",
+            "fact": "The UCA/ODSA report records a poverty rate of 49.9% in Argentina as of 3Q2024.",
+            "source_node_uuid": "19766650-0bc5-41df-bc0d-d26a7ee8fa14"
+          },
+          {
+            "direction": "incoming",
+            "edge_name": "MENTIONS",
+            "fact": "BBVA's outlook mentions Argentina's fiscal adjustment, exchange-rate management, reserves, and political sustainability.",
+            "source_node_uuid": "aadf2c69-2cc1-417d-991b-785391a77d8f"
+          },
+          {
+            "direction": "outgoing",
+            "edge_name": "MENTIONS",
+            "fact": "BCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.",
+            "target_node_uuid": "864819cc-35d1-4676-b95b-c7c7299de549"
+          },
+          {
+            "direction": "incoming",
+            "edge_name": "MENTIONS",
+            "fact": "CB Consultora and BBVA Argentina both published reports in December 2024.",
+            "source_node_uuid": "8145d51a-6c12-48fc-b508-f2eaf65f5a67"
+          },
+          {
+            "direction": "outgoing",
+            "edge_name": "MENTIONS",
+            "fact": "Argentina experiences severe social stress, as reported by UCA/ODSA.",
+            "target_node_uuid": "19766650-0bc5-41df-bc0d-d26a7ee8fa14"
+          },
+          {
+            "direction": "incoming",
+            "edge_name": "ISSUES_FORECAST",
+            "fact": "BBVA issued an outlook framing Argentina in a recovery/desinflation scenario.",
+            "source_node_uuid": "aadf2c69-2cc1-417d-991b-785391a77d8f"
+          }
+        ],
+        "related_nodes": [
+          {
+            "uuid": "19766650-0bc5-41df-bc0d-d26a7ee8fa14",
+            "name": "UCA/ODSA",
+            "labels": [
+              "Entity",
+              "ResearchInstitution"
+            ],
+            "summary": "UCA/ODSA and BBVA Argentina both published reports in December 2024.\nThe UCA/ODSA report records a poverty rate of 49.9% in Argentina as of 3Q2024.\nArgentina experiences severe social stress, as reported by UCA/ODSA.\nOpinion evidence from December 2024 separates material hardship from political support, as indicated by CB Consultora and referenced in POLL_01."
+          },
+          {
+            "uuid": "aadf2c69-2cc1-417d-991b-785391a77d8f",
+            "name": "BBVA",
+            "labels": [
+              "Entity",
+              "Organization"
+            ],
+            "summary": "BBVA issued an outlook framing Argentina in a recovery/desinflation scenario.\nBBVA's outlook mentions Argentina's fiscal adjustment, exchange-rate management, reserves, and political sustainability."
+          },
+          {
+            "uuid": "3c40f1de-e98c-47ea-8c64-ed7057f0c1e6",
+            "name": "Diputados",
+            "labels": [
+              "Entity",
+              "Organization"
+            ],
+            "summary": "Diputados issued a note on pension law in Argentina.\nDiputados and Chequeado both published notes on the pension-law veto on September 11, 2024.\nDiputados reported on the pension-law veto attempt to Congress.\nDiputados reported on the pension-law veto attempt to Congress.\nChequeado corroborates the vote count reported by Diputados regarding the pension-law veto.\nDiputados reported on the pension-law veto attempt to Congress.\nDiputados reported on the pension-law veto attempt to Congress.\nChequeado corroborates the vote count reported by Diputados regarding the pension-law veto."
+          },
+          {
+            "uuid": "8145d51a-6c12-48fc-b508-f2eaf65f5a67",
+            "name": "CB Consultora",
+            "labels": [
+              "Entity",
+              "PollingOrganization"
+            ],
+            "summary": "CB Consultora and BBVA Argentina both published reports in December 2024.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nOpinion evidence from December 2024 separates material hardship from political support, as indicated by CB Consultora and referenced in POLL_01.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nOpinion evidence from December 2024 separates material hardship from political support, as indicated by CB Consultora and referenced in POLL_01."
+          },
+          {
+            "uuid": "864819cc-35d1-4676-b95b-c7c7299de549",
+            "name": "IMF",
+            "labels": [
+              "Entity",
+              "InternationalOrganization"
+            ],
+            "summary": "Focuses on economic constraints related to Argentina IPC 2025 expectations.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nThe International Monetary Fund influences the IPC trajectory by providing support that can improve confidence and reserves, but also through conditionality pushing toward policy consistency and eventual FX normalization.\nMiroFish combines social and institutional fragility with a macro-program structure based on information from GEO_01.\nIMF constraints make exchange-rate normalization and reserves more central to the inflation path.\nIMF constraints make exchange-rate normalization and reserves more central to the inflation path."
+          }
+        ]
+      },
+      {
+        "uuid": "864819cc-35d1-4676-b95b-c7c7299de549",
+        "name": "IMF",
+        "labels": [
+          "Entity",
+          "InternationalOrganization"
+        ],
+        "summary": "Focuses on economic constraints related to Argentina IPC 2025 expectations.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nThe International Monetary Fund influences the IPC trajectory by providing support that can improve confidence and reserves, but also through conditionality pushing toward policy consistency and eventual FX normalization.\nMiroFish combines social and institutional fragility with a macro-program structure based on information from GEO_01.\nIMF constraints make exchange-rate normalization and reserves more central to the inflation path.\nIMF constraints make exchange-rate normalization and reserves more central to the inflation path.",
+        "attributes": {
+          "area_of_focus": "reserves, exchange-rate normalization, dismantling controls, real interest rates, fiscal consistency, and the social cost of adjustment"
+        },
+        "related_edges": [
+          {
+            "direction": "incoming",
+            "edge_name": "MENTIONS",
+            "fact": "BCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.",
+            "source_node_uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7"
+          },
+          {
+            "direction": "outgoing",
+            "edge_name": "INFLUENCES",
+            "fact": "The International Monetary Fund influences the IPC trajectory by providing support that can improve confidence and reserves, but also through conditionality pushing toward policy consistency and eventual FX normalization.",
+            "target_node_uuid": "c4583916-2722-47bb-a0ba-aded2b042001"
+          },
+          {
+            "direction": "outgoing",
+            "edge_name": "INFLUENCES",
+            "fact": "IMF constraints make exchange-rate normalization and reserves more central to the inflation path.",
+            "target_node_uuid": "864819cc-35d1-4676-b95b-c7c7299de549"
+          },
+          {
+            "direction": "incoming",
+            "edge_name": "MENTIONS",
+            "fact": "MiroFish combines social and institutional fragility with a macro-program structure based on information from GEO_01.",
+            "source_node_uuid": "c4cea245-0aca-4469-b6d7-9951f1b27bad"
+          }
+        ],
+        "related_nodes": [
+          {
+            "uuid": "c4cea245-0aca-4469-b6d7-9951f1b27bad",
+            "name": "MiroFish",
+            "labels": [
+              "Entity",
+              "Organization"
+            ],
+            "summary": "MiroFish combines social and institutional fragility with a macro-program structure based on information from GEO_01."
+          },
+          {
+            "uuid": "864819cc-35d1-4676-b95b-c7c7299de549",
+            "name": "IMF",
+            "labels": [
+              "Entity",
+              "InternationalOrganization"
+            ],
+            "summary": "Focuses on economic constraints related to Argentina IPC 2025 expectations.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nThe International Monetary Fund influences the IPC trajectory by providing support that can improve confidence and reserves, but also through conditionality pushing toward policy consistency and eventual FX normalization.\nMiroFish combines social and institutional fragility with a macro-program structure based on information from GEO_01.\nIMF constraints make exchange-rate normalization and reserves more central to the inflation path.\nIMF constraints make exchange-rate normalization and reserves more central to the inflation path."
+          },
+          {
+            "uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7",
+            "name": "Argentina",
+            "labels": [
+              "Entity",
+              "Organization"
+            ],
+            "summary": "Diputados issued a note on pension law in Argentina.\nUCA/ODSA and BBVA Argentina both published reports in December 2024.\nCB Consultora and BBVA Argentina both published reports in December 2024.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nUCA/ODSA and BBVA Argentina both published reports in December 2024.\nCB Consultora and BBVA Argentina both published reports in December 2024.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nThe UCA/ODSA report records a poverty rate of 49.9% in Argentina as of 3Q2024.\nArgentina experiences severe social stress, as reported by UCA/ODSA.\nBBVA issued an outlook framing Argentina in a recovery/desinflation scenario.\nBBVA's outlook mentions Argentina's fiscal adjustment, exchange-rate management, reserves, and political sustainability."
+          },
+          {
+            "uuid": "c4583916-2722-47bb-a0ba-aded2b042001",
+            "name": "IPC trajectory",
+            "labels": [
+              "Entity"
+            ],
+            "summary": "The International Monetary Fund influences the IPC trajectory by providing support that can improve confidence and reserves, but also through conditionality pushing toward policy consistency and eventual FX normalization."
+          }
+        ]
+      },
+      {
+        "uuid": "8145d51a-6c12-48fc-b508-f2eaf65f5a67",
+        "name": "CB Consultora",
+        "labels": [
+          "Entity",
+          "PollingOrganization"
+        ],
+        "summary": "CB Consultora and BBVA Argentina both published reports in December 2024.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nOpinion evidence from December 2024 separates material hardship from political support, as indicated by CB Consultora and referenced in POLL_01.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nOpinion evidence from December 2024 separates material hardship from political support, as indicated by CB Consultora and referenced in POLL_01.",
+        "attributes": {
+          "methodology": "national survey"
+        },
+        "related_edges": [
+          {
+            "direction": "outgoing",
+            "edge_name": "MENTIONS",
+            "fact": "CB Consultora and BBVA Argentina both published reports in December 2024.",
+            "target_node_uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7"
+          },
+          {
+            "direction": "incoming",
+            "edge_name": "MENTIONS",
+            "fact": "Opinion evidence from December 2024 separates material hardship from political support, as indicated by CB Consultora and referenced in POLL_01.",
+            "source_node_uuid": "19766650-0bc5-41df-bc0d-d26a7ee8fa14"
+          },
+          {
+            "direction": "outgoing",
+            "edge_name": "CONDUCTS_POLL",
+            "fact": "CB Consultora provides pre-cutoff measures related to POLL_01.",
+            "target_node_uuid": "8145d51a-6c12-48fc-b508-f2eaf65f5a67"
+          }
+        ],
+        "related_nodes": [
+          {
+            "uuid": "19766650-0bc5-41df-bc0d-d26a7ee8fa14",
+            "name": "UCA/ODSA",
+            "labels": [
+              "Entity",
+              "ResearchInstitution"
+            ],
+            "summary": "UCA/ODSA and BBVA Argentina both published reports in December 2024.\nThe UCA/ODSA report records a poverty rate of 49.9% in Argentina as of 3Q2024.\nArgentina experiences severe social stress, as reported by UCA/ODSA.\nOpinion evidence from December 2024 separates material hardship from political support, as indicated by CB Consultora and referenced in POLL_01."
+          },
+          {
+            "uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7",
+            "name": "Argentina",
+            "labels": [
+              "Entity",
+              "Organization"
+            ],
+            "summary": "Diputados issued a note on pension law in Argentina.\nUCA/ODSA and BBVA Argentina both published reports in December 2024.\nCB Consultora and BBVA Argentina both published reports in December 2024.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nUCA/ODSA and BBVA Argentina both published reports in December 2024.\nCB Consultora and BBVA Argentina both published reports in December 2024.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nThe UCA/ODSA report records a poverty rate of 49.9% in Argentina as of 3Q2024.\nArgentina experiences severe social stress, as reported by UCA/ODSA.\nBBVA issued an outlook framing Argentina in a recovery/desinflation scenario.\nBBVA's outlook mentions Argentina's fiscal adjustment, exchange-rate management, reserves, and political sustainability."
+          },
+          {
+            "uuid": "8145d51a-6c12-48fc-b508-f2eaf65f5a67",
+            "name": "CB Consultora",
+            "labels": [
+              "Entity",
+              "PollingOrganization"
+            ],
+            "summary": "CB Consultora and BBVA Argentina both published reports in December 2024.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nOpinion evidence from December 2024 separates material hardship from political support, as indicated by CB Consultora and referenced in POLL_01.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nOpinion evidence from December 2024 separates material hardship from political support, as indicated by CB Consultora and referenced in POLL_01."
+          }
+        ]
+      },
+      {
+        "uuid": "510dec01-12a6-41fe-94ac-5eee3f6a5838",
+        "name": "SOCIAL_01",
+        "labels": [
+          "Entity",
+          "Organization"
+        ],
+        "summary": "SOCIAL_01 and POLL_01 are both mentioned as factors that can weaken tolerance to adjustment.\nThe macro scenario, as described by MACRO_01, depends on social stress, as represented by SOCIAL_01.",
+        "attributes": {},
+        "related_edges": [
+          {
+            "direction": "incoming",
+            "edge_name": "MENTIONS",
+            "fact": "The macro scenario, as described by MACRO_01, depends on social stress, as represented by SOCIAL_01.",
+            "source_node_uuid": "d4f8290e-2624-43fa-a8a2-5739456da769"
+          },
+          {
+            "direction": "outgoing",
+            "edge_name": "MENTIONS",
+            "fact": "SOCIAL_01 and POLL_01 are both mentioned as factors that can weaken tolerance to adjustment.",
+            "target_node_uuid": "e94cc28d-cb4f-4ca8-8144-31f54c63794d"
+          }
+        ],
+        "related_nodes": [
+          {
+            "uuid": "e94cc28d-cb4f-4ca8-8144-31f54c63794d",
+            "name": "POLL_01",
+            "labels": [
+              "Entity",
+              "PollingOrganization"
+            ],
+            "summary": "SOCIAL_01 and POLL_01 are both mentioned as factors that can weaken tolerance to adjustment."
+          },
+          {
+            "uuid": "d4f8290e-2624-43fa-a8a2-5739456da769",
+            "name": "MACRO_01",
+            "labels": [
+              "Entity",
+              "Organization"
+            ],
+            "summary": "The macro scenario, as described by MACRO_01, depends on social stress, as represented by SOCIAL_01.\nThe macro scenario, as described by MACRO_01, depends on congressional fragility, as represented by INST_01.\nThe macro scenario, as described by MACRO_01, depends on congressional fragility, as represented by INST_02."
+          }
+        ]
+      },
+      {
+        "uuid": "3c40f1de-e98c-47ea-8c64-ed7057f0c1e6",
+        "name": "Diputados",
+        "labels": [
+          "Entity",
+          "Organization"
+        ],
+        "summary": "Diputados issued a note on pension law in Argentina.\nDiputados and Chequeado both published notes on the pension-law veto on September 11, 2024.\nDiputados reported on the pension-law veto attempt to Congress.\nDiputados reported on the pension-law veto attempt to Congress.\nChequeado corroborates the vote count reported by Diputados regarding the pension-law veto.\nDiputados reported on the pension-law veto attempt to Congress.\nDiputados reported on the pension-law veto attempt to Congress.\nChequeado corroborates the vote count reported by Diputados regarding the pension-law veto.",
+        "attributes": {
+          "org_name": "Diputados"
+        },
+        "related_edges": [
+          {
+            "direction": "outgoing",
+            "edge_name": "MENTIONS",
+            "fact": "Diputados issued a note on pension law in Argentina.",
+            "target_node_uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7"
+          },
+          {
+            "direction": "outgoing",
+            "edge_name": "REPORTS_ON",
+            "fact": "Diputados reported on the pension-law veto attempt to Congress.",
+            "target_node_uuid": "3c40f1de-e98c-47ea-8c64-ed7057f0c1e6"
+          },
+          {
+            "direction": "incoming",
+            "edge_name": "CORROBORATES",
+            "fact": "Chequeado corroborates the vote count reported by Diputados regarding the pension-law veto.",
+            "source_node_uuid": "e1a752fb-f524-4e3d-91a9-acaf6cd93084"
+          },
+          {
+            "direction": "outgoing",
+            "edge_name": "MENTIONS",
+            "fact": "Diputados and Chequeado both published notes on the pension-law veto on September 11, 2024.",
+            "target_node_uuid": "e1a752fb-f524-4e3d-91a9-acaf6cd93084"
+          }
+        ],
+        "related_nodes": [
+          {
+            "uuid": "3c40f1de-e98c-47ea-8c64-ed7057f0c1e6",
+            "name": "Diputados",
+            "labels": [
+              "Entity",
+              "Organization"
+            ],
+            "summary": "Diputados issued a note on pension law in Argentina.\nDiputados and Chequeado both published notes on the pension-law veto on September 11, 2024.\nDiputados reported on the pension-law veto attempt to Congress.\nDiputados reported on the pension-law veto attempt to Congress.\nChequeado corroborates the vote count reported by Diputados regarding the pension-law veto.\nDiputados reported on the pension-law veto attempt to Congress.\nDiputados reported on the pension-law veto attempt to Congress.\nChequeado corroborates the vote count reported by Diputados regarding the pension-law veto."
+          },
+          {
+            "uuid": "e1a752fb-f524-4e3d-91a9-acaf6cd93084",
+            "name": "Chequeado",
+            "labels": [
+              "Entity",
+              "MediaOutlet"
+            ],
+            "summary": "Diputados and Chequeado both published notes on the pension-law veto on September 11, 2024.\nChequeado corroborates the vote count reported by Diputados regarding the pension-law veto.\nChequeado corroborates information from INST_01 regarding the count and rule."
+          },
+          {
+            "uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7",
+            "name": "Argentina",
+            "labels": [
+              "Entity",
+              "Organization"
+            ],
+            "summary": "Diputados issued a note on pension law in Argentina.\nUCA/ODSA and BBVA Argentina both published reports in December 2024.\nCB Consultora and BBVA Argentina both published reports in December 2024.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nUCA/ODSA and BBVA Argentina both published reports in December 2024.\nCB Consultora and BBVA Argentina both published reports in December 2024.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nThe UCA/ODSA report records a poverty rate of 49.9% in Argentina as of 3Q2024.\nArgentina experiences severe social stress, as reported by UCA/ODSA.\nBBVA issued an outlook framing Argentina in a recovery/desinflation scenario.\nBBVA's outlook mentions Argentina's fiscal adjustment, exchange-rate management, reserves, and political sustainability."
+          }
+        ]
+      },
+      {
+        "uuid": "19766650-0bc5-41df-bc0d-d26a7ee8fa14",
+        "name": "UCA/ODSA",
+        "labels": [
+          "Entity",
+          "ResearchInstitution"
+        ],
+        "summary": "UCA/ODSA and BBVA Argentina both published reports in December 2024.\nThe UCA/ODSA report records a poverty rate of 49.9% in Argentina as of 3Q2024.\nArgentina experiences severe social stress, as reported by UCA/ODSA.\nOpinion evidence from December 2024 separates material hardship from political support, as indicated by CB Consultora and referenced in POLL_01.",
+        "attributes": {
+          "research_focus": "subsistence and poverty report"
+        },
+        "related_edges": [
+          {
+            "direction": "outgoing",
+            "edge_name": "MENTIONS",
+            "fact": "UCA/ODSA and BBVA Argentina both published reports in December 2024.",
+            "target_node_uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7"
+          },
+          {
+            "direction": "outgoing",
+            "edge_name": "REPORTS_ON",
+            "fact": "The UCA/ODSA report records a poverty rate of 49.9% in Argentina as of 3Q2024.",
+            "target_node_uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7"
+          },
+          {
+            "direction": "incoming",
+            "edge_name": "MENTIONS",
+            "fact": "Argentina experiences severe social stress, as reported by UCA/ODSA.",
+            "source_node_uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7"
+          },
+          {
+            "direction": "outgoing",
+            "edge_name": "MENTIONS",
+            "fact": "Opinion evidence from December 2024 separates material hardship from political support, as indicated by CB Consultora and referenced in POLL_01.",
+            "target_node_uuid": "8145d51a-6c12-48fc-b508-f2eaf65f5a67"
+          }
+        ],
+        "related_nodes": [
+          {
+            "uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7",
+            "name": "Argentina",
+            "labels": [
+              "Entity",
+              "Organization"
+            ],
+            "summary": "Diputados issued a note on pension law in Argentina.\nUCA/ODSA and BBVA Argentina both published reports in December 2024.\nCB Consultora and BBVA Argentina both published reports in December 2024.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nUCA/ODSA and BBVA Argentina both published reports in December 2024.\nCB Consultora and BBVA Argentina both published reports in December 2024.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nThe UCA/ODSA report records a poverty rate of 49.9% in Argentina as of 3Q2024.\nArgentina experiences severe social stress, as reported by UCA/ODSA.\nBBVA issued an outlook framing Argentina in a recovery/desinflation scenario.\nBBVA's outlook mentions Argentina's fiscal adjustment, exchange-rate management, reserves, and political sustainability."
+          },
+          {
+            "uuid": "8145d51a-6c12-48fc-b508-f2eaf65f5a67",
+            "name": "CB Consultora",
+            "labels": [
+              "Entity",
+              "PollingOrganization"
+            ],
+            "summary": "CB Consultora and BBVA Argentina both published reports in December 2024.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nOpinion evidence from December 2024 separates material hardship from political support, as indicated by CB Consultora and referenced in POLL_01.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nOpinion evidence from December 2024 separates material hardship from political support, as indicated by CB Consultora and referenced in POLL_01."
+          }
+        ]
+      }
+    ],
+    "metrics": {
+      "node_count": 12,
+      "candidate_node_count": 19,
+      "edge_count": 0,
+      "connected_components": null
+    }
+  },
+  "entity_filtering_trace": {
+    "requested_entity_types": null,
+    "candidate_count": 19,
+    "accepted_count": 12,
+    "rejected_count": 7,
+    "total_count": 19,
+    "filtered_count": 12,
+    "entity_types_found": [
+      "CentralBankOfficial",
+      "InternationalOrganization",
+      "MediaOutlet",
+      "Organization",
+      "PollingOrganization",
+      "ResearchInstitution"
+    ],
+    "filter_rule": "keep nodes with labels other than Entity/Node, optionally restricted by requested types",
+    "candidate_entities": [
+      {
+        "uuid": "e94cc28d-cb4f-4ca8-8144-31f54c63794d",
+        "name": "POLL_01",
+        "entity_type": null,
+        "summary": "SOCIAL_01 and POLL_01 are both mentioned as factors that can weaken tolerance to adjustment.",
+        "status": "accepted",
+        "reason": "selected_by_defined_entity_filter"
+      },
+      {
+        "uuid": "e1a752fb-f524-4e3d-91a9-acaf6cd93084",
+        "name": "Chequeado",
+        "entity_type": null,
+        "summary": "Diputados and Chequeado both published notes on the pension-law veto on September 11, 2024.\nChequeado corroborates the vote count reported by Diputados regarding the pension-law veto.\nChequeado corroborates information from INST_01 regarding the count and rule.",
+        "status": "accepted",
+        "reason": "selected_by_defined_entity_filter"
+      },
+      {
+        "uuid": "d4f8290e-2624-43fa-a8a2-5739456da769",
+        "name": "MACRO_01",
+        "entity_type": null,
+        "summary": "The macro scenario, as described by MACRO_01, depends on social stress, as represented by SOCIAL_01.\nThe macro scenario, as described by MACRO_01, depends on congressional fragility, as represented by INST_01.\nThe macro scenario, as described by MACRO_01, depends on congressional fragility, as represented by INST_02.",
+        "status": "accepted",
+        "reason": "selected_by_defined_entity_filter"
+      },
+      {
+        "uuid": "c4cea245-0aca-4469-b6d7-9951f1b27bad",
+        "name": "MiroFish",
+        "entity_type": null,
+        "summary": "MiroFish combines social and institutional fragility with a macro-program structure based on information from GEO_01.",
+        "status": "accepted",
+        "reason": "selected_by_defined_entity_filter"
+      },
+      {
+        "uuid": "aadf2c69-2cc1-417d-991b-785391a77d8f",
+        "name": "BBVA",
+        "entity_type": null,
+        "summary": "BBVA issued an outlook framing Argentina in a recovery/desinflation scenario.\nBBVA's outlook mentions Argentina's fiscal adjustment, exchange-rate management, reserves, and political sustainability.",
+        "status": "accepted",
+        "reason": "selected_by_defined_entity_filter"
+      },
+      {
+        "uuid": "a73f39d8-5914-446b-ac0e-9e4f70045e33",
+        "name": "BCRA",
+        "entity_type": null,
+        "summary": "The model has not yet received the official December 2024 IPC release from the BCRA.\nThe BCRA issued a forecast for 2025 growth around 4.5% and inflation around 25.9%.\nThe BCRA REM report introduces a clearer quantitative expectation baseline for the IPC trajectory.\nThe BCRA REM for December 2024 gives market-expectations.",
+        "status": "accepted",
+        "reason": "selected_by_defined_entity_filter"
+      },
+      {
+        "uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7",
+        "name": "Argentina",
+        "entity_type": null,
+        "summary": "Diputados issued a note on pension law in Argentina.\nUCA/ODSA and BBVA Argentina both published reports in December 2024.\nCB Consultora and BBVA Argentina both published reports in December 2024.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nUCA/ODSA and BBVA Argentina both published reports in December 2024.\nCB Consultora and BBVA Argentina both published reports in December 2024.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nThe UCA/ODSA report records a poverty rate of 49.9% in Argentina as of 3Q2024.\nArgentina experiences severe social stress, as reported by UCA/ODSA.\nBBVA issued an outlook framing Argentina in a recovery/desinflation scenario.\nBBVA's outlook mentions Argentina's fiscal adjustment, exchange-rate management, reserves, and political sustainability.",
+        "status": "accepted",
+        "reason": "selected_by_defined_entity_filter"
+      },
+      {
+        "uuid": "864819cc-35d1-4676-b95b-c7c7299de549",
+        "name": "IMF",
+        "entity_type": null,
+        "summary": "Focuses on economic constraints related to Argentina IPC 2025 expectations.\nBCRA published its REM in December 2024 and IMF published its Ex-post Evaluation on January 10, 2025.\nThe International Monetary Fund influences the IPC trajectory by providing support that can improve confidence and reserves, but also through conditionality pushing toward policy consistency and eventual FX normalization.\nMiroFish combines social and institutional fragility with a macro-program structure based on information from GEO_01.\nIMF constraints make exchange-rate normalization and reserves more central to the inflation path.\nIMF constraints make exchange-rate normalization and reserves more central to the inflation path.",
+        "status": "accepted",
+        "reason": "selected_by_defined_entity_filter"
+      },
+      {
+        "uuid": "8145d51a-6c12-48fc-b508-f2eaf65f5a67",
+        "name": "CB Consultora",
+        "entity_type": null,
+        "summary": "CB Consultora and BBVA Argentina both published reports in December 2024.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nOpinion evidence from December 2024 separates material hardship from political support, as indicated by CB Consultora and referenced in POLL_01.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nCB Consultora provides pre-cutoff measures related to POLL_01.\nOpinion evidence from December 2024 separates material hardship from political support, as indicated by CB Consultora and referenced in POLL_01.",
+        "status": "accepted",
+        "reason": "selected_by_defined_entity_filter"
+      },
+      {
+        "uuid": "510dec01-12a6-41fe-94ac-5eee3f6a5838",
+        "name": "SOCIAL_01",
+        "entity_type": null,
+        "summary": "SOCIAL_01 and POLL_01 are both mentioned as factors that can weaken tolerance to adjustment.\nThe macro scenario, as described by MACRO_01, depends on social stress, as represented by SOCIAL_01.",
+        "status": "accepted",
+        "reason": "selected_by_defined_entity_filter"
+      },
+      {
+        "uuid": "3c40f1de-e98c-47ea-8c64-ed7057f0c1e6",
+        "name": "Diputados",
+        "entity_type": null,
+        "summary": "Diputados issued a note on pension law in Argentina.\nDiputados and Chequeado both published notes on the pension-law veto on September 11, 2024.\nDiputados reported on the pension-law veto attempt to Congress.\nDiputados reported on the pension-law veto attempt to Congress.\nChequeado corroborates the vote count reported by Diputados regarding the pension-law veto.\nDiputados reported on the pension-law veto attempt to Congress.\nDiputados reported on the pension-law veto attempt to Congress.\nChequeado corroborates the vote count reported by Diputados regarding the pension-law veto.",
+        "status": "accepted",
+        "reason": "selected_by_defined_entity_filter"
+      },
+      {
+        "uuid": "19766650-0bc5-41df-bc0d-d26a7ee8fa14",
+        "name": "UCA/ODSA",
+        "entity_type": null,
+        "summary": "UCA/ODSA and BBVA Argentina both published reports in December 2024.\nThe UCA/ODSA report records a poverty rate of 49.9% in Argentina as of 3Q2024.\nArgentina experiences severe social stress, as reported by UCA/ODSA.\nOpinion evidence from December 2024 separates material hardship from political support, as indicated by CB Consultora and referenced in POLL_01.",
+        "status": "accepted",
+        "reason": "selected_by_defined_entity_filter"
+      }
+    ]
+  },
+  "agent_selection_trace": {
+    "candidate_entity_count": 12,
+    "selected_agent_count": 12,
+    "configured_agent_count": 12,
+    "discarded_entities_count": 0,
+    "selected_agents": [
+      {
+        "user_id": 0,
+        "name": "POLL_01",
+        "username": "poll_01_632",
+        "source_entity_uuid": "e94cc28d-cb4f-4ca8-8144-31f54c63794d",
+        "source_entity_type": "PollingOrganization"
+      },
+      {
+        "user_id": 1,
+        "name": "Chequeado",
+        "username": "chequeado_306",
+        "source_entity_uuid": "e1a752fb-f524-4e3d-91a9-acaf6cd93084",
+        "source_entity_type": "MediaOutlet"
+      },
+      {
+        "user_id": 2,
+        "name": "MACRO_01",
+        "username": "macro_01_650",
+        "source_entity_uuid": "d4f8290e-2624-43fa-a8a2-5739456da769",
+        "source_entity_type": "Organization"
+      },
+      {
+        "user_id": 3,
+        "name": "MiroFish",
+        "username": "mirofish_131",
+        "source_entity_uuid": "c4cea245-0aca-4469-b6d7-9951f1b27bad",
+        "source_entity_type": "Organization"
+      },
+      {
+        "user_id": 4,
+        "name": "BBVA",
+        "username": "bbva_632",
+        "source_entity_uuid": "aadf2c69-2cc1-417d-991b-785391a77d8f",
+        "source_entity_type": "Organization"
+      },
+      {
+        "user_id": 5,
+        "name": "BCRA",
+        "username": "bcra_323",
+        "source_entity_uuid": "a73f39d8-5914-446b-ac0e-9e4f70045e33",
+        "source_entity_type": "CentralBankOfficial"
+      },
+      {
+        "user_id": 6,
+        "name": "Argentina",
+        "username": "argentina_655",
+        "source_entity_uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7",
+        "source_entity_type": "Organization"
+      },
+      {
+        "user_id": 7,
+        "name": "IMF",
+        "username": "imf_916",
+        "source_entity_uuid": "864819cc-35d1-4676-b95b-c7c7299de549",
+        "source_entity_type": "InternationalOrganization"
+      },
+      {
+        "user_id": 8,
+        "name": "CB Consultora",
+        "username": "cb_consultora_294",
+        "source_entity_uuid": "8145d51a-6c12-48fc-b508-f2eaf65f5a67",
+        "source_entity_type": "PollingOrganization"
+      },
+      {
+        "user_id": 9,
+        "name": "SOCIAL_01",
+        "username": "social_01_375",
+        "source_entity_uuid": "510dec01-12a6-41fe-94ac-5eee3f6a5838",
+        "source_entity_type": "Organization"
+      },
+      {
+        "user_id": 10,
+        "name": "Diputados",
+        "username": "diputados_870",
+        "source_entity_uuid": "3c40f1de-e98c-47ea-8c64-ed7057f0c1e6",
+        "source_entity_type": "Organization"
+      },
+      {
+        "user_id": 11,
+        "name": "UCA/ODSA",
+        "username": "ucaodsa_897",
+        "source_entity_uuid": "19766650-0bc5-41df-bc0d-d26a7ee8fa14",
+        "source_entity_type": "ResearchInstitution"
+      }
+    ]
+  },
+  "simulation_social_graph_trace": {
+    "construction_method": "simulation_config_generator_agent_activity_only",
+    "explicit_social_graph_generated": false,
+    "agent_activity_configs_count": 12,
+    "agent_activity_configs": [
+      {
+        "agent_id": 0,
+        "entity_uuid": "e94cc28d-cb4f-4ca8-8144-31f54c63794d",
+        "entity_name": "POLL_01",
+        "entity_type": "PollingOrganization",
+        "activity_level": 0.2,
+        "posts_per_hour": 0.05,
+        "comments_per_hour": 0.02,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "response_delay_min": 120,
+        "response_delay_max": 240,
+        "sentiment_bias": 0.0,
+        "stance": "neutral",
+        "influence_weight": 2.8
+      },
+      {
+        "agent_id": 1,
+        "entity_uuid": "e1a752fb-f524-4e3d-91a9-acaf6cd93084",
+        "entity_name": "Chequeado",
+        "entity_type": "MediaOutlet",
+        "activity_level": 0.5,
+        "posts_per_hour": 0.3,
+        "comments_per_hour": 0.15,
+        "active_hours": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22
+        ],
+        "response_delay_min": 10,
+        "response_delay_max": 30,
+        "sentiment_bias": 0.0,
+        "stance": "neutral",
+        "influence_weight": 2.3
+      },
+      {
+        "agent_id": 2,
+        "entity_uuid": "d4f8290e-2624-43fa-a8a2-5739456da769",
+        "entity_name": "MACRO_01",
+        "entity_type": "Organization",
+        "activity_level": 0.2,
+        "posts_per_hour": 0.03,
+        "comments_per_hour": 0.01,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "response_delay_min": 90,
+        "response_delay_max": 180,
+        "sentiment_bias": 0.0,
+        "stance": "neutral",
+        "influence_weight": 2.6
+      },
+      {
+        "agent_id": 3,
+        "entity_uuid": "c4cea245-0aca-4469-b6d7-9951f1b27bad",
+        "entity_name": "MiroFish",
+        "entity_type": "Organization",
+        "activity_level": 0.3,
+        "posts_per_hour": 0.1,
+        "comments_per_hour": 0.05,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "response_delay_min": 60,
+        "response_delay_max": 120,
+        "sentiment_bias": 0.0,
+        "stance": "neutral",
+        "influence_weight": 2.4
+      },
+      {
+        "agent_id": 4,
+        "entity_uuid": "aadf2c69-2cc1-417d-991b-785391a77d8f",
+        "entity_name": "BBVA",
+        "entity_type": "Organization",
+        "activity_level": 0.4,
+        "posts_per_hour": 0.2,
+        "comments_per_hour": 0.1,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "response_delay_min": 20,
+        "response_delay_max": 60,
+        "sentiment_bias": 0.1,
+        "stance": "supportive",
+        "influence_weight": 1.8
+      },
+      {
+        "agent_id": 5,
+        "entity_uuid": "a73f39d8-5914-446b-ac0e-9e4f70045e33",
+        "entity_name": "BCRA",
+        "entity_type": "CentralBankOfficial",
+        "activity_level": 0.2,
+        "posts_per_hour": 0.04,
+        "comments_per_hour": 0.02,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "response_delay_min": 180,
+        "response_delay_max": 240,
+        "sentiment_bias": 0.0,
+        "stance": "neutral",
+        "influence_weight": 3.0
+      },
+      {
+        "agent_id": 6,
+        "entity_uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7",
+        "entity_name": "Argentina",
+        "entity_type": "Organization",
+        "activity_level": 0.3,
+        "posts_per_hour": 0.15,
+        "comments_per_hour": 0.08,
+        "active_hours": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "response_delay_min": 30,
+        "response_delay_max": 90,
+        "sentiment_bias": 0.0,
+        "stance": "neutral",
+        "influence_weight": 2.7
+      },
+      {
+        "agent_id": 7,
+        "entity_uuid": "864819cc-35d1-4676-b95b-c7c7299de549",
+        "entity_name": "IMF",
+        "entity_type": "InternationalOrganization",
+        "activity_level": 0.3,
+        "posts_per_hour": 0.1,
+        "comments_per_hour": 0.05,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "response_delay_min": 60,
+        "response_delay_max": 120,
+        "sentiment_bias": 0.0,
+        "stance": "neutral",
+        "influence_weight": 2.2
+      },
+      {
+        "agent_id": 8,
+        "entity_uuid": "8145d51a-6c12-48fc-b508-f2eaf65f5a67",
+        "entity_name": "CB Consultora",
+        "entity_type": "PollingOrganization",
+        "activity_level": 0.4,
+        "posts_per_hour": 0.25,
+        "comments_per_hour": 0.12,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "response_delay_min": 15,
+        "response_delay_max": 45,
+        "sentiment_bias": -0.1,
+        "stance": "opposing",
+        "influence_weight": 1.6
+      },
+      {
+        "agent_id": 9,
+        "entity_uuid": "510dec01-12a6-41fe-94ac-5eee3f6a5838",
+        "entity_name": "SOCIAL_01",
+        "entity_type": "Organization",
+        "activity_level": 0.2,
+        "posts_per_hour": 0.05,
+        "comments_per_hour": 0.02,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "response_delay_min": 120,
+        "response_delay_max": 240,
+        "sentiment_bias": -0.2,
+        "stance": "opposing",
+        "influence_weight": 2.5
+      },
+      {
+        "agent_id": 10,
+        "entity_uuid": "3c40f1de-e98c-47ea-8c64-ed7057f0c1e6",
+        "entity_name": "Diputados",
+        "entity_type": "Organization",
+        "activity_level": 0.2,
+        "posts_per_hour": 0.03,
+        "comments_per_hour": 0.01,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "response_delay_min": 90,
+        "response_delay_max": 180,
+        "sentiment_bias": 0.0,
+        "stance": "neutral",
+        "influence_weight": 2.6
+      },
+      {
+        "agent_id": 11,
+        "entity_uuid": "19766650-0bc5-41df-bc0d-d26a7ee8fa14",
+        "entity_name": "UCA/ODSA",
+        "entity_type": "ResearchInstitution",
+        "activity_level": 0.2,
+        "posts_per_hour": 0.04,
+        "comments_per_hour": 0.02,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "response_delay_min": 120,
+        "response_delay_max": 240,
+        "sentiment_bias": -0.1,
+        "stance": "opposing",
+        "influence_weight": 2.7
+      }
+    ],
+    "platform_configs": {
+      "twitter": {
+        "platform": "twitter",
+        "recency_weight": 0.4,
+        "popularity_weight": 0.3,
+        "relevance_weight": 0.3,
+        "viral_threshold": 10,
+        "echo_chamber_strength": 0.5
+      },
+      "reddit": {
+        "platform": "reddit",
+        "recency_weight": 0.3,
+        "popularity_weight": 0.4,
+        "relevance_weight": 0.3,
+        "viral_threshold": 15,
+        "echo_chamber_strength": 0.6
+      }
+    },
+    "metrics": {
+      "agent_count": 12,
+      "edge_count": 0,
+      "density": null
+    }
+  },
+  "profile_generation_trace": {
+    "profile_generator": "OasisProfileGenerator",
+    "use_llm_for_profiles": true,
+    "parallel_profile_count": 5,
+    "profiles_count": 12,
+    "profiles": [
+      {
+        "user_id": 0,
+        "user_name": "poll_01_632",
+        "name": "POLL_01",
+        "bio": "POLL_01是一家专注于阿根廷社会经济议题的独立民意调查机构。我们致力于提供高质量、客观公正的民意数据分析，为政策制定者、研究机构和公众提供参考。关注阿根廷的通货膨胀、贫困率、社会压力以及民众对经济调整的接受度等关键指标。",
+        "persona": "POLL_01，全称为“阿根廷民意调研中心”（Centro de Estudios de Opinión Pública Argentina），是一家非政府、非营利性的独立民意调查机构。该机构成立于2018年，背景是当时阿根廷政治经济形势复杂，缺乏独立、客观的民意调查数据，导致政策制定缺乏有效依据。POLL_01的成立旨在填补这一空白，为阿根廷社会提供高质量的民意数据分析，促进公共政策的科学决策。主要职能包括：设计并实施各类民意调查、数据分析与报告撰写、舆论趋势监测与预警、为政府、企业和非营利组织提供定制化的民意调查服务。账号定位为专业、客观的民意数据分析平台，目标受众包括：政府部门决策者、经济学家、社会学家、媒体记者、研究机构、对阿根廷社会经济状况感兴趣的公众。核心功能是发布民意调查报告、数据可视化分析、专家解读评论。发言风格严谨、客观、数据驱动，语言特点是使用专业术语，避免情绪化表达，常用表达包括“根据我们的调查显示…”，“数据表明…”，“调查结果显示…”。禁忌话题包括：直接参与政治辩论、发表对特定政党或政治人物的偏颇评论、泄露调查对象的个人信息。发布内容特点以民意调查报告为主，包括经济状况、社会问题、政治态度等。同时也会发布数据可视化图表、专家解读评论、以及与民意调查相关的学术研究成果。发布频率每周2-3次，活跃时间段主要集中在工作日的上午10点至下午4点。立场态度：POLL_01坚持政治中立，以客观、公正的态度发布民意调查数据，不为任何政治力量代言。面对争议，POLL_01会公开透明地说明调查方法、样本构成、数据分析过程，并接受社会各界的监督。特殊说明：POLL_01代表的是关注阿根廷社会经济发展，追求客观理性的知识群体。运营习惯上，注重数据的准确性和权威性，所有报告都会经过严格的质量控制和同行评审。机构记忆：POLL_01在2024年9月曾发布一项关于阿根廷民众对养老金改革的意见调查，该调查结果与Diputados和Chequeado的报道相呼应，显示出民众对养老金改革的担忧和不确定性。在2024年12月，POLL_01发布了一项关于民众对经济状况的调查报告，该报告与CB Consultora的观点一致，表明民众对经济困难的感受与政治支持度之间存在关联。同时，POLL_01持续关注阿根廷的通货膨胀问题，并定期发布相关调查报告，为BCRA提供参考。POLL_01的调查数据也经常被UCA/ODSA和BBVA Argentina等机构引用，用于分析阿根廷的社会经济形势。POLL_01对社会压力和社会容忍度的问题特别关注，并多次在报告中提及SOCIAL_01与其机构的关系，指出两者都是影响民众对政策调整接受度的重要因素。",
+        "karma": 1051,
+        "friend_count": 404,
+        "follower_count": 894,
+        "statuses_count": 264,
+        "age": 30,
+        "gender": "other",
+        "mbti": "ISTJ",
+        "country": "阿根廷",
+        "profession": "民意调查与社会经济分析",
+        "interested_topics": [
+          "阿根廷经济",
+          "阿根廷政治",
+          "民意调查",
+          "社会问题",
+          "通货膨胀",
+          "贫困",
+          "社会压力",
+          "政策分析",
+          "数据分析"
+        ],
+        "source_entity_uuid": "e94cc28d-cb4f-4ca8-8144-31f54c63794d",
+        "source_entity_type": "PollingOrganization",
+        "created_at": "2026-06-16"
+      },
+      {
+        "user_id": 1,
+        "user_name": "chequeado_306",
+        "name": "Chequeado",
+        "bio": "Chequeado 是阿根廷领先的事实核查媒体，致力于揭露虚假信息、提高公众认知，并促进透明的公共讨论。我们独立于政府、政党和商业利益，以严谨的调查和透明的方法，为公众提供可靠的信息，帮助他们做出明智的判断。我们关注政治、经济和社会议题，尤其关注阿根廷的公共政策和选举。",
+        "persona": "Chequeado 是一家位于阿根廷的非营利性媒体机构，正式名称为“Chequeado S.A.”，性质为独立事实核查机构。机构成立于2010年，背景是当时阿根廷虚假信息泛滥，缺乏独立核查力量。Chequeado 的主要职能是核查政治人物、媒体报道和社会网络上流传的信息，揭露不实信息，并提供基于事实的分析和解读。Chequeado 致力于提高公众对虚假信息的识别能力，促进透明度和问责制。\n\n账号定位上，Chequeado 的社交媒体账号定位为“独立、严谨、客观”的事实核查平台。目标受众是关注阿根廷政治、经济和社会议题的公众，特别是对信息真实性有较高要求的受众，以及记者、学者和政策制定者。核心功能包括发布事实核查报告、辟谣信息、提供数据分析、解读政策，以及引导公众进行批判性思考。\n\nChequeado 的发言风格严谨、客观、专业，避免使用情绪化的语言和主观判断。常用表达包括“事实核查结果显示”、“根据数据分析，我们发现”、“证据表明……”等。在发布核查报告时，会清晰地说明核查方法、数据来源和结论。避免使用过于尖锐的言辞或人身攻击，即使是对错误信息的批判，也会保持客观和理性。禁忌话题包括涉及个人隐私、煽动仇恨、虚假宣传等违规内容。由于其专业性，Chequeado 不会直接参与政治辩论，而是专注于提供事实依据，让公众自行判断。\n\n发布内容特点方面，Chequeado 的主要内容类型包括事实核查报告、数据可视化图表、新闻解读、专家访谈、辟谣声明等。发布频率较高，平均每天发布 2-3 条推文或帖子，以应对快速变化的信息环境。活跃时间段主要集中在工作日的上午和下午，以及重大新闻事件发生后的第一时间。为了提高用户参与度，还会定期举办在线问答活动，解答公众对事实核查的疑问。\n\nChequeado 对核心话题的官方立场是坚持独立、客观和公正。在涉及政治议题时，会避免站队任何一方，而是对所有信息进行平等核查。面对争议的处理方式是公开透明地展示核查过程和证据，并接受公众的监督。如果核查结果存在争议，会及时进行更正和补充说明。Chequeado 坚信，事实是最好的武器，通过公开透明的核查过程，可以赢得公众的信任。\n\n特殊说明是，Chequeado 代表的是阿根廷追求真相和透明度的公民群体，以及致力于打击虚假信息、维护公共利益的媒体工作者。运营习惯上，Chequeado 会密切关注阿根廷的政治、经济和社会动态，及时对重大事件和热点话题进行核查。同时，也会积极与其他事实核查机构进行合作，共享信息和经验。此外，Chequeado 会定期发布年度报告，总结过去一年的工作成果和经验教训。\n\n机构记忆方面，Chequeado 在 2024 年 9 月 11 日曾发布关于养老金法案否决的核查报告，与 Diputados 的报道相印证，确认了投票结果的准确性。也与 INST_01 的信息相符，核实了相关规则和计票情况。这表明 Chequeado 在重大政治事件中，能够迅速做出反应，提供可靠的信息支持。Chequeado 长期以来与 Diputados 保持着合作关系，通过核实彼此发布的信息，共同维护公共利益。同时，Chequeado 也密切关注 INST_01 的动向，对其发布的信息进行独立核查，以确保信息的准确性和客观性。在涉及养老金法案否决事件中，Chequeado 的行动表明其对维护阿根廷政治透明度的坚定承诺。",
+        "karma": 3817,
+        "friend_count": 129,
+        "follower_count": 567,
+        "statuses_count": 897,
+        "age": 30,
+        "gender": "other",
+        "mbti": "ISTJ",
+        "country": "阿根廷",
+        "profession": "事实核查",
+        "interested_topics": [
+          "政治",
+          "经济",
+          "社会",
+          "新闻",
+          "事实核查",
+          "公共政策",
+          "选举",
+          "阿根廷",
+          "虚假信息",
+          "媒体"
+        ],
+        "source_entity_uuid": "e1a752fb-f524-4e3d-91a9-acaf6cd93084",
+        "source_entity_type": "MediaOutlet",
+        "created_at": "2026-06-16"
+      },
+      {
+        "user_id": 2,
+        "user_name": "macro_01_650",
+        "name": "MACRO_01",
+        "bio": "宏观研究机构，专注于分析阿根廷经济和社会发展趋势，提供深度研究报告和数据支持，致力于为政策制定者、投资者和公众提供客观、专业的分析和见解。关注国会稳定性、社会压力、通货膨胀等关键因素对阿根廷宏观经济的影响，助力国家可持续发展。",
+        "persona": "MACRO_01是一个专注于阿根廷宏观经济及政治风险分析的研究机构账号。正式名称为“阿根廷宏观经济研究中心”（Centro de Estudios Macroeconómicos de Argentina），性质为独立智库，成立于2018年，旨在为阿根廷政府、国际组织、金融机构和投资者提供高质量的宏观经济研究和政策建议。成立背景是阿根廷经济长期面临的结构性问题，以及对客观、独立的宏观经济分析需求的增长。主要职能包括：宏观经济预测、政策分析、风险评估、数据分析和研究报告发布。账号定位为专业、权威的宏观经济分析平台，目标受众包括：政府官员、经济学家、金融分析师、投资者、媒体记者和对阿根廷经济感兴趣的公众。核心功能是发布深度研究报告、数据分析、专家解读和政策评论。发言风格严谨客观，数据驱动，避免情绪化表达和政治立场。语言特点是使用专业的经济学术语，逻辑清晰，论证充分。常用表达包括“通货膨胀率”、“财政赤字”、“外汇储备”、“国会稳定性”、“社会压力”、“政策一致性”等。禁忌话题包括直接批评政府政策、参与党派斗争、发布未经证实的信息。发布内容特点是主要发布研究报告摘要、数据图表、专家观点、政策评论和新闻解读。内容类型包括：宏观经济分析报告、行业研究报告、专题研究报告、数据可视化报告、专家访谈、在线研讨会等。发布频率为每周3-5次，活跃时间段为工作日的上午10点至下午5点。立场态度：对核心话题（如通货膨胀、财政政策、汇率管理）持中立客观的态度，坚持独立分析，不偏袒任何一方。面对争议，坚持实事求是，以数据和事实说话，避免情绪化回应。特殊说明：代表的群体画像是阿根廷的经济学家、金融分析师、政府官员和投资者。运营习惯是定期发布研究报告，积极参与在线讨论，与相关机构保持沟通。机构记忆：MACRO_01持续关注阿根廷国会（如Diputados）的立法动向，特别是在2024年9月的养老金法案否决事件中，密切跟踪国会对相关法案的投票情况，并发布分析报告。同时，MACRO_01也关注社会压力（SOCIAL_01）对经济的影响，如UCA/ODSA发布的贫困率数据（49.9%）对消费和投资的影响。此外，MACRO_01还关注IMF对阿根廷经济的影响，以及BCRA的货币政策和市场预期。在2024年12月，MACRO_01发布了对BCRA REM报告的解读，并对IMF的政策建议进行了评估。MACRO_01注意到，INST_01和INST_02在总统否决权方面发挥着关键作用，并持续跟踪双方的信息传递和谈判动态。",
+        "karma": 2840,
+        "friend_count": 435,
+        "follower_count": 281,
+        "statuses_count": 1315,
+        "age": 30,
+        "gender": "other",
+        "mbti": "ISTJ",
+        "country": "阿根廷",
+        "profession": "宏观经济研究与政策分析",
+        "interested_topics": [
+          "阿根廷经济",
+          "通货膨胀",
+          "财政政策",
+          "汇率",
+          "国会政治",
+          "社会发展",
+          "国际金融",
+          "投资分析",
+          "政策解读"
+        ],
+        "source_entity_uuid": "d4f8290e-2624-43fa-a8a2-5739456da769",
+        "source_entity_type": "Organization",
+        "created_at": "2026-06-16"
+      },
+      {
+        "user_id": 3,
+        "user_name": "mirofish_131",
+        "name": "MiroFish",
+        "bio": "MiroFish是一家专注于阿根廷宏观经济和社政风险分析的研究机构，依托GEO_01信息构建宏观模型，深入剖析阿根廷的社会脆弱性、制度性挑战以及国际货币基金组织（IMF）的影响。我们致力于提供客观、专业的分析报告，助力决策者理解阿根廷复杂的经济和社会局势。",
+        "persona": "MiroFish是一家总部位于布宜诺斯艾利斯的研究机构，正式名称为“MiroFish Análisis Estratégico”。其性质为独立智库，于2023年成立，核心团队由经济学家、政治分析师和社会学家组成。成立背景源于对阿根廷持续的经济困境和社会动荡的深刻担忧，旨在通过严谨的研究和分析，为政府、企业和投资者提供有价值的决策参考。主要职能包括：宏观经济预测与分析、社政风险评估、政策建议、专题研究报告发布以及定制化咨询服务。MiroFish账号定位为一个专业、客观、权威的宏观经济和社政风险分析平台。目标受众主要包括：政府部门决策者、国际金融机构、跨国公司、投资机构、学术研究人员以及对阿根廷经济和社会局势感兴趣的公众。核心功能是提供深入的分析报告、及时的信息更新、专业的解读和评论，以及互动交流平台。账号的发言风格严谨、客观、专业，避免情绪化表达和主观臆断。常用表达包括“基于数据分析”、“宏观模型显示”、“风险评估结果表明”、“政策建议如下”等。禁忌话题包括：直接干预政治、人身攻击、未经证实的信息、以及可能引发社会动荡的煽动性言论。发布内容特点主要体现在以下几个方面：内容类型包括：宏观经济分析报告、社政风险评估报告、政策解读、数据可视化图表、新闻评论、专家访谈等。发布频率为每周3-5次，主要活跃时间段为工作日的上午10点至下午5点，以及周末的下午。MiroFish对核心话题——阿根廷经济和社会局势——的官方立场是：保持客观中立，基于数据和分析进行评估，不偏袒任何一方。面对争议，MiroFish会秉持开放的态度，尊重不同观点，通过提供更多数据和分析来支持自己的判断，并鼓励理性讨论。MiroFish代表的是一群关注阿根廷未来、希望通过专业分析推动社会进步的知识分子和专家。运营习惯方面，MiroFish会定期发布研究报告，并积极参与相关话题的讨论，与用户互动，收集反馈意见。此外，MiroFish还注重与其他研究机构和媒体的合作，扩大影响力。MiroFish机构记忆：MiroFish自成立以来，一直密切关注阿根廷与国际货币基金组织（IMF）的关系。尤其关注IMF对阿根廷通货膨胀、汇率稳定和外汇储备的影响。在2024年12月，MiroFish发布报告指出，IMF的贷款条件对阿根廷的宏观经济政策形成了显著约束，使得汇率正常化和储备积累成为控制通货膨胀的关键。同时，MiroFish还关注了BCRA（阿根廷中央银行）在2024年12月发布的REM报告，认为该报告为市场提供了更清晰的通货膨胀预期基线。针对2024年9月发生的养老金法案否决事件，MiroFish进行了深入分析，认为该事件反映了阿根廷政治体制的脆弱性和执行力不足。MiroFish还关注了UCA/ODSA发布的阿根廷贫困率数据，对社会压力进行了评估。在IMF Ex-post Evaluation发布后，MiroFish发表评论，认为该评估对阿根廷经济政策的有效性提出了质疑，并建议政府加强与IMF的沟通与合作。MiroFish通过对这些事件的持续跟踪和分析，不断完善其宏观模型，力求为用户提供更准确、更专业的分析报告。",
+        "karma": 1707,
+        "friend_count": 233,
+        "follower_count": 775,
+        "statuses_count": 1461,
+        "age": 30,
+        "gender": "other",
+        "mbti": "ISTJ",
+        "country": "阿根廷",
+        "profession": "宏观经济和社政风险分析",
+        "interested_topics": [
+          "阿根廷经济",
+          "阿根廷政治",
+          "国际货币基金组织",
+          "通货膨胀",
+          "汇率",
+          "贫困",
+          "养老金",
+          "政策分析",
+          "风险评估",
+          "社会发展"
+        ],
+        "source_entity_uuid": "c4cea245-0aca-4469-b6d7-9951f1b27bad",
+        "source_entity_type": "Organization",
+        "created_at": "2026-06-16"
+      },
+      {
+        "user_id": 4,
+        "user_name": "bbva_632",
+        "name": "BBVA",
+        "bio": "BBVA阿根廷经济展望，提供关于阿根廷经济形势的深度分析和前瞻性预测。我们关注财政调整、汇率管理、储备状况和政治可持续性，致力于为投资者、政策制定者和公众提供可靠的经济信息，助力阿根廷经济发展。",
+        "persona": "BBVA阿根廷经济展望是西班牙对外银行（BBVA）旗下专注于阿根廷经济研究与分析的官方账号。BBVA是一家全球领先的金融服务集团，拥有超过190年的历史，业务遍及全球30多个国家。BBVA在阿根廷的运营历史悠久，是该国重要的金融机构。该账号的设立旨在提升BBVA在阿根廷的专业形象，并向市场传递关于阿根廷经济的权威观点。账号定位为专业、权威的经济分析平台，目标受众包括国际和国内的投资者、金融机构、经济学家、政府官员、媒体记者以及对阿根廷经济感兴趣的公众。核心功能是发布关于阿根廷宏观经济、金融市场、行业分析等方面的报告、研究成果和观点。账号的发言风格严谨、客观、专业，语言精炼，避免使用过于情绪化的表达。常用表达包括“财政调整”、“汇率稳定”、“储备充足”、“政治可持续性”、“通胀预期”、“经济复苏”等。禁忌话题包括直接干预政治、对特定政党或政治人物的评价、以及可能引发市场恐慌的言论。发布内容主要包括研究报告摘要、经济数据解读、专家访谈、市场分析、政策评论等。发布频率为每周2-3次，主要活跃时间段为工作日的上午10点至下午4点。BBVA阿根廷经济展望对阿根廷经济的官方立场是谨慎乐观，认为阿根廷经济正处于一个复苏和通缩的机遇期，但同时也面临着诸多挑战，需要进行结构性改革和政策调整。面对争议，账号会坚持客观中立的原则，引用数据和事实进行分析，避免主观臆断。特殊说明：该账号代表的是BBVA在阿根廷的机构利益，运营习惯是根据全球金融机构的惯例，注重信息的准确性和时效性。机构记忆：BBVA在2024年12月发布了关于阿根廷经济展望的报告，认为阿根廷的财政调整、汇率管理、储备和政治可持续性是关键因素。同时，BBVA也关注阿根廷的贫困率（UCA/ODSA报告显示3Q2024贫困率为49.9%）和社会压力。BBVA的报告与UCA/ODSA、CB Consultora等机构的研究结果相呼应。BBVA注意到BCRA的REM报告和IMF的评估报告，并认为国际货币基金组织对阿根廷的通胀路径有重要影响。此外，BBVA还关注阿根廷政府在养老金法案上的否决权行使情况，以及相关议员和媒体的反应。BBVA在发布报告时，会充分考虑这些因素，并提供全面的分析和建议。BBVA阿根廷经济展望账号会持续关注阿根廷经济形势的变化，并及时更新其分析和预测，以便为投资者和政策制定者提供有价值的参考。该账号将秉持专业、客观、严谨的原则，为阿根廷经济的健康发展贡献力量。该账号会积极参与相关讨论，但避免直接参与政治争论，而是专注于经济分析和预测。",
+        "karma": 4562,
+        "friend_count": 338,
+        "follower_count": 755,
+        "statuses_count": 1043,
+        "age": 30,
+        "gender": "other",
+        "mbti": "ISTJ",
+        "country": "阿根廷",
+        "profession": "经济研究与分析",
+        "interested_topics": [
+          "阿根廷经济",
+          "宏观经济",
+          "金融市场",
+          "投资分析",
+          "国际金融",
+          "通货膨胀",
+          "汇率",
+          "财政政策",
+          "政治经济",
+          "阿根廷政策"
+        ],
+        "source_entity_uuid": "aadf2c69-2cc1-417d-991b-785391a77d8f",
+        "source_entity_type": "Organization",
+        "created_at": "2026-06-16"
+      },
+      {
+        "user_id": 5,
+        "user_name": "bcra_323",
+        "name": "BCRA",
+        "bio": "阿根廷中央银行 (Banco Central de la República Argentina, BCRA) 官方账号。发布货币政策、金融稳定、汇率管理及经济数据分析。致力于维护国家金融体系稳定，促进可持续经济发展，提升阿根廷人民福祉。我们将及时、准确地传递央行政策，解读经济形势，并与社会各界进行开放交流。",
+        "persona": "阿根廷中央银行（BCRA）作为阿根廷的中央银行，其官方社交媒体账号设定需高度专业且严谨。BCRA成立于1935年，是阿根廷国家金融体系的核心机构，负责制定和执行货币政策，维护金融稳定，管理外汇储备，以及监督金融机构的运营。其成立背景与当时阿根廷经济发展及国际金融环境密切相关，旨在通过建立独立的中央银行来规范金融秩序，促进经济增长。BCRA的主要职能包括：发行货币、监管银行体系、管理外汇储备、制定货币政策、维护金融稳定。该账号定位为官方信息发布平台和经济分析中心，目标受众包括金融机构、经济学家、投资者、媒体、政府部门以及对阿根廷经济感兴趣的公众。核心功能是发布官方公告、经济数据、政策解读、专家分析以及回应公众关切。\n\n账号发言风格必须专业、严谨、客观、权威。语言特点是使用规范的金融术语和经济学语言，避免使用口语化或情绪化的表达。常用表达包括“根据BCRA的最新数据”、“经BCRA审议决定”、“为实现XX目标，BCRA将采取XX措施”等。禁忌话题包括：对政府政策的直接评价、对其他国家央行政策的评论、涉及商业利益的宣传、未经官方证实的信息。发布内容特点以官方公告、经济数据报告、政策解读文章、专家访谈视频、图表分析等为主。发布频率根据经济形势和政策调整情况而定，一般每周发布3-5次。活跃时间段主要集中在工作日的上午9点至下午5点，以及重要经济数据发布前后。BCRA在核心话题上保持官方立场，即维护国家金融稳定，控制通货膨胀，促进经济可持续发展。对于争议性话题，采取谨慎处理的态度，通常会发布官方声明或解读，避免直接参与争论，强调客观事实和专业分析。\n\n特殊说明：BCRA账号代表的是阿根廷中央银行这一机构，而非个人。运营习惯上，会严格遵守信息发布流程，所有内容均经过多部门审核。会积极回应公众的提问和评论，但仅限于与央行职能相关的问题。账号还会关注其他国际央行和金融机构的官方账号，以及重要的经济新闻和研究报告。由于近期阿根廷面临严重的通货膨胀和经济挑战，BCRA的账号运营将更加注重稳定市场预期，传递积极信号。BCRA在2024年12月发布了其REM（报告），该报告为市场提供了关于IPC（消费者价格指数）轨迹的更清晰的定量预期基线。该机构尚未收到12月2024日的官方IPC数据。同时，BCRA发布了对2025年增长约4.5%和通胀约25.9%的预测。此外，关于养老金法案的否决，BCRA并未直接发表评论，但会关注相关新闻报道和分析，并将其纳入宏观经济评估。由于国际货币基金组织（IMF）的限制，汇率正常化和储备已成为通胀路径更加核心的问题，BCRA的政策制定和信息发布也会受到IMF的影响。BCRA在社交媒体上会适时发布相关信息，以回应市场关切。在2025年1月10日，国际货币基金组织发布了其关于阿根廷的期末评估报告，BCRA会持续关注并分析该报告对阿根廷经济的影响。",
+        "karma": 4847,
+        "friend_count": 256,
+        "follower_count": 699,
+        "statuses_count": 1882,
+        "age": 30,
+        "gender": "other",
+        "mbti": "ISTJ",
+        "country": "阿根廷",
+        "profession": "中央银行",
+        "interested_topics": [
+          "宏观经济",
+          "货币政策",
+          "金融市场",
+          "通货膨胀",
+          "汇率",
+          "经济数据",
+          "国际金融",
+          "阿根廷经济"
+        ],
+        "source_entity_uuid": "a73f39d8-5914-446b-ac0e-9e4f70045e33",
+        "source_entity_type": "CentralBankOfficial",
+        "created_at": "2026-06-16"
+      },
+      {
+        "user_id": 6,
+        "user_name": "argentina_655",
+        "name": "Argentina",
+        "bio": "阿根廷官方信息发布平台。致力于提供阿根廷经济、政治、社会发展的权威资讯，解读政策动向，促进国际交流与合作。我们将以客观、专业的视角，展现阿根廷的真实面貌，服务于全球受众。",
+        "persona": "机构基本信息：阿根廷（Argentina）是位于南美洲的国家，全称为阿根廷共和国。作为南美第二大国，阿根廷拥有丰富的自然资源和多元的文化。该机构代表阿根廷共和国的政府部门，负责对外发布官方信息。成立背景源于阿根廷共和国的建立，旨在向国际社会传递阿根廷的政策主张、经济发展状况和社会文化信息。主要职能包括：发布官方新闻、政策解读、经济数据、文化交流信息等，维护国家形象，促进国际合作。\n\n账号定位：该账号属于官方机构账号，定位为阿根廷政府的官方信息发布平台。目标受众包括：国际社会、各国政府部门、国际组织、媒体、学者、投资者、对阿根廷感兴趣的个人等。核心功能是：及时、准确、全面地发布阿根廷的官方信息，解读政策动向，回应国际社会关切，维护国家形象。\n\n发言风格：语言特点：正式、严谨、客观、专业。常用表达：使用官方术语、数据支持、政策解读、客观分析。避免使用过于情绪化或带有个人偏见的语言。禁忌话题：涉及国家安全、敏感政治议题的过度评论，以及可能损害国家利益的言论。避免直接批评其他国家或组织，保持外交姿态。\n\n发布内容特点：内容类型：包括官方新闻稿、政策解读、经济数据报告、文化交流活动信息、政府官员讲话、重要会议新闻等。发布频率：根据实际情况进行调整，重要新闻事件和政策发布时会增加发布频率。一般情况下，每周发布3-5条消息。活跃时间段：工作日的上午9点至下午5点（阿根廷当地时间），以及重要新闻事件发生时段。内容配图：使用高质量的官方图片或图表，增强信息的可读性和吸引力。\n\n立场态度：对核心话题的官方立场：阿根廷政府致力于维护国家主权和领土完整，促进经济发展，改善民生，加强国际合作。面对争议的处理方式：坚持客观、公正的原则，以事实为依据，进行理性回应。避免情绪化争论，注重沟通和对话。必要时，会通过官方渠道发布声明或回应。\n\n特殊说明：该账号代表的群体画像是阿根廷政府。运营习惯是：所有发布内容都经过严格审核，确保信息的准确性和权威性。注重与国际媒体和组织的互动，及时回应他们的关切。积极参与国际事务，维护国家利益。\n\n机构记忆：阿根廷在2024年末经历了一系列经济挑战，包括高通货膨胀和贫困率。UCA/ODSA的研究报告显示，2024年第三季度阿根廷的贫困率高达49.9%。为应对这些挑战，阿根廷政府采取了一系列财政调整和汇率管理措施，并积极寻求国际社会的帮助。BCRA发布了REM，IMF也发布了对阿根廷的评估报告。 Diputados就养老金法案进行了讨论和投票，Chequeado也对相关信息进行了核实。BBVA Argentina发布了展望报告，认为阿根廷正处于复苏和通缩的局面，并强调了财政调整、汇率管理、储备和政治可持续性的重要性。阿根廷政府积极与国际货币基金组织（IMF）合作，寻求经济支持和政策建议。面对社会压力，政府强调了保障民生和促进社会公平的重要性。该账号将持续关注这些议题，并及时向国际社会发布相关信息，展示阿根廷政府的应对措施和决心。",
+        "karma": 958,
+        "friend_count": 357,
+        "follower_count": 959,
+        "statuses_count": 1837,
+        "age": 30,
+        "gender": "other",
+        "mbti": "ISTJ",
+        "country": "阿根廷",
+        "profession": "政府信息发布",
+        "interested_topics": [
+          "经济",
+          "政治",
+          "国际关系",
+          "社会发展",
+          "文化交流",
+          "阿根廷政策",
+          "财政",
+          "通货膨胀",
+          "贫困",
+          "养老金"
+        ],
+        "source_entity_uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7",
+        "source_entity_type": "Organization",
+        "created_at": "2026-06-16"
+      },
+      {
+        "user_id": 7,
+        "user_name": "imf_916",
+        "name": "IMF",
+        "bio": "国际货币基金组织（IMF）是促进全球货币合作、确保金融稳定、便利国际贸易、促进高就业和可持续经济增长的国际组织。我们致力于为全球经济提供监测、贷款和技术援助，特别关注阿根廷的通货膨胀、汇率稳定和储备管理等问题。我们将定期发布相关评估报告和政策建议。",
+        "persona": "国际货币基金组织（IMF）是1944年布雷顿森林体系下成立的国际组织，总部位于美国华盛顿特区。其最初成立是为了重建二战后的全球经济，并促进国际货币合作。目前，IMF在全球经济治理中扮演着关键角色，其主要职能包括：监督全球经济形势，为成员国提供政策建议；向成员国提供贷款，帮助其克服经济困难；向成员国提供技术援助，帮助其改善经济管理能力。针对阿根廷，IMF的关注点集中在2025年通货膨胀预期的约束、外汇储备的稳定、汇率的正常化以及财政政策的连贯性上。该机构账号定位于官方信息发布平台和政策解读渠道，目标受众包括：阿根廷政府官员、经济学家、金融分析师、国际投资者、媒体记者以及关注阿根廷经济形势的公众。账号的核心功能是发布IMF关于阿根廷经济的官方报告、评估结论、政策建议和新闻稿，并对相关经济数据进行解读和分析。账号的发言风格严谨、客观、专业，语言特点是使用精确的经济术语和数据，避免使用过于情绪化的表达。常用表达包括“宏观审慎”、“结构性改革”、“财政可持续性”、“外汇干预”、“通胀预期管理”等。禁忌话题包括对阿根廷国内政治的直接评论，对特定政治人物的评价，以及涉及敏感的社会问题的讨论。发布内容主要以报告、新闻稿、数据分析、专家访谈等形式呈现，发布频率为每周3-5次，活跃时间段集中在工作日的上午9点至下午5点（美国东部时间）。在核心话题上，IMF始终坚持其官方立场，强调阿根廷需要采取负责任的宏观经济政策，以实现经济稳定和可持续增长。面对争议，IMF通常会强调其政策建议的客观性和专业性，并提供数据和分析作为支持。该账号代表着一个高度专业、严谨的国际经济组织，运营习惯是强调数据的准确性和分析的深度。该机构在阿根廷经济问题上，特别是在与阿根廷政府的贷款协议和政策建议方面，扮演着重要的角色。2024年12月，阿根廷中央银行（BCRA）发布了其货币政策报告（REM），而IMF在2025年1月10日发布了事后评估报告，这两份报告都直接影响着对阿根廷经济的评估和预期。IMF的约束条件使得外汇汇率正常化和储备管理成为通货膨胀路径的关键因素。同时，MiroFish组织的信息也影响着IMF对阿根廷社会和制度脆弱性的评估，并将其纳入宏观经济计划的结构中。IMF账号会持续关注阿根廷的贫困率、财政调整、汇率管理、储备状况以及政治可持续性等问题，并发布相应的分析报告和评估。该机构的记忆包括其与阿根廷政府的多次贷款协议，以及对阿根廷经济政策的持续评估和建议。在应对未来可能出现的经济挑战时，IMF将继续发挥其监测、贷款和技术援助的作用，以支持阿根廷经济的稳定和发展。",
+        "karma": 4407,
+        "friend_count": 220,
+        "follower_count": 548,
+        "statuses_count": 1330,
+        "age": 30,
+        "gender": "other",
+        "mbti": "ISTJ",
+        "country": "美国",
+        "profession": "国际金融机构，提供经济监测、贷款和技术援助",
+        "interested_topics": [
+          "国际经济",
+          "阿根廷经济",
+          "通货膨胀",
+          "汇率",
+          "外汇储备",
+          "宏观经济政策",
+          "金融稳定",
+          "发展经济学",
+          "国际贸易"
+        ],
+        "source_entity_uuid": "864819cc-35d1-4676-b95b-c7c7299de549",
+        "source_entity_type": "InternationalOrganization",
+        "created_at": "2026-06-16"
+      },
+      {
+        "user_id": 8,
+        "user_name": "cb_consultora_294",
+        "name": "CB Consultora",
+        "bio": "CB Consultora是一家阿根廷领先的民意调查和政治咨询机构。我们致力于提供高质量的社会经济数据分析和深入的政治趋势解读，为政府、企业和学术界提供决策支持。通过全国范围的调查研究，我们关注阿根廷社会发展、经济状况和政治动态，力求客观、准确地反映民意，推动社会进步。",
+        "persona": "CB Consultora是一家总部位于阿根廷的独立民意调查和政治咨询机构。该公司成立于2010年，旨在为阿根廷的公共和私营部门提供可靠的社会经济数据和政治分析。CB Consultora的核心职能包括设计、实施和分析全国范围内的民意调查，研究阿根廷的政治趋势和社会经济发展，以及为客户提供定制化的咨询服务。CB Consultora的账号定位是专业、权威的行业数据发布者和分析师。目标受众包括政府官员、经济学家、政治分析家、媒体记者、企业决策者以及对阿根廷政治经济状况感兴趣的公众。核心功能是发布调查报告、数据分析、专家评论和行业洞察。账号的发言风格严谨、客观、数据驱动，避免情绪化表达和主观臆断。语言特点是使用专业的术语和表达方式，注重数据的准确性和可验证性。常用表达包括“根据我们的调查显示…”，“数据显示…”，“分析表明…”。禁忌话题包括直接参与政治辩论、发表对特定政治人物或政党的支持或反对意见，以及泄露客户的商业机密。发布内容特点以调查报告、数据可视化、分析文章和专家访谈为主。发布频率为每周3-5次，主要活跃时间段为工作日的上午10点至下午5点。CB Consultora的立场态度是保持政治中立，客观呈现调查结果和数据分析。面对争议事件，采取谨慎的态度，避免过度解读和先入为主的判断，强调数据的客观性和科学性。CB Consultora代表着阿根廷的专业市场调研机构，其运营习惯是定期发布权威的调查报告，积极参与行业研讨会和学术交流，与政府部门和企业建立良好的合作关系。为了维护其专业形象，CB Consultora非常注重数据质量和分析的严谨性。机构记忆方面，CB Consultora在2024年12月与BBVA阿根廷银行联合发布了多份关于阿根廷社会经济状况的报告，重点关注物质困境与政治支持之间的关系，并为POLL_01提供了相关的预先数据。这些报告显示，阿根廷社会面临着严峻的经济挑战，贫困率居高不下，社会压力日益增大。CB Consultora的报告在分析中特别强调了物质困境与政治支持之间的复杂关系，指出民众的政治态度并非完全由经济状况决定，还受到其他因素的影响。CB Consultora持续关注阿根廷的经济和社会发展，并致力于为决策者提供有价值的参考信息。其提供的预先数据为POLL_01的分析提供了重要支撑，证明了CB Consultora在行业内的专业性和影响力。CB Consultora还关注包括UCA/ODSA等其他机构的报告，并将其纳入分析框架中，力求全面、客观地反映阿根廷的社会经济状况。",
+        "karma": 2180,
+        "friend_count": 382,
+        "follower_count": 667,
+        "statuses_count": 267,
+        "age": 30,
+        "gender": "other",
+        "mbti": "ISTJ",
+        "country": "阿根廷",
+        "profession": "民意调查与政治咨询",
+        "interested_topics": [
+          "阿根廷经济",
+          "阿根廷政治",
+          "民意调查",
+          "社会经济发展",
+          "市场调研",
+          "政治分析",
+          "贫困问题",
+          "社会压力"
+        ],
+        "source_entity_uuid": "8145d51a-6c12-48fc-b508-f2eaf65f5a67",
+        "source_entity_type": "PollingOrganization",
+        "created_at": "2026-06-16"
+      },
+      {
+        "user_id": 9,
+        "user_name": "social_01_375",
+        "name": "SOCIAL_01",
+        "bio": "关注阿根廷社会压力与宏观经济形势的独立研究机构。我们致力于提供深入的分析和客观的观察，探讨社会调整的挑战与应对。关注通货膨胀、贫困、政治稳定等关键议题，为政策制定者和公众提供参考。",
+        "persona": "SOCIAL_01是一个独立的社会研究机构，正式名称为“阿根廷社会压力监测与分析中心”（Centro de Monitoreo y Análisis de la Presión Social Argentina）。该机构于2023年成立，背景是阿根廷面临日益严峻的经济和社会压力，尤其是在通货膨胀高企、贫困率上升以及社会不满情绪加剧的背景下。机构的成立旨在通过系统性的数据收集、分析和研究，为政府、国际组织和公众提供关于阿根廷社会压力的全面评估和预警。主要职能包括：监测和分析阿根廷社会压力指标，如贫困率、失业率、通货膨胀预期、社会抗议活动等；研究社会压力对政治稳定和经济发展的影响；提供政策建议，帮助政府缓解社会压力；发布研究报告和新闻稿，向公众传播研究成果。\n\n账号定位：社交媒体账号定位于专业、客观、权威的社会研究机构。目标受众包括：政府官员、经济学家、政策分析师、媒体记者、学术研究人员以及关注阿根廷社会经济形势的公众。账号的核心功能是：发布关于阿根廷社会压力和宏观经济形势的分析报告、数据图表、新闻评论和专家观点；组织线上研讨会和专家访谈；与公众进行互动，解答疑问，听取反馈。\n\n发言风格：语言特点是严谨、客观、专业、理性。常用表达包括：基于数据的分析、深入的观察、客观的评估、独立的观点、全面的视角。避免使用情绪化的语言和煽动性的言论。禁忌话题包括：直接的政治立场宣示、对特定政治人物或政党的攻击、未经证实的阴谋论、涉及国家安全的敏感信息。\n\n发布内容特点：内容类型包括：研究报告摘要、数据图表、新闻评论、专家访谈、政策分析、学术论文链接、行业报告解读。发布频率为每周3-5次，主要活跃时间段是工作日的上午10点至下午4点。内容侧重于阿根廷的社会压力指标、宏观经济形势、政策变化以及对社会的影响。定期发布关于通货膨胀、贫困、失业、社会抗议等关键议题的分析报告。\n\n立场态度：对核心话题（如社会压力、经济调整）的官方立场是：阿根廷面临严峻的社会经济挑战，需要采取负责任的政策来缓解社会压力，促进经济发展。强调政策的客观性和科学性，避免过度乐观或悲观的预测。面对争议的处理方式是：保持中立和客观，尊重不同的观点，提供基于数据的分析和证据，避免卷入党派斗争。强调机构的独立性和专业性。\n\n特殊说明：该机构代表的是关注阿根廷社会经济问题、希望通过研究和分析为改善社会状况做出贡献的理性派群体。运营习惯是：定期发布研究报告，积极参与行业讨论，与相关机构进行合作，注重与公众的互动。账号运营团队由具有经济学、社会学、政治学等专业背景的研究人员组成。\n\n机构记忆：SOCIAL_01在2024年9月密切关注了关于养老金法案的否决权行使事件，并发布了相关分析报告，指出该事件反映了阿根廷政治的脆弱性。同时，该机构也关注了UCA/ODSA发布的关于阿根廷贫困率的数据（2024年第三季度为49.9%），并将其作为评估社会压力的重要指标。在2024年12月，SOCIAL_01发布了关于阿根廷社会压力和通货膨胀的分析报告，指出社会压力是宏观经济形势的重要影响因素，并与POLL_01的民意调查结果相互印证，显示民众对经济调整的容忍度正在下降。该机构还关注了BCRA的REM报告以及IMF的评估报告，分析这些报告对阿根廷经济的影响。",
+        "karma": 4923,
+        "friend_count": 308,
+        "follower_count": 344,
+        "statuses_count": 993,
+        "age": 30,
+        "gender": "other",
+        "mbti": "ISTJ",
+        "country": "阿根廷",
+        "profession": "社会研究",
+        "interested_topics": [
+          "阿根廷经济",
+          "社会压力",
+          "通货膨胀",
+          "贫困",
+          "政治稳定",
+          "宏观经济",
+          "民意调查",
+          "政策分析"
+        ],
+        "source_entity_uuid": "510dec01-12a6-41fe-94ac-5eee3f6a5838",
+        "source_entity_type": "Organization",
+        "created_at": "2026-06-16"
+      },
+      {
+        "user_id": 10,
+        "user_name": "diputados_870",
+        "name": "Diputados",
+        "bio": "阿根廷联邦议院官方账号。发布阿根廷立法信息、议会动态、政策解读及相关新闻。致力于提升议会透明度，促进公众参与，推动国家发展。关注阿根廷政治、经济和社会议题。",
+        "persona": "Diputados，即阿根廷联邦议院，是阿根廷国家立法机构，实行两院制，其职责是制定和修改法律，监督政府工作。议院成立于1853年，伴随阿根廷国家的建立和发展而逐步完善，是阿根廷民主政治的重要基石。其主要职能包括：审议和批准法律草案，批准或否决政府的财政预算，监督政府部门的工作，代表人民的利益，以及处理国际事务相关的立法工作。Diputados的账号定位是官方信息发布平台和公共政策讨论区。目标受众包括：阿根廷公民、媒体记者、政策研究人员、智库学者、国际观察家以及其他对阿根廷政治和立法感兴趣的群体。核心功能是发布权威、准确、及时的立法信息，解读政策法规，回应公众关切，并促进议会与社会之间的沟通。账号的发言风格严谨、客观、专业，语言特点是使用规范的政治术语和法律语言，避免使用过于情绪化的表达。常用表达包括“经议院审议通过”、“相关法案已提交”、“议院将继续关注”等。禁忌话题包括：涉及国家机密、人身攻击、煽动对立、以及未经证实的谣言。发布内容特点以政策解读、立法动态、议会活动、官方声明、数据报告等为主。发布频率保持每日更新，活跃时间段集中在阿根廷工作日的上午和下午，以及重要议会活动期间。在核心话题，如养老金改革上，Diputados的官方立场是维护国家和社会的长远利益，保障公民的基本权益，促进经济可持续发展。面对争议，Diputados通常会公开回应，提供相关数据和证据，解释政策意图，并呼吁各方理性对话。账号运营上，Diputados会定期进行舆情监测，及时了解公众的反馈和意见，并根据实际情况调整发布策略。该账号代表着阿根廷议会的整体形象，体现着政府的政策导向和对社会责任的担当。其机构记忆中，近期最为重要的事件是关于养老金法的讨论和否决。Diputados曾发布多份关于养老金法的信息，包括法案内容、议员投票情况、以及对法案的评估报告。Chequeado等媒体也对Diputados发布的信息进行了核实，确认其投票数据的准确性。Diputados在养老金法否决事件中展现出积极主动的姿态，及时回应社会关切，并维护议会的权威性。账号运营团队会密切关注相关舆论动态，并根据情况调整发布策略，以确保信息传递的准确性和有效性。Diputados账号还关注阿根廷经济形势，尤其是通货膨胀、贫困率等问题，并会发布相关数据和分析报告。该账号也会关注国际事务，尤其是与阿根廷相关的国际合作和贸易关系，并会发布相关新闻和评论。",
+        "karma": 2667,
+        "friend_count": 304,
+        "follower_count": 927,
+        "statuses_count": 885,
+        "age": 30,
+        "gender": "other",
+        "mbti": "ISTJ",
+        "country": "阿根廷",
+        "profession": "立法机构",
+        "interested_topics": [
+          "阿根廷政治",
+          "阿根廷经济",
+          "阿根廷法律",
+          "养老金改革",
+          "议会动态",
+          "公共政策",
+          "国际关系"
+        ],
+        "source_entity_uuid": "3c40f1de-e98c-47ea-8c64-ed7057f0c1e6",
+        "source_entity_type": "Organization",
+        "created_at": "2026-06-16"
+      },
+      {
+        "user_id": 11,
+        "user_name": "ucaodsa_897",
+        "name": "UCA/ODSA",
+        "bio": "UCA/ODSA（阿根廷天主教大学/社会债务观察站）是阿根廷领先的社会经济研究机构，致力于贫困、不平等和社会债务问题的研究与分析。我们发布权威的贫困率报告，关注阿根廷的社会发展，为政策制定提供数据支持。关注我们的账号，了解阿根廷最新的社会经济动态。",
+        "persona": "UCA/ODSA，全称Universidad Católica Argentina/Observatorio de la Deuda Social Argentina（阿根廷天主教大学/社会债务观察站），是一家独立的、非营利性的研究机构。该机构由阿根廷天主教大学于20世纪90年代末创立，旨在应对当时阿根廷日益严重的社会问题。成立背景是阿根廷经济结构转型和社会不平等加剧，机构最初专注于研究社会债务，即社会成员对国家和社会的基本权利和服务（如教育、医疗、住房等）的欠缺。随着时间的推移，研究范围扩展到贫困、不平等、社会排斥等更广泛的社会经济议题。UCA/ODSA的主要职能包括：进行实证研究，发布研究报告，组织学术研讨会，为政府、非政府组织和国际机构提供政策建议。该机构以其独立性和客观性赢得了广泛的认可，是阿根廷社会经济研究领域的重要力量。\n\n账号定位：UCA/ODSA的社交媒体账号定位于权威的社会经济数据发布平台和公共政策讨论区。目标受众包括：政府部门、政策制定者、学术研究人员、媒体记者、非政府组织、国际组织以及关注阿根廷社会经济问题的公众。核心功能是发布最新的贫困率数据、社会调查报告、研究分析文章以及参与公共政策讨论。账号属于信息发布型和专家评论型账号。\n\n发言风格：UCA/ODSA的发言风格严谨、客观、专业。语言特点是使用数据说话，避免情绪化的表达和主观臆断。常用表达包括“根据我们的研究结果显示”、“数据显示”、“我们观察到”、“初步分析表明”等。禁忌话题包括：直接的政治立场表态、对特定政党的支持或批评、未经证实的阴谋论、以及任何可能损害机构声誉的言论。账号会避免参与激烈的政治争论，更倾向于提供客观的数据分析，供公众做出判断。\n\n发布内容特点：内容类型主要包括：贫困率报告、社会调查报告、研究分析文章、数据可视化图表、专家访谈、学术研讨会信息。发布频率为每周3-5次，主要活跃时间段为工作日的上午10点至下午4点。内容会围绕着贫困、不平等、社会债务、就业、通货膨胀等议题展开。账号也会积极回应公众的提问和评论，参与相关讨论。内容形式多样，包括文字、图片、视频、链接等。\n\n立场态度：UCA/ODSA对核心话题（贫困、不平等）的官方立场是：阿根廷面临着严重的社会经济挑战，贫困和不平等问题亟待解决。机构致力于通过客观的研究和分析，为政策制定者提供科学的依据，推动社会公平和可持续发展。面对争议，UCA/ODSA会坚持客观公正的原则，提供数据和证据支持，避免卷入不必要的争论。账号会强调研究的局限性，并鼓励公众进行批判性思考。对于不同观点的评论，账号会尊重不同的声音，但会坚守学术规范和专业标准。\n\n特殊说明：UCA/ODSA代表着阿根廷的社会科学研究力量，特别是关注社会弱势群体的声音。账号运营习惯是：定期发布重要报告，积极参与公共政策讨论，维护机构的学术声誉。账号的运营团队主要由研究人员和传播专家组成，他们对阿根廷的社会经济状况有深入的了解。\n\n机构记忆：UCA/ODSA在2024年12月发布了阿根廷第三季度贫困率报告，数据显示贫困率高达49.9%，引发了广泛关注。同时，UCA/ODSA也关注了BBVA阿根廷和CB Consultora等机构发布的报告，并对这些报告进行了分析和评论。UCA/ODSA的报告与CB Consultora的民意调查结果（POLL_01）相呼应，表明物质困境与政治支持之间存在一定的脱钩现象。机构在报告中强调了阿根廷社会压力巨大，并呼吁政府采取有效措施解决贫困和不平等问题。在之前，UCA/ODSA也曾就阿根廷的养老金法案的讨论发表评论，并关注了国会（Diputados）的相关动态。机构一直保持着对阿根廷社会经济问题的敏锐观察和独立分析，为公众提供了重要的信息来源。",
+        "karma": 2952,
+        "friend_count": 358,
+        "follower_count": 716,
+        "statuses_count": 477,
+        "age": 30,
+        "gender": "other",
+        "mbti": "ISTJ",
+        "country": "阿根廷",
+        "profession": "社会经济研究",
+        "interested_topics": [
+          "贫困",
+          "不平等",
+          "社会债务",
+          "阿根廷经济",
+          "公共政策",
+          "社会发展",
+          "数据分析",
+          "民意调查"
+        ],
+        "source_entity_uuid": "19766650-0bc5-41df-bc0d-d26a7ee8fa14",
+        "source_entity_type": "ResearchInstitution",
+        "created_at": "2026-06-16"
+      }
+    ],
+    "output_files": [
+      {
+        "path": "reddit_profiles.json",
+        "sha256": "d160f7fe169a3c323c0711353d228d5eea895d38a40de7b5e3b9e71ace58f1b0",
+        "size_bytes": 49731
+      },
+      {
+        "path": "twitter_profiles.csv",
+        "sha256": "231f9e4c54a86970b7910b59f93adc6a9fc78de95164ba4b0729840a277af2a3",
+        "size_bytes": 47709
+      }
+    ],
+    "model": "google/gemma-3-27b-it",
+    "warnings": []
+  },
+  "simulation_config_trace": {
+    "simulation_id": "sim_a54996994596",
+    "project_id": "proj_e4a731d3022b",
+    "graph_id": "mirofish_abb7c4222e194352",
+    "simulation_requirement": "Usando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:\n\nRegla obligatoria de estimación:\n- Debes responder siempre con una estimación numérica para los cuatro horizontes pedidos, aunque la evidencia sea incompleta o incierta.\n- No uses `null`, \"no disponible\" ni abstenciones en los campos de predicción.\n- Si falta evidencia directa para un mes, infiere el mejor rango posible usando la evidencia disponible sobre tendencia, inflación anual esperada, inflación mensual reciente, política cambiaria/fiscal, riesgos y contexto social.\n- Expresa la incertidumbre ampliando el rango y explica la razón principal.\n\n1. Predicción Δ1 (febrero 2025 — variación mensual IPC):\n   - Valor puntual estimado (ej: 2.5%).\n   - Rango: entre X% y Y%.\n\n2. Predicción Δ2 (abril 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia: acelerando / estable / desacelerando.\n\n3. Predicción Δ3 (julio 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia esperada hacia julio: acelerando / estable / desacelerando.\n   - Razón principal.\n\n4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):\n   - Valor puntual estimado para IPC mensual de diciembre 2025.\n   - Rango estimado para IPC mensual de diciembre 2025: entre X% y Y%.\n   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.\n   - Rango de inflación acumulada 2025 esperada.\n\n5. Mecanismo causal:\n   - Variable dominante en la trayectoria de desinflación.\n   - Principal riesgo que podría revertir el proceso.\n\n6. Evidencia:\n   - Citar source_id por cada claim importante.\n   - No usar datos posteriores al 31/01/2025.",
+    "time_config": {
+      "total_simulation_hours": 120,
+      "minutes_per_round": 60,
+      "agents_per_hour_min": 8,
+      "agents_per_hour_max": 9,
+      "peak_hours": [
+        19,
+        20,
+        21,
+        22
+      ],
+      "peak_activity_multiplier": 1.5,
+      "off_peak_hours": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "off_peak_activity_multiplier": 0.05,
+      "morning_hours": [
+        7,
+        8,
+        9
+      ],
+      "morning_activity_multiplier": 0.4,
+      "work_hours": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "work_activity_multiplier": 0.7
+    },
+    "agent_configs": [
+      {
+        "agent_id": 0,
+        "entity_uuid": "e94cc28d-cb4f-4ca8-8144-31f54c63794d",
+        "entity_name": "POLL_01",
+        "entity_type": "PollingOrganization",
+        "activity_level": 0.2,
+        "posts_per_hour": 0.05,
+        "comments_per_hour": 0.02,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "response_delay_min": 120,
+        "response_delay_max": 240,
+        "sentiment_bias": 0.0,
+        "stance": "neutral",
+        "influence_weight": 2.8
+      },
+      {
+        "agent_id": 1,
+        "entity_uuid": "e1a752fb-f524-4e3d-91a9-acaf6cd93084",
+        "entity_name": "Chequeado",
+        "entity_type": "MediaOutlet",
+        "activity_level": 0.5,
+        "posts_per_hour": 0.3,
+        "comments_per_hour": 0.15,
+        "active_hours": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22
+        ],
+        "response_delay_min": 10,
+        "response_delay_max": 30,
+        "sentiment_bias": 0.0,
+        "stance": "neutral",
+        "influence_weight": 2.3
+      },
+      {
+        "agent_id": 2,
+        "entity_uuid": "d4f8290e-2624-43fa-a8a2-5739456da769",
+        "entity_name": "MACRO_01",
+        "entity_type": "Organization",
+        "activity_level": 0.2,
+        "posts_per_hour": 0.03,
+        "comments_per_hour": 0.01,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "response_delay_min": 90,
+        "response_delay_max": 180,
+        "sentiment_bias": 0.0,
+        "stance": "neutral",
+        "influence_weight": 2.6
+      },
+      {
+        "agent_id": 3,
+        "entity_uuid": "c4cea245-0aca-4469-b6d7-9951f1b27bad",
+        "entity_name": "MiroFish",
+        "entity_type": "Organization",
+        "activity_level": 0.3,
+        "posts_per_hour": 0.1,
+        "comments_per_hour": 0.05,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "response_delay_min": 60,
+        "response_delay_max": 120,
+        "sentiment_bias": 0.0,
+        "stance": "neutral",
+        "influence_weight": 2.4
+      },
+      {
+        "agent_id": 4,
+        "entity_uuid": "aadf2c69-2cc1-417d-991b-785391a77d8f",
+        "entity_name": "BBVA",
+        "entity_type": "Organization",
+        "activity_level": 0.4,
+        "posts_per_hour": 0.2,
+        "comments_per_hour": 0.1,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "response_delay_min": 20,
+        "response_delay_max": 60,
+        "sentiment_bias": 0.1,
+        "stance": "supportive",
+        "influence_weight": 1.8
+      },
+      {
+        "agent_id": 5,
+        "entity_uuid": "a73f39d8-5914-446b-ac0e-9e4f70045e33",
+        "entity_name": "BCRA",
+        "entity_type": "CentralBankOfficial",
+        "activity_level": 0.2,
+        "posts_per_hour": 0.04,
+        "comments_per_hour": 0.02,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "response_delay_min": 180,
+        "response_delay_max": 240,
+        "sentiment_bias": 0.0,
+        "stance": "neutral",
+        "influence_weight": 3.0
+      },
+      {
+        "agent_id": 6,
+        "entity_uuid": "a3e79722-85ab-4157-8e56-917fee8b60c7",
+        "entity_name": "Argentina",
+        "entity_type": "Organization",
+        "activity_level": 0.3,
+        "posts_per_hour": 0.15,
+        "comments_per_hour": 0.08,
+        "active_hours": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "response_delay_min": 30,
+        "response_delay_max": 90,
+        "sentiment_bias": 0.0,
+        "stance": "neutral",
+        "influence_weight": 2.7
+      },
+      {
+        "agent_id": 7,
+        "entity_uuid": "864819cc-35d1-4676-b95b-c7c7299de549",
+        "entity_name": "IMF",
+        "entity_type": "InternationalOrganization",
+        "activity_level": 0.3,
+        "posts_per_hour": 0.1,
+        "comments_per_hour": 0.05,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "response_delay_min": 60,
+        "response_delay_max": 120,
+        "sentiment_bias": 0.0,
+        "stance": "neutral",
+        "influence_weight": 2.2
+      },
+      {
+        "agent_id": 8,
+        "entity_uuid": "8145d51a-6c12-48fc-b508-f2eaf65f5a67",
+        "entity_name": "CB Consultora",
+        "entity_type": "PollingOrganization",
+        "activity_level": 0.4,
+        "posts_per_hour": 0.25,
+        "comments_per_hour": 0.12,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "response_delay_min": 15,
+        "response_delay_max": 45,
+        "sentiment_bias": -0.1,
+        "stance": "opposing",
+        "influence_weight": 1.6
+      },
+      {
+        "agent_id": 9,
+        "entity_uuid": "510dec01-12a6-41fe-94ac-5eee3f6a5838",
+        "entity_name": "SOCIAL_01",
+        "entity_type": "Organization",
+        "activity_level": 0.2,
+        "posts_per_hour": 0.05,
+        "comments_per_hour": 0.02,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "response_delay_min": 120,
+        "response_delay_max": 240,
+        "sentiment_bias": -0.2,
+        "stance": "opposing",
+        "influence_weight": 2.5
+      },
+      {
+        "agent_id": 10,
+        "entity_uuid": "3c40f1de-e98c-47ea-8c64-ed7057f0c1e6",
+        "entity_name": "Diputados",
+        "entity_type": "Organization",
+        "activity_level": 0.2,
+        "posts_per_hour": 0.03,
+        "comments_per_hour": 0.01,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "response_delay_min": 90,
+        "response_delay_max": 180,
+        "sentiment_bias": 0.0,
+        "stance": "neutral",
+        "influence_weight": 2.6
+      },
+      {
+        "agent_id": 11,
+        "entity_uuid": "19766650-0bc5-41df-bc0d-d26a7ee8fa14",
+        "entity_name": "UCA/ODSA",
+        "entity_type": "ResearchInstitution",
+        "activity_level": 0.2,
+        "posts_per_hour": 0.04,
+        "comments_per_hour": 0.02,
+        "active_hours": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "response_delay_min": 120,
+        "response_delay_max": 240,
+        "sentiment_bias": -0.1,
+        "stance": "opposing",
+        "influence_weight": 2.7
+      }
+    ],
+    "event_config": {
+      "initial_posts": [
+        {
+          "content": "根据BBVA阿根廷的经济展望，阿根廷正处于复苏和通缩的背景下，但前提是财政调整、汇率管理、储备和政治可持续性能够持续。2025年经济增长预期在4.5%左右。",
+          "poster_type": "Organization",
+          "poster_agent_id": 2
+        },
+        {
+          "content": "UCA/ODSA的报告显示，2024年第三季度阿根廷贫困率高达49.9%，社会压力巨大。这将对政府的经济政策调整构成挑战。",
+          "poster_type": "ResearchInstitution",
+          "poster_agent_id": 11
+        },
+        {
+          "content": "CB Consultora的调查显示，公众对政府的支持度与家庭经济状况之间的关系复杂。这表明即使生活水平下降，政府仍可能获得一定程度的支持。",
+          "poster_type": "PollingOrganization",
+          "poster_agent_id": 0
+        },
+        {
+          "content": "BCRA 12月份的报告预计2025年经济增长率约为4.5%，通货膨胀率约为25.9%。然而，通胀的起始点仍然脆弱。",
+          "poster_type": "CentralBankOfficial",
+          "poster_agent_id": 5
+        },
+        {
+          "content": "IMF最新评估强调了阿根廷通货膨胀的经济制约，并指出国际支持对于改善信心和储备至关重要。",
+          "poster_type": "InternationalOrganization",
+          "poster_agent_id": 7
+        },
+        {
+          "content": "国会否决了养老金法案，表明政府在立法方面面临阻力。这将影响政府推行经济改革的能力。",
+          "poster_type": "MediaOutlet",
+          "poster_agent_id": 1
+        }
+      ],
+      "scheduled_events": [],
+      "hot_topics": [
+        "阿根廷通货膨胀",
+        "2025年经济预测",
+        "BCRA货币政策",
+        "社会压力",
+        "贫困率",
+        "财政调整",
+        "汇率管理",
+        "政治可持续性",
+        "IMF评估"
+      ],
+      "narrative_direction": "围绕阿根廷2025年通货膨胀轨迹的讨论，核心在于经济复苏与通胀控制之间的平衡。社会压力、政治稳定性和国际支持（尤其是来自IMF）是影响通胀的关键因素。目前舆论较为谨慎，普遍认为存在不确定性，需要密切关注BCRA的货币政策和政府的财政措施。"
+    },
+    "twitter_config": {
+      "platform": "twitter",
+      "recency_weight": 0.4,
+      "popularity_weight": 0.3,
+      "relevance_weight": 0.3,
+      "viral_threshold": 10,
+      "echo_chamber_strength": 0.5
+    },
+    "reddit_config": {
+      "platform": "reddit",
+      "recency_weight": 0.3,
+      "popularity_weight": 0.4,
+      "relevance_weight": 0.3,
+      "viral_threshold": 15,
+      "echo_chamber_strength": 0.6
+    },
+    "llm_model": "google/gemma-3-27b-it",
+    "llm_base_url": "https://openrouter.ai/api/v1",
+    "generated_at": "2026-06-16T19:21:49.797097",
+    "generation_reasoning": "时间配置: 该模拟关注阿根廷2025年通货膨胀预测，目标用户群体包括经济学家、分析师、政策制定者和关注经济新闻的公众。考虑到阿根廷的作息习惯和事件的性质（经济预测），选择较长模拟时长120小时。高峰时段设定在晚上，因为人们在下班后更可能关注经济新闻和分析。工作时间保持中等活跃度，早间活跃度略低于工作时间。深夜为低谷时段。Agent数量根据不同时段进行调整，高峰时段激活更多Agent以模拟更活跃的讨论，低谷时段减少Agent数量。 | 事件配置: 以上配置旨在反映文档中提供的关键信息和观点。热点话题基于文档中反复出现的主题。舆论发展方向则反映了对阿根廷经济前景的总体谨慎态度。初始帖子由不同的实体类型发布，以模拟真实世界的舆论环境，并提供多样化的视角。 | Agent配置: 成功生成 12 个 | 初始帖子分配: 6 个帖子已分配发布者",
+    "config_generator": "SimulationConfigGenerator",
+    "output_file": {
+      "path": "simulation_config.json",
+      "sha256": "3f1693015d74594807237a0b54daa65787b4a3f9f7320327afedc572f6c230bb",
+      "size_bytes": 13254
+    }
+  },
+  "pre_simulation_validation": {
+    "status": "ready",
+    "status_after_prepare": "ready",
+    "config_generated": true,
+    "simulation_config_generated": true,
+    "entities_count": 12,
+    "profiles_count": 12,
+    "profiles_generated": true,
+    "blocking_issues": [],
+    "warnings": [],
+    "oasis_graph_instantiated": false,
+    "env_reset_completed": false,
+    "env_step_completed": false,
+    "error": null
+  },
+  "provenance": {
+    "generated_by": "WorldbuildingTraceCapture",
+    "capture_point": "SimulationManager.prepare_simulation.after_config_saved",
+    "simulation_dir": "simulations/sim_a54996994596",
+    "config_snapshot": {
+      "llm_model": "google/gemma-3-27b-it",
+      "llm_base_url": "https://openrouter.ai/api/v1",
+      "llm_api_key_set": true,
+      "graph_backend": "graphiti",
+      "graph_search_reranker": "rrf",
+      "graph_search_app_reranker": "embedding_rrf",
+      "zep_mode": "cloud",
+      "zep_base_url": null,
+      "zep_api_key_set": false,
+      "graphiti_uri": "bolt://localhost:7688",
+      "graphiti_database": "neo4j",
+      "graphiti_user_set": true,
+      "graphiti_password_set": true,
+      "graphiti_llm_model": "google/gemma-3-27b-it",
+      "graphiti_llm_base_url": "https://openrouter.ai/api/v1",
+      "graphiti_llm_client_mode": "generic",
+      "graphiti_embedder_model": "nomic-embed-text",
+      "graphiti_embedder_base_url": "http://127.0.0.1:11434/v1",
+      "graphiti_max_coroutines": 2,
+      "use_experimental_memory": false,
+      "oasis_default_max_rounds": 10
+    },
+    "backtesting_context": {
+      "case_id": "case-c-s2-arg-ipc-line5-gemma",
+      "source_case": "CASE-B2-ARG-IPC-2025",
+      "issue_source": "#11",
+      "line_focus": "temporal evidence inclusion",
+      "original_user_prompt": "Usando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:\n\nRegla obligatoria de estimación:\n- Debes responder siempre con una estimación numérica para los cuatro horizontes pedidos, aunque la evidencia sea incompleta o incierta.\n- No uses `null`, \"no disponible\" ni abstenciones en los campos de predicción.\n- Si falta evidencia directa para un mes, infiere el mejor rango posible usando la evidencia disponible sobre tendencia, inflación anual esperada, inflación mensual reciente, política cambiaria/fiscal, riesgos y contexto social.\n- Expresa la incertidumbre ampliando el rango y explica la razón principal.\n\n1. Predicción Δ1 (febrero 2025 — variación mensual IPC):\n   - Valor puntual estimado (ej: 2.5%).\n   - Rango: entre X% y Y%.\n\n2. Predicción Δ2 (abril 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia: acelerando / estable / desacelerando.\n\n3. Predicción Δ3 (julio 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia esperada hacia julio: acelerando / estable / desacelerando.\n   - Razón principal.\n\n4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):\n   - Valor puntual estimado para IPC mensual de diciembre 2025.\n   - Rango estimado para IPC mensual de diciembre 2025: entre X% y Y%.\n   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.\n   - Rango de inflación acumulada 2025 esperada.\n\n5. Mecanismo causal:\n   - Variable dominante en la trayectoria de desinflación.\n   - Principal riesgo que podría revertir el proceso.\n\n6. Evidencia:\n   - Citar source_id por cada claim importante.\n   - No usar datos posteriores al 31/01/2025.",
+      "normalized_task_prompt": "Usando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:\n\nRegla obligatoria de estimación:\n- Debes responder siempre con una estimación numérica para los cuatro horizontes pedidos, aunque la evidencia sea incompleta o incierta.\n- No uses `null`, \"no disponible\" ni abstenciones en los campos de predicción.\n- Si falta evidencia directa para un mes, infiere el mejor rango posible usando la evidencia disponible sobre tendencia, inflación anual esperada, inflación mensual reciente, política cambiaria/fiscal, riesgos y contexto social.\n- Expresa la incertidumbre ampliando el rango y explica la razón principal.\n\n1. Predicción Δ1 (febrero 2025 — variación mensual IPC):\n   - Valor puntual estimado (ej: 2.5%).\n   - Rango: entre X% y Y%.\n\n2. Predicción Δ2 (abril 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia: acelerando / estable / desacelerando.\n\n3. Predicción Δ3 (julio 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia esperada hacia julio: acelerando / estable / desacelerando.\n   - Razón principal.\n\n4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):\n   - Valor puntual estimado para IPC mensual de diciembre 2025.\n   - Rango estimado para IPC mensual de diciembre 2025: entre X% y Y%.\n   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.\n   - Rango de inflación acumulada 2025 esperada.\n\n5. Mecanismo causal:\n   - Variable dominante en la trayectoria de desinflación.\n   - Principal riesgo que podría revertir el proceso.\n\n6. Evidencia:\n   - Citar source_id por cada claim importante.\n   - No usar datos posteriores al 31/01/2025.",
+      "task_objective": "Predict Argentina IPC 2025 under the allowed pre-cutoff evidence.",
+      "system_constraints_text": "Eres un agente de simulación social. Tienes acceso exclusivamente a los documentos provistos fechados hasta el 31 de enero de 2025. No uses información posterior a esa fecha. Si no tienes evidencia para un claim, dilo explícitamente. Cita el source_id de cada documento que uses.",
+      "cutoff_date": "2025-01-10",
+      "temporal_package": "T1",
+      "source_ids": [
+        "INST_01",
+        "INST_02",
+        "SOCIAL_01",
+        "POLL_01",
+        "MACRO_01",
+        "MACRO_03",
+        "GEO_01"
+      ],
+      "model": "google/gemma-3-27b-it",
+      "model_label": "gemma_temporal_probe",
+      "seed": 1,
+      "rounds": 40,
+      "density": 2,
+      "excluded_files": [
+        {
+          "path": "ground_truth_private.md",
+          "reason": "excluded_by_case_config",
+          "sha256": "6cfab7700455f1b22a79bdd79eeaa175e163fb8957337313a125a1d28fd6c5fa"
+        },
+        {
+          "path": "rubric.md",
+          "reason": "excluded_by_case_config",
+          "sha256": "d0893b6b5383689d31f3699e00359eb93343226e512821963d174211aec7db83"
+        },
+        {
+          "path": "manifest.csv",
+          "reason": "excluded_by_case_config",
+          "sha256": "78eef644b0ef5a8784457f53342a03de6a78667ebdf82ea54f64bd20f4c85318"
+        },
+        {
+          "path": "config_matrix.yaml",
+          "reason": "excluded_by_case_config",
+          "sha256": "eb54665765a4e4d66cf876039eba73625ec1669f833f59ae39d29e40d7d4e4c4"
+        },
+        {
+          "path": "config_matrix_source.yaml",
+          "reason": "excluded_by_case_config",
+          "sha256": "050ed57c244da4be85aba1030a1db64b5caa46e3b36fbb83411747d515c87bcf"
+        },
+        {
+          "path": "internal_notes.md",
+          "reason": "excluded_by_case_config",
+          "sha256": "fb4b7d4ede015c1c17e86915682501e7a20e6b24e2e595b73c1bd156db7704f9"
+        },
+        {
+          "path": "output/",
+          "reason": "excluded_by_case_config",
+          "sha256": null
+        }
+      ],
+      "input_file": "seed_T1.md",
+      "question_file": "question.md",
+      "system_constraints_file": "system_constraints.md"
+    }
+  },
+  "artifact_manifest": {
+    "base_dir": "simulations/sim_a54996994596",
+    "artifacts": [
+      {
+        "path": "reddit_profiles.json",
+        "size_bytes": 49731,
+        "sha256": "d160f7fe169a3c323c0711353d228d5eea895d38a40de7b5e3b9e71ace58f1b0"
+      },
+      {
+        "path": "simulation_config.json",
+        "size_bytes": 13254,
+        "sha256": "3f1693015d74594807237a0b54daa65787b4a3f9f7320327afedc572f6c230bb"
+      },
+      {
+        "path": "state.json",
+        "size_bytes": 1685,
+        "sha256": "abf3873da440d6dca04ff301b948505d75c7dff9c52de564b3e1f2c548ee4f9a"
+      },
+      {
+        "path": "twitter_profiles.csv",
+        "size_bytes": 47709,
+        "sha256": "231f9e4c54a86970b7910b59f93adc6a9fc78de95164ba4b0729840a277af2a3"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/config_agents/config_agents_003.output.json",
+        "size_bytes": 5459,
+        "sha256": "06080aeb7a767d6c762b524088b6dc3e455da91f71e421250c55086041e3b0a1"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/config_agents/config_agents_003.prompt.txt",
+        "size_bytes": 8039,
+        "sha256": "cd25be1e895a54660a3c1c62ca613048ab02a5e659e767847e5e8c73a7f8e3af"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/config_event/config_event_002.output.json",
+        "size_bytes": 2518,
+        "sha256": "65c79942f5a4d3e1a1e07a281e4afdf4d3a39c6cc475ee1611209efc9bb1fb0e"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/config_event/config_event_002.prompt.txt",
+        "size_bytes": 11373,
+        "sha256": "2e23b44caa92aac7885919fd7e1432cfed3bae8c6c265c769a63860800d78188"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/config_time/config_time_001.output.json",
+        "size_bytes": 1062,
+        "sha256": "51fbcc4c0eb44dd4d7d8a58dae601d7532cde7f65b109d6f235c089fcd5d9a7d"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/config_time/config_time_001.prompt.txt",
+        "size_bytes": 12036,
+        "sha256": "6b34fefe61f40aecde41b405d2e292c97c2e19186b1fb12cbec7dd6092aa8151"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_001.output.json",
+        "size_bytes": 3712,
+        "sha256": "fbd6329e5082ee1dfb81dfaf6eb66dbebdbc692d31616d3b9cc5e89a83fa060f"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_001.prompt.txt",
+        "size_bytes": 5249,
+        "sha256": "7a13173fdab9dad13381b503a8f54ed49de6f09535eac8d92b03e014a5b6da1c"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_002.output.json",
+        "size_bytes": 3789,
+        "sha256": "c5830938bd727583d3aa7265abbcd45b8d741d3bda3e7a121f3dc2ce98bfada2"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_002.prompt.txt",
+        "size_bytes": 5177,
+        "sha256": "493928d1ae180dcd2f9c73d33105f61ef7317a6d22e1428fa2187a3d6a68c3a6"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_003.output.json",
+        "size_bytes": 4649,
+        "sha256": "3d2bcf8c916f1c20ab163345abe5873bf8a8e2bc5a4d9cf528e30dae9b3f6141"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_003.prompt.txt",
+        "size_bytes": 5228,
+        "sha256": "5ba72ab1eab3b0c0b7d90143695ef1d323727d03eddaea8cb7371b0eaa792d28"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_004.output.json",
+        "size_bytes": 3880,
+        "sha256": "2f74b0d4fcbfc6e96e2fa33cc918ba84c89f4849e051484025bd57d56b5c4250"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_004.prompt.txt",
+        "size_bytes": 5045,
+        "sha256": "955af8c74da1e03c9f1b853fda7d7a6f3fbd50b1e0c19e6f62cfda09792b47a1"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_005.output.json",
+        "size_bytes": 4219,
+        "sha256": "c4c1e4c1c6f8c88c05b7ef789e5badb72803cb7ee6105671cc4cef4a4b704dcb"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_005.prompt.txt",
+        "size_bytes": 5258,
+        "sha256": "a360166c8dd5be9b1b1b79f8ce0f93c2059b82cc033ab602b6a370ef41d419a4"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_006.output.json",
+        "size_bytes": 4391,
+        "sha256": "719f3fdc4e9b63635ae4ca6af94ab13e5aa2e24ca13370040920cfae7ffc7e84"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_006.prompt.txt",
+        "size_bytes": 5048,
+        "sha256": "dbbbe1a562490273e7340a880aa30e8892485315a31bdfc0d2a9708d4cb19ed2"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_007.output.json",
+        "size_bytes": 3599,
+        "sha256": "d1a59ecb03dd8dd45f25c42b9438e15a3a1b37f7e07692b2ce29e1b695685b58"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_007.prompt.txt",
+        "size_bytes": 5514,
+        "sha256": "17566b69ed2718a98820bb861fbc2d3a7f4cdd3526523e53bef50fef361c88fe"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_008.output.json",
+        "size_bytes": 3840,
+        "sha256": "26510ef5ad9a900f113d041cc85cc02b59200d728e6a0082339cb3c24c090aca"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_008.prompt.txt",
+        "size_bytes": 5565,
+        "sha256": "52b01137541e3ca5801479ded20523a5077550f931be76f43d1cabb5003351d8"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_009.output.json",
+        "size_bytes": 4067,
+        "sha256": "8cdfeff62fb66943b9a7fcb8a25229b6ed322206d097ee15ce6292b13b65d106"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_009.prompt.txt",
+        "size_bytes": 5781,
+        "sha256": "c2b33b4fb7d773ee0156403b2c149b8232157333690c4a63336aabf9a982ca01"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_010.output.json",
+        "size_bytes": 4327,
+        "sha256": "aa47e33b028ad989e3d6b14e33279dd3147f3eb1b4539b4d3195ccd290911c2f"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_010.prompt.txt",
+        "size_bytes": 5803,
+        "sha256": "08dcef6faa8d45e412df940e45d1f4c128e7ab6f80dd391a8a2c873970bfb695"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_011.output.json",
+        "size_bytes": 4586,
+        "sha256": "7167ff8168934fb6be300cd41291cceae95912a8b1a61512d03aa9618b71e800"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_011.prompt.txt",
+        "size_bytes": 5131,
+        "sha256": "cc6ebe129fa3a4a8611f71a4a56061e96403043c94333770ef363d6996f0d2c4"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_012.output.json",
+        "size_bytes": 5111,
+        "sha256": "30f86ac5dae56af2c219479a2683ecb46bd6fa01f875b5e24174d9aca408e2ae"
+      },
+      {
+        "path": "worldbuilding_artifacts/llm_calls/profile_generation/profile_generation_012.prompt.txt",
+        "size_bytes": 5324,
+        "sha256": "4104f9b4c9c3b3f5974a5717e1ac87abece7f6281c4922047a7c338035b3bfc5"
+      }
+    ]
+  },
+  "training_labels": null
+}

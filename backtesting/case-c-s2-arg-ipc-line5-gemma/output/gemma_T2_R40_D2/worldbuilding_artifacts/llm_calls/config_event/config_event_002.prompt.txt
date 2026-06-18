@@ -1,0 +1,204 @@
+[system]
+你是舆论分析专家。返回纯JSON格式。注意 poster_type 必须精确匹配可用实体类型。
+
+请使用中文回答。
+IMPORTANT: The 'poster_type' field value MUST be in English PascalCase exactly matching the available entity types. Only 'content', 'narrative_direction', 'hot_topics' and 'reasoning' fields should use the specified language.
+
+[user]
+基于以下模拟需求，生成事件配置。
+
+模拟需求: Usando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:
+
+Regla obligatoria de estimación:
+- Debes responder siempre con una estimación numérica para los cuatro horizontes pedidos, aunque la evidencia sea incompleta o incierta.
+- No uses `null`, "no disponible" ni abstenciones en los campos de predicción.
+- Si falta evidencia directa para un mes, infiere el mejor rango posible usando la evidencia disponible sobre tendencia, inflación anual esperada, inflación mensual reciente, política cambiaria/fiscal, riesgos y contexto social.
+- Expresa la incertidumbre ampliando el rango y explica la razón principal.
+
+1. Predicción Δ1 (febrero 2025 — variación mensual IPC):
+   - Valor puntual estimado (ej: 2.5%).
+   - Rango: entre X% y Y%.
+
+2. Predicción Δ2 (abril 2025 — variación mensual IPC):
+   - Rango estimado: entre X% y Y%.
+   - Dirección de tendencia: acelerando / estable / desacelerando.
+
+3. Predicción Δ3 (julio 2025 — variación mensual IPC):
+   - Rango estimado: entre X% y Y%.
+   - Dirección de tendencia esperada hacia julio: acelerando / estable / desacelerando.
+   - Razón principal.
+
+4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):
+   - Valor puntual estimado para IPC mensual de diciembre 2025.
+   - Rango estimado para IPC mensual de diciembre 2025: entre X% y Y%.
+   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.
+   - Rango de inflación acumulada 2025 esperada.
+
+5. Mecanismo causal:
+   - Variable dominante en la trayectoria de desinflación.
+   - Principal riesgo que podría revertir el proceso.
+
+6. Evidencia:
+   - Citar source_id por cada claim importante.
+   - No usar datos posteriores al 31/01/2025.
+
+## 模拟需求
+Usando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:
+
+Regla obligatoria de estimación:
+- Debes responder siempre con una estimación numérica para los cuatro horizontes pedidos, aunque la evidencia sea incompleta o incierta.
+- No uses `null`, "no disponible" ni abstenciones en los campos de predicción.
+- Si falta evidencia directa para un mes, infiere el mejor rango posible usando la evidencia disponible sobre tendencia, inflación anual esperada, inflación mensual reciente, política cambiaria/fiscal, riesgos y contexto social.
+- Expresa la incertidumbre ampliando el rango y explica la razón principal.
+
+1. Predicción Δ1 (febrero 2025 — variación mensual IPC):
+   - Valor puntual estimado (ej: 2.5%).
+   - Rango: entre X% y Y%.
+
+2. Predicción Δ2 (abril 2025 — variación mensual IPC):
+   - Rango estimado: entre X% y Y%.
+   - Dirección de tendencia: acelerando / estable / desacelerando.
+
+3. Predicción Δ3 (julio 2025 — variación mensual IPC):
+   - Rango estimado: entre X% y Y%.
+   - Dirección de tendencia esperada hacia julio: acelerando / estable / desacelerando.
+   - Razón principal.
+
+4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):
+   - Valor puntual estimado para IPC mensual de diciembre 2025.
+   - Rango estimado para IPC mensual de diciembre 2025: entre X% y Y%.
+   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.
+   - Rango de inflación acumulada 2025 esperada.
+
+5. Mecanismo causal:
+   - Variable dominante en la trayectoria de desinflación.
+   - Principal riesgo que podría revertir el proceso.
+
+6. Evidencia:
+   - Citar source_id por cada claim importante.
+   - No usar datos posteriores al 31/01/2025.
+
+## 实体信息 (15个)
+
+### Person (3个)
+- INST_02: INST_01 and INST_02 support the idea that the Executive can sustain vetoes if it preserves at least one-third blocking power.
+- Milei: Americas Quarterly analyzes the 2025 legislative election as a political validation test for Milei's economic program.
+- INST_01: INST_01 and INST_02 support the idea that the Executive can sustain vetoes if it preserves at least one-third blocking power.
+
+### InternationalOrganization (1个)
+- IMF: Published Ex-post Evaluation on 2025-01-10.
+Americas Quarterly reports on the International Monetary Fund in its January 2025 political snapshot.
+The IMF can improve confidence and reserves, but its conditionality pushes toward policy consistency and eventual FX normalization.
+The IMF can improve co...
+
+### Organization (4个)
+- MiroFish: MiroFish combines constraints from the IMF.
+- Argentina: Case focuses on Argentina's 2025 IPC (inflation). Max document date: 2025-01-14.
+The UCA/ODSA report records poverty in Argentina at 49.9% in 3Q2024.
+BBVA analyzes Argentina's economic situation, framing it as being in a recovery/desinflation scenario.
+- INDEC: Americas Quarterly reports on INDEC in its January 2025 political snapshot.
+INDEC reported a monthly inflation rate of 2.7% in December 2024 and accumulated inflation of 117.8% for 2024.
+- UCA/ODSA: Published subsistence and poverty report on 2024-12-05.
+The UCA/ODSA report records poverty in Argentina at 49.9% in 3Q2024.
+
+### MediaOutlet (2个)
+- Americas Quarterly: Americas Quarterly reports on the International Monetary Fund in its January 2025 political snapshot.
+Americas Quarterly reports on INDEC in its January 2025 political snapshot.
+Americas Quarterly analyzes the 2025 legislative election as a political validation test for Milei's economic program.
+Ame...
+- Chequeado: Published supporting note on pension-law veto count and two-thirds rule on 2024-09-11.
+Chequeado corroborated the vote count and rule regarding the pension-law veto in Congress.
+
+### Legislator (2个)
+- Diputados: Diputados made a note on the pension-law veto.
+Diputados is a part of Congress.
+Diputados reported on a vote regarding the pension-law veto in Congress on September 11, 2024.
+- Congress: Diputados is a part of Congress.
+Diputados reported on a vote regarding the pension-law veto in Congress on September 11, 2024.
+Chequeado corroborated the vote count and rule regarding the pension-law veto in Congress.
+The International Monetary Fund influences the congressional capacity during 2025...
+
+### PollingOrganization (1个)
+- CB Consultora: Conducted national survey on 2024-12-06.
+CB Consultora provided pre-cutoff measures of public approval and household economic perception in December 2024.
+CB Consultora provided pre-cutoff measures of public approval and household economic perception in December 2024.
+
+### FinancialInstitution (1个)
+- BBVA Argentina: Published Argentina Economic Outlook for December 2024 / 4Q24.
+BBVA analyzes Argentina's economic situation, framing it as being in a recovery/desinflation scenario.
+
+### CentralBankRepresentative (1个)
+- BCRA: Published BCRA REM December 2024 on 2025-01-07.
+Banco Central de la República Argentina publishes reports as BCRA.
+Banco Central de la República Argentina publishes reports as BCRA.
+The Banco Central de la República Argentina, through its REM report for December 2024, provides expectations for 2025 ...
+
+## 原始文档内容
+
+
+=== seed_T2.md ===
+# Seed T2 - Argentina IPC 2025
+
+Case ID: `case-c-s2-arg-ipc-line5-gemma`
+
+Temporal package: `T2`
+
+Max document date: `2025-01-14`
+
+Rule: this package is cumulative. It includes the full T1 evidence plus the official December 2024 IPC release and January political framing. Do not use documents published after `2025-01-14`.
+
+## Included source_ids
+
+- `INST_01`: official Diputados note on pension-law veto, 2024-09-11.
+- `INST_02`: Chequeado supporting note on veto count and two-thirds rule, 2024-09-11.
+- `SOCIAL_01`: UCA/ODSA subsistence and poverty report, 2024-12-05.
+- `POLL_01`: CB Consultora national survey, 2024-12-06.
+- `MACRO_01`: BBVA Argentina Economic Outlook, December 2024 / 4Q24.
+- `MACRO_03`: BCRA REM December 2024, published 2025-01-07.
+- `GEO_01`: IMF Ex-post Evaluation, published 2025-01-10.
+- `MACRO_02`: INDEC IPC December 2024, published 2025-01-14.
+- `POL_01`: Americas Quarterly January 2025 political snapshot.
+
+## Social and institutional baseline carried from T0
+
+Argentina enters 2025 with severe social stress. The UCA/ODSA report records poverty of 49.9% in 3Q2024 and broader subsistence/privation pressures. For simulation, this should initialize household stress, sensitivity to wages and employment, potential protest pressure, and political limits to continued adjustment [SOCIAL_01].
+
+Opinion evidence from December 2024 separates material hardship from political support. CB Consultora provides pre-cutoff measures of public approval and household economic perception. The key hypothesis is whether resilient approval and rejection of previous alternatives can coexist with deteriorated household conditions [POLL_01].
+
+The institutional constraint is Congress. Diputados reported on 2024-09-11 that the attempt to insist against the pension-law veto received 153 positive votes, 87 negative votes, and 8 abstentions, below the two-thirds threshold. Chequeado corroborates the count and rule. This initializes a veto shield: the Executive can sustain vetoes if it preserves at least one-third blocking power, but that depends on allies and negotiation [INST_01; INST_02].
+
+## Macro and external baseline carried from T1
+
+BBVA's December 2024 outlook frames Argentina in a recovery/desinflation scenario, conditional on the continuity of fiscal adjustment, exchange-rate management, reserves, and political sustainability. It supplies expectations on growth, inflation, fiscal position, exchange-rate risks, and the limits of adjustment [MACRO_01].
+
+The BCRA REM for December 2024, published on `2025-01-07`, gives a market-expectations anchor before the final cutoff. It points to expected 2025 growth around 4.5% and expected 2025 inflation around 25.9%, plus exchange-rate, fiscal, and monetary expectations [MACRO_03]
+
+## 可用实体类型及示例
+- Person: INST_02, Milei, INST_01
+- InternationalOrganization: IMF
+- Organization: MiroFish, Argentina, INDEC
+- MediaOutlet: Americas Quarterly, Chequeado
+- Legislator: Diputados, Congress
+- PollingOrganization: CB Consultora
+- FinancialInstitution: BBVA Argentina
+- CentralBankRepresentative: BCRA
+
+## 任务
+请生成事件配置JSON：
+- 提取热点话题关键词
+- 描述舆论发展方向
+- 设计初始帖子内容，**每个帖子必须指定 poster_type（发布者类型）**
+
+**重要**: poster_type 必须从上面的"可用实体类型"中选择，这样初始帖子才能分配给合适的 Agent 发布。
+例如：官方声明应由 Official/University 类型发布，新闻由 MediaOutlet 发布，学生观点由 Student 发布。
+
+返回JSON格式（不要markdown）：
+{
+    "hot_topics": ["关键词1", "关键词2", ...],
+    "narrative_direction": "<舆论发展方向描述>",
+    "initial_posts": [
+        {"content": "帖子内容", "poster_type": "实体类型（必须从可用类型中选择）"},
+        ...
+    ],
+    "reasoning": "<简要说明>"
+}

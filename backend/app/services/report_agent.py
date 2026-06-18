@@ -465,6 +465,10 @@ class Report:
     status: ReportStatus
     outline: Optional[ReportOutline] = None
     markdown_content: str = ""
+    output_mode: str = "narrative"
+    schema_id: Optional[str] = None
+    structured_answer: Optional[Dict[str, Any]] = None
+    metadata: Dict[str, Any] = field(default_factory=dict)
     created_at: str = ""
     completed_at: str = ""
     error: Optional[str] = None
@@ -478,6 +482,10 @@ class Report:
             "status": self.status.value,
             "outline": self.outline.to_dict() if self.outline else None,
             "markdown_content": self.markdown_content,
+            "output_mode": self.output_mode,
+            "schema_id": self.schema_id,
+            "structured_answer": self.structured_answer,
+            "metadata": self.metadata,
             "created_at": self.created_at,
             "completed_at": self.completed_at,
             "error": self.error
@@ -2033,6 +2041,11 @@ class ReportManager:
     def _get_report_markdown_path(cls, report_id: str) -> str:
         """获取完整报告Markdown文件路径"""
         return os.path.join(cls._get_report_folder(report_id), "full_report.md")
+
+    @classmethod
+    def _get_structured_answer_path(cls, report_id: str) -> str:
+        """获取结构化答案JSON路径"""
+        return os.path.join(cls._get_report_folder(report_id), "structured_answer.json")
     
     @classmethod
     def _get_outline_path(cls, report_id: str) -> str:
@@ -2580,6 +2593,11 @@ class ReportManager:
         if report.markdown_content:
             with open(cls._get_report_markdown_path(report.report_id), 'w', encoding='utf-8') as f:
                 f.write(report.markdown_content)
+
+        if report.structured_answer is not None:
+            with open(cls._get_structured_answer_path(report.report_id), 'w', encoding='utf-8') as f:
+                json.dump(report.structured_answer, f, ensure_ascii=False, indent=2)
+                f.write("\n")
         
         logger.info(t('report.reportSaved', reportId=report.report_id))
     
@@ -2622,6 +2640,13 @@ class ReportManager:
             if os.path.exists(full_report_path):
                 with open(full_report_path, 'r', encoding='utf-8') as f:
                     markdown_content = f.read()
+
+        structured_answer = data.get('structured_answer')
+        if structured_answer is None:
+            structured_path = cls._get_structured_answer_path(report_id)
+            if os.path.exists(structured_path):
+                with open(structured_path, 'r', encoding='utf-8') as f:
+                    structured_answer = json.load(f)
         
         return Report(
             report_id=data['report_id'],
@@ -2631,6 +2656,10 @@ class ReportManager:
             status=ReportStatus(data['status']),
             outline=outline,
             markdown_content=markdown_content,
+            output_mode=data.get('output_mode', 'narrative'),
+            schema_id=data.get('schema_id'),
+            structured_answer=structured_answer,
+            metadata=data.get('metadata', {}),
             created_at=data.get('created_at', ''),
             completed_at=data.get('completed_at', ''),
             error=data.get('error')
@@ -2640,22 +2669,26 @@ class ReportManager:
     def get_report_by_simulation(cls, simulation_id: str) -> Optional[Report]:
         """根据模拟ID获取报告"""
         cls._ensure_reports_dir()
-        
+        matches = []
         for item in os.listdir(cls.REPORTS_DIR):
             item_path = os.path.join(cls.REPORTS_DIR, item)
             # 新格式：文件夹
             if os.path.isdir(item_path):
                 report = cls.get_report(item)
                 if report and report.simulation_id == simulation_id:
-                    return report
+                    matches.append(report)
             # 兼容旧格式：JSON文件
             elif item.endswith('.json'):
                 report_id = item[:-5]
                 report = cls.get_report(report_id)
                 if report and report.simulation_id == simulation_id:
-                    return report
-        
-        return None
+                    matches.append(report)
+
+        if not matches:
+            return None
+
+        matches.sort(key=lambda report: report.created_at or "", reverse=True)
+        return matches[0]
     
     @classmethod
     def list_reports(cls, simulation_id: Optional[str] = None, limit: int = 50) -> List[Report]:

@@ -46,6 +46,7 @@ move sideways into a separate package.
 from __future__ import annotations
 
 import json
+import ast
 import re
 from typing import Any, Dict, Iterable, List, Optional
 
@@ -101,6 +102,15 @@ def parse_tool_calls(response: Optional[str], valid_tool_names: Iterable[str]) -
     tool_calls: List[Dict[str, Any]] = []
     whitelist = set(valid_tool_names)
 
+    def parse_payload(payload: str) -> Any:
+        try:
+            return json.loads(payload)
+        except json.JSONDecodeError:
+            # Some OpenAI-compatible models emit Python-style literals inside
+            # otherwise valid tool-call blocks, e.g. {"include_expired": True}.
+            # ast.literal_eval is safe for literals and avoids dropping the call.
+            return ast.literal_eval(payload)
+
     def add_if_valid(candidate: Any) -> None:
         if isinstance(candidate, list):
             for item in candidate:
@@ -113,8 +123,8 @@ def parse_tool_calls(response: Optional[str], valid_tool_names: Iterable[str]) -
     # 1) Canonical <tool_call>{...}</tool_call>.
     for match in re.finditer(r"<tool_call>\s*(\{.*?\})\s*</tool_call>", response, re.DOTALL):
         try:
-            add_if_valid(json.loads(match.group(1)))
-        except json.JSONDecodeError:
+            add_if_valid(parse_payload(match.group(1)))
+        except (json.JSONDecodeError, ValueError, SyntaxError):
             pass
     if tool_calls:
         return tool_calls
@@ -123,8 +133,8 @@ def parse_tool_calls(response: Optional[str], valid_tool_names: Iterable[str]) -
     fence_pattern = r"```(?:json)?\s*([\[{].*?[\]}])\s*```"
     for match in re.finditer(fence_pattern, response, re.DOTALL | re.IGNORECASE):
         try:
-            add_if_valid(json.loads(match.group(1)))
-        except json.JSONDecodeError:
+            add_if_valid(parse_payload(match.group(1)))
+        except (json.JSONDecodeError, ValueError, SyntaxError):
             pass
     if tool_calls:
         return tool_calls
@@ -152,8 +162,8 @@ def parse_tool_calls(response: Optional[str], valid_tool_names: Iterable[str]) -
     # 4) Bare ``Action: {...}`` style.
     for match in re.finditer(r"Action\s*:\s*(\{.*?\})", response, re.DOTALL):
         try:
-            add_if_valid(json.loads(match.group(1)))
-        except json.JSONDecodeError:
+            add_if_valid(parse_payload(match.group(1)))
+        except (json.JSONDecodeError, ValueError, SyntaxError):
             pass
 
     return tool_calls

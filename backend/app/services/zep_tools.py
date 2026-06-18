@@ -22,7 +22,7 @@ from ..utils.embedding_client import EmbeddingClient
 from ..utils.reranker_client import RerankerClient
 from ..utils.logger import get_logger
 from ..utils.llm_client import LLMClient
-from ..utils.locale import t
+from ..utils.locale import get_locale, t
 
 logger = get_logger('mirofish.zep_tools')
 
@@ -1956,23 +1956,65 @@ class ZepToolsService:
                 })
             
             logger.info(t("console.callingBatchInterviewApi", count=len(interviews_request)))
-            
-            # 调用 SimulationRunner 的批量采访方法（不传platform，双平台采访）
-            api_result = SimulationRunner.interview_agents_batch(
-                simulation_id=simulation_id,
-                interviews=interviews_request,
-                platform=None,  # 不指定platform，双平台采访
-                timeout=180.0   # 双平台需要更长超时
-            )
-            
+
+            def call_batch_interview(platform: str | None, timeout: float):
+                return SimulationRunner.interview_agents_batch(
+                    simulation_id=simulation_id,
+                    interviews=interviews_request,
+                    platform=platform,
+                    timeout=timeout
+                )
+
+            def retry_single_platform(reason: str):
+                logger.warning(
+                    "Dual-platform interview failed (%s); retrying one platform at a time",
+                    reason,
+                )
+                fallback_errors = []
+                for fallback_platform in ("reddit", "twitter"):
+                    try:
+                        fallback_result = call_batch_interview(
+                            platform=fallback_platform,
+                            timeout=600.0
+                        )
+                        if fallback_result.get("success", False):
+                            logger.info(
+                                "Single-platform interview fallback succeeded: platform=%s, count=%s",
+                                fallback_platform,
+                                fallback_result.get("interviews_count", 0),
+                            )
+                            return fallback_result
+                        fallback_errors.append(
+                            f"{fallback_platform}: {fallback_result.get('error', 'unknown error')}"
+                        )
+                    except Exception as fallback_error:
+                        fallback_errors.append(f"{fallback_platform}: {fallback_error}")
+                logger.warning(
+                    "Single-platform interview fallback failed: %s",
+                    "; ".join(fallback_errors),
+                )
+                return None
+
+            # 调用 SimulationRunner 的批量采访方法（不传platform，双平台采访）。
+            # 双平台会对每个Agent同时请求Twitter/Reddit，给慢模型更长等待时间。
+            try:
+                api_result = call_batch_interview(platform=None, timeout=600.0)
+            except TimeoutError as timeout_error:
+                api_result = retry_single_platform(str(timeout_error))
+                if api_result is None:
+                    result.summary = f"采访API调用超时，单平台重试也失败：{timeout_error}"
+                    return result
+
             logger.info(t("console.interviewApiReturned", count=api_result.get('interviews_count', 0), success=api_result.get('success')))
             
             # 检查API调用是否成功
             if not api_result.get("success", False):
                 error_msg = api_result.get("error", "未知错误")
-                logger.warning(t("console.interviewApiReturnedFailure", error=error_msg))
-                result.summary = f"采访API调用失败：{error_msg}。请检查OASIS模拟环境状态。"
-                return result
+                api_result = retry_single_platform(error_msg)
+                if api_result is None:
+                    logger.warning(t("console.interviewApiReturnedFailure", error=error_msg))
+                    result.summary = f"采访API调用失败：{error_msg}。请检查OASIS模拟环境状态。"
+                    return result
             
             # Step 5: 解析API返回结果，构建AgentInterview对象
             # 双平台模式返回格式: {"twitter_0": {...}, "reddit_0": {...}, "twitter_1": {...}, ...}
