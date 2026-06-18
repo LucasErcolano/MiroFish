@@ -68,6 +68,7 @@ Both models mostly stay on the lower/disinflation side. Counter-signal weakens t
 - `evaluation/smoke_summary.*`: 12-row smoke result, all valid.
 - `evaluation/full_summary.*`: 42-row technical result, all valid.
 - `evaluation/condition_summary_metrics.*`: deterministic keyword/axis metrics.
+- `evaluation/results_analysis.md`: detailed interpretation and S2/V2 comparison.
 - `scripts/run_s3_matrix.py`: resumable runner with prepared-simulation reuse.
 - `scripts/summarize_s3_smoke.py`: smoke/full technical summarizer.
 - `scripts/extract_s3_metrics.py`: deterministic metrics extractor.
@@ -75,4 +76,3 @@ Both models mostly stay on the lower/disinflation side. Counter-signal weakens t
 ## Remaining Optional Work
 
 Artifact-only ReportAgent scoring can be added later for semantic interpretation. It should read only committed summaries plus local run artifacts for one condition at a time, with no shared graph/Zep state.
-
