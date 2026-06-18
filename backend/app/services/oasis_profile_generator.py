@@ -21,6 +21,7 @@ from ..config import Config
 from ..graph import get_graph_backend
 from ..utils.logger import get_logger
 from ..utils.locale import get_language_instruction, get_locale, set_locale, t
+from .capture_artifacts import LLMCallRecorder
 from .zep_entity_reader import EntityNode, ZepEntityReader
 
 logger = get_logger('mirofish.oasis_profile')
@@ -184,7 +185,8 @@ class OasisProfileGenerator:
         base_url: Optional[str] = None,
         model_name: Optional[str] = None,
         zep_api_key: Optional[str] = None,
-        graph_id: Optional[str] = None
+        graph_id: Optional[str] = None,
+        capture_base_dir: Optional[str] = None,
     ):
         self.api_key = api_key or Config.LLM_API_KEY
         self.base_url = base_url or Config.LLM_BASE_URL
@@ -202,6 +204,9 @@ class OasisProfileGenerator:
         self.zep_api_key = Config.ZEP_API_KEY if zep_api_key is None else zep_api_key
         self.zep_backend = None
         self.graph_id = graph_id
+        self.llm_call_recorder = LLMCallRecorder(
+            capture_base_dir if Config.PLANNING_CAPTURE_SAVE_RAW_ARTIFACTS else None
+        )
         
         if Config.is_graph_backend_configured(api_key=self.zep_api_key):
             try:
@@ -539,6 +544,19 @@ class OasisProfileGenerator:
                 )
                 
                 content = response.choices[0].message.content
+                self.llm_call_recorder.record(
+                    stage="profile_generation",
+                    model=self.model_name,
+                    system_prompt=self._get_system_prompt(is_individual),
+                    user_prompt=prompt,
+                    output_text=content or "",
+                    extra={
+                        "entity_name": entity_name,
+                        "entity_type": entity_type,
+                        "attempt": attempt + 1,
+                        "finish_reason": response.choices[0].finish_reason,
+                    },
+                )
                 
                 # 检查是否被截断（finish_reason不是'stop'）
                 finish_reason = response.choices[0].finish_reason

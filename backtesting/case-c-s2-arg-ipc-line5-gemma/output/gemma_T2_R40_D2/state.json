@@ -1,0 +1,28 @@
+{
+  "simulation_id": "sim_64ea6d87f61f",
+  "project_id": "proj_4b18524a5ada",
+  "graph_id": "mirofish_fdf6638a9ed14847",
+  "enable_twitter": true,
+  "enable_reddit": true,
+  "status": "running",
+  "entities_count": 15,
+  "profiles_count": 15,
+  "entity_types": [
+    "Legislator",
+    "Person",
+    "Organization",
+    "FinancialInstitution",
+    "CentralBankRepresentative",
+    "InternationalOrganization",
+    "PollingOrganization",
+    "MediaOutlet"
+  ],
+  "config_generated": true,
+  "config_reasoning": "时间配置: 该模拟涉及阿根廷通货膨胀预测，目标用户群体包括经济学家、分析师、政府官员、媒体记者和普通民众。考虑到阿根廷的地理位置和作息习惯，以及该事件的专业性和时效性，采用如下时间配置：总时长96小时，覆盖多个工作日和晚间高峰期。每轮30分钟，方便快速迭代和分析。高峰期（晚间19-22点）激活较多Agent，模拟公众讨论和媒体报道；工作时间（9-18点）激活中等数量Agent，模拟专业分析和政府决策；深夜和凌晨激活较少Agent，模拟低活跃状态。早间活跃度适中，模拟新闻的传播和初步讨论。根据实体信息，需要模拟官方机构（如BCRA, INDEC）的工作时间，以及媒体（Americas Quarterly）的全天报道，因此工作时间和晚间高峰期的Agent数量设置较高。 | 事件配置: 根据提供的文档，提取了通货膨胀、经济复苏、社会压力等关键信息，并根据不同实体类型生成初始帖子，以模拟舆论的初始状态。帖子内容基于文档中的数据和分析，旨在反映当前阿根廷经济的复杂情况。 | Agent配置: 成功生成 15 个 | 初始帖子分配: 6 个帖子已分配发布者",
+  "current_round": 0,
+  "twitter_status": "not_started",
+  "reddit_status": "not_started",
+  "created_at": "2026-06-16T19:39:00.682926",
+  "updated_at": "2026-06-16T19:43:21.020355",
+  "error": null
+}

@@ -20,6 +20,8 @@ fixed_simulation_config:
   density: 2
   temperature: 0
   seed: 1
+  output_mode: "structured_json"
+  schema_id: "arg_ipc_2025_v1"
 
 temporal_packages:
   - id: "T0"

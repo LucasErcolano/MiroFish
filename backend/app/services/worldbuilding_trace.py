@@ -22,7 +22,7 @@ logger = get_logger('mirofish.worldbuilding_trace')
 class WorldbuildingTraceCapture:
     """Build and save worldbuilding_trace.json for one prepared simulation."""
 
-    TRACE_VERSION = 1
+    TRACE_VERSION = 2
     TRACE_FILENAME = "worldbuilding_trace.json"
 
     @classmethod
@@ -39,6 +39,8 @@ class WorldbuildingTraceCapture:
         defined_entity_types: Optional[List[str]],
         use_llm_for_profiles: bool,
         parallel_profile_count: int,
+        llm_call_records: Optional[List[Dict[str, Any]]] = None,
+        warnings: Optional[List[str]] = None,
     ) -> Optional[str]:
         """Write a passive capture artifact and return its path."""
         if not Config.PLANNING_CAPTURE_ENABLED:
@@ -56,13 +58,12 @@ class WorldbuildingTraceCapture:
             defined_entity_types=defined_entity_types,
             use_llm_for_profiles=use_llm_for_profiles,
             parallel_profile_count=parallel_profile_count,
+            llm_call_records=llm_call_records,
+            warnings=warnings,
         )
 
         os.makedirs(simulation_dir, exist_ok=True)
         trace_path = os.path.join(simulation_dir, cls.TRACE_FILENAME)
-
-        trace["artifact_manifest"] = cls._build_artifact_manifest(simulation_dir)
-        cls._write_json(trace_path, trace)
 
         trace["artifact_manifest"] = cls._build_artifact_manifest(simulation_dir)
         cls._write_json(trace_path, trace)
@@ -84,6 +85,8 @@ class WorldbuildingTraceCapture:
         defined_entity_types: Optional[List[str]],
         use_llm_for_profiles: bool,
         parallel_profile_count: int,
+        llm_call_records: Optional[List[Dict[str, Any]]] = None,
+        warnings: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """Build the trace payload without writing it to disk."""
         created_at = datetime.now().isoformat()
@@ -92,9 +95,25 @@ class WorldbuildingTraceCapture:
         profiles_data = [cls._to_plain_dict(profile) for profile in profiles]
         sim_params_data = cls._to_plain_dict(simulation_params)
         state_data = cls._to_plain_dict(state)
+        project_metadata = cls._to_plain_dict(getattr(project, "metadata", {}) or {})
+        warnings = [str(item) for item in (warnings or []) if item]
 
         source_files = cls._build_source_file_snapshot(project)
+        excluded_files = cls._build_excluded_file_snapshot(project_metadata)
         entity_types = sorted(list(getattr(filtered_entities, "entity_types", []) or []))
+        total_count = getattr(filtered_entities, "total_count", None)
+        filtered_count = getattr(filtered_entities, "filtered_count", None)
+        llm_call_records = cls._to_plain_dict(llm_call_records or [])
+        project_status = cls._to_plain_dict(getattr(project, "status", None))
+        profile_output_files = cls._build_expected_output_files(
+            simulation_dir,
+            ["reddit_profiles.json", "twitter_profiles.csv"],
+        )
+        config_output_file = cls._build_expected_output_files(
+            simulation_dir,
+            ["simulation_config.json"],
+        )
+        graph_snapshot_entities = [cls._to_plain_dict(entity) for entity in entities]
 
         return {
             "trace_version": cls.TRACE_VERSION,
@@ -110,7 +129,11 @@ class WorldbuildingTraceCapture:
                 "behavior": "passive_capture_only",
             },
             "input_context": {
+                "original_prompt": project_metadata.get("original_user_prompt") or simulation_requirement,
+                "normalized_task_prompt": project_metadata.get("normalized_task_prompt") or simulation_requirement,
+                "task_objective": project_metadata.get("task_objective"),
                 "simulation_requirement": simulation_requirement,
+                "system_constraints": project_metadata.get("system_constraints_text"),
                 "document_text_length": len(document_text or ""),
                 "document_text_sha256": cls._sha256_text(document_text or ""),
                 "document_text_saved_raw": False,
@@ -121,37 +144,82 @@ class WorldbuildingTraceCapture:
                 "defined_entity_types_requested": defined_entity_types or None,
                 "use_llm_for_profiles": use_llm_for_profiles,
                 "parallel_profile_count": parallel_profile_count,
+                "cutoff_date": project_metadata.get("cutoff_date"),
+                "temporal_package": project_metadata.get("temporal_package"),
+                "source_ids": project_metadata.get("source_ids", []),
+                "requested_model": project_metadata.get("model"),
+                "requested_seed": project_metadata.get("seed"),
+                "requested_rounds": project_metadata.get("rounds"),
+                "requested_density": project_metadata.get("density"),
                 "source_files": source_files,
-                "excluded_files": [],
+                "excluded_files": excluded_files,
             },
             "source_snapshot": {
                 "graph_backend": Config.GRAPH_BACKEND,
                 "graph_reused": True,
                 "graph_id": state.graph_id,
+                "graph_build_status": project_status,
+                "documents_ingested": len(source_files),
+                "chunk_size": getattr(project, "chunk_size", None),
+                "chunk_overlap": getattr(project, "chunk_overlap", None),
+                "llm_model_for_graph": Config.GRAPHITI_LLM_MODEL,
+                "embedding_model": Config.GRAPHITI_EMBEDDER_MODEL,
                 "total_nodes_seen": getattr(filtered_entities, "total_count", None),
                 "filtered_entities_count": getattr(filtered_entities, "filtered_count", None),
                 "filtered_entity_types": entity_types,
                 "graph_memory_enabled": not Config.USE_EXPERIMENTAL_MEMORY,
                 "experimental_memory_enabled": Config.USE_EXPERIMENTAL_MEMORY,
+                "warnings": warnings,
             },
             "prompt_snapshot": {
+                "original_user_prompt": project_metadata.get("original_user_prompt") or simulation_requirement,
+                "normalized_task_prompt": project_metadata.get("normalized_task_prompt") or simulation_requirement,
+                "system_constraints_text": project_metadata.get("system_constraints_text"),
                 "simulation_requirement": simulation_requirement,
-                "profile_generation_prompts_captured": False,
-                "config_generation_prompts_captured": False,
-                "note": "Internal LLM prompts are not intercepted yet; this trace captures inputs and produced artifacts.",
+                "llm_calls": llm_call_records,
+                "profile_generation_prompts_captured": any(
+                    item.get("stage") == "profile_generation" for item in llm_call_records
+                ),
+                "config_generation_prompts_captured": any(
+                    str(item.get("stage", "")).startswith("config_") for item in llm_call_records
+                ),
+                "note": "LLM prompts/outputs are referenced as secondary artifacts when capture is enabled.",
             },
             "graph_snapshot": {
-                "filtered_entities": [cls._to_plain_dict(entity) for entity in entities],
+                "filtered_entities": graph_snapshot_entities,
+                "metrics": {
+                    "node_count": filtered_count,
+                    "candidate_node_count": total_count,
+                    "edge_count": sum(len(item.get("edges", []) or []) for item in graph_snapshot_entities),
+                    "connected_components": None,
+                },
             },
             "entity_filtering_trace": {
                 "requested_entity_types": defined_entity_types or None,
-                "total_count": getattr(filtered_entities, "total_count", None),
-                "filtered_count": getattr(filtered_entities, "filtered_count", None),
+                "candidate_count": total_count,
+                "accepted_count": filtered_count,
+                "rejected_count": max((total_count or 0) - (filtered_count or 0), 0),
+                "total_count": total_count,
+                "filtered_count": filtered_count,
                 "entity_types_found": entity_types,
                 "filter_rule": "keep nodes with labels other than Entity/Node, optionally restricted by requested types",
+                "candidate_entities": [
+                    {
+                        "uuid": item.get("uuid"),
+                        "name": item.get("name"),
+                        "entity_type": item.get("entity_type") or item.get("type"),
+                        "summary": item.get("summary"),
+                        "status": "accepted",
+                        "reason": "selected_by_defined_entity_filter",
+                    }
+                    for item in graph_snapshot_entities
+                ],
             },
             "agent_selection_trace": {
+                "candidate_entity_count": filtered_count,
                 "selected_agent_count": len(profiles_data),
+                "configured_agent_count": len(profiles_data),
+                "discarded_entities_count": max((filtered_count or 0) - len(profiles_data), 0),
                 "selected_agents": [
                     {
                         "user_id": profile.get("user_id"),
@@ -164,6 +232,7 @@ class WorldbuildingTraceCapture:
                 ],
             },
             "simulation_social_graph_trace": {
+                "construction_method": "simulation_config_generator_agent_activity_only",
                 "explicit_social_graph_generated": False,
                 "agent_activity_configs_count": len(sim_params_data.get("agent_configs", []) or []),
                 "agent_activity_configs": sim_params_data.get("agent_configs", []),
@@ -171,19 +240,40 @@ class WorldbuildingTraceCapture:
                     "twitter": sim_params_data.get("twitter_config"),
                     "reddit": sim_params_data.get("reddit_config"),
                 },
+                "metrics": {
+                    "agent_count": len(profiles_data),
+                    "edge_count": 0,
+                    "density": None,
+                },
             },
             "profile_generation_trace": {
+                "profile_generator": "OasisProfileGenerator",
                 "use_llm_for_profiles": use_llm_for_profiles,
                 "parallel_profile_count": parallel_profile_count,
                 "profiles_count": len(profiles_data),
                 "profiles": profiles_data,
+                "output_files": profile_output_files,
+                "model": Config.LLM_MODEL_NAME,
+                "warnings": warnings,
             },
-            "simulation_config_trace": sim_params_data,
+            "simulation_config_trace": {
+                **sim_params_data,
+                "config_generator": "SimulationConfigGenerator",
+                "output_file": config_output_file[0] if config_output_file else None,
+            },
             "pre_simulation_validation": {
+                "status": state_data.get("status"),
                 "status_after_prepare": state_data.get("status"),
                 "config_generated": state_data.get("config_generated"),
+                "simulation_config_generated": state_data.get("config_generated"),
                 "entities_count": state_data.get("entities_count"),
                 "profiles_count": state_data.get("profiles_count"),
+                "profiles_generated": bool(profiles_data),
+                "blocking_issues": [state_data.get("error")] if state_data.get("error") else [],
+                "warnings": warnings,
+                "oasis_graph_instantiated": False,
+                "env_reset_completed": False,
+                "env_step_completed": False,
                 "error": state_data.get("error"),
             },
             "provenance": {
@@ -191,6 +281,7 @@ class WorldbuildingTraceCapture:
                 "capture_point": "SimulationManager.prepare_simulation.after_config_saved",
                 "simulation_dir": cls._relpath(simulation_dir, Config.UPLOAD_FOLDER),
                 "config_snapshot": cls._build_config_snapshot(),
+                "backtesting_context": project_metadata,
             },
             "artifact_manifest": {},
             "training_labels": None,
@@ -242,6 +333,30 @@ class WorldbuildingTraceCapture:
             "base_dir": cls._relpath(simulation_dir, Config.UPLOAD_FOLDER),
             "artifacts": artifacts,
         }
+
+    @classmethod
+    def _build_excluded_file_snapshot(cls, metadata: Dict[str, Any]) -> List[Dict[str, Any]]:
+        excluded = []
+        for item in metadata.get("excluded_files", []) or []:
+            if isinstance(item, dict):
+                excluded.append(item)
+            else:
+                excluded.append({"path": str(item), "reason": "excluded_by_case_config"})
+        return excluded
+
+    @classmethod
+    def _build_expected_output_files(cls, simulation_dir: str, filenames: List[str]) -> List[Dict[str, Any]]:
+        outputs = []
+        for filename in filenames:
+            path = os.path.join(simulation_dir, filename)
+            if not os.path.exists(path):
+                continue
+            outputs.append({
+                "path": cls._relpath(path, simulation_dir),
+                "sha256": cls._sha256_file(path),
+                "size_bytes": cls._safe_file_size(path),
+            })
+        return outputs
 
     @classmethod
     def _build_config_snapshot(cls) -> Dict[str, Any]:

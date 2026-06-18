@@ -1,0 +1,120 @@
+{
+  "predicted_winner": "Argentina",
+  "confidence": 0.72,
+  "winner_probability_point": 0.49,
+  "winner_probability_range": {
+    "winner_min": 0.46,
+    "winner_max": 0.51
+  },
+  "predicted_goal_margin": {
+    "winner_goals_margin_point": 1.0,
+    "winner_goals_margin_min": 1.0,
+    "winner_goals_margin_max": 2.0,
+    "rationale": "Argentina's defensive solidity, having conceded only one goal in the tournament, combined with their championship experience, suggests a controlled win by a small margin."
+  },
+  "probability_calibration": {
+    "method": "Market and Model Anchoring",
+    "confidence_rationale": "Confidence is set at 0.72 based on the strong alignment between betting markets (Argentina as favorite) and Opta's model, though tempered by Colombia's historic unbeaten streak.",
+    "range_rationale": "The range is anchored to the Opta model (50.4% for 90 mins) and FanDuel's implied market price (47.6%), resulting in a narrow window around 49%."
+  },
+  "probability_drivers": [
+    {
+      "factor": "Tournament Pedigree and Experience",
+      "direction": "Argentina",
+      "source_id": [
+        "HIST_01",
+        "BASE_01"
+      ]
+    },
+    {
+      "factor": "Defensive Solidity",
+      "direction": "Argentina",
+      "source_id": [
+        "FACTS_01"
+      ]
+    },
+    {
+      "factor": "Market Consensus",
+      "direction": "Argentina",
+      "source_id": [
+        "MARKET_01",
+        "MARKET_03"
+      ]
+    },
+    {
+      "factor": "Unbeaten Streak and Momentum",
+      "direction": "Colombia",
+      "source_id": [
+        "FORM_03",
+        "FACTS_01"
+      ]
+    }
+  ],
+  "justification": [
+    {
+      "claim": "Argentina is the defending Copa America and reigning World Cup champion, possessing a core of experienced players from recent title cycles.",
+      "source_id": [
+        "HIST_01",
+        "SQUAD_01"
+      ]
+    },
+    {
+      "claim": "Opta's model predicts Argentina winning in 90 minutes 50.4% of the time, and betting markets list them as the favorite.",
+      "source_id": [
+        "MARKET_03",
+        "MARKET_01"
+      ]
+    },
+    {
+      "claim": "Argentina has a strong head-to-head record in Copa America knockout stages, remaining unbeaten against Colombia in five such meetings.",
+      "source_id": [
+        "HIST_01",
+        "FACTS_01"
+      ]
+    }
+  ],
+  "uncertainty": [
+    {
+      "factor": "Colombia's 28-game unbeaten streak, the longest in its national-team history.",
+      "source_id": [
+        "FORM_03",
+        "FACTS_01"
+      ]
+    },
+    {
+      "factor": "The high creative influence of James Rodriguez, who broke the tournament assist record.",
+      "source_id": [
+        "COL_01",
+        "FACTS_01"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "claim": "Argentina conceded only one goal throughout the 2024 Copa America.",
+      "source_id": [
+        "FACTS_01"
+      ]
+    },
+    {
+      "claim": "Colombia reached the final by defeating Uruguay 1-0, showing defensive resilience with 10 men.",
+      "source_id": [
+        "FORM_02"
+      ]
+    },
+    {
+      "claim": "Argentina's last encounter with Colombia resulted in an Argentine victory in February 2022.",
+      "source_id": [
+        "FORM_03",
+        "FACTS_01"
+      ]
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2024-07-13",
+    "temporal_package": "T3",
+    "model": "google/gemma-3-27b-it",
+    "simulation_id": "sim_51a35ce954a3",
+    "graph_id": "mirofish_759974b822934d8b"
+  }
+}

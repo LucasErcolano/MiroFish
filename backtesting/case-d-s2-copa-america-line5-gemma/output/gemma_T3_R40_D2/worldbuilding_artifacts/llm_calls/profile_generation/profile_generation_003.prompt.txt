@@ -1,0 +1,90 @@
+[system]
+你是社交媒体用户画像生成专家。生成详细、真实的人设用于舆论模拟,最大程度还原已有现实情况。必须返回有效的JSON格式，所有字符串值不能包含未转义的换行符。
+
+请使用中文回答。
+
+[user]
+为机构/群体实体生成详细的社交媒体账号设定,最大程度还原已有现实情况。
+
+实体名称: Lionel Scaloni
+实体类型: CoachEntity
+实体摘要: Lionel Scaloni mentioned James Rodriguez as a great player.
+Lionel Scaloni said Colombia was a good team.
+Lionel Scaloni stated that Nestor Lorenzo had found a collective structure around James Rodriguez.
+实体属性: 无
+
+上下文信息:
+### 相关事实和关系
+- Lionel Scaloni stated that Nestor Lorenzo had found a collective structure around James Rodriguez.
+- Lionel Scaloni said Colombia was a good team.
+- Lionel Scaloni mentioned James Rodriguez as a great player.
+
+### 关联实体信息
+- **James Rodriguez** (PlayerEntity): James Rodriguez is a core player for Colombia.
+Jefferson Lerma scored from a James Rodriguez corner.
+James Rodriguez's set-piece delivery created a goal for Colombia.
+James Rodriguez had 24 direct shot participations in the 2024 Copa America tournament.
+James Rodriguez broke Lionel Messi's Copa America assist record.
+James Rodriguez had six assists in one edition of the Copa America tournament.
+Lionel Scaloni mentioned James Rodriguez as a great player.
+- **Nestor Lorenzo** (CoachEntity): Lionel Scaloni stated that Nestor Lorenzo had found a collective structure around James Rodriguez.
+- **Colombia** (NationalTeamEntity): Finalist in the 2024 Copa America. Reached the final by beating Uruguay 1-0 on July 10, 2024, with a goal from Jefferson Lerma. Core players include James Rodriguez, Luis Diaz, and Jhon Cordoba. Pre-final betting markets listed them as underdogs (+360 for 90 minutes, +170 to lift the trophy) compared to Argentina.
+Argentina competes with Colombia in the final match.
+Hard Rock Stadium hosts the final match between Argentina and Colombia.
+Colombia and Argentina were the key teams in the final.
+Colombia's last defeat before the final was against Argentina in February 2022.
+Colombia won its only Copa America title in 2001.
+Colombia's last defeat was against Argentina in a 2022 World Cup qualifier.
+Colombia kept clean sheets in its last two final-phase matches of the 2024 Copa America.
+Santiago Arias is a player for Colombia.
+Carlos Cuesta is a player for Colombia.
+Johan Mojica is a player for Colombia.
+Jhon Cordoba is a player for Colombia.
+Lionel Scaloni said Colombia was a good team.
+Argentina wants to be protagonist and dominant against Colombia.
+
+### Zep检索到的事实信息
+- Nicolas Tagliafico is a probable player for Argentina.
+- The final was scheduled at Hard Rock Stadium in Miami.
+- Argentina and Colombia had faced each other 15 times in Copa America history before the final.
+- Lisandro Martinez is a probable player for Argentina.
+- The Copa America final is scheduled to be held at Hard Rock Stadium.
+- Julian Alvarez is a probable player for Argentina.
+- Gonzalo Montiel is a probable player for Argentina.
+- Lionel Messi is a probable player for Argentina.
+- Emiliano Martinez is a probable player for Argentina.
+- Opta provided a pre-match analysis of Colombia before the 2024 Copa America final.
+- Jhon Cordoba is a player for Colombia.
+- Julian Alvarez scored a goal while playing for Argentina on July 9, 2024.
+- Hard Rock Stadium is located in Miami Gardens, Florida.
+- The document discusses information related to Colombia.
+- Enzo Fernandez is a probable player for Argentina.
+
+### Zep检索到的相关节点
+- Nicolas Tagliafico is a probable player for Argentina.
+- Jhon Cordoba is a c
+
+请生成JSON，包含以下字段:
+
+1. bio: 官方账号简介，200字，专业得体
+2. persona: 详细账号设定描述（2000字的纯文本），需包含:
+   - 机构基本信息（正式名称、机构性质、成立背景、主要职能）
+   - 账号定位（账号类型、目标受众、核心功能）
+   - 发言风格（语言特点、常用表达、禁忌话题）
+   - 发布内容特点（内容类型、发布频率、活跃时间段）
+   - 立场态度（对核心话题的官方立场、面对争议的处理方式）
+   - 特殊说明（代表的群体画像、运营习惯）
+   - 机构记忆（机构人设的重要部分，要介绍这个机构与事件的关联，以及这个机构在事件中的已有动作与反应）
+3. age: 固定填30（机构账号的虚拟年龄）
+4. gender: 固定填"other"（机构账号使用other表示非个人）
+5. mbti: MBTI类型，用于描述账号风格，如ISTJ代表严谨保守
+6. country: 国家（使用中文，如"中国"）
+7. profession: 机构职能描述
+8. interested_topics: 关注领域数组
+
+重要:
+- 所有字段值必须是字符串或数字，不允许null值
+- persona必须是一段连贯的文字描述，不要使用换行符
+- 请使用中文回答。 (gender字段必须用英文"other")
+- age必须是整数30，gender必须是字符串"other"
+- 机构账号发言要符合其身份定位

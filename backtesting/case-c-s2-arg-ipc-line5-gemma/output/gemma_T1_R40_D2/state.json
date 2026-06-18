@@ -1,0 +1,26 @@
+{
+  "simulation_id": "sim_a54996994596",
+  "project_id": "proj_e4a731d3022b",
+  "graph_id": "mirofish_abb7c4222e194352",
+  "enable_twitter": true,
+  "enable_reddit": true,
+  "status": "running",
+  "entities_count": 12,
+  "profiles_count": 12,
+  "entity_types": [
+    "Organization",
+    "InternationalOrganization",
+    "ResearchInstitution",
+    "PollingOrganization",
+    "CentralBankOfficial",
+    "MediaOutlet"
+  ],
+  "config_generated": true,
+  "config_reasoning": "时间配置: 该模拟关注阿根廷2025年通货膨胀预测，目标用户群体包括经济学家、分析师、政策制定者和关注经济新闻的公众。考虑到阿根廷的作息习惯和事件的性质（经济预测），选择较长模拟时长120小时。高峰时段设定在晚上，因为人们在下班后更可能关注经济新闻和分析。工作时间保持中等活跃度，早间活跃度略低于工作时间。深夜为低谷时段。Agent数量根据不同时段进行调整，高峰时段激活更多Agent以模拟更活跃的讨论，低谷时段减少Agent数量。 | 事件配置: 以上配置旨在反映文档中提供的关键信息和观点。热点话题基于文档中反复出现的主题。舆论发展方向则反映了对阿根廷经济前景的总体谨慎态度。初始帖子由不同的实体类型发布，以模拟真实世界的舆论环境，并提供多样化的视角。 | Agent配置: 成功生成 12 个 | 初始帖子分配: 6 个帖子已分配发布者",
+  "current_round": 0,
+  "twitter_status": "not_started",
+  "reddit_status": "not_started",
+  "created_at": "2026-06-16T19:18:42.614182",
+  "updated_at": "2026-06-16T19:21:52.902586",
+  "error": null
+}
