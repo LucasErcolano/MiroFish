@@ -28,6 +28,14 @@ Prereq: set the key in the user environment or current shell:
 $env:DEEPINFRA_API_KEY="..."
 ```
 
+Recommended if Graphiti must build/search graph memory:
+
+```powershell
+$env:OPENROUTER_API_KEY="..."
+```
+
+The runner uses DeepInfra for the simulation LLM and, when available, OpenRouter `qwen/qwen3-embedding-8b` for Graphiti embeddings. Graphiti extraction uses the `graphiti_llm_model` declared in `matrix.yaml`; this is Gemma by default for both Gemma and Llama rows to avoid schema drift during graph construction. It also expects Neo4j on `bolt://127.0.0.1:7687` with `neo4j/mirofishpassword`.
+
 Then:
 
 ```powershell
@@ -42,6 +50,8 @@ The script runs one model group at a time, starts the backend with that model en
 ```text
 runs/s3_cross_topic/<topic>/<model>/<condition>-r20/
 ```
+
+S3 passes `--no-wait-after-run` by default. Without it, the Reddit runner can enter IPC command-wait mode and produce no rounds. Because backend progress counters may remain at zero in this mode, use `simulation_artifacts/simulation.log`, `reddit_simulation.db`, and `scheduled_events_fired.jsonl` as the primary technical audit.
 
 ## 4. Manual backend mode
 

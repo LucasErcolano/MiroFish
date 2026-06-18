@@ -43,11 +43,13 @@ models:
   gemma:
     provider: deepinfra
     model: google/gemma-3-27b-it
+    graphiti_llm_model: google/gemma-3-27b-it
     base_url: https://api.deepinfra.com/v1/openai
     key_env: DEEPINFRA_API_KEY
   llama:
     provider: deepinfra
     model: meta-llama/Llama-3.3-70B-Instruct-Turbo
+    graphiti_llm_model: google/gemma-3-27b-it
     base_url: https://api.deepinfra.com/v1/openai
     key_env: DEEPINFRA_API_KEY
 topics:

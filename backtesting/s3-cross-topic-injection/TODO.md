@@ -8,10 +8,9 @@
 
 ## Medium range
 
-- Validate matrix, topic files, injection plans, and ledger structure.
-- Execute smoke: `baseline-control` and `signal-mid` for all topics and both DeepInfra models.
 - Add compact scoring summaries for smoke outputs.
 - Decide whether to add artifact-only ReportAgent reports after smoke.
+- Decide whether to execute the full 42-row matrix.
 
 ## Short range
 
@@ -28,3 +27,5 @@
 - Added compact topic packets for football, Bolivia, and IPC.
 - Added matrix, run ledger, validator, and resumable smoke/full runner.
 - Verified package validation and smoke dry-run locally.
+- Executed 12/12 smoke rows successfully across football, Bolivia, and IPC with Gemma and Llama.
+- Generated `evaluation/smoke_summary.*` with committed evidence derived from local `runs/`.
