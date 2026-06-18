@@ -1,0 +1,21 @@
+{
+  "narrative_summary": "The simulation indicates a persistent inflationary environment driven by monetary expansion and exchange rate pressures, partially offset by central bank intervention.  Herd behavior among consumers reacting to price increases in services, coupled with wage recovery, contributes to ongoing inflation.  Expectations of IMF support for the BCRA suggest a degree of stabilization, but underlying structural issues remain.",
+  "predictions": {
+    "delta_1_feb": {
+      "min_pct": 3.5,
+      "max_pct": 5.0
+    },
+    "delta_2_apr": {
+      "min_pct": 4.0,
+      "max_pct": 6.5
+    },
+    "delta_3_jul": {
+      "min_pct": 2.5,
+      "max_pct": 4.5
+    },
+    "delta_4_dec": {
+      "min_pct": 2.0,
+      "max_pct": 3.5
+    }
+  }
+}

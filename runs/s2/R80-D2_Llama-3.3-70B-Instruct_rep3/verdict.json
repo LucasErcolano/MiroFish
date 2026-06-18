@@ -1,0 +1,21 @@
+{
+  "narrative_summary": "The simulation data indicates a high inflation rate in Argentina for 2024-2025, driven by heterogeneous price behavior, wage recovery, and regulated prices. The BCRA's monetary policy and possible recapitalization through FMI funds may impact the inflation rate. The forecast is based on projections from BBVA Research, Consultora Privada, and REM.",
+  "predictions": {
+    "delta_1_feb": {
+      "min_pct": 2.5,
+      "max_pct": 4.5
+    },
+    "delta_2_apr": {
+      "min_pct": 3.8,
+      "max_pct": 5.2
+    },
+    "delta_3_jul": {
+      "min_pct": 4.2,
+      "max_pct": 6.1
+    },
+    "delta_4_dec": {
+      "min_pct": 5.5,
+      "max_pct": 7.8
+    }
+  }
+}

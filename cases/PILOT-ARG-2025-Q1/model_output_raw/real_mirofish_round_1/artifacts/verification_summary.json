@@ -1,0 +1,25 @@
+{
+  "missing_required_files": [],
+  "stdout_round_line_found": true,
+  "stdout_agents_line_found": true,
+  "run_config_status": "PASS",
+  "verdict_status": "PASS",
+  "model": "gemini-2.5-flash-lite",
+  "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+  "num_rounds_or_epochs": 1,
+  "num_agents": 2,
+  "oasis_used": true,
+  "zep_graphiti_used": false,
+  "memory_persistent": false,
+  "db_counts": {
+    "users": 2,
+    "posts": 3,
+    "trace": 8,
+    "likes": 1
+  },
+  "temporal_hits": {},
+  "secret_hits": [],
+  "hash_file_entries": 41,
+  "hash_mismatches": [],
+  "overall": "PASS"
+}

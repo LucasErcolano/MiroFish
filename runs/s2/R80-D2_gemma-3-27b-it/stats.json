@@ -1,0 +1,8 @@
+{
+  "simulation_id": "sim_f034f887c10e",
+  "model": "deepinfra/google/gemma-3-27b-it",
+  "rounds": 80,
+  "density": 2,
+  "duration_sec": 674.25,
+  "cost_usd": 0.1216
+}

@@ -1,0 +1,165 @@
+{
+  "total": 337667,
+  "agrupaciones": [
+    {
+      "nombre": "LA LIBERTAD AVANZA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "83",
+          "Votos": 89070,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "LA LIBERTAD AVANZA"
+        }
+      ],
+      "votos": 89070,
+      "porcentaje": "28.30",
+      "idAgrupacion": "83",
+      "color": "#743bbc"
+    },
+    {
+      "nombre": "FRENTE UNIDOS PODEMOS",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "80",
+          "Votos": 87628,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE UNIDOS PODEMOS"
+        }
+      ],
+      "votos": 87628,
+      "porcentaje": "27.84",
+      "idAgrupacion": "80",
+      "color": "#ffffff"
+    },
+    {
+      "nombre": "DESPIERTA CHUBUT",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "86",
+          "Votos": 63056,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "DESPIERTA CHUBUT"
+        }
+      ],
+      "votos": 63056,
+      "porcentaje": "20.04",
+      "idAgrupacion": "86",
+      "color": "#fd5001"
+    },
+    {
+      "nombre": "LA FUERZA DEL TRABAJO CHUBUTENSE",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "85",
+          "Votos": 34186,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "LA FUERZA DEL TRABAJO CHUBUTENSE"
+        }
+      ],
+      "votos": 34186,
+      "porcentaje": "10.86",
+      "idAgrupacion": "85",
+      "color": "#4fabd4"
+    },
+    {
+      "nombre": "FRENTE DE IZQUIERDA Y DE TRABAJADORES - UNIDAD",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "81",
+          "Votos": 16171,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE DE IZQUIERDA Y DE TRABAJADORES - UNIDAD"
+        }
+      ],
+      "votos": 16171,
+      "porcentaje": "5.14",
+      "idAgrupacion": "81",
+      "color": "#ef2b2d"
+    },
+    {
+      "nombre": "PARTIDO LIBERTARIO",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "79",
+          "Votos": 13762,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "PARTIDO LIBERTARIO"
+        }
+      ],
+      "votos": 13762,
+      "porcentaje": "4.37",
+      "idAgrupacion": "79",
+      "color": "#372a84"
+    },
+    {
+      "nombre": "PARTIDO INDEPENDIENTE DE CHUBUT",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "84",
+          "Votos": 6380,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "PARTIDO INDEPENDIENTE DE CHUBUT"
+        }
+      ],
+      "votos": 6380,
+      "porcentaje": "2.03",
+      "idAgrupacion": "84",
+      "color": "#0047bb"
+    },
+    {
+      "nombre": "GEN",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "2",
+          "Votos": 4465,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "GEN"
+        }
+      ],
+      "votos": 4465,
+      "porcentaje": "1.42",
+      "idAgrupacion": "2",
+      "color": "#da281c"
+    }
+  ],
+  "NULO": 14271,
+  "RECURRIDO": 282,
+  "COMANDO": 0,
+  "EN BLANCO": 8340,
+  "IMPUGNADO": 56,
+  "IdDistrito": 7,
+  "Distrito": "CHUBUT",
+  "MesasEscrutadas": 1450,
+  "Electores": 6305390,
+  "Votantes": 337667,
+  "ParticipacionSobreEscrutado": 5.36,
+  "Año": 2025,
+  "Recuento": "Provisorio",
+  "IdEleccion": 2,
+  "Elecciones": "GENERALES",
+  "IdCargo": 3,
+  "Cargo": "DIPUTADO NACIONAL",
+  "positivos": 314718,
+  "blancos": 8340,
+  "impugnados": 56,
+  "nulos": 14271,
+  "recurridos": 282,
+  "comando": 0,
+  "union": 338
+}

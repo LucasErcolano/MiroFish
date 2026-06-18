@@ -1,0 +1,21 @@
+{
+  "narrative_summary": "The simulation data indicates a heterogeneous price behavior in Argentina, with services increasing by 4.4% monthly due to wage recovery and regulated prices. The BCRA's monetary base rose to $31 billion, and the market anticipates a possible recapitalization of the BCRA through FMI funds. These factors contribute to an inflation projection of 30% annual for 2025. The agents' behaviors, such as consumers and producers, play a significant role in shaping prices and inflation, influenced by monetary and fiscal policies.",
+  "predictions": {
+    "delta_1_feb": {
+      "min_pct": 2.5,
+      "max_pct": 4.2
+    },
+    "delta_2_apr": {
+      "min_pct": 3.8,
+      "max_pct": 5.1
+    },
+    "delta_3_jul": {
+      "min_pct": 4.2,
+      "max_pct": 5.8
+    },
+    "delta_4_dec": {
+      "min_pct": 5.5,
+      "max_pct": 7.2
+    }
+  }
+}

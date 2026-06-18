@@ -1,0 +1,8 @@
+{
+  "simulation_id": "sim_0b297cab98b2",
+  "model": "openrouter/qwen/qwen3-8b",
+  "rounds": 80,
+  "density": 2,
+  "duration_sec": 1174.13,
+  "cost_usd": 0.124
+}

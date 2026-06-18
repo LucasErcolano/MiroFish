@@ -1,0 +1,21 @@
+{
+  "narrative_summary": "The simulation data indicates a heterogeneous behavior between goods and services, with services experiencing a 4.4% monthly increase due to wage recovery and regulated prices. The BCRA's policy to slow the depreciation rate has led to a revision of inflation forecasts, with BBVA Research revising its forecast downwards to 30% annually for 2025. The market expects a possible recapitalization of the BCRA through funds from the FMI, but there are doubts about the political sustainability of flexibilizing the exchange rate in an election year.",
+  "predictions": {
+    "delta_1_feb": {
+      "min_pct": 3.5,
+      "max_pct": 5.0
+    },
+    "delta_2_apr": {
+      "min_pct": 2.8,
+      "max_pct": 4.2
+    },
+    "delta_3_jul": {
+      "min_pct": 2.2,
+      "max_pct": 3.8
+    },
+    "delta_4_dec": {
+      "min_pct": 1.8,
+      "max_pct": 3.2
+    }
+  }
+}

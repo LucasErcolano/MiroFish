@@ -1,0 +1,21 @@
+{
+  "narrative_summary": "The simulation data indicates a heterogeneous price behavior in Argentina, with services increasing by 4.4% monthly due to wage recovery and regulated prices, leading to an inflation projection of 30% annual for 2025. The market bets on a possible recapitalization of BCRA through FMI funds, influencing the exchange rate forecast to 1400 ARS/USD for December. The behavior of agents, such as consumers and producers, and external factors like monetary policy and international economic situation, play a significant role in determining prices and inflation.",
+  "predictions": {
+    "delta_1_feb": {
+      "min_pct": 2.5,
+      "max_pct": 4.0
+    },
+    "delta_2_apr": {
+      "min_pct": 3.8,
+      "max_pct": 5.2
+    },
+    "delta_3_jul": {
+      "min_pct": 4.2,
+      "max_pct": 6.0
+    },
+    "delta_4_dec": {
+      "min_pct": 5.0,
+      "max_pct": 7.0
+    }
+  }
+}
