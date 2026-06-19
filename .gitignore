@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+
+# Headless runner artifacts (see AI_HEADLESS_RUNNER.md)
+runs/
