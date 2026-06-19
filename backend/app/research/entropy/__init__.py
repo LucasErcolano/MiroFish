@@ -37,6 +37,13 @@ from .analysis import (
     categorical_diversity_index,
     rank_cases,
 )
+from .checkpoints import (
+    DEFAULT_QUESTIONS,
+    checkpoint_rounds,
+    parse_interview_result,
+    responses_to_sequences,
+)
+from .temporal import stance_js_divergence, temporal_drift_report
 
 __all__ = [
     "CATEGORICAL_FIELDS",
@@ -61,4 +68,10 @@ __all__ = [
     "across_persona_report",
     "categorical_diversity_index",
     "rank_cases",
+    "DEFAULT_QUESTIONS",
+    "checkpoint_rounds",
+    "parse_interview_result",
+    "responses_to_sequences",
+    "stance_js_divergence",
+    "temporal_drift_report",
 ]
