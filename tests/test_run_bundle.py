@@ -63,6 +63,11 @@ def _make_uploads(root, pid="proj_1", sid="sim_1", rid="rep_1"):
         }, f)
     with open(os.path.join(sdir, "twitter", "actions.jsonl"), "w", encoding="utf-8") as f:
         f.write('{"round":1}\n{"round":2}\n')
+    with open(os.path.join(sdir, "reddit_profiles.json"), "w", encoding="utf-8") as f:
+        json.dump([
+            {"username": "v1", "persona": "a builder", "mbti": "INTJ"},
+            {"username": "v2", "persona": "a healer", "mbti": "ENFP"},
+        ], f)
 
     with open(os.path.join(rdir, "meta.json"), "w", encoding="utf-8") as f:
         json.dump({"report_id": rid, "simulation_id": sid, "graph_id": "graph_1",
@@ -89,6 +94,16 @@ class TestBuildBundle(unittest.TestCase):
             self.assertEqual(b["result"]["run_state"]["twitter_actions_logged"], 2)
             self.assertEqual(b["ids"]["graph_id"], "graph_1")
             self.assertTrue(b["content_hash"])
+            # full personas embedded by default ("todo el planning")
+            self.assertEqual(len(b["plan"]["personas"]), 2)
+            self.assertEqual(b["plan"]["personas"][0]["persona"], "a builder")
+
+    def test_personas_can_be_excluded(self):
+        with tempfile.TemporaryDirectory() as root:
+            pid, sid, rid = _make_uploads(root)
+            b = run_bundle.build_bundle(uploads_root=root, project_id=pid, simulation_id=sid,
+                                        report_id=rid, include_personas=False)
+            self.assertIsNone(b["plan"]["personas"])
 
     def test_seed_files_hashed_and_text_optional(self):
         with tempfile.TemporaryDirectory() as root:

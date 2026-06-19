@@ -12,11 +12,13 @@ Artifact layout (under ``backend/uploads/``):
 
 from __future__ import annotations
 
+import csv
+import glob
 import hashlib
 import json
 import os
 from collections import Counter
-from typing import Optional
+from typing import List, Optional
 
 SCHEMA_VERSION = 1
 
@@ -103,6 +105,37 @@ def resolve_ids_from_run_dir(run_dir: str) -> dict:
 # --------------------------------------------------------------------------- #
 # Bundle assembly
 # --------------------------------------------------------------------------- #
+_PROFILE_GLOBS = ("reddit_profiles.json", "twitter_profiles.csv", "*_profiles.json", "*_profiles.csv")
+
+
+def _load_profiles_dir(sim_dir: Optional[str]) -> List[dict]:
+    """Load the generated personas from a simulation dir (json list or csv). Empty if none."""
+    if not sim_dir:
+        return []
+    path = None
+    for pattern in _PROFILE_GLOBS:
+        matches = sorted(glob.glob(os.path.join(sim_dir, pattern)))
+        if matches:
+            path = matches[0]
+            break
+    if not path:
+        return []
+    if path.endswith(".csv"):
+        try:
+            with open(path, "r", encoding="utf-8", newline="") as f:
+                return [dict(row) for row in csv.DictReader(f)]
+        except OSError:
+            return []
+    obj = _read_json(path)
+    if isinstance(obj, list):
+        return [p for p in obj if isinstance(p, dict)]
+    if isinstance(obj, dict):
+        for key in ("profiles", "agents", "data"):
+            if isinstance(obj.get(key), list):
+                return [p for p in obj[key] if isinstance(p, dict)]
+    return []
+
+
 def _agent_config_summary(sim_cfg: dict) -> dict:
     agents = (sim_cfg or {}).get("agent_configs") or []
     stance = Counter(a.get("stance") for a in agents if a.get("stance"))
@@ -156,6 +189,7 @@ def build_bundle(
     report_id: Optional[str] = None,
     run_dir: Optional[str] = None,
     include_seed_text: bool = False,
+    include_personas: bool = True,
 ) -> dict:
     """Assemble the full run bundle. IDs may be given explicitly or via a headless run_dir."""
     if run_dir:
@@ -211,6 +245,7 @@ def build_bundle(
             "time_config": (sim_cfg or {}).get("time_config"),
             "event_config": (sim_cfg or {}).get("event_config"),
             "agents": _agent_config_summary(sim_cfg) if sim_cfg else None,
+            "personas": _load_profiles_dir(sim_dir) if include_personas else None,
             "report_outline": outline,
         },
         "result": {

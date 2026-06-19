@@ -41,6 +41,7 @@ def main(argv=None) -> int:
     ap.add_argument("--simulation-id")
     ap.add_argument("--report-id")
     ap.add_argument("--include-seed-text", action="store_true", help="Embed extracted_text.txt in the bundle.")
+    ap.add_argument("--no-personas", action="store_true", help="Don't embed the full generated personas (smaller records).")
     ap.add_argument("--out-bundle", help="Write the full bundle JSON here.")
     ap.add_argument("--dataset", help="Append the flattened training record to this JSONL (deduped).")
     args = ap.parse_args(argv)
@@ -55,6 +56,7 @@ def main(argv=None) -> int:
         report_id=args.report_id,
         run_dir=args.run_dir,
         include_seed_text=args.include_seed_text,
+        include_personas=not args.no_personas,
     )
 
     ids = bundle["ids"]

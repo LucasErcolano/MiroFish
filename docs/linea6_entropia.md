@@ -113,7 +113,9 @@ para dataset de entrenamiento / fine-tuning (JSONL, hasheado y deduplicado):
 - `input.question`: el `simulation_requirement` + procedencia del seed (hashes de
   archivos, opcional el `extracted_text`).
 - `plan`: el planning del modelo (razonamiento de config, time/event config,
-  distribuciones de agent_configs, outline del reporte).
+  distribuciones de agent_configs, **las personas generadas completas**, outline
+  del reporte). Las personas se embeben por defecto; `--no-personas` las omite
+  para registros más chicos.
 - `result`: el `full_report.md` + resumen del run_state.
 
 ```bash
