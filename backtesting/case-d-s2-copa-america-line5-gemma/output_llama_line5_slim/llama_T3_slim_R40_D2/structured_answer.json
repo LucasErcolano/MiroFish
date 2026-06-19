@@ -1,0 +1,104 @@
+{
+  "predicted_winner": "Argentina",
+  "confidence": 0.7,
+  "winner_probability_point": 0.475,
+  "winner_probability_range": {
+    "winner_min": 0.45,
+    "winner_max": 0.5
+  },
+  "predicted_goal_margin": {
+    "winner_goals_margin_point": 1.0,
+    "winner_goals_margin_min": 0.0,
+    "winner_goals_margin_max": 2.0,
+    "rationale": "Based on the historical context and recent form of both teams, Argentina is expected to win by a margin of 1 goal, with a possible range of 0 to 2 goals."
+  },
+  "probability_calibration": {
+    "method": "Model signals and market odds",
+    "confidence_rationale": "The confidence level is set to 0.7 based on the strength of the evidence, including Argentina's historical dominance and recent form.",
+    "range_rationale": "The winner probability range is set to 0.45-0.5 based on the model signals and market odds, which suggest a slight advantage for Argentina."
+  },
+  "probability_drivers": [
+    {
+      "factor": "Historical context",
+      "direction": "Argentina",
+      "source_id": [
+        "COPA_T3_SLIM_01"
+      ]
+    },
+    {
+      "factor": "Recent form",
+      "direction": "Argentina",
+      "source_id": [
+        "COPA_T3_SLIM_02"
+      ]
+    },
+    {
+      "factor": "Market odds",
+      "direction": "Argentina",
+      "source_id": [
+        "COPA_T3_SLIM_03"
+      ]
+    }
+  ],
+  "justification": [
+    {
+      "claim": "Argentina has a strong historical record against Colombia in Copa America knockout-stage meetings.",
+      "source_id": [
+        "SLIM_01"
+      ]
+    },
+    {
+      "claim": "Argentina has been in good form recently, with a 2-0 win over Canada in the semifinals.",
+      "source_id": [
+        "SLIM_02"
+      ]
+    },
+    {
+      "claim": "The market odds favor Argentina to win the tournament, with a probability of around 47.6%.",
+      "source_id": [
+        "SLIM_03"
+      ]
+    }
+  ],
+  "uncertainty": [
+    {
+      "factor": "Injuries to key players",
+      "source_id": [
+        "SLIM_02"
+      ]
+    },
+    {
+      "factor": "Colombia's strong recent form, including a 28-match unbeaten streak",
+      "source_id": [
+        "SLIM_04"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "claim": "Argentina and Colombia have met 15 times in Copa America history, with 7 Argentina wins, 3 Colombia wins, and 5 draws.",
+      "source_id": [
+        "SLIM_01"
+      ]
+    },
+    {
+      "claim": "Lionel Messi played the full match against Canada after recent concerns around an adductor issue and looked fitter than in the quarter-final against Ecuador.",
+      "source_id": [
+        "SLIM_02"
+      ]
+    },
+    {
+      "claim": "FanDuel's market price implies Argentina has around a 47.6% chance of winning the tournament.",
+      "source_id": [
+        "SLIM_03"
+      ]
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2024-07-13",
+    "temporal_package": "T3_slim",
+    "model": "meta-llama/llama-3.3-70b-instruct",
+    "simulation_id": "sim_2ad7dffbcba4",
+    "graph_id": "mirofish_bb802559676c4df2"
+  }
+}

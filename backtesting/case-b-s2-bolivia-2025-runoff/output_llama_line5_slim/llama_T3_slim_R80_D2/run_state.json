@@ -1,0 +1,758 @@
+{
+  "simulation_id": "sim_02d4f0b01ba6",
+  "runner_status": "completed",
+  "current_round": 72,
+  "total_rounds": 72,
+  "simulated_hours": 0,
+  "total_simulation_hours": 72,
+  "progress_percent": 100.0,
+  "twitter_current_round": 72,
+  "reddit_current_round": 72,
+  "twitter_simulated_hours": 0,
+  "reddit_simulated_hours": 0,
+  "twitter_running": false,
+  "reddit_running": false,
+  "twitter_completed": true,
+  "reddit_completed": true,
+  "twitter_actions_count": 76,
+  "reddit_actions_count": 6,
+  "total_actions_count": 82,
+  "started_at": "2026-06-18T18:08:08.648689",
+  "updated_at": "2026-06-18T18:14:41.500606",
+  "completed_at": "2026-06-18T18:14:41.500764",
+  "error": null,
+  "process_pid": 1528935,
+  "recent_actions": [
+    {
+      "round_num": 71,
+      "timestamp": "2026-06-18T18:14:39.753054",
+      "platform": "twitter",
+      "agent_id": 9,
+      "agent_name": "Jorge Quiroga",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 50,
+        "new_post_id": 63,
+        "original_content": "MAS的主要己乐是治聘网络和三浮轉化。",
+        "original_author_name": "Bolivian presidential candidates",
+        "quote_content": "I disagree with the quote content. As a politician, I believe that building a network and promoting trilateralism is not the right approach for our country. Instead, I think we should focus on promoting international cooperation and financial stability."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 71,
+      "timestamp": "2026-06-18T18:14:39.753029",
+      "platform": "twitter",
+      "agent_id": 8,
+      "agent_name": "His running mate",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "50",
+        "new_post_id": 62,
+        "original_content": "MAS的主要己乐是治聘网络和三浮轉化。",
+        "original_author_name": "Bolivian presidential candidates",
+        "quote_content": "I am pleased to see the support for MAS's goals, but we must also consider the potential challenges and complexities involved in achieving economic stability and cooperation. Let's have a nuanced discussion about the issues at hand."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 71,
+      "timestamp": "2026-06-18T18:14:39.753005",
+      "platform": "twitter",
+      "agent_id": 4,
+      "agent_name": "Bolivian presidential candidates",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "5",
+        "new_post_id": 61,
+        "original_content": "MAS的主要己乐是治聘网络和三浮轉化。",
+        "original_author_name": "MAS",
+        "quote_content": "I agree with MAS's main goals of building a network and promoting trilateralism. This is a crucial step towards achieving economic stability and cooperation between countries."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 71,
+      "timestamp": "2026-06-18T18:14:39.752969",
+      "platform": "twitter",
+      "agent_id": 5,
+      "agent_name": "Rodrigo Paz",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "It's time for a change in our country. We need to focus on creating a better future, promoting economic stability and cooperation. Let's work together to achieve this goal. #Change #EconomicStability #Cooperation",
+        "post_id": 60
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 71,
+      "timestamp": "2026-06-18T18:14:39.752869",
+      "platform": "twitter",
+      "agent_id": 7,
+      "agent_name": "Samuel Doria Medina",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 70,
+      "timestamp": "2026-06-18T18:14:19.771727",
+      "platform": "twitter",
+      "agent_id": 5,
+      "agent_name": "Rodrigo Paz",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "We need to change the current system and promote economic stability and cooperation. Let's work together to create a better future for our country. #EconomicStability #Cooperation",
+        "post_id": 59
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 70,
+      "timestamp": "2026-06-18T18:14:19.771707",
+      "platform": "twitter",
+      "agent_id": 4,
+      "agent_name": "Bolivian presidential candidates",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello everyone, I'm excited to be a part of this social media platform! As a presidential candidate, I'm looking forward to sharing my thoughts and ideas with all of you. Let's work together to build a better future for our country.",
+        "post_id": 58
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 70,
+      "timestamp": "2026-06-18T18:14:19.771676",
+      "platform": "twitter",
+      "agent_id": 0,
+      "agent_name": "Edman Lara",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 57,
+        "original_content": "As a supporter of Rodrigo Paz, I believe that it's time for Bolivia to take a stand against corruption and promote transparency in our government. Let's work together to create a better future for our country! 我是一个福微的打支者，我们不过要成为民则和政民洗设。让我们参与工作，成为一个明一世畅。",
+        "original_author_name": "Edman Lara"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 70,
+      "timestamp": "2026-06-18T18:14:19.771556",
+      "platform": "twitter",
+      "agent_id": 9,
+      "agent_name": "Jorge Quiroga",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "As a politician, I strongly disagree with MAS's main goals of building a network and promoting trilateralism. Instead, I believe in promoting international cooperation and financial stability, and I think that we should focus on building a stronger relationship with the US and supporting the IMF.",
+        "post_id": 56
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 69,
+      "timestamp": "2026-06-18T18:14:01.634362",
+      "platform": "twitter",
+      "agent_id": 8,
+      "agent_name": "His running mate",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "The election is a critical moment for our country, and it's essential to make informed decisions. As a political candidate, I believe in promoting transparency and accountability in our political system. Let's work together to create a better future for our nation.",
+        "post_id": 55
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 69,
+      "timestamp": "2026-06-18T18:14:01.634293",
+      "platform": "twitter",
+      "agent_id": 4,
+      "agent_name": "Bolivian presidential candidates",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "2",
+        "new_post_id": 54,
+        "original_content": "MAS的支持率直线下降，这将会对本次选举产生重大影响。许多选民开始寻找替代性的选择。",
+        "original_author_name": "MAS",
+        "quote_content": "I agree that MAS's support rate is decreasing, and this will have a significant impact on the current election. I believe we should start to reflect on the characteristics of the candidates."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 69,
+      "timestamp": "2026-06-18T18:14:01.634150",
+      "platform": "twitter",
+      "agent_id": 5,
+      "agent_name": "Rodrigo Paz",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "It's time for a change! We need to work together to create a better future for our country. Let's focus on economic stability and cooperation. #ChangeIsNeeded #EconomicStability",
+        "post_id": 53
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 68,
+      "timestamp": "2026-06-18T18:13:42.745994",
+      "platform": "twitter",
+      "agent_id": 0,
+      "agent_name": "Edman Lara",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "As a supporter of Rodrigo Paz, I believe that anti-corruption and political reform are crucial for Bolivia's development. Let's work together to create a better future for our country! 我是一个福微的打支者，我们不过要成为民则和政民洗设。让我们参与工作，成为一个明一世畅。",
+        "post_id": 52
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 68,
+      "timestamp": "2026-06-18T18:13:42.745950",
+      "platform": "twitter",
+      "agent_id": 8,
+      "agent_name": "His running mate",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "13",
+        "new_post_id": 51,
+        "original_content": "",
+        "original_author_name": "His running mate",
+        "quote_content": "The decline of MAS's popularity is a significant issue in the current election. As a political candidate, I believe it's essential to provide voters with accurate information to make informed decisions. Let's work together to promote transparency and accountability in our political system."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 68,
+      "timestamp": "2026-06-18T18:13:42.745902",
+      "platform": "twitter",
+      "agent_id": 4,
+      "agent_name": "Bolivian presidential candidates",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "5",
+        "new_post_id": 50,
+        "original_content": "MAS的主要己乐是治聘网络和三浮轉化。",
+        "original_author_name": "MAS",
+        "quote_content": "I agree with MAS's main goals of building a network and promoting trilateralism. This is a crucial step towards achieving economic stability and cooperation between countries."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 68,
+      "timestamp": "2026-06-18T18:13:42.745850",
+      "platform": "twitter",
+      "agent_id": 9,
+      "agent_name": "Jorge Quiroga",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 33,
+        "new_post_id": 49,
+        "original_content": "I am excited to see the discussions around the election and the potential impact of MAS's decline in popularity. As a political candidate, I believe it's crucial to engage with voters and provide them with accurate information to make informed decisions. Let's work together to promote transparency and accountability in our political system.",
+        "original_author_name": "Jorge Quiroga",
+        "quote_content": "I agree with the sentiment expressed in this post. As a politician, I believe that transparency and accountability are essential for our political system, and I am committed to pushing for policies that benefit our country and its people."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 68,
+      "timestamp": "2026-06-18T18:13:42.745789",
+      "platform": "twitter",
+      "agent_id": 5,
+      "agent_name": "Rodrigo Paz",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Let's work together to create a better future for our country. We need to focus on economic stability and cooperation. #WeNeedChange #EconomicStability",
+        "post_id": 48
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 68,
+      "timestamp": "2026-06-18T18:13:42.745638",
+      "platform": "twitter",
+      "agent_id": 7,
+      "agent_name": "Samuel Doria Medina",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "As a politician, I am committed to improving the lives of my fellow citizens. I believe in the importance of education, healthcare, and economic development. Let's work together to build a better future for our country.",
+        "post_id": 47
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 67,
+      "timestamp": "2026-06-18T18:13:25.466822",
+      "platform": "twitter",
+      "agent_id": 7,
+      "agent_name": "Samuel Doria Medina",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 67,
+      "timestamp": "2026-06-18T18:13:25.466803",
+      "platform": "twitter",
+      "agent_id": 9,
+      "agent_name": "Jorge Quiroga",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "As a politician, I believe that engaging with voters and providing them with accurate information is crucial for promoting transparency and accountability in our political system. Let's work together to build a better future for our country.",
+        "post_id": 46
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 67,
+      "timestamp": "2026-06-18T18:13:25.466766",
+      "platform": "twitter",
+      "agent_id": 5,
+      "agent_name": "Rodrigo Paz",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "We need to change the current system and promote stability and cooperation. Let's work together to create a better future. #WeNeedChange #StabilityAndCooperation",
+        "post_id": 45
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 67,
+      "timestamp": "2026-06-18T18:13:25.466645",
+      "platform": "twitter",
+      "agent_id": 4,
+      "agent_name": "Bolivian presidential candidates",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 44,
+        "original_content": "美国官员最近会见了玻利维亚的总统候选人，讨论了改善两国关系的可能性。这一事件对选举结果有着重要的影响。",
+        "original_author_name": "US officials"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 63,
+      "timestamp": "2026-06-18T18:12:51.479432",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "US officials",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "29",
+        "new_post_id": 43,
+        "original_content": "美国官员最近会见了玻利维亚的总统候选人，讨论了改善两国关系的可能性。这一事件对选举结果有着重要的影响。",
+        "original_author_name": "US officials",
+        "quote_content": "Improving diplomatic relations between countries is essential for promoting peace and understanding."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 62,
+      "timestamp": "2026-06-18T18:12:29.593800",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "MAS",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "2",
+        "new_post_id": 42,
+        "original_content": "MAS的支持率直线下降，这将会对本次选举产生重大影响。许多选民开始寻找替代性的选择。",
+        "original_author_name": "MAS",
+        "quote_content": "MAS的支持率直线下降，这将会对本次选举产生重大影响。许多选民开始寻找替代性的选择。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 61,
+      "timestamp": "2026-06-18T18:12:11.747808",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "MAS",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "MAS的支持率直线下降，这将会对本次选举产生重大影响。许多选民开始寻找替代性的选择。",
+        "post_id": 41
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 47,
+      "timestamp": "2026-06-18T18:11:45.311316",
+      "platform": "twitter",
+      "agent_id": 4,
+      "agent_name": "Bolivian presidential candidates",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello, I'm excited to be a part of this social media platform! As a presidential candidate, I'm looking forward to sharing my thoughts and ideas with all of you. Let's work together to build a better future for our country.",
+        "post_id": 40
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 47,
+      "timestamp": "2026-06-18T18:11:45.311292",
+      "platform": "twitter",
+      "agent_id": 7,
+      "agent_name": "Samuel Doria Medina",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "As a politician, I believe that building strong relationships with other nations is crucial for a country's development. We should focus on promoting international cooperation and understanding to achieve economic growth and stability.",
+        "post_id": 39
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 47,
+      "timestamp": "2026-06-18T18:11:45.311208",
+      "platform": "twitter",
+      "agent_id": 5,
+      "agent_name": "Rodrigo Paz",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "We need change in our country and we need it now. Let's stand together and fight for a better future.",
+        "post_id": 38
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 46,
+      "timestamp": "2026-06-18T18:11:32.413378",
+      "platform": "twitter",
+      "agent_id": 5,
+      "agent_name": "Rodrigo Paz",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "We need to change the current economic system to promote stability and cooperation. Let's work together to create a better future.",
+        "post_id": 37
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 46,
+      "timestamp": "2026-06-18T18:11:32.413128",
+      "platform": "twitter",
+      "agent_id": 7,
+      "agent_name": "Samuel Doria Medina",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 45,
+      "timestamp": "2026-06-18T18:11:21.460552",
+      "platform": "twitter",
+      "agent_id": 0,
+      "agent_name": "Edman Lara",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "As a supporter of Rodrigo Paz, I believe that it's time for Bolivia to take a stand against corruption and promote transparency in our government. Let's work together to create a better future for our country! 我是一个福微的打支者，我们不过要成为民则和政民洗设。让我们参与工作，成为一个明一世畅。",
+        "post_id": 36
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 45,
+      "timestamp": "2026-06-18T18:11:21.460452",
+      "platform": "twitter",
+      "agent_id": 7,
+      "agent_name": "Samuel Doria Medina",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 44,
+      "timestamp": "2026-06-18T18:11:06.302366",
+      "platform": "twitter",
+      "agent_id": 5,
+      "agent_name": "Rodrigo Paz",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "MAS的支持率下降是一个明显的罪记。我们带过一个新的形式，带一个新的基础，并也为这个形式上给了很多的幸一个计划。",
+        "post_id": 35
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 44,
+      "timestamp": "2026-06-18T18:11:06.302297",
+      "platform": "twitter",
+      "agent_id": 7,
+      "agent_name": "Samuel Doria Medina",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 44,
+      "timestamp": "2026-06-18T18:11:06.302122",
+      "platform": "twitter",
+      "agent_id": 8,
+      "agent_name": "His running mate",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "20",
+        "new_post_id": 34,
+        "original_content": "I am excited to see the discussions around the election and the potential impact of MAS's decline in popularity. As a political candidate, I believe it's crucial to engage with voters and provide them with accurate information to make informed decisions. Let's work together to promote transparency and accountability in our political system.",
+        "original_author_name": "His running mate",
+        "quote_content": "I am excited to see the discussions around the election and the potential impact of MAS's decline in popularity. As a political candidate, I believe it's crucial to engage with voters and provide them with accurate information to make informed decisions. Let's work together to promote transparency and accountability in our political system."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 43,
+      "timestamp": "2026-06-18T18:10:43.001529",
+      "platform": "twitter",
+      "agent_id": 9,
+      "agent_name": "Jorge Quiroga",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 22,
+        "new_post_id": 33,
+        "original_content": "I am excited to see the discussions around the election and the potential impact of MAS's decline in popularity. As a political candidate, I believe it's crucial to engage with voters and provide them with accurate information to make informed decisions. Let's work together to promote transparency and accountability in our political system.",
+        "original_author_name": "Jorge Quiroga",
+        "quote_content": "I completely agree with the importance of transparency and accountability in our political system. As a politician, I am committed to pushing for policies that benefit our country and its people, and I appreciate the enthusiasm for engaging in discussions around the election."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 43,
+      "timestamp": "2026-06-18T18:10:43.001425",
+      "platform": "twitter",
+      "agent_id": 0,
+      "agent_name": "Edman Lara",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 23,
+        "new_post_id": 32,
+        "original_content": "As a proud supporter of Rodrigo Paz, I believe in the importance of anti-corruption and political reform. Let's work together to create a better future for Bolivia! 我是一个福微的打支者，我们不过要成为民则和政民洗设。让我们参与工作，成为一个明一世畅。",
+        "original_author_name": "Edman Lara",
+        "quote_content": "I completely agree with the importance of anti-corruption and political reform. Let's work together to create a better future for Bolivia! As a supporter of Rodrigo Paz, I believe that we can make a difference by promoting transparency and accountability in our government."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 41,
+      "timestamp": "2026-06-18T18:10:31.633030",
+      "platform": "twitter",
+      "agent_id": 2,
+      "agent_name": "IMF",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 2,
+        "new_post_id": 31,
+        "original_content": "MAS的支持率直线下降，这将会对本次选举产生重大影响。许多选民开始寻找替代性的选择。",
+        "original_author_name": "MAS",
+        "quote_content": "The current economic situation is complex and requires careful consideration of various factors to ensure stability and growth."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 41,
+      "timestamp": "2026-06-18T18:10:31.632959",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "MAS",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 2,
+        "target_user_name": "MAS"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 40,
+      "timestamp": "2026-06-18T18:10:20.038740",
+      "platform": "twitter",
+      "agent_id": 2,
+      "agent_name": "IMF",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "As a global economic organization, our mission is to promote international cooperation, ensure financial stability, and reduce poverty. We aim to improve the living standards of our member countries and promote global economic growth.",
+        "post_id": 30
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 40,
+      "timestamp": "2026-06-18T18:10:20.038674",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "MAS",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 38,
+      "timestamp": "2026-06-18T18:10:09.585866",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "US officials",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "3",
+        "new_post_id": 29,
+        "original_content": "美国官员最近会见了玻利维亚的总统候选人，讨论了改善两国关系的可能性。这一事件对选举结果有着重要的影响。",
+        "original_author_name": "US officials",
+        "quote_content": "I agree that improving relations between the US and other countries is crucial for global stability and cooperation."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 36,
+      "timestamp": "2026-06-18T18:09:59.137558",
+      "platform": "twitter",
+      "agent_id": 2,
+      "agent_name": "IMF",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 35,
+      "timestamp": "2026-06-18T18:09:49.721540",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "MAS",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "2",
+        "new_post_id": 28,
+        "original_content": "MAS的支持率直线下降，这将会对本次选举产生重大影响。许多选民开始寻找替代性的选择。",
+        "original_author_name": "MAS",
+        "quote_content": "MAS的支持率直线下降，这将会对本次选举产生重大影响。许多选民开始寻找替代性的选择。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T18:09:37.031625",
+      "platform": "twitter",
+      "agent_id": 4,
+      "agent_name": "Bolivian presidential candidates",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "1",
+        "new_post_id": 27,
+        "original_content": "Quiroga和Paz两位候选人在经济政策上的对比将会是本次选举的焦点。Quiroga主张更为激进的经济改革，而Paz则强调渐进式的经济转型。",
+        "original_author_name": "Edman Lara",
+        "quote_content": "I agree that Quiroga and Paz are important candidates in this election. Their economic policies will be crucial in determining the future of our country."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T18:09:37.031606",
+      "platform": "twitter",
+      "agent_id": 7,
+      "agent_name": "Samuel Doria Medina",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "As a politician, I believe that building strong relationships with other nations is crucial for a country's development. We should focus on promoting international cooperation and understanding to achieve economic growth and stability.",
+        "post_id": 26
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T18:09:37.031578",
+      "platform": "twitter",
+      "agent_id": 5,
+      "agent_name": "Rodrigo Paz",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "4",
+        "new_post_id": 25,
+        "original_content": "We appreciate the efforts of 美国官员 to improve the relationship between our two countries. 玻利维亚的总统候选人 is a significant figure in promoting international cooperation and understanding.",
+        "original_author_name": "United States",
+        "quote_content": "I agree that international cooperation is key to a country's development, but we must also prioritize our own economic stability and security. We can't rely solely on other nations for growth."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T18:09:37.031482",
+      "platform": "twitter",
+      "agent_id": 0,
+      "agent_name": "Edman Lara",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 24,
+        "original_content": "As a proud supporter of Rodrigo Paz, I believe in the importance of anti-corruption and political reform. Let's work together to create a better future for Bolivia! 我是一个福微的打支者，我们不过要成为民则和政民洗设。让我们参与工作，成为一个明一世畅。",
+        "original_author_name": "Edman Lara"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T18:09:27.498741",
+      "platform": "twitter",
+      "agent_id": 0,
+      "agent_name": "Edman Lara",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "As a proud supporter of Rodrigo Paz, I believe in the importance of anti-corruption and political reform. Let's work together to create a better future for Bolivia! 我是一个福微的打支者，我们不过要成为民则和政民洗设。让我们参与工作，成为一个明一世畅。",
+        "post_id": 23
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T18:09:27.498706",
+      "platform": "twitter",
+      "agent_id": 7,
+      "agent_name": "Samuel Doria Medina",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    }
+  ],
+  "rounds_count": 0
+}

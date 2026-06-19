@@ -1,0 +1,98 @@
+{
+  "predicted_winner": "Argentina",
+  "confidence": 0.7,
+  "winner_probability_point": 0.475,
+  "winner_probability_range": {
+    "winner_min": 0.45,
+    "winner_max": 0.5
+  },
+  "predicted_goal_margin": {
+    "winner_goals_margin_point": 1.0,
+    "winner_goals_margin_min": 0.0,
+    "winner_goals_margin_max": 2.0,
+    "rationale": "Argentina's strong team and recent performance suggest a potential win by a small margin."
+  },
+  "probability_calibration": {
+    "method": "model-based calibration",
+    "confidence_rationale": "The confidence is based on the model's estimated probabilities, which take into account various factors such as team performance, head-to-head records, and market odds.",
+    "range_rationale": "The probability range is narrow, reflecting the model's relatively high confidence in Argentina's chances of winning."
+  },
+  "probability_drivers": [
+    {
+      "factor": "team performance",
+      "direction": "Argentina",
+      "source_id": [
+        "COPA_T3_SLIM_01",
+        "COPA_T3_SLIM_02"
+      ]
+    },
+    {
+      "factor": "head-to-head records",
+      "direction": "Argentina",
+      "source_id": [
+        "COPA_T3_SLIM_01"
+      ]
+    },
+    {
+      "factor": "market odds",
+      "direction": "Argentina",
+      "source_id": [
+        "COPA_T3_SLIM_03"
+      ]
+    }
+  ],
+  "justification": [
+    {
+      "claim": "Argentina has a strong team with a good recent performance",
+      "source_id": [
+        "COPA_T3_SLIM_01",
+        "COPA_T3_SLIM_02"
+      ]
+    },
+    {
+      "claim": "Argentina has a favorable head-to-head record against Colombia",
+      "source_id": [
+        "COPA_T3_SLIM_01"
+      ]
+    },
+    {
+      "claim": "Argentina is favored by the market odds",
+      "source_id": [
+        "COPA_T3_SLIM_03"
+      ]
+    }
+  ],
+  "uncertainty": [
+    {
+      "factor": "injuries or suspensions",
+      "source_id": [
+        "COPA_T3_SLIM_02"
+      ]
+    },
+    {
+      "factor": "weather conditions",
+      "source_id": []
+    }
+  ],
+  "evidence": [
+    {
+      "claim": "Argentina won the 2021 Copa America and the 2022 World Cup",
+      "source_id": [
+        "COPA_T3_SLIM_01"
+      ]
+    },
+    {
+      "claim": "Argentina has a strong squad with players like Lionel Messi and Julian Alvarez",
+      "source_id": [
+        "COPA_T3_SLIM_02"
+      ]
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2024-07-13",
+    "temporal_package": "T3_slim",
+    "model": "meta-llama/llama-3.3-70b-instruct",
+    "simulation_id": "sim_cfdca0502049",
+    "graph_id": "mirofish_bb802559676c4df2"
+  }
+}

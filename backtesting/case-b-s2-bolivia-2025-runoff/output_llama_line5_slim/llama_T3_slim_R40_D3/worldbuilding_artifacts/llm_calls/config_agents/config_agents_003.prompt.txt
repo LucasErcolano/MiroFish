@@ -1,0 +1,142 @@
+[system]
+你是社交媒体行为分析专家。返回纯JSON，配置需符合模拟场景中目标用户群体的作息习惯。
+
+请使用中文回答。
+IMPORTANT: The 'stance' field value MUST be one of the English strings: 'supportive', 'opposing', 'neutral', 'observer'. All JSON field names and numeric values must remain unchanged. Only natural language text fields should use the specified language.
+
+[user]
+基于以下信息，为每个实体生成社交媒体活动配置。
+
+模拟需求: # Question
+
+Con la informacion disponible en el paquete de evidencia provisto, predecir quien ganara el balotaje presidencial de Bolivia del 19 de octubre de 2025.
+
+Responder exclusivamente en espanol.
+
+La respuesta debe:
+
+- identificar desde la evidencia cuales son los dos candidatos competitivos del balotaje;
+- elegir una prediccion principal unica, sin responder empate;
+- estimar el porcentaje de voto de los dos candidatos competitivos y de otros/blanco/nulo;
+- estimar el margen entre el ganador predicho y el segundo candidato en puntos;
+- justificar la prediccion usando solo evidencia del contexto entregado;
+- explicar como pesan la crisis economica, el colapso del MAS, la sorpresa de primera vuelta, el contraste de plataformas y la encuesta tardia;
+- mencionar factores de incertidumbre;
+- no usar informacion posterior a la fecha maxima del paquete.
+
+Formato esperado:
+
+Candidatos competitivos identificados:
+- Candidato 1: __
+- Candidato 2: __
+
+Prediccion principal: __ gana
+
+Estimacion de votos:
+- [nombre completo del candidato 1]: __%
+- [nombre completo del candidato 2]: __%
+- Otros / blanco / nulo: __%
+
+Margen estimado ganador-segundo: __ puntos
+
+Justificacion:
+- evidencia 1
+- evidencia 2
+- evidencia 3
+
+Incertidumbre:
+- factor 1
+- factor 2
+
+## 实体列表
+```json
+[
+  {
+    "agent_id": 0,
+    "entity_name": "Edman Lara",
+    "entity_type": "Person",
+    "summary": "Politician and Rodrigo Paz's running mate with an anti-corruption and outsider profile."
+  },
+  {
+    "agent_id": 1,
+    "entity_name": "MAS",
+    "entity_type": "Organization",
+    "summary": "Bolivia is governed by MAS\nJorge Quiroga opposes MAS\nRodrigo Paz opposes MAS\nMAS has post-foreign policy in Bolivia"
+  },
+  {
+    "agent_id": 2,
+    "entity_name": "IMF",
+    "entity_type": "Organization",
+    "summary": "Rodrigo Paz rejects making the IMF the central answer.\nRodrigo Paz leaves room for other multilateral support including the IMF.\nJorge Quiroga possibly supports the International Monetary Fund"
+  },
+  {
+    "agent_id": 3,
+    "entity_name": "United States",
+    "entity_type": "Organization",
+    "summary": "Jorge Quiroga seeks closer ties with the United States\nBolivian presidential candidates may have improved relations with the United States"
+  },
+  {
+    "agent_id": 4,
+    "entity_name": "Bolivian presidential candidates",
+    "entity_type": "PresidentCandidate",
+    "summary": "US officials met with Bolivian presidential candidates\nBolivian presidential candidates may have improved relations with the United States"
+  },
+  {
+    "agent_id": 5,
+    "entity_name": "Rodrigo Paz",
+    "entity_type": "Person",
+    "summary": "Rodrigo Paz was supported by Samuel Doria Medina\nSamuel Doria Medina supports Rodrigo Paz\nRodrigo Paz opposes MAS\nRodrigo Paz rejects making the IMF the central answer.\nRodrigo Paz leaves room for other multilateral support including the IMF.\nQuiroga leads Paz in a late runoff poll\nQuiroga has an 8."
+  },
+  {
+    "agent_id": 6,
+    "entity_name": "US officials",
+    "entity_type": "GovernmentOfficial",
+    "summary": "US officials met with Bolivian presidential candidates\nUS officials emphasized the possibility of improved relations with Bolivia"
+  },
+  {
+    "agent_id": 7,
+    "entity_name": "Samuel Doria Medina",
+    "entity_type": "Person",
+    "summary": "Rodrigo Paz was supported by Samuel Doria Medina\nSamuel Doria Medina supports Rodrigo Paz"
+  },
+  {
+    "agent_id": 8,
+    "entity_name": "His running mate",
+    "entity_type": "Person",
+    "summary": "Edman Lara, politician with anti-corruption and outsider profile."
+  },
+  {
+    "agent_id": 9,
+    "entity_name": "Jorge Quiroga",
+    "entity_type": "Person",
+    "summary": "Jorge Quiroga opposes MAS\nJorge Quiroga possibly supports the International Monetary Fund\nJorge Quiroga seeks closer ties with the United States\nQuiroga leads Paz in a late runoff poll\nQuiroga has an 8.4-point poll gap over Paz"
+  }
+]
+```
+
+## 任务
+为每个实体生成活动配置，注意：
+- **时间符合目标用户群体作息**：以下为参考（东八区），请根据模拟场景调整
+- **官方机构**（University/GovernmentAgency）：活跃度低(0.1-0.3)，工作时间(9-17)活动，响应慢(60-240分钟)，影响力高(2.5-3.0)
+- **媒体**（MediaOutlet）：活跃度中(0.4-0.6)，全天活动(8-23)，响应快(5-30分钟)，影响力高(2.0-2.5)
+- **个人**（Student/Person/Alumni）：活跃度高(0.6-0.9)，主要晚间活动(18-23)，响应快(1-15分钟)，影响力低(0.8-1.2)
+- **公众人物/专家**：活跃度中(0.4-0.6)，影响力中高(1.5-2.0)
+
+返回JSON格式（不要markdown）：
+{
+    "agent_configs": [
+        {
+            "agent_id": <必须与输入一致>,
+            "activity_level": <0.0-1.0>,
+            "posts_per_hour": <发帖频率>,
+            "comments_per_hour": <评论频率>,
+            "active_hours": [<活跃小时列表，考虑中国人作息>],
+            "response_delay_min": <最小响应延迟分钟>,
+            "response_delay_max": <最大响应延迟分钟>,
+            "sentiment_bias": <-1.0到1.0>,
+            "stance": "<supportive/opposing/neutral/observer>",
+            "influence_weight": <影响力权重>
+        },
+        ...
+    ]
+}
