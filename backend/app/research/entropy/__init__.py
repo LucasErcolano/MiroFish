@@ -32,6 +32,11 @@ from .personas import (
     load_profiles_from_sim_dir,
     persona_texts,
 )
+from .analysis import (
+    across_persona_report,
+    categorical_diversity_index,
+    rank_cases,
+)
 
 __all__ = [
     "CATEGORICAL_FIELDS",
@@ -53,4 +58,7 @@ __all__ = [
     "load_profiles",
     "load_profiles_from_sim_dir",
     "persona_texts",
+    "across_persona_report",
+    "categorical_diversity_index",
+    "rank_cases",
 ]

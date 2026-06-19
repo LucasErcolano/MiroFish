@@ -22,6 +22,7 @@ sys.path.insert(0, os.path.abspath(_RESEARCH_DIR))
 from entropy import metrics  # noqa: E402
 from entropy import embeddings  # noqa: E402
 from entropy import personas  # noqa: E402
+from entropy import analysis  # noqa: E402
 from entropy.embedder import HashingEmbedder  # noqa: E402
 
 
@@ -168,6 +169,51 @@ class TestPersonaLoaders(unittest.TestCase):
         profs = [{"persona": "builder", "bio": "of systems"}, {"persona": "healer"}]
         texts = personas.persona_texts(profs)
         self.assertEqual(texts, ["builder of systems", "healer"])
+
+
+class TestAcrossPersonaAnalysis(unittest.TestCase):
+    def setUp(self):
+        self.diverse = [
+            {"mbti": "INTJ", "gender": "M", "country": "AR", "profession": "eng",
+             "age": 31, "interested_topics": ["ai"], "persona": "a systems builder reasoning from first principles"},
+            {"mbti": "ENFP", "gender": "F", "country": "BO", "profession": "doc",
+             "age": 44, "interested_topics": ["health"], "persona": "a warm clinician who values human stories"},
+            {"mbti": "ISTP", "gender": "X", "country": "CL", "profession": "farmer",
+             "age": 58, "interested_topics": ["climate"], "persona": "a pragmatic grower attuned to weather"},
+        ]
+        self.homogeneous = [
+            {"mbti": "INTJ", "gender": "M", "country": "AR", "profession": "eng",
+             "age": 30, "interested_topics": ["ai"], "persona": "an engineer who likes ai"},
+            {"mbti": "INTJ", "gender": "M", "country": "AR", "profession": "eng",
+             "age": 31, "interested_topics": ["ai"], "persona": "an engineer who likes ai"},
+            {"mbti": "INTJ", "gender": "M", "country": "AR", "profession": "eng",
+             "age": 32, "interested_topics": ["ai"], "persona": "an engineer who likes ai"},
+        ]
+
+    def test_diverse_index_higher_than_homogeneous(self):
+        d = analysis.across_persona_report(self.diverse, label="diverse")
+        h = analysis.across_persona_report(self.homogeneous, label="homog")
+        self.assertGreater(d["categorical_diversity_index"], h["categorical_diversity_index"])
+
+    def test_homogeneous_self_bleu_higher(self):
+        d = analysis.across_persona_report(self.diverse)
+        h = analysis.across_persona_report(self.homogeneous)
+        self.assertGreater(h["lexical"]["self_bleu"], d["lexical"]["self_bleu"])
+
+    def test_rank_cases_selects_most_diverse(self):
+        reports = [
+            analysis.across_persona_report(self.homogeneous, label="B"),
+            analysis.across_persona_report(self.diverse, label="A"),
+        ]
+        ranked = analysis.rank_cases(reports)
+        self.assertEqual(ranked[0]["label"], "A")
+
+    def test_embeddings_optional_and_vendi_orders(self):
+        emb = HashingEmbedder(dim=64)
+        d = analysis.across_persona_report(self.diverse, embedder=emb, with_embeddings=True)
+        h = analysis.across_persona_report(self.homogeneous, embedder=emb, with_embeddings=True)
+        self.assertIn("embeddings", d)
+        self.assertGreater(d["embeddings"]["vendi_score"], h["embeddings"]["vendi_score"])
 
 
 if __name__ == "__main__":

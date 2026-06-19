@@ -66,8 +66,14 @@ def get_embedder(prefer_real: bool = True, dim: int = 256):
     """Return a configured RealEmbedder, or the offline HashingEmbedder fallback."""
     if prefer_real:
         try:
-            from ...config import Config
-            from ...utils.embedding_client import EmbeddingClient
+            try:
+                from ...config import Config
+                from ...utils.embedding_client import EmbeddingClient
+            except (ImportError, ValueError):
+                # Standalone import (e.g. CLI with `backend` on sys.path but not run
+                # as the `app` package): fall back to absolute imports.
+                from app.config import Config  # type: ignore
+                from app.utils.embedding_client import EmbeddingClient  # type: ignore
 
             cfg = Config.get_graph_search_embedder_config()
             if cfg.get("base_url") and cfg.get("model"):
