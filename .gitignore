@@ -1,5 +1,8 @@
 __pycache__/
 *.pyc
 
+# Secrets — never commit
+.env
+
 # Headless runner artifacts (see AI_HEADLESS_RUNNER.md)
 runs/
