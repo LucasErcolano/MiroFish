@@ -25,7 +25,7 @@ class DeepSearchService:
         if not self.tavily_key:
             logger.warning("TAVILY_API_KEY not configured. Deep Search will use LLM Fallback mode exclusively.")
             
-    def perform_research(self, theme: str, max_results: int = 5) -> str:
+    def perform_research(self, theme: str, max_results: int = 5, max_date: Optional[str] = None) -> str:
         """
         Main entry point for autonomous research.
         """
@@ -40,13 +40,17 @@ class DeepSearchService:
                 
                 # We let Tavily handle the smart search and extraction
                 logger.info("Executing Tavily Search...")
-                response = tavily_client.search(
-                    query=theme,
-                    search_depth="advanced",
-                    max_results=max_results,
-                    include_answer=True,
-                    include_raw_content=False # We use the concise content blocks to save tokens
-                )
+                search_kwargs = {
+                    "query": theme,
+                    "search_depth": "advanced",
+                    "max_results": max_results,
+                    "include_answer": True,
+                    "include_raw_content": False
+                }
+                if max_date:
+                    search_kwargs["end_date"] = max_date
+                    
+                response = tavily_client.search(**search_kwargs)
                 
                 # Compile results
                 scraped_data = []
@@ -71,22 +75,24 @@ class DeepSearchService:
         # 2. LLM Fallback if Tavily failed or wasn't configured
         if not raw_text:
             logger.warning("Using LLM Internal Knowledge for Deep Search...")
+            date_instruction = f"\n\nCRITICAL (ANTI-DATA LEAKAGE): You MUST NOT include any events, facts, or data that occurred after the cutoff date: {max_date}. Act as if your knowledge stops exactly at {max_date}." if max_date else ""
             prompt = f"""
             You are an Expert Research Agent. The web search was unavailable, but I need you to generate a detailed briefing document based on your internal knowledge regarding the topic: "{theme}".
             
             Please synthesize all the relevant facts, figures, dates, and actors into a clean, comprehensive briefing document.
-            Keep it factual, detailed, and structure it as if it were a scraped research report.
+            Keep it factual, detailed, and structure it as if it were a scraped research report.{date_instruction}
             """
             header = f"--- AUTONOMOUS DEEP SEARCH (LLM INTERNAL KNOWLEDGE): {theme} ---\n\n"
         else:
             # 3. Consolidate Tavily results using LLM
             logger.info("Consolidating Tavily search results via LLM...")
+            date_instruction = f"\n\nCRITICAL (ANTI-DATA LEAKAGE): You MUST discard any information from the WEB SEARCH DATA that references events or facts occurring after the cutoff date: {max_date}. Do not include them in the briefing." if max_date else ""
             prompt = f"""
             You are a Research Assistant preparing a seed document for a social simulation.
             I have gathered information from the web regarding the topic: "{theme}".
             
             Please synthesize all the relevant facts, figures, dates, and actors into a clean, comprehensive briefing document.
-            Keep it factual and detailed.
+            Keep it factual and detailed.{date_instruction}
             
             WEB SEARCH DATA:
             {raw_text}

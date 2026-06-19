@@ -1,0 +1,17 @@
+{
+  "status": "COMPLETED",
+  "is_model_output": true,
+  "is_real_mirofish_system": true,
+  "real_mirofish_flow_invoked": true,
+  "failure_stage": null,
+  "num_rounds_or_epochs_requested": 10,
+  "num_rounds_or_epochs": 10,
+  "num_agents_configured": 30,
+  "num_agents": 30,
+  "graph_id": "mirofish_7d10820b8d8d49a4",
+  "simulation_id": "sim_3cc6c682da06",
+  "report_id": "report_77d6221406d9",
+  "llm_model": "gemini-3.1-flash-lite",
+  "started_at": "2026-05-26T17:52:26.766828+00:00",
+  "completed_at": "2026-05-26T18:23:44.250774+00:00"
+}

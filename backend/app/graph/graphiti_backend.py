@@ -508,6 +508,63 @@ class GraphitiBackend(GraphBackend):
             entity_types,
             edges=new_edges,
         )
+        
+        # [Spike S3] Semantic Deduplication for Isolated Nodes
+        connected_node_uuids = {e.source_node_uuid for e in entity_edges + new_edges} | {e.target_node_uuid for e in entity_edges + new_edges}
+        
+        final_nodes = []
+        isolated_nodes = []
+        for n in hydrated_nodes:
+            if n.uuid in connected_node_uuids:
+                final_nodes.append(n)
+            else:
+                isolated_nodes.append(n)
+                
+        if isolated_nodes and len(isolated_nodes) + len(final_nodes) > 1:
+            try:
+                import numpy as np
+                from ..utils.embedding_client import EmbeddingClient
+                embedder = EmbeddingClient(
+                    api_key=Config.GRAPHITI_EMBEDDER_API_KEY,
+                    base_url=Config.GRAPHITI_EMBEDDER_BASE_URL,
+                    model=Config.GRAPHITI_EMBEDDER_MODEL
+                )
+                
+                all_summaries = [n.summary or n.name for n in final_nodes]
+                isolated_summaries = [n.summary or n.name for n in isolated_nodes]
+                
+                all_embeddings = []
+                if all_summaries:
+                    all_embeddings = [np.array(e) for e in embedder.embed_texts(all_summaries)]
+                
+                isolated_embeddings = [np.array(e) for e in embedder.embed_texts(isolated_summaries)]
+                
+                threshold = 0.85
+                for i, iso_node in enumerate(isolated_nodes):
+                    iso_emb = isolated_embeddings[i]
+                    is_redundant = False
+                    
+                    for existing_emb in all_embeddings:
+                        norm_i = np.linalg.norm(iso_emb)
+                        norm_j = np.linalg.norm(existing_emb)
+                        if norm_i > 0 and norm_j > 0:
+                            sim = np.dot(iso_emb, existing_emb) / (norm_i * norm_j)
+                            if sim > threshold:
+                                is_redundant = True
+                                logger.info(f"Deduplication: Dropping isolated node '{iso_node.name}' (sim={sim:.4f})")
+                                break
+                    
+                    if not is_redundant:
+                        final_nodes.append(iso_node)
+                        all_embeddings.append(iso_emb)
+            except Exception as e:
+                logger.error(f"Deduplication failed: {e}")
+                final_nodes.extend(isolated_nodes)
+        else:
+            final_nodes.extend(isolated_nodes)
+            
+        hydrated_nodes = final_nodes
+
         _, saved_episode = await self._graphiti._process_episode_data(
             episode,
             hydrated_nodes,

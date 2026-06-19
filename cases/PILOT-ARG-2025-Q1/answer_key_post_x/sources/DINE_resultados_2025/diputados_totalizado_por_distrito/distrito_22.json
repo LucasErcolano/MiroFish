@@ -1,0 +1,148 @@
+{
+  "total": 590626,
+  "agrupaciones": [
+    {
+      "nombre": "FRENTE CÍVICO POR SANTIAGO",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "355",
+          "Votos": 284387,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE CÍVICO POR SANTIAGO"
+        }
+      ],
+      "votos": 284387,
+      "porcentaje": "51.36",
+      "idAgrupacion": "355",
+      "color": "#e03c32"
+    },
+    {
+      "nombre": "FRENTE FUERZA PATRIA PERONISTA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "150",
+          "Votos": 115698,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE FUERZA PATRIA PERONISTA"
+        }
+      ],
+      "votos": 115698,
+      "porcentaje": "20.89",
+      "idAgrupacion": "150",
+      "color": "#63b5e5"
+    },
+    {
+      "nombre": "LA LIBERTAD AVANZA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "83",
+          "Votos": 80084,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "LA LIBERTAD AVANZA"
+        }
+      ],
+      "votos": 80084,
+      "porcentaje": "14.46",
+      "idAgrupacion": "83",
+      "color": "#743bbc"
+    },
+    {
+      "nombre": "DESPIERTA SANTIAGO",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "156",
+          "Votos": 57627,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "DESPIERTA SANTIAGO"
+        }
+      ],
+      "votos": 57627,
+      "porcentaje": "10.41",
+      "idAgrupacion": "156",
+      "color": "#ffd101"
+    },
+    {
+      "nombre": "HACEMOS POR SANTIAGO",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "289",
+          "Votos": 6263,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "HACEMOS POR SANTIAGO"
+        }
+      ],
+      "votos": 6263,
+      "porcentaje": "1.13",
+      "idAgrupacion": "289",
+      "color": "#0deb0a"
+    },
+    {
+      "nombre": "NUEVA IZQUIERDA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "272",
+          "Votos": 5389,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "NUEVA IZQUIERDA"
+        }
+      ],
+      "votos": 5389,
+      "porcentaje": "0.97",
+      "idAgrupacion": "272",
+      "color": "#cd3333"
+    },
+    {
+      "nombre": "UNITE POR LA LIBERTAD Y LA DIGNIDAD",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "158",
+          "Votos": 4265,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "UNITE POR LA LIBERTAD Y LA DIGNIDAD"
+        }
+      ],
+      "votos": 4265,
+      "porcentaje": "0.77",
+      "idAgrupacion": "158",
+      "color": "#de7c01"
+    }
+  ],
+  "EN BLANCO": 28872,
+  "COMANDO": 0,
+  "IMPUGNADO": 135,
+  "NULO": 7613,
+  "RECURRIDO": 293,
+  "IdDistrito": 22,
+  "Distrito": "SANTIAGO DEL ESTERO",
+  "MesasEscrutadas": 4726,
+  "Electores": 9922644,
+  "Votantes": 590626,
+  "ParticipacionSobreEscrutado": 5.95,
+  "Año": 2025,
+  "Recuento": "Provisorio",
+  "IdEleccion": 2,
+  "Elecciones": "GENERALES",
+  "IdCargo": 3,
+  "Cargo": "DIPUTADO NACIONAL",
+  "positivos": 553713,
+  "blancos": 28872,
+  "impugnados": 135,
+  "nulos": 7613,
+  "recurridos": 293,
+  "comando": 0,
+  "union": 428
+}
