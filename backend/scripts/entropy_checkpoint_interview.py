@@ -111,20 +111,17 @@ def _resolve_agents(args) -> list:
 def _do_checkpoint(client, args, questions, agents, checkpoint, existing) -> list:
     """Batch-interview all agents for all questions at one checkpoint; return new records."""
     records = list(existing)
+    name_by_id = {aid: name for aid, name in agents}
     for q in questions:
         interviews = [{"agent_id": aid, "prompt": q["text"], "platform": args.platform} for aid, _ in agents]
         resp = client.interview_batch(args.simulation_id, interviews, platform=args.platform, timeout=args.timeout)
-        data = resp.get("data", resp)
-        results = data.get("results") or data.get("interviews") or []
-        name_by_id = {aid: name for aid, name in agents}
-        for item in results:
-            aid = item.get("agent_id")
-            parsed = checkpoints.parse_interview_result(item.get("result", item), args.platform)
-            for plat, text in parsed.items():
-                records.append(checkpoints.make_record(
-                    persona_id=aid, checkpoint=checkpoint, question=q,
-                    platform=plat, response=text, persona_name=name_by_id.get(aid),
-                ))
+        for item in checkpoints.parse_batch_response(resp):
+            aid = item["agent_id"]
+            records.append(checkpoints.make_record(
+                persona_id=aid, checkpoint=checkpoint, question=q,
+                platform=item["platform"], response=item["response"],
+                persona_name=name_by_id.get(aid),
+            ))
     return records
 
 
@@ -207,7 +204,12 @@ def main(argv=None) -> int:
         while len(done) < len(plan):
             status = client.run_status(args.simulation_id).get("data", {})
             current = status.get("current_round", 0)
-            completed = status.get("twitter_completed") or status.get("runner_status") == "completed"
+            total = status.get("total_rounds") or args.total_rounds or 0
+            completed = (
+                status.get("runner_status") == "completed"
+                or bool(status.get("twitter_completed"))
+                or (total and current >= total)
+            )
             for cp in plan:
                 if cp["label"] in done:
                     continue

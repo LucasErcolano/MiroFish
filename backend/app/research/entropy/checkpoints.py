@@ -70,6 +70,34 @@ def parse_interview_result(result: dict, platform: Optional[str] = None) -> Dict
     return {}
 
 
+def parse_batch_response(resp: dict) -> List[dict]:
+    """
+    Normalize a ``/api/simulation/interview/batch`` response to a flat list of
+    ``{agent_id, platform, response}``.
+
+    The batch envelope is ``data.result.results`` — a dict keyed by
+    ``"{platform}_{agent_id}"`` whose values are single-platform result objects
+    (``{agent_id, response, platform}``). A list form is also tolerated.
+    """
+    data = resp.get("data", resp) if isinstance(resp, dict) else {}
+    result = data.get("result", data) if isinstance(data, dict) else {}
+    results = result.get("results", {}) if isinstance(result, dict) else {}
+    if isinstance(results, dict):
+        items = list(results.values())
+    elif isinstance(results, list):
+        items = results
+    else:
+        items = []
+    out = []
+    for obj in items:
+        if not isinstance(obj, dict):
+            continue
+        aid = obj.get("agent_id")
+        for plat, text in parse_interview_result(obj).items():
+            out.append({"agent_id": aid, "platform": plat, "response": text})
+    return out
+
+
 def make_record(
     persona_id,
     checkpoint: dict,

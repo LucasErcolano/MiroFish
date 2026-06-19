@@ -45,6 +45,21 @@ class TestParseInterview(unittest.TestCase):
     def test_empty(self):
         self.assertEqual(checkpoints.parse_interview_result({}), {})
 
+    def test_batch_envelope_dict_keyed(self):
+        # Real shape: data.result.results keyed by "{platform}_{agent_id}".
+        resp = {"success": True, "data": {"result": {"results": {
+            "twitter_0": {"agent_id": 0, "response": "tw0", "platform": "twitter"},
+            "reddit_0": {"agent_id": 0, "response": "rd0", "platform": "reddit"},
+            "twitter_1": {"agent_id": 1, "response": "tw1", "platform": "twitter"},
+        }}}}
+        out = checkpoints.parse_batch_response(resp)
+        self.assertEqual(len(out), 3)
+        tw0 = [r for r in out if r["agent_id"] == 0 and r["platform"] == "twitter"][0]
+        self.assertEqual(tw0["response"], "tw0")
+
+    def test_batch_envelope_empty(self):
+        self.assertEqual(checkpoints.parse_batch_response({"data": {"result": {"results": {}}}}), [])
+
 
 class TestSequences(unittest.TestCase):
     def _records(self):

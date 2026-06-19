@@ -40,6 +40,7 @@ from .analysis import (
 from .checkpoints import (
     DEFAULT_QUESTIONS,
     checkpoint_rounds,
+    parse_batch_response,
     parse_interview_result,
     responses_to_sequences,
 )
@@ -70,6 +71,7 @@ __all__ = [
     "rank_cases",
     "DEFAULT_QUESTIONS",
     "checkpoint_rounds",
+    "parse_batch_response",
     "parse_interview_result",
     "responses_to_sequences",
     "stance_js_divergence",

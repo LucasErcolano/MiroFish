@@ -78,6 +78,21 @@ python backend/scripts/entropy_checkpoint_interview.py \
 Referencias: Vendi Score (Friedman & Dieng 2022), Semantic Entropy (Kuhn et al.
 2023 / Farquhar et al. 2024), Self-BLEU, Distinct-n (Li et al. 2016).
 
+### Caveats metodológicos (importantes)
+
+- **La entropía categórica solo es válida con generación de perfiles por LLM.**
+  En `oasis_profile_generator.py`, `mbti`/`gender`/`country` salen del LLM cuando
+  `use_llm=True` (camino de producción), pero el fallback `_generate_profile_rule_based`
+  los asigna con `random.choice`. Con el fallback, la entropía categórica mide el
+  RNG, no el modelo. Correr siempre con generación por LLM activada.
+- **Para comparar modelos (Fase 2), las métricas de texto son el discriminador
+  más fuerte.** Los campos derivados de entidades (`profession`/`country`/`topics`)
+  vienen de las mismas entidades del seed en los 3 modelos, así que la entropía
+  categórica puede moverse poco entre modelos. La señal que mejor discrimina entre
+  modelos es la diversidad del **texto** (`persona`/`bio`): **Vendi Score** y
+  **Self-BLEU/distinct-n**. La entropía categórica lidera la **selección de caso**
+  (Fase 1, un solo modelo), donde sí varía caso a caso.
+
 ## 4. Herramientas
 
 Biblioteca: `backend/app/research/entropy/` (métricas primarias en stdlib puro,
