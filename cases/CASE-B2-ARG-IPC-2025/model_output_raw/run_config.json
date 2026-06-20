@@ -1,0 +1,21 @@
+{
+  "base_url": "http://localhost:5001",
+  "flow_provenance": "frontend_replay_backend_api",
+  "project_name": "MiroFish Headless Benchmark",
+  "files": [
+    {
+      "path": "cases/CASE-B2-ARG-IPC-2025/input_pack_pre_x/seed_bundle.md",
+      "sha256": "88338609cc9453b7abc2ea12b0e818f19c78b0d79df17be1c215ef09f599b498",
+      "bytes": 6430
+    }
+  ],
+  "simulation_requirement": "Usando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:\n\n1. Predicción Δ1 (febrero 2025 — variación mensual IPC):\n   - Valor puntual estimado (ej: 2.5%).\n   - Rango: entre X% y Y%.\n\n2. Predicción Δ2 (abril 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia: acelerando / estable / desacelerando.\n\n3. Predicción Δ3 (julio 2025 — variación mensual IPC):\n   - Bucket: desinflación fuerte (<2%), moderada (2–4%), estancamiento/reversión (>4%).\n   - Razón principal.\n\n4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):\n   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.\n   - Rango de inflación acumulada 2025 esperada.\n\n5. Mecanismo causal:\n   - Variable dominante en la trayectoria de desinflación.\n   - Principal riesgo que podría revertir el proceso.\n\n6. Evidencia:\n   - Citar source_id por cada claim importante.\n   - No usar datos posteriores al 31/01/2025.",
+  "platform": "parallel",
+  "max_rounds": 10,
+  "enable_graph_memory_update": true,
+  "force": true,
+  "use_llm_for_profiles": true,
+  "parallel_profile_count": 5,
+  "generate_report": true,
+  "started_at": "2026-05-27T13:05:46.213102+00:00"
+}

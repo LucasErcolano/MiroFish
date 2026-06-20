@@ -1,0 +1,301 @@
+{
+  "total": 1803222,
+  "agrupaciones": [
+    {
+      "nombre": "LA LIBERTAD AVANZA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "83",
+          "Votos": 681504,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "LA LIBERTAD AVANZA"
+        }
+      ],
+      "votos": 681504,
+      "porcentaje": "40.67",
+      "idAgrupacion": "83",
+      "color": "#743bbc"
+    },
+    {
+      "nombre": "FUERZA PATRIA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "35",
+          "Votos": 480946,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FUERZA PATRIA"
+        }
+      ],
+      "votos": 480946,
+      "porcentaje": "28.70",
+      "idAgrupacion": "35",
+      "color": "#63b5e5"
+    },
+    {
+      "nombre": "PROVINCIAS UNIDAS",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "140",
+          "Votos": 307143,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "PROVINCIAS UNIDAS"
+        }
+      ],
+      "votos": 307143,
+      "porcentaje": "18.33",
+      "idAgrupacion": "140",
+      "color": "#ff5800"
+    },
+    {
+      "nombre": "FRENTE AMPLIO POR LA SOBERANIA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "147",
+          "Votos": 53267,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE AMPLIO POR LA SOBERANIA"
+        }
+      ],
+      "votos": 53267,
+      "porcentaje": "3.18",
+      "idAgrupacion": "147",
+      "color": "#e31278"
+    },
+    {
+      "nombre": "FRENTE DE IZQUIERDA Y DE TRABAJADORES - UNIDAD",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "144",
+          "Votos": 30499,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE DE IZQUIERDA Y DE TRABAJADORES - UNIDAD"
+        }
+      ],
+      "votos": 30499,
+      "porcentaje": "1.82",
+      "idAgrupacion": "144",
+      "color": "#ef2b2d"
+    },
+    {
+      "nombre": "NUEVAS IDEAS",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "142",
+          "Votos": 20986,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "NUEVAS IDEAS"
+        }
+      ],
+      "votos": 20986,
+      "porcentaje": "1.25",
+      "idAgrupacion": "142",
+      "color": "#013476"
+    },
+    {
+      "nombre": "COALICIÓN CÍVICA - A.R.I.",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "316",
+          "Votos": 15096,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "COALICIÓN CÍVICA - A.R.I."
+        }
+      ],
+      "votos": 15096,
+      "porcentaje": "0.90",
+      "idAgrupacion": "316",
+      "color": "#ed145b"
+    },
+    {
+      "nombre": "IGUALDAD Y PARTICIPACIÓN",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "376",
+          "Votos": 14311,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "IGUALDAD Y PARTICIPACIÓN"
+        }
+      ],
+      "votos": 14311,
+      "porcentaje": "0.85",
+      "idAgrupacion": "376",
+      "color": "#ff6619"
+    },
+    {
+      "nombre": "DEFENDAMOS SANTA FE",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "143",
+          "Votos": 13989,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "DEFENDAMOS SANTA FE"
+        }
+      ],
+      "votos": 13989,
+      "porcentaje": "0.83",
+      "idAgrupacion": "143",
+      "color": "#22c0e7"
+    },
+    {
+      "nombre": "PARTIDO FE",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "106",
+          "Votos": 10309,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "PARTIDO FE"
+        }
+      ],
+      "votos": 10309,
+      "porcentaje": "0.62",
+      "idAgrupacion": "106",
+      "color": "#bbdd00"
+    },
+    {
+      "nombre": "MOVIMIENTO AL SOCIALISMO",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "99",
+          "Votos": 10253,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "MOVIMIENTO AL SOCIALISMO"
+        }
+      ],
+      "votos": 10253,
+      "porcentaje": "0.61",
+      "idAgrupacion": "99",
+      "color": "#ea675f"
+    },
+    {
+      "nombre": "POLÍTICA OBRERA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "323",
+          "Votos": 9813,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "POLÍTICA OBRERA"
+        }
+      ],
+      "votos": 9813,
+      "porcentaje": "0.59",
+      "idAgrupacion": "323",
+      "color": "#d24124"
+    },
+    {
+      "nombre": "REPUBLICANOS UNIDOS",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "139",
+          "Votos": 9732,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "REPUBLICANOS UNIDOS"
+        }
+      ],
+      "votos": 9732,
+      "porcentaje": "0.58",
+      "idAgrupacion": "139",
+      "color": "#01859c"
+    },
+    {
+      "nombre": "COMPROMISO FEDERAL",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "146",
+          "Votos": 7787,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "COMPROMISO FEDERAL"
+        }
+      ],
+      "votos": 7787,
+      "porcentaje": "0.46",
+      "idAgrupacion": "146",
+      "color": "#58a9de"
+    },
+    {
+      "nombre": "PARTIDO AUTONOMISTA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "137",
+          "Votos": 6053,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "PARTIDO AUTONOMISTA"
+        }
+      ],
+      "votos": 6053,
+      "porcentaje": "0.36",
+      "idAgrupacion": "137",
+      "color": "#ff2100"
+    },
+    {
+      "nombre": "MOVIMIENTO INDEPENDIENTE RENOVADOR",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "145",
+          "Votos": 3977,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "MOVIMIENTO INDEPENDIENTE RENOVADOR"
+        }
+      ],
+      "votos": 3977,
+      "porcentaje": "0.24",
+      "idAgrupacion": "145",
+      "color": "#000464"
+    }
+  ],
+  "COMANDO": 0,
+  "NULO": 86605,
+  "EN BLANCO": 40270,
+  "RECURRIDO": 471,
+  "IMPUGNADO": 211,
+  "IdDistrito": 21,
+  "Distrito": "SANTA FE",
+  "MesasEscrutadas": 8423,
+  "Electores": 59846871,
+  "Votantes": 1803222,
+  "ParticipacionSobreEscrutado": 3.01,
+  "Año": 2025,
+  "Recuento": "Provisorio",
+  "IdEleccion": 2,
+  "Elecciones": "GENERALES",
+  "IdCargo": 3,
+  "Cargo": "DIPUTADO NACIONAL",
+  "positivos": 1675665,
+  "blancos": 40270,
+  "impugnados": 211,
+  "nulos": 86605,
+  "recurridos": 471,
+  "comando": 0,
+  "union": 682
+}

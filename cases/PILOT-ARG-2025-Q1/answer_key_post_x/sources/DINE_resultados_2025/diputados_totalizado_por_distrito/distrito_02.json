@@ -1,0 +1,284 @@
+{
+  "total": 9013159,
+  "agrupaciones": [
+    {
+      "nombre": "ALIANZA LA LIBERTAD AVANZA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "110",
+          "Votos": 3605127,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "ALIANZA LA LIBERTAD AVANZA"
+        }
+      ],
+      "votos": 3605127,
+      "porcentaje": "41.45",
+      "idAgrupacion": "110",
+      "color": "#743bbc"
+    },
+    {
+      "nombre": "ALIANZA FUERZA PATRIA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "248",
+          "Votos": 3558527,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "ALIANZA FUERZA PATRIA"
+        }
+      ],
+      "votos": 3558527,
+      "porcentaje": "40.92",
+      "idAgrupacion": "248",
+      "color": "#63b5e5"
+    },
+    {
+      "nombre": "FRENTE DE IZQUIERDA Y DE TRABAJADORES - UNIDAD",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "372",
+          "Votos": 438747,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE DE IZQUIERDA Y DE TRABAJADORES - UNIDAD"
+        }
+      ],
+      "votos": 438747,
+      "porcentaje": "5.05",
+      "idAgrupacion": "372",
+      "color": "#ef2b2d"
+    },
+    {
+      "nombre": "PROPUESTA FEDERAL PARA EL CAMBIO",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "258",
+          "Votos": 243326,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "PROPUESTA FEDERAL PARA EL CAMBIO"
+        }
+      ],
+      "votos": 243326,
+      "porcentaje": "2.80",
+      "idAgrupacion": "258",
+      "color": "#af1180"
+    },
+    {
+      "nombre": "ALIANZA PROVINCIAS UNIDAS",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "259",
+          "Votos": 212959,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "ALIANZA PROVINCIAS UNIDAS"
+        }
+      ],
+      "votos": 212959,
+      "porcentaje": "2.45",
+      "idAgrupacion": "259",
+      "color": "#ff5800"
+    },
+    {
+      "nombre": "PARTIDO NUEVO BUENOS AIRES",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "252",
+          "Votos": 116670,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "PARTIDO NUEVO BUENOS AIRES"
+        }
+      ],
+      "votos": 116670,
+      "porcentaje": "1.34",
+      "idAgrupacion": "252",
+      "color": "#c80f2e"
+    },
+    {
+      "nombre": "FRENTE PATRIOTA FEDERAL",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "11",
+          "Votos": 104965,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE PATRIOTA FEDERAL"
+        }
+      ],
+      "votos": 104965,
+      "porcentaje": "1.21",
+      "idAgrupacion": "11",
+      "color": "#0086be"
+    },
+    {
+      "nombre": "ALIANZA UNIÓN FEDERAL",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "317",
+          "Votos": 78125,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "ALIANZA UNIÓN FEDERAL"
+        }
+      ],
+      "votos": 78125,
+      "porcentaje": "0.90",
+      "idAgrupacion": "317",
+      "color": "#4fa0d8"
+    },
+    {
+      "nombre": "COALICIÓN CÍVICA - A.R.I.",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "316",
+          "Votos": 69358,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "COALICIÓN CÍVICA - A.R.I."
+        }
+      ],
+      "votos": 69358,
+      "porcentaje": "0.80",
+      "idAgrupacion": "316",
+      "color": "#ed145b"
+    },
+    {
+      "nombre": "ALIANZA POTENCIA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "260",
+          "Votos": 61209,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "ALIANZA POTENCIA"
+        }
+      ],
+      "votos": 61209,
+      "porcentaje": "0.70",
+      "idAgrupacion": "260",
+      "color": "#99001f"
+    },
+    {
+      "nombre": "MOVIMIENTO POLÍTICO SOCIAL Y CULTURAL PROYECTO SUR",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "265",
+          "Votos": 52563,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "MOVIMIENTO POLÍTICO SOCIAL Y CULTURAL PROYECTO SUR"
+        }
+      ],
+      "votos": 52563,
+      "porcentaje": "0.60",
+      "idAgrupacion": "265",
+      "color": "#d6001c"
+    },
+    {
+      "nombre": "MOVIMIENTO AVANZADA SOCIALISTA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "263",
+          "Votos": 49482,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "MOVIMIENTO AVANZADA SOCIALISTA"
+        }
+      ],
+      "votos": 49482,
+      "porcentaje": "0.57",
+      "idAgrupacion": "263",
+      "color": "#ea675f"
+    },
+    {
+      "nombre": "ALIANZA NUEVOS AIRES",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "262",
+          "Votos": 45550,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "ALIANZA NUEVOS AIRES"
+        }
+      ],
+      "votos": 45550,
+      "porcentaje": "0.52",
+      "idAgrupacion": "262",
+      "color": "#ff8b6e"
+    },
+    {
+      "nombre": "UNIÓN LIBERAL",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "315",
+          "Votos": 43339,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "UNIÓN LIBERAL"
+        }
+      ],
+      "votos": 43339,
+      "porcentaje": "0.50",
+      "idAgrupacion": "315",
+      "color": "#3a4682"
+    },
+    {
+      "nombre": "LIBER.AR",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "253",
+          "Votos": 16689,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "LIBER.AR"
+        }
+      ],
+      "votos": 16689,
+      "porcentaje": "0.19",
+      "idAgrupacion": "253",
+      "color": "#e1e1e1"
+    }
+  ],
+  "RECURRIDO": 4277,
+  "COMANDO": 0,
+  "IMPUGNADO": 2122,
+  "EN BLANCO": 103947,
+  "NULO": 206177,
+  "IdDistrito": 2,
+  "Distrito": "BUENOS AIRES",
+  "MesasEscrutadas": 38760,
+  "Electores": 266980280,
+  "Votantes": 9013159,
+  "ParticipacionSobreEscrutado": 3.38,
+  "Año": 2025,
+  "Recuento": "Provisorio",
+  "IdEleccion": 2,
+  "Elecciones": "GENERALES",
+  "IdCargo": 3,
+  "Cargo": "DIPUTADO NACIONAL",
+  "positivos": 8696636,
+  "blancos": 103947,
+  "impugnados": 2122,
+  "nulos": 206177,
+  "recurridos": 4277,
+  "comando": 0,
+  "union": 6399
+}
