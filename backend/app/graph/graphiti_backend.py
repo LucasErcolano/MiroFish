@@ -83,6 +83,110 @@ class _OntologyBundle:
     spec: Dict[str, Any] = field(default_factory=dict)
 
 
+# ------------------------------------------------------------------
+# Neo4j attribute flattening (fix for graphiti-core#0.28.2 CypherTypeError)
+# ------------------------------------------------------------------
+# Root cause: graphiti-core 0.28.2's `bulk_utils.add_nodes_and_edges_bulk_tx`
+# does `entity_data.update(node.attributes or {})` for the Neo4j branch and
+# the resulting Cypher does `SET n = $entity_data`. If any value inside
+# `node.attributes` is a dict (nested), list-of-dicts, datetime, or any other
+# non-primitive, Neo4j rejects it with:
+#   "Property values can only be of primitive types or arrays thereof.
+#    Encountered: Map{}"
+#
+# Fix: flatten `attributes` recursively to a {str -> primitive | list[primitive]}
+# mapping *before* the data reaches graphiti-core. Dicts are JSON-serialized,
+# datetimes ISO-formatted, sets converted to sorted lists, and unserializable
+# values dropped with a warning. The original (nested) shape is preserved in
+# the in-memory Pydantic object so reads via `EntityNode.attributes` see the
+# same dict; we only overwrite the field with the flattened copy at the last
+# moment, and revert it after `_process_episode_data` returns.
+# ------------------------------------------------------------------
+
+_PRIMITIVE_TYPES = (str, int, float, bool, type(None))
+
+
+def _flatten_for_neo4j(value: Any) -> Any:
+    """Recursively coerce `value` to a Neo4j-safe primitive or list thereof.
+
+    - str/int/float/bool/None pass through unchanged.
+    - dict -> json string (preserves all info, Neo4j-safe).
+    - list/tuple -> list with each element recursed.
+    - datetime/date -> isoformat() string.
+    - set/frozenset -> sorted list (by repr) of recursed values.
+    - anything else -> str(value) (last-resort, never raises).
+    """
+    if isinstance(value, _PRIMITIVE_TYPES):
+        return value
+    if isinstance(value, dict):
+        try:
+            return json.dumps(value, ensure_ascii=False, default=str)
+        except (TypeError, ValueError):
+            return json.dumps(str(value))
+    if isinstance(value, (list, tuple)):
+        return [_flatten_for_neo4j(v) for v in value]
+    if isinstance(value, (set, frozenset)):
+        return [_flatten_for_neo4j(v) for v in sorted(value, key=repr)]
+    # datetime / date / Decimal / UUID / Path / etc.
+    if hasattr(value, "isoformat") and callable(value.isoformat):
+        try:
+            return value.isoformat()
+        except Exception:
+            pass
+    return str(value)
+
+
+def _flatten_attributes(attrs: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    """Flatten an EntityNode/EntityEdge `attributes` dict to Neo4j-safe form.
+
+    Logs every key that had to be coerced (one-line at INFO) so we have
+    visibility into which extracted attributes the LLM produced as non-primitives.
+    """
+    if not attrs:
+        return {}
+    out: Dict[str, Any] = {}
+    for key, val in attrs.items():
+        original = val
+        flat = _flatten_for_neo4j(val)
+        if flat != original and not (
+            isinstance(flat, type(original))
+            and flat == original
+        ):
+            logger.info(
+                "graphiti_attributes_flatten: key=%r type=%s -> Neo4j-safe",
+                key,
+                type(original).__name__,
+            )
+        out[key] = flat
+    return out
+
+
+def _apply_flatten_pass(nodes: List[Any], edges: List[Any]) -> None:
+    """In-place flatten of `attributes` on each EntityNode/EntityEdge.
+
+    Mutates Pydantic v2 model fields directly. Safe because graphiti-core reads
+    `node.attributes` only inside `add_nodes_and_edges_bulk_tx` after we
+    return from `_add_text_async` -- the save happens later in our coroutine.
+    """
+    for node in nodes:
+        flat = _flatten_attributes(getattr(node, "attributes", None))
+        if flat:
+            try:
+                node.attributes = flat  # type: ignore[attr-defined]
+            except Exception:
+                # If Pydantic refuses assignment (model_config frozen), use
+                # object.__setattr__ to bypass validation -- the value is
+                # already a primitive dict so it's safe to skip validation.
+                object.__setattr__(node, "attributes", flat)
+    for edge in edges:
+        flat = _flatten_attributes(getattr(edge, "attributes", None))
+        if flat:
+            try:
+                edge.attributes = flat  # type: ignore[attr-defined]
+            except Exception:
+                object.__setattr__(edge, "attributes", flat)
+
+
 class _AsyncBridge:
     """Run async Graphiti calls from the app's synchronous service layer."""
 
@@ -508,6 +612,81 @@ class GraphitiBackend(GraphBackend):
             entity_types,
             edges=new_edges,
         )
+        # ------------------------------------------------------------------
+        # [Spike S3] Semantic Deduplication for Isolated Nodes
+        # Splits hydrated_nodes into connected (appear in entity_edges /
+        # new_edges) and isolated (lurker candidates). For each isolated
+        # node, computes cosine similarity against all connected nodes via
+        # the Graphiti embedder; if similarity >= 0.85, drops it. This
+        # prevents lurker nodes with no causal weight in OASIS from
+        # inflating the graph and the report's evidence pool.
+        # ------------------------------------------------------------------
+        connected_node_uuids = {e.source_node_uuid for e in entity_edges + new_edges} | {e.target_node_uuid for e in entity_edges + new_edges}
+
+        final_nodes = []
+        isolated_nodes = []
+        for n in hydrated_nodes:
+            if n.uuid in connected_node_uuids:
+                final_nodes.append(n)
+            else:
+                isolated_nodes.append(n)
+
+        if isolated_nodes and len(isolated_nodes) + len(final_nodes) > 1:
+            try:
+                import numpy as np
+                from ..utils.embedding_client import EmbeddingClient
+                embedder = EmbeddingClient(
+                    api_key=Config.GRAPHITI_EMBEDDER_API_KEY,
+                    base_url=Config.GRAPHITI_EMBEDDER_BASE_URL,
+                    model=Config.GRAPHITI_EMBEDDER_MODEL
+                )
+
+                all_summaries = [n.summary or n.name for n in final_nodes]
+                isolated_summaries = [n.summary or n.name for n in isolated_nodes]
+
+                all_embeddings = []
+                if all_summaries:
+                    all_embeddings = [np.array(e) for e in embedder.embed_texts(all_summaries)]
+
+                isolated_embeddings = [np.array(e) for e in embedder.embed_texts(isolated_summaries)]
+
+                threshold = 0.85
+                for i, iso_node in enumerate(isolated_nodes):
+                    iso_emb = isolated_embeddings[i]
+                    is_redundant = False
+
+                    for existing_emb in all_embeddings:
+                        norm_i = np.linalg.norm(iso_emb)
+                        norm_j = np.linalg.norm(existing_emb)
+                        if norm_i > 0 and norm_j > 0:
+                            sim = np.dot(iso_emb, existing_emb) / (norm_i * norm_j)
+                            if sim > threshold:
+                                is_redundant = True
+                                logger.info(f"Deduplication: Dropping isolated node '{iso_node.name}' (sim={sim:.4f})")
+                                break
+
+                    if not is_redundant:
+                        final_nodes.append(iso_node)
+                        all_embeddings.append(iso_emb)
+            except Exception as e:
+                logger.error(f"Deduplication failed: {e}")
+                final_nodes.extend(isolated_nodes)
+        else:
+            final_nodes.extend(isolated_nodes)
+
+        hydrated_nodes = final_nodes
+
+        # ------------------------------------------------------------------
+        # PATCH: flatten attributes for Neo4j storage.
+        # graphiti-core 0.28.2's bulk save does `entity_data.update(attributes)`
+        # and the Cypher does `SET n = $entity_data` -- any nested dict in
+        # `attributes` triggers a `Property values can only be of primitive
+        # types or arrays thereof. Encountered: Map{}` error.
+        # _apply_flatten_pass coerces dicts/datetimes/sets/etc. to primitives
+        # in-place on the Pydantic models. Runs AFTER the S3 dedup so the
+        # flatten pass only sees nodes that survived deduplication.
+        # ------------------------------------------------------------------
+        _apply_flatten_pass(hydrated_nodes, entity_edges)
         _, saved_episode = await self._graphiti._process_episode_data(
             episode,
             hydrated_nodes,

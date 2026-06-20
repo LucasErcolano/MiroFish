@@ -1,27 +1,74 @@
+# Local environment/secrets
 .env
 .env.local
 .env.*.local
-# Python
+.env.bak-*
+.env.*.bak
+..env.swp
+# Python / cache artifacts
 __pycache__/
+*$py.class
+*.so
 *.py[cod]
+*.egg
 *.egg-info/
+*.manifest
+*.spec
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+.installed.cfg
+MANIFEST
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.token-savior-cache.json
 # Editors / OS
 .vscode/
 .idea/
 .DS_Store
 *.swp
 *.swo
-..env.swp
 # Runtime / generated
+*.log
+log/
+logs/
+backend/log/
 backend/logs/
 backend/uploads/
+backend/data/cache/
+backend/backend/
 runs/
-# Local env backups
-.env.bak-*
-.env.*.bak
 # Smoke test artifacts
 seed_mvp.md
+# Local backup/temp files
 backend/uv.lock.bak
+*.localbak.*
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache/
+.pytest_cache/
+cover/
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/

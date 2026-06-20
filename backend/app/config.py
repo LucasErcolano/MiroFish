@@ -32,6 +32,14 @@ class Config:
     LLM_BASE_URL = os.environ.get('LLM_BASE_URL', 'https://api.openai.com/v1')
     LLM_MODEL_NAME = os.environ.get('LLM_MODEL_NAME', 'gpt-4o-mini')
 
+    # Boost LLM (cascading fallback, portado desde PR #600 upstream).
+    # Si está configurado, LLMClient lo usa automáticamente cuando el LLM
+    # primario falla (timeout, 5xx, JSON inválido irreparable, etc.).
+    # Sin breaking change: si están vacíos, cascading fallback se desactiva.
+    LLM_BOOST_API_KEY = os.environ.get('LLM_BOOST_API_KEY')
+    LLM_BOOST_BASE_URL = os.environ.get('LLM_BOOST_BASE_URL')
+    LLM_BOOST_MODEL_NAME = os.environ.get('LLM_BOOST_MODEL_NAME')
+
     # Simulation LLM (subprocesos OASIS via simulation_runner)
     # Permite usar una API key / base URL / modelo distintos para la fase de
     # simulación interactiva, separada del resto del pipeline (graph/ontology,
@@ -121,6 +129,18 @@ class Config:
     
     # Experimental Memory (Spike S1)
     USE_EXPERIMENTAL_MEMORY = os.environ.get('USE_EXPERIMENTAL_MEMORY', 'False').lower() == 'true'
+    
+    # Worldbuilding Planning & Capture (Spike S3)
+    PLANNING_CAPTURE_ENABLED = os.environ.get('PLANNING_CAPTURE_ENABLED', 'True').lower() == 'true'
+    SIMILARITY_THRESHOLD = float(os.environ.get('SIMILARITY_THRESHOLD', '0.85'))
+    
+    # Deep Search (Spike S3)
+    ENABLE_DEEP_SEARCH = os.environ.get('ENABLE_DEEP_SEARCH', 'False').lower() == 'true'
+    DEEP_SEARCH_API_KEY = os.environ.get('DEEP_SEARCH_API_KEY', '')
+    DEEP_SEARCH_PROVIDER = os.environ.get('DEEP_SEARCH_PROVIDER', 'tavily')
+    GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+    TAVILY_API_KEY = os.environ.get('TAVILY_API_KEY', '')
+    
     DATA_DIR = os.path.join(os.path.dirname(__file__), '../data')
 
     @classmethod
