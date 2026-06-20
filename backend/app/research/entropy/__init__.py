@@ -45,6 +45,12 @@ from .checkpoints import (
     responses_to_sequences,
 )
 from .temporal import stance_js_divergence, temporal_drift_report
+from .simulation_db import (
+    find_sim_db,
+    load_posts,
+    output_diversity,
+    temporal_drift_from_posts,
+)
 
 __all__ = [
     "CATEGORICAL_FIELDS",
