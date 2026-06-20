@@ -1,0 +1,89 @@
+experiment_metadata:
+  phase: "S2"
+  issue_source: "#18"
+  source_pr: "#22"
+  case_id: "bolivia_2025_runoff_s2"
+  source_case: "case-b-s2-bolivia-2025-runoff"
+  line_focus: "Linea 5 - profundidad de simulacion / densidad"
+  question_file: "question.md"
+  system_constraints_file: null
+  primary_metric: "winner_score, MAE voto, error de margen"
+  output_dir: "output_llama_line5"
+  eval_script: "eval_objective.py"
+  eval_artifact: "report_markdown"
+
+model_policy:
+  label: "Llama 3.3 70B Instruct"
+  provider_id: "meta-llama/Llama-3.3-70B-Instruct"
+  model_policy: "llama_line5_probe"
+  required_backend_base_url: "https://api.deepinfra.com/v1/openai"
+  note: "Start backend with this model before running; the runner cannot change a live backend model."
+
+fixed_simulation_config:
+  seed: 1
+  temperature: 0
+  output_mode: "narrative"
+  schema_id: null
+  platform: "parallel"
+  use_llm_for_profiles: true
+  parallel_profile_count: 5
+  enable_graph_memory_update: false
+
+line5_package:
+  id: "T3"
+  label: "full pre-cutoff Bolivia runoff evidence package without football noise"
+  max_document_date: "2025-10-17"
+  input_file: "seed_T3_clean.md"
+  sources:
+    - "pre_first_round_context"
+    - "first_round_poll_context"
+    - "first_round_surprise"
+    - "mas_collapse_runoff"
+    - "runoff_policy_contrast"
+    - "late_poll_quiroga_lead"
+    - "us_relations_signal"
+
+run_matrix:
+  - id: "llama_T3_R10_D2"
+    package: "T3"
+    input_file: "seed_T3_clean.md"
+    rounds: 10
+    density: 2
+    label: "Low Depth"
+  - id: "llama_T3_R40_D2"
+    package: "T3"
+    input_file: "seed_T3_clean.md"
+    rounds: 40
+    density: 2
+    label: "Standard Depth"
+  - id: "llama_T3_R80_D2"
+    package: "T3"
+    input_file: "seed_T3_clean.md"
+    rounds: 80
+    density: 2
+    label: "High Depth"
+  - id: "llama_T3_R40_D1"
+    package: "T3"
+    input_file: "seed_T3_clean.md"
+    rounds: 40
+    density: 1
+    label: "Density D1"
+  - id: "llama_T3_R40_D3"
+    package: "T3"
+    input_file: "seed_T3_clean.md"
+    rounds: 40
+    density: 3
+    label: "Density D3"
+
+do_not_upload:
+  - "ground_truth_private.md"
+  - "eval_objective.py"
+  - "README.md"
+  - "RESULTS.md"
+  - "ISSUE_RESPONSE.md"
+  - "rubric.md"
+  - "manifest.csv"
+  - "testing_protocol.md"
+  - "internal_notes.md"
+  - "output/"
+  - "output_llama_line5/"

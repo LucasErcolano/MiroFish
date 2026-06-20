@@ -1,0 +1,604 @@
+{
+  "simulation_id": "sim_95d79df54684",
+  "runner_status": "completed",
+  "current_round": 40,
+  "total_rounds": 40,
+  "simulated_hours": 0,
+  "total_simulation_hours": 96,
+  "progress_percent": 100.0,
+  "twitter_current_round": 40,
+  "reddit_current_round": 40,
+  "twitter_simulated_hours": 0,
+  "reddit_simulated_hours": 0,
+  "twitter_running": false,
+  "reddit_running": false,
+  "twitter_completed": true,
+  "reddit_completed": true,
+  "twitter_actions_count": 30,
+  "reddit_actions_count": 10,
+  "total_actions_count": 40,
+  "started_at": "2026-06-16T19:03:16.406014",
+  "updated_at": "2026-06-16T19:09:04.835536",
+  "completed_at": "2026-06-16T19:09:04.836373",
+  "error": null,
+  "process_pid": 267944,
+  "recent_actions": [
+    {
+      "round_num": 40,
+      "timestamp": "2026-06-16T19:09:03.590737",
+      "platform": "twitter",
+      "agent_id": 7,
+      "agent_name": "Executive",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 13,
+        "new_post_id": 21,
+        "original_content": "阿根廷政府高度关注Diputados关于养老金法案否决的讨论，并重申维护养老金体系可持续性的决心。政府正积极寻求解决方案，以确保阿根廷人民的福祉。",
+        "original_author_name": "Argentina",
+        "quote_content": "政府同方就要在给讨应达上继续与Diputados关注养老金法案的讨论否决的内官。同方一起往近进往的方案和决心。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 40,
+      "timestamp": "2026-06-16T19:09:03.590713",
+      "platform": "twitter",
+      "agent_id": 4,
+      "agent_name": "BCRA",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "最新经济前景分析进行中，我们注意到BBVA的报告。定期发布经济展望报告更全面的信息。",
+        "post_id": 20
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 40,
+      "timestamp": "2026-06-16T19:09:03.590622",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "Argentina",
+      "action_type": "LIKE_POST",
+      "action_args": {
+        "post_id": 13,
+        "like_id": 4,
+        "post_content": "阿根廷政府高度关注Diputados关于养老金法案否决的讨论，并重申维护养老金体系可持续性的决心。政府正积极寻求解决方案，以确保阿根廷人民的福祉。",
+        "post_author_name": "Argentina"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 36,
+      "timestamp": "2026-06-16T19:08:24.333826",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "BBVA Argentina",
+      "action_type": "LIKE_POST",
+      "action_args": {
+        "post_id": 19,
+        "like_id": 3,
+        "post_content": "阿根廷政府再次强调，将继续与各方保持沟通，以推动经济发展和社会进步。我们将致力于确保阿根廷人民的福祉，并积极应对各种挑战。",
+        "post_author_name": "Argentina"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 35,
+      "timestamp": "2026-06-16T19:08:09.589692",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "Argentina",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "阿根廷政府再次强调，将继续与各方保持沟通，以推动经济发展和社会进步。我们将致力于确保阿根廷人民的福祉，并积极应对各种挑战。",
+        "post_id": 19
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 34,
+      "timestamp": "2026-06-16T19:08:01.077911",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "Argentina",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 18,
+        "original_content": "阿根廷政府高度关注Diputados关于养老金法案否决的讨论，并重申维护养老金体系可持续性的决心。政府正积极寻求解决方案，以确保阿根廷人民的福祉。",
+        "original_author_name": "Argentina"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 34,
+      "timestamp": "2026-06-16T19:08:01.077654",
+      "platform": "twitter",
+      "agent_id": 3,
+      "agent_name": "Diputados",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 17,
+        "original_content": "阿根廷政府高度关注Diputados关于养老金法案否决的讨论，并重申维护养老金体系可持续性的决心。政府正积极寻求解决方案，以确保阿根廷人民的福祉。",
+        "original_author_name": "Argentina"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-16T19:07:44.596359",
+      "platform": "twitter",
+      "agent_id": 10,
+      "agent_name": "ken tolerance",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 5,
+        "new_post_id": 16,
+        "original_content": "根据 Diputados 的报告，行政部门如果能够维持至少三分之一的阻挠力量，则可以维持否决权。这取决于盟友和谈判。",
+        "original_author_name": "Chequeado",
+        "quote_content": "Diputados的声明令人担忧，经济形势已经非常严峻，希望政府能够认真对待，制定合理的政策，稳定经济，避免进一步恶化。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-16T19:07:33.749262",
+      "platform": "twitter",
+      "agent_id": 10,
+      "agent_name": "ken tolerance",
+      "action_type": "LIKE_POST",
+      "action_args": {
+        "post_id": 13,
+        "like_id": 2,
+        "post_content": "阿根廷政府高度关注Diputados关于养老金法案否决的讨论，并重申维护养老金体系可持续性的决心。政府正积极寻求解决方案，以确保阿根廷人民的福祉。",
+        "post_author_name": "Argentina"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-16T19:07:26.891184",
+      "platform": "twitter",
+      "agent_id": 10,
+      "agent_name": "ken tolerance",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Diputados的声明令人担忧，如果政府无法维持否决权，那么经济的未来将更加不确定。通货膨胀和汇率问题已经给民众带来了巨大的压力，希望政府能够尽快采取有效措施，稳定经济，保障民生。",
+        "post_id": 15
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 19,
+      "timestamp": "2026-06-16T19:06:48.203686",
+      "platform": "twitter",
+      "agent_id": 10,
+      "agent_name": "ken tolerance",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 3,
+        "new_post_id": 14,
+        "original_content": "国会阻力可能限制财政整合或迫使谈判。2024年9月11日，对否决养老金法案的坚持投票结果为153票赞成、87票反对和8票弃权，未能达到三分之二的门槛。这表明行政部门有能力维持否决权，但取决于盟友和谈判。",
+        "original_author_name": "Diputados",
+        "quote_content": "国会阻力可能限制财政整合或迫使谈判。这表明行政部门有能力维持否决权，但取决于盟友和谈判。如果放好运行序制小可能往明可是不邓，而这表决往的考虑识号可能更多。例如如果运行不更多序制小可能往明但另好运行序制小，这一小，可能明序消失。果失财政可往明来例如后果考虑作者自己的往明，将有够很够的序制小。但仅此或考虑不聪有整合现待。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 19,
+      "timestamp": "2026-06-16T19:06:48.203564",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "Argentina",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "阿根廷政府高度关注Diputados关于养老金法案否决的讨论，并重申维护养老金体系可持续性的决心。政府正积极寻求解决方案，以确保阿根廷人民的福祉。",
+        "post_id": 13
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 17,
+      "timestamp": "2026-06-16T19:05:31.410320",
+      "platform": "twitter",
+      "agent_id": 3,
+      "agent_name": "Diputados",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "下议院将继续关注并分析财政状况，确保国家预算的合理性和透明度。我们将积极与各方沟通协商，以促进经济发展和社会进步。",
+        "post_id": 12
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 16,
+      "timestamp": "2026-06-16T19:05:22.382697",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "Argentina",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 11,
+        "original_content": "BBVA阿根廷的最新经济展望（2024年12月/第四季度）将阿根廷置于复苏/脱离通胀的背景下，但强调了财政调整、汇率管理、储备和政治可持续性的重要性。关注2025年的通胀轨迹。",
+        "original_author_name": "BBVA Argentina"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 14,
+      "timestamp": "2026-06-16T19:04:56.470712",
+      "platform": "twitter",
+      "agent_id": 3,
+      "agent_name": "Diputados",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 5,
+        "new_post_id": 10,
+        "original_content": "根据 Diputados 的报告，行政部门如果能够维持至少三分之一的阻挠力量，则可以维持否决权。这取决于盟友和谈判。",
+        "original_author_name": "Chequeado",
+        "quote_content": "关于财政部门的公司报告，考虑财政整合或迫使谈判的来源和方法。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 14,
+      "timestamp": "2026-06-16T19:04:56.470579",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "Argentina",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 5,
+        "new_post_id": 9,
+        "original_content": "根据 Diputados 的报告，行政部门如果能够维持至少三分之一的阻挠力量，则可以维持否决权。这取决于盟友和谈判。",
+        "original_author_name": "Chequeado",
+        "quote_content": "作为阿根廷共和国官方社交媒体账号，我们注意到关于议会否决三分之二规则的讨论。政府已采取措施以维护养老金体系的可持续性，该问题涉及立法和论证。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 13,
+      "timestamp": "2026-06-16T19:04:40.714082",
+      "platform": "twitter",
+      "agent_id": 3,
+      "agent_name": "Diputados",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "决方很录和很如，根据行政部门的公司斥告，考虑财政整合或迫使谈判的来源和方法。而这取决于盟友和谈判。我们必电解自司的很录和公司后台，并以证明决方的报告。",
+        "post_id": 8
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 13,
+      "timestamp": "2026-06-16T19:04:40.714040",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "Argentina",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "根据官方数据，BBVA阿根廷银行发布的最新经济报告（2024年12月/第4季度）认为阿根廷银行将处于复苏/通货紧缩之下，但强调了经济前景、货币管理、政策和财政可持续性的重要性。请关注2025年的通货报告。",
+        "post_id": 7
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 13,
+      "timestamp": "2026-06-16T19:04:40.713930",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "BBVA Argentina",
+      "action_type": "LIKE_POST",
+      "action_args": {
+        "post_id": 1,
+        "like_id": 1,
+        "post_content": "BBVA阿根廷的最新经济展望（2024年12月/第四季度）将阿根廷置于复苏/脱离通胀的背景下，但强调了财政调整、汇率管理、储备和政治可持续性的重要性。关注2025年的通胀轨迹。",
+        "post_author_name": "BBVA Argentina"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 10,
+      "timestamp": "2026-06-16T19:03:51.428871",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "BBVA Argentina",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "BBVA阿根廷银行关注阿根廷经济发展，并定期发布经济展望报告。我们注意到CB Consultora的最新报告，对阿根廷的经济前景分析进行了补充，为投资者和企业管理者提供更全面的信息。",
+        "post_id": 6
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 9,
+      "timestamp": "2026-06-16T19:03:34.518545",
+      "platform": "twitter",
+      "agent_id": 0,
+      "agent_name": "Chequeado",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "根据 Diputados 的报告，行政部门如果能够维持至少三分之一的阻挠力量，则可以维持否决权。这取决于盟友和谈判。",
+        "post_id": 5
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 9,
+      "timestamp": "2026-06-16T19:03:34.518528",
+      "platform": "twitter",
+      "agent_id": 2,
+      "agent_name": "CB Consultora",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "CB Consultora的2024年12月6日的全国调查显示，公众的认可度和家庭经济状况的看法两极分化。关键假设是，对先前替代方案的持续认可和拒绝是否能与恶化的家庭状况并存。",
+        "post_id": 4
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 9,
+      "timestamp": "2026-06-16T19:03:34.518509",
+      "platform": "twitter",
+      "agent_id": 3,
+      "agent_name": "Diputados",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "国会阻力可能限制财政整合或迫使谈判。2024年9月11日，对否决养老金法案的坚持投票结果为153票赞成、87票反对和8票弃权，未能达到三分之二的门槛。这表明行政部门有能力维持否决权，但取决于盟友和谈判。",
+        "post_id": 3
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 9,
+      "timestamp": "2026-06-16T19:03:34.518483",
+      "platform": "twitter",
+      "agent_id": 8,
+      "agent_name": "UCA/ODSA",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "UCA/ODSA的报告显示，2024年第三季度阿根廷的贫困率达到49.9%，并存在更广泛的生存压力。社会压力可能会削弱对进一步调整的容忍度，这需要密切关注。",
+        "post_id": 2
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 9,
+      "timestamp": "2026-06-16T19:03:34.518398",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "BBVA Argentina",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "BBVA阿根廷的最新经济展望（2024年12月/第四季度）将阿根廷置于复苏/脱离通胀的背景下，但强调了财政调整、汇率管理、储备和政治可持续性的重要性。关注2025年的通胀轨迹。",
+        "post_id": 1
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 9,
+      "timestamp": "2026-06-16T19:03:31.035705",
+      "platform": "reddit",
+      "agent_id": 0,
+      "agent_name": "Chequeado",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "根据 Diputados 的报告，行政部门如果能够维持至少三分之一的阻挠力量，则可以维持否决权。这取决于盟友和谈判。",
+        "post_id": 5
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 9,
+      "timestamp": "2026-06-16T19:03:31.035690",
+      "platform": "reddit",
+      "agent_id": 2,
+      "agent_name": "CB Consultora",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "CB Consultora的2024年12月6日的全国调查显示，公众的认可度和家庭经济状况的看法两极分化。关键假设是，对先前替代方案的持续认可和拒绝是否能与恶化的家庭状况并存。",
+        "post_id": 4
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 9,
+      "timestamp": "2026-06-16T19:03:31.035673",
+      "platform": "reddit",
+      "agent_id": 3,
+      "agent_name": "Diputados",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "国会阻力可能限制财政整合或迫使谈判。2024年9月11日，对否决养老金法案的坚持投票结果为153票赞成、87票反对和8票弃权，未能达到三分之二的门槛。这表明行政部门有能力维持否决权，但取决于盟友和谈判。",
+        "post_id": 3
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 9,
+      "timestamp": "2026-06-16T19:03:31.035650",
+      "platform": "reddit",
+      "agent_id": 8,
+      "agent_name": "UCA/ODSA",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "UCA/ODSA的报告显示，2024年第三季度阿根廷的贫困率达到49.9%，并存在更广泛的生存压力。社会压力可能会削弱对进一步调整的容忍度，这需要密切关注。",
+        "post_id": 2
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 9,
+      "timestamp": "2026-06-16T19:03:31.035593",
+      "platform": "reddit",
+      "agent_id": 1,
+      "agent_name": "BBVA Argentina",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "BBVA阿根廷的最新经济展望（2024年12月/第四季度）将阿根廷置于复苏/脱离通胀的背景下，但强调了财政调整、汇率管理、储备和政治可持续性的重要性。关注2025年的通胀轨迹。",
+        "post_id": 1
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-16T19:03:21.154651",
+      "platform": "reddit",
+      "agent_id": 0,
+      "agent_name": "Chequeado",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "根据 Diputados 的报告，行政部门如果能够维持至少三分之一的阻挠力量，则可以维持否决权。这取决于盟友和谈判。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-16T19:03:21.154624",
+      "platform": "reddit",
+      "agent_id": 2,
+      "agent_name": "CB Consultora",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "CB Consultora的2024年12月6日的全国调查显示，公众的认可度和家庭经济状况的看法两极分化。关键假设是，对先前替代方案的持续认可和拒绝是否能与恶化的家庭状况并存。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-16T19:03:21.154592",
+      "platform": "reddit",
+      "agent_id": 3,
+      "agent_name": "Diputados",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "国会阻力可能限制财政整合或迫使谈判。2024年9月11日，对否决养老金法案的坚持投票结果为153票赞成、87票反对和8票弃权，未能达到三分之二的门槛。这表明行政部门有能力维持否决权，但取决于盟友和谈判。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-16T19:03:21.154556",
+      "platform": "reddit",
+      "agent_id": 8,
+      "agent_name": "UCA/ODSA",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "UCA/ODSA的报告显示，2024年第三季度阿根廷的贫困率达到49.9%，并存在更广泛的生存压力。社会压力可能会削弱对进一步调整的容忍度，这需要密切关注。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-16T19:03:21.154513",
+      "platform": "reddit",
+      "agent_id": 1,
+      "agent_name": "BBVA Argentina",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "BBVA阿根廷的最新经济展望（2024年12月/第四季度）将阿根廷置于复苏/脱离通胀的背景下，但强调了财政调整、汇率管理、储备和政治可持续性的重要性。关注2025年的通胀轨迹。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-16T19:03:21.055105",
+      "platform": "twitter",
+      "agent_id": 0,
+      "agent_name": "Chequeado",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "根据 Diputados 的报告，行政部门如果能够维持至少三分之一的阻挠力量，则可以维持否决权。这取决于盟友和谈判。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-16T19:03:21.055073",
+      "platform": "twitter",
+      "agent_id": 2,
+      "agent_name": "CB Consultora",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "CB Consultora的2024年12月6日的全国调查显示，公众的认可度和家庭经济状况的看法两极分化。关键假设是，对先前替代方案的持续认可和拒绝是否能与恶化的家庭状况并存。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-16T19:03:21.055042",
+      "platform": "twitter",
+      "agent_id": 3,
+      "agent_name": "Diputados",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "国会阻力可能限制财政整合或迫使谈判。2024年9月11日，对否决养老金法案的坚持投票结果为153票赞成、87票反对和8票弃权，未能达到三分之二的门槛。这表明行政部门有能力维持否决权，但取决于盟友和谈判。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-16T19:03:21.055010",
+      "platform": "twitter",
+      "agent_id": 8,
+      "agent_name": "UCA/ODSA",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "UCA/ODSA的报告显示，2024年第三季度阿根廷的贫困率达到49.9%，并存在更广泛的生存压力。社会压力可能会削弱对进一步调整的容忍度，这需要密切关注。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-16T19:03:21.054966",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "BBVA Argentina",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "BBVA阿根廷的最新经济展望（2024年12月/第四季度）将阿根廷置于复苏/脱离通胀的背景下，但强调了财政调整、汇率管理、储备和政治可持续性的重要性。关注2025年的通胀轨迹。"
+      },
+      "result": null,
+      "success": true
+    }
+  ],
+  "rounds_count": 0
+}

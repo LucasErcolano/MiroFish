@@ -1,0 +1,94 @@
+[system]
+你是社交媒体行为分析专家。返回纯JSON，配置需符合模拟场景中目标用户群体的作息习惯。
+
+请使用中文回答。
+IMPORTANT: The 'stance' field value MUST be one of the English strings: 'supportive', 'opposing', 'neutral', 'observer'. All JSON field names and numeric values must remain unchanged. Only natural language text fields should use the specified language.
+
+[user]
+基于以下信息，为每个实体生成社交媒体活动配置。
+
+模拟需求: Usando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:
+
+Regla obligatoria de estimación:
+- Debes responder siempre con una estimación numérica para los cuatro horizontes pedidos, aunque la evidencia sea incompleta o incierta.
+- No uses `null`, "no disponible" ni abstenciones en los campos de predicción.
+- Si falta evidencia directa para un mes, infiere el mejor rango posible usando la evidencia disponible sobre tendencia, inflación anual esperada, inflación mensual reciente, política cambiaria/fiscal, riesgos y contexto social.
+- Expresa la incertidumbre ampliando el rango y explica la razón principal.
+
+1. Predicción Δ1 (febrero 2025 — variación mensual IPC):
+   - Valor puntual estimado (ej: 2.5%).
+   - Rango: entre X% y Y%.
+
+2. Predicción Δ2 (abril 2025 — variación mensual IPC):
+   - Rango estimado: entre X% y Y%.
+   - Dirección de tendencia: acelerando / estable / desacelerando.
+
+3. Predicción Δ3 (julio 2025 — variación mensual IPC):
+   - Rango estimado: entre X% y Y%.
+   - Dirección de tendencia esperada hacia julio: acelerando / estable / desacelerando.
+   - Razón principal.
+
+4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):
+   - Valor puntual estimado para IPC mensual de diciembre 2025.
+   - Rango estimado para IPC mensual de diciembre 2025: entre X% y Y%.
+   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.
+   - Rango de inflación acumulada 2025 esperada.
+
+5. Mecanismo causal:
+   - Variable dominante en la trayectoria de desinflación.
+   - Principal riesgo que podría revertir el proceso.
+
+6. Evidencia:
+   - Citar source_id por cada claim importante.
+   - No usar datos posteriores al 31/01/2025.
+
+## 实体列表
+```json
+[
+  {
+    "agent_id": 15,
+    "entity_name": "IPC",
+    "entity_type": "Organization",
+    "summary": "Argentina IPC 2025 is associated with Case ID case-c-s2-arg-ipc-line5-gemma.\nINDEC reported that the December 2024 IPC was 2.7% monthly and accumulated inflation for 2024 was 117.8%.\nMiroFish balances disinflation anchors including December IPC data of 2.7%."
+  },
+  {
+    "agent_id": 16,
+    "entity_name": "Congress",
+    "entity_type": "Organization",
+    "summary": "Diputados reported on the pension-law veto attempt to Congress.\nThe financial surplus of the national public sector tightens the political constraint, reducing the Executive's ability to respond to congressional pressure.\nThe financial surplus limits the Executive's ability to respond to congression"
+  },
+  {
+    "agent_id": 17,
+    "entity_name": "Ministerio de Economía",
+    "entity_type": "Organization",
+    "summary": "The Ministerio de Economía announced a fiscal surplus, while the International Monetary Fund published an ex-post evaluation.\nMECON reported that the national public sector registered an annual financial surplus for the first time since 2010."
+  }
+]
+```
+
+## 任务
+为每个实体生成活动配置，注意：
+- **时间符合目标用户群体作息**：以下为参考（东八区），请根据模拟场景调整
+- **官方机构**（University/GovernmentAgency）：活跃度低(0.1-0.3)，工作时间(9-17)活动，响应慢(60-240分钟)，影响力高(2.5-3.0)
+- **媒体**（MediaOutlet）：活跃度中(0.4-0.6)，全天活动(8-23)，响应快(5-30分钟)，影响力高(2.0-2.5)
+- **个人**（Student/Person/Alumni）：活跃度高(0.6-0.9)，主要晚间活动(18-23)，响应快(1-15分钟)，影响力低(0.8-1.2)
+- **公众人物/专家**：活跃度中(0.4-0.6)，影响力中高(1.5-2.0)
+
+返回JSON格式（不要markdown）：
+{
+    "agent_configs": [
+        {
+            "agent_id": <必须与输入一致>,
+            "activity_level": <0.0-1.0>,
+            "posts_per_hour": <发帖频率>,
+            "comments_per_hour": <评论频率>,
+            "active_hours": [<活跃小时列表，考虑中国人作息>],
+            "response_delay_min": <最小响应延迟分钟>,
+            "response_delay_max": <最大响应延迟分钟>,
+            "sentiment_bias": <-1.0到1.0>,
+            "stance": "<supportive/opposing/neutral/observer>",
+            "influence_weight": <影响力权重>
+        },
+        ...
+    ]
+}

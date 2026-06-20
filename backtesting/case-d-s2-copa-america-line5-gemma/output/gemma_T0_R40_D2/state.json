@@ -1,0 +1,24 @@
+{
+  "simulation_id": "sim_1ee9ce94e898",
+  "project_id": "proj_67dbd5d8cb59",
+  "graph_id": "mirofish_585e56a25f7841f6",
+  "enable_twitter": true,
+  "enable_reddit": true,
+  "status": "running",
+  "entities_count": 25,
+  "profiles_count": 25,
+  "entity_types": [
+    "FootballCompetition",
+    "Stadium",
+    "FootballTeam",
+    "FootballPlayer"
+  ],
+  "config_generated": true,
+  "config_reasoning": "时间配置: 模拟的是一场足球比赛的讨论热度，考虑到比赛时间为周日，且在美洲地区进行，用户活跃高峰预计在晚间。由于是决赛，且涉及阿根廷和哥伦比亚这两支球队，话题的讨论热度会持续一段时间。因此模拟时长设定为48小时。高峰时段设定为比赛结束后和第二天晚上，工作时段和早间时段保持相对活跃，深夜则较为低迷。调整agent数量以模拟讨论规模。 | 事件配置: 根据模拟需求，该事件是关于2024年美洲杯决赛的预测。热点话题围绕两队竞争和关键球星。由于所有发布者必须从提供的实体类型中选择，我将赛事组织（Copa America）作为官方发布者，两支球队作为立场发布者，而世界杯（World Cup）作为背景关联实体来提供对比分析，以符合实体约束。 | Agent配置: 成功生成 25 个 | 初始帖子分配: 4 个帖子已分配发布者",
+  "current_round": 0,
+  "twitter_status": "not_started",
+  "reddit_status": "not_started",
+  "created_at": "2026-06-17T17:04:13.727051",
+  "updated_at": "2026-06-17T17:09:14.082621",
+  "error": null
+}

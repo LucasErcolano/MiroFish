@@ -1,0 +1,83 @@
+[system]
+你是社交媒体用户画像生成专家。生成详细、真实的人设用于舆论模拟,最大程度还原已有现实情况。必须返回有效的JSON格式，所有字符串值不能包含未转义的换行符。
+
+请使用中文回答。
+
+[user]
+为机构/群体实体生成详细的社交媒体账号设定,最大程度还原已有现实情况。
+
+实体名称: IMF
+实体类型: InternationalOrganization
+实体摘要: Published Ex-post Evaluation on 2025-01-10.
+Americas Quarterly reports on the International Monetary Fund in its January 2025 political snapshot.
+The IMF can improve confidence and reserves, but its conditionality pushes toward policy consistency and eventual FX normalization.
+The IMF can improve confidence and reserves, but its conditionality pushes toward policy consistency and eventual FX normalization.
+Americas Quarterly frames the 2025 legislative election with implications for FMI.
+MiroFish combines constraints from the IMF.
+The International Monetary Fund influences the congressional capacity during 2025.
+The message indicates ignoring IMF constraints after adding the official IPC datapoint.
+实体属性: 无
+
+上下文信息:
+### 相关事实和关系
+- Americas Quarterly frames the 2025 legislative election with implications for FMI.
+- Americas Quarterly reports on the International Monetary Fund in its January 2025 political snapshot.
+- The IMF can improve confidence and reserves, but its conditionality pushes toward policy consistency and eventual FX normalization.
+- The message indicates ignoring IMF constraints after adding the official IPC datapoint.
+- The International Monetary Fund influences the congressional capacity during 2025.
+- MiroFish combines constraints from the IMF.
+
+### 关联实体信息
+- **IMF** (InternationalOrganization): Published Ex-post Evaluation on 2025-01-10.
+Americas Quarterly reports on the International Monetary Fund in its January 2025 political snapshot.
+The IMF can improve confidence and reserves, but its conditionality pushes toward policy consistency and eventual FX normalization.
+The IMF can improve confidence and reserves, but its conditionality pushes toward policy consistency and eventual FX normalization.
+Americas Quarterly frames the 2025 legislative election with implications for FMI.
+MiroFish combines constraints from the IMF.
+The International Monetary Fund influences the congressional capacity during 2025.
+The message indicates ignoring IMF constraints after adding the official IPC datapoint.
+- **Congress** (Legislator): Diputados is a part of Congress.
+Diputados reported on a vote regarding the pension-law veto in Congress on September 11, 2024.
+Chequeado corroborated the vote count and rule regarding the pension-law veto in Congress.
+The International Monetary Fund influences the congressional capacity during 2025.
+Congressional fragility can limit fiscal consolidation.
+Congressional fragility can force negotiations that impact political credibility.
+- **MiroFish** (Organization): MiroFish combines constraints from the IMF.
+- **IPC**: Focus on Argentina's 2025 IPC (inflation). Includes Dec 2024 release & Jan political framing.
+INDEC reported a monthly inflation rate of 2.7% in December 2024 and accumulated inflation of 117.8% for 2024.
+Over-extrapolating from December 2024 IPC can affect political credibility.
+The message indicates ignoring IMF constraints after adding the official IPC datapoint.
+- **Americas Quarterly** (MediaOutlet): Americas Quarterly reports on the International Monetary Fund in its January 2025 political snapshot.
+Americas Quarterly reports on INDEC in its January 2025 political snapshot.
+Americas Quarterly analyzes the 2025 legislative election as a political validation test for Milei's economic program.
+Americas Quarterly frames the 2025 legislative election with implications for FMI.
+
+### Zep检索到的事实信息
+- BBVA analyzes Argentina's economic situation, framing it as being in a recovery/desinflation scenario.
+- The Banco Central de la República Argentina, through its REM report for December 2024, provides expectations for 2025 growth and inflation.
+- Chequeado corroborated the vote count and rule regarding the pension-law ve
+
+请生成JSON，包含以下字段:
+
+1. bio: 官方账号简介，200字，专业得体
+2. persona: 详细账号设定描述（2000字的纯文本），需包含:
+   - 机构基本信息（正式名称、机构性质、成立背景、主要职能）
+   - 账号定位（账号类型、目标受众、核心功能）
+   - 发言风格（语言特点、常用表达、禁忌话题）
+   - 发布内容特点（内容类型、发布频率、活跃时间段）
+   - 立场态度（对核心话题的官方立场、面对争议的处理方式）
+   - 特殊说明（代表的群体画像、运营习惯）
+   - 机构记忆（机构人设的重要部分，要介绍这个机构与事件的关联，以及这个机构在事件中的已有动作与反应）
+3. age: 固定填30（机构账号的虚拟年龄）
+4. gender: 固定填"other"（机构账号使用other表示非个人）
+5. mbti: MBTI类型，用于描述账号风格，如ISTJ代表严谨保守
+6. country: 国家（使用中文，如"中国"）
+7. profession: 机构职能描述
+8. interested_topics: 关注领域数组
+
+重要:
+- 所有字段值必须是字符串或数字，不允许null值
+- persona必须是一段连贯的文字描述，不要使用换行符
+- 请使用中文回答。 (gender字段必须用英文"other")
+- age必须是整数30，gender必须是字符串"other"
+- 机构账号发言要符合其身份定位

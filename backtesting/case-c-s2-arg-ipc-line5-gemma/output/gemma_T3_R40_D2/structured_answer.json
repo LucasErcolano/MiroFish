@@ -1,0 +1,75 @@
+{
+  "delta_1": {
+    "point_estimate": 2.5,
+    "range_min": 1.8,
+    "range_max": 3.2
+  },
+  "delta_2": {
+    "range_min": 1.5,
+    "range_max": 2.8,
+    "trend": "estable"
+  },
+  "delta_3": {
+    "range_min": 1.2,
+    "range_max": 2.5,
+    "trend": "desacelerando",
+    "reason": "The crawling peg change to 1% monthly from 2025-02-01 [MONETARY_01] and the fiscal surplus [FISCAL_01] suggest a deceleration of inflation, although social stress [SOCIAL_01] and the legislative election [POL_01] introduce uncertainty."
+  },
+  "delta_4": {
+    "point_estimate": 2.0,
+    "range_min": 1.5,
+    "range_max": 3.0,
+    "program_stability": "incierto",
+    "accumulated_2025_range_min": 20.0,
+    "accumulated_2025_range_max": 35.0
+  },
+  "causal_mechanism": {
+    "dominant_variable": "fiscal adjustment",
+    "main_risk": "social stress and political instability"
+  },
+  "evidence": [
+    {
+      "claim": "INDEC reported that the December 2024 IPC was 2.7% monthly and accumulated inflation for 2024 was 117.8%.",
+      "source_id": [
+        "MACRO_02"
+      ]
+    },
+    {
+      "claim": "The BCRA announced that the official crawling peg would move to 1% monthly from 2025-02-01.",
+      "source_id": [
+        "MONETARY_01"
+      ]
+    },
+    {
+      "claim": "The Ministerio de Economía announced a fiscal surplus.",
+      "source_id": [
+        "FISCAL_01"
+      ]
+    },
+    {
+      "claim": "The World Bank projects a rebound for Argentina around 5% in 2025 and 4.7% in 2026.",
+      "source_id": [
+        "MACRO_04"
+      ]
+    },
+    {
+      "claim": "The BCRA REM December 2024 expects 25.9% inflation in 2025.",
+      "source_id": [
+        "MACRO_03"
+      ]
+    },
+    {
+      "claim": "Poverty is at 49.9% in 3Q2024 and broader subsistence/privation pressures exist.",
+      "source_id": [
+        "SOCIAL_01"
+      ]
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2025-01-31",
+    "temporal_package": "T3",
+    "model": "google/gemma-3-27b-it",
+    "simulation_id": "sim_e598399b6849",
+    "graph_id": "mirofish_84d7ae07d55846d9"
+  }
+}

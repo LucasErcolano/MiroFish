@@ -1,0 +1,146 @@
+{
+  "report_id": "report_4978fc76777e",
+  "simulation_id": "sim_a54996994596",
+  "graph_id": "mirofish_abb7c4222e194352",
+  "simulation_requirement": "Usando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:\n\nRegla obligatoria de estimación:\n- Debes responder siempre con una estimación numérica para los cuatro horizontes pedidos, aunque la evidencia sea incompleta o incierta.\n- No uses `null`, \"no disponible\" ni abstenciones en los campos de predicción.\n- Si falta evidencia directa para un mes, infiere el mejor rango posible usando la evidencia disponible sobre tendencia, inflación anual esperada, inflación mensual reciente, política cambiaria/fiscal, riesgos y contexto social.\n- Expresa la incertidumbre ampliando el rango y explica la razón principal.\n\n1. Predicción Δ1 (febrero 2025 — variación mensual IPC):\n   - Valor puntual estimado (ej: 2.5%).\n   - Rango: entre X% y Y%.\n\n2. Predicción Δ2 (abril 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia: acelerando / estable / desacelerando.\n\n3. Predicción Δ3 (julio 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia esperada hacia julio: acelerando / estable / desacelerando.\n   - Razón principal.\n\n4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):\n   - Valor puntual estimado para IPC mensual de diciembre 2025.\n   - Rango estimado para IPC mensual de diciembre 2025: entre X% y Y%.\n   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.\n   - Rango de inflación acumulada 2025 esperada.\n\n5. Mecanismo causal:\n   - Variable dominante en la trayectoria de desinflación.\n   - Principal riesgo que podría revertir el proceso.\n\n6. Evidencia:\n   - Citar source_id por cada claim importante.\n   - No usar datos posteriores al 31/01/2025.",
+  "status": "completed",
+  "outline": null,
+  "markdown_content": "# Structured IPC Forecast\n\n- Cutoff: 2025-01-10\n- Temporal package: T1\n- Model: google/gemma-3-27b-it\n\n## Delta 1\n- point_estimate: 1.8\n- range: 1.5 to 2.2\n\n## Delta 2\n- range: 1.5 to 2.5\n- trend: estable\n\n## Delta 3\n- range: 1.2 to 2.0\n- trend: desacelerando\n- reason: The BCRA REM for December 2024 points to expected 2025 inflation around 25.9%, suggesting a gradual deceleration throughout the year. [MACRO_03]\n\n## Delta 4\n- point_estimate: 1.5\n- monthly_range: 1.0 to 2.0\n- program_stability: incierto\n- accumulated_2025_range: 20.0 to 30.0\n\n## Causal mechanism\n- dominant_variable: Fiscal adjustment and exchange-rate management\n- main_risk: Social stress and congressional fragility\n\n## Evidence\n- The BCRA REM for December 2024 gives a market expectation of 25.9% inflation for 2025. [MACRO_03] [MACRO_03]\n- The BCRA issued a forecast for 2025 growth around 4.5% and inflation around 25.9%. [MACRO_03] [MACRO_03]\n- Argentina enters 2025 with severe social stress. [SOCIAL_01] [SOCIAL_01]\n- The IMF adds external constraints, including reserves, exchange-rate normalization, and fiscal consistency. [GEO_01] [GEO_01]\n",
+  "output_mode": "structured_json",
+  "schema_id": "arg_ipc_2025_v1",
+  "structured_answer": {
+    "delta_1": {
+      "point_estimate": 1.8,
+      "range_min": 1.5,
+      "range_max": 2.2
+    },
+    "delta_2": {
+      "range_min": 1.5,
+      "range_max": 2.5,
+      "trend": "estable"
+    },
+    "delta_3": {
+      "range_min": 1.2,
+      "range_max": 2.0,
+      "trend": "desacelerando",
+      "reason": "The BCRA REM for December 2024 points to expected 2025 inflation around 25.9%, suggesting a gradual deceleration throughout the year. [MACRO_03]"
+    },
+    "delta_4": {
+      "point_estimate": 1.5,
+      "range_min": 1.0,
+      "range_max": 2.0,
+      "program_stability": "incierto",
+      "accumulated_2025_range_min": 20.0,
+      "accumulated_2025_range_max": 30.0
+    },
+    "causal_mechanism": {
+      "dominant_variable": "Fiscal adjustment and exchange-rate management",
+      "main_risk": "Social stress and congressional fragility"
+    },
+    "evidence": [
+      {
+        "claim": "The BCRA REM for December 2024 gives a market expectation of 25.9% inflation for 2025. [MACRO_03]",
+        "source_id": [
+          "MACRO_03"
+        ]
+      },
+      {
+        "claim": "The BCRA issued a forecast for 2025 growth around 4.5% and inflation around 25.9%. [MACRO_03]",
+        "source_id": [
+          "MACRO_03"
+        ]
+      },
+      {
+        "claim": "Argentina enters 2025 with severe social stress. [SOCIAL_01]",
+        "source_id": [
+          "SOCIAL_01"
+        ]
+      },
+      {
+        "claim": "The IMF adds external constraints, including reserves, exchange-rate normalization, and fiscal consistency. [GEO_01]",
+        "source_id": [
+          "GEO_01"
+        ]
+      }
+    ],
+    "metadata": {
+      "cutoff_date": "2025-01-10",
+      "temporal_package": "T1",
+      "model": "google/gemma-3-27b-it",
+      "simulation_id": "sim_a54996994596",
+      "graph_id": "mirofish_abb7c4222e194352"
+    }
+  },
+  "metadata": {
+    "case_id": "case-c-s2-arg-ipc-line5-gemma",
+    "source_case": "CASE-B2-ARG-IPC-2025",
+    "issue_source": "#11",
+    "line_focus": "temporal evidence inclusion",
+    "original_user_prompt": "Usando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:\n\nRegla obligatoria de estimación:\n- Debes responder siempre con una estimación numérica para los cuatro horizontes pedidos, aunque la evidencia sea incompleta o incierta.\n- No uses `null`, \"no disponible\" ni abstenciones en los campos de predicción.\n- Si falta evidencia directa para un mes, infiere el mejor rango posible usando la evidencia disponible sobre tendencia, inflación anual esperada, inflación mensual reciente, política cambiaria/fiscal, riesgos y contexto social.\n- Expresa la incertidumbre ampliando el rango y explica la razón principal.\n\n1. Predicción Δ1 (febrero 2025 — variación mensual IPC):\n   - Valor puntual estimado (ej: 2.5%).\n   - Rango: entre X% y Y%.\n\n2. Predicción Δ2 (abril 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia: acelerando / estable / desacelerando.\n\n3. Predicción Δ3 (julio 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia esperada hacia julio: acelerando / estable / desacelerando.\n   - Razón principal.\n\n4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):\n   - Valor puntual estimado para IPC mensual de diciembre 2025.\n   - Rango estimado para IPC mensual de diciembre 2025: entre X% y Y%.\n   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.\n   - Rango de inflación acumulada 2025 esperada.\n\n5. Mecanismo causal:\n   - Variable dominante en la trayectoria de desinflación.\n   - Principal riesgo que podría revertir el proceso.\n\n6. Evidencia:\n   - Citar source_id por cada claim importante.\n   - No usar datos posteriores al 31/01/2025.",
+    "normalized_task_prompt": "Usando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:\n\nRegla obligatoria de estimación:\n- Debes responder siempre con una estimación numérica para los cuatro horizontes pedidos, aunque la evidencia sea incompleta o incierta.\n- No uses `null`, \"no disponible\" ni abstenciones en los campos de predicción.\n- Si falta evidencia directa para un mes, infiere el mejor rango posible usando la evidencia disponible sobre tendencia, inflación anual esperada, inflación mensual reciente, política cambiaria/fiscal, riesgos y contexto social.\n- Expresa la incertidumbre ampliando el rango y explica la razón principal.\n\n1. Predicción Δ1 (febrero 2025 — variación mensual IPC):\n   - Valor puntual estimado (ej: 2.5%).\n   - Rango: entre X% y Y%.\n\n2. Predicción Δ2 (abril 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia: acelerando / estable / desacelerando.\n\n3. Predicción Δ3 (julio 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia esperada hacia julio: acelerando / estable / desacelerando.\n   - Razón principal.\n\n4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):\n   - Valor puntual estimado para IPC mensual de diciembre 2025.\n   - Rango estimado para IPC mensual de diciembre 2025: entre X% y Y%.\n   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.\n   - Rango de inflación acumulada 2025 esperada.\n\n5. Mecanismo causal:\n   - Variable dominante en la trayectoria de desinflación.\n   - Principal riesgo que podría revertir el proceso.\n\n6. Evidencia:\n   - Citar source_id por cada claim importante.\n   - No usar datos posteriores al 31/01/2025.",
+    "task_objective": "Predict Argentina IPC 2025 under the allowed pre-cutoff evidence.",
+    "system_constraints_text": "Eres un agente de simulación social. Tienes acceso exclusivamente a los documentos provistos fechados hasta el 31 de enero de 2025. No uses información posterior a esa fecha. Si no tienes evidencia para un claim, dilo explícitamente. Cita el source_id de cada documento que uses.",
+    "cutoff_date": "2025-01-10",
+    "temporal_package": "T1",
+    "source_ids": [
+      "INST_01",
+      "INST_02",
+      "SOCIAL_01",
+      "POLL_01",
+      "MACRO_01",
+      "MACRO_03",
+      "GEO_01"
+    ],
+    "model": "google/gemma-3-27b-it",
+    "model_label": "gemma_temporal_probe",
+    "seed": 1,
+    "rounds": 40,
+    "density": 2,
+    "excluded_files": [
+      {
+        "path": "ground_truth_private.md",
+        "reason": "excluded_by_case_config",
+        "sha256": "6cfab7700455f1b22a79bdd79eeaa175e163fb8957337313a125a1d28fd6c5fa"
+      },
+      {
+        "path": "rubric.md",
+        "reason": "excluded_by_case_config",
+        "sha256": "d0893b6b5383689d31f3699e00359eb93343226e512821963d174211aec7db83"
+      },
+      {
+        "path": "manifest.csv",
+        "reason": "excluded_by_case_config",
+        "sha256": "78eef644b0ef5a8784457f53342a03de6a78667ebdf82ea54f64bd20f4c85318"
+      },
+      {
+        "path": "config_matrix.yaml",
+        "reason": "excluded_by_case_config",
+        "sha256": "eb54665765a4e4d66cf876039eba73625ec1669f833f59ae39d29e40d7d4e4c4"
+      },
+      {
+        "path": "config_matrix_source.yaml",
+        "reason": "excluded_by_case_config",
+        "sha256": "050ed57c244da4be85aba1030a1db64b5caa46e3b36fbb83411747d515c87bcf"
+      },
+      {
+        "path": "internal_notes.md",
+        "reason": "excluded_by_case_config",
+        "sha256": "fb4b7d4ede015c1c17e86915682501e7a20e6b24e2e595b73c1bd156db7704f9"
+      },
+      {
+        "path": "output/",
+        "reason": "excluded_by_case_config",
+        "sha256": null
+      }
+    ],
+    "input_file": "seed_T1.md",
+    "question_file": "question.md",
+    "system_constraints_file": "system_constraints.md",
+    "primary_query": "Usando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:\n\nRegla obligatoria de estimación:\n- Debes responder siempre con una estimación numérica para los cuatro horizontes pedidos, aunque la evidencia sea incompleta o incierta.\n- No uses `null`, \"no disponible\" ni abstenciones en los campos de predicción.\n- Si falta evidencia directa para un mes, infiere el mejor rango posible usando la evidencia disponible sobre tendencia, inflación anual esperada, inflación mensual reciente, política cambiaria/fiscal, riesgos y contexto social.\n- Expresa la incertidumbre ampliando el rango y explica la razón principal.\n\n1. Predicción Δ1 (febrero 2025 — variación mensual IPC):\n   - Valor puntual estimado (ej: 2.5%).\n   - Rango: entre X% y Y%.\n\n2. Predicción Δ2 (abril 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia: acelerando / estable / desacelerando.\n\n3. Predicción Δ3 (julio 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia esperada hacia julio: acelerando / estable / desacelerando.\n   - Razón principal.\n\n4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):\n   - Valor puntual estimado para IPC mensual de diciembre 2025.\n   - Rango estimado para IPC mensual de diciembre 2025: entre X% y Y%.\n   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.\n   - Rango de inflación acumulada 2025 esperada.\n\n5. Mecanismo causal:\n   - Variable dominante en la trayectoria de desinflación.\n   - Principal riesgo que podría revertir el proceso.\n\n6. Evidencia:\n   - Citar source_id por cada claim importante.\n   - No usar datos posteriores al 31/01/2025.",
+    "source_packet_file": "seed_T1.md",
+    "source_packet_text": "# Seed T1 - Argentina IPC 2025\n\nCase ID: `case-c-s2-arg-ipc-line5-gemma`\n\nTemporal package: `T1`\n\nMax document date: `2025-01-10`\n\nRule: this package is cumulative. It includes the full T0 evidence plus early January 2025 expectations and IMF constraints. Do not use documents published after `2025-01-10`.\n\n## Included source_ids\n\n- `INST_01`: official Diputados note on pension-law veto, 2024-09-11.\n- `INST_02`: Chequeado supporting note on veto count and two-thirds rule, 2024-09-11.\n- `SOCIAL_01`: UCA/ODSA subsistence and poverty report, 2024-12-05.\n- `POLL_01`: CB Consultora national survey, 2024-12-06.\n- `MACRO_01`: BBVA Argentina Economic Outlook, December 2024 / 4Q24.\n- `MACRO_03`: BCRA REM December 2024, published 2025-01-07.\n- `GEO_01`: IMF Ex-post Evaluation, published 2025-01-10.\n\n## Social and institutional baseline carried from T0\n\nArgentina enters 2025 with severe social stress. The UCA/ODSA report records poverty of 49.9% in 3Q2024 and broader subsistence/privation pressures. For simulation, this should initialize household stress, sensitivity to wages and employment, potential protest pressure, and political limits to continued adjustment [SOCIAL_01].\n\nOpinion evidence from December 2024 separates material hardship from political support. CB Consultora provides pre-cutoff measures of public approval and household economic perception. The key hypothesis is whether resilient approval and rejection of previous alternatives can coexist with deteriorated household conditions [POLL_01].\n\nThe institutional constraint is Congress. Diputados reported on 2024-09-11 that the attempt to insist against the pension-law veto received 153 positive votes, 87 negative votes, and 8 abstentions, below the two-thirds threshold. Chequeado corroborates the count and rule. This initializes a veto shield: the Executive can sustain vetoes if it preserves at least one-third blocking power, but that depends on allies and negotiation [INST_01; INST_02].\n\n## Macro baseline carried from T0\n\nBBVA's December 2024 outlook frames Argentina in a recovery/desinflation scenario, conditional on the continuity of fiscal adjustment, exchange-rate management, reserves, and political sustainability. It supplies expectations on growth, inflation, fiscal position, exchange-rate risks, and the limits of adjustment [MACRO_01].\n\nAt T1, the model still has not yet received the official December 2024 IPC release, the BCRA crawling-peg decision, or the January fiscal close announcement. It should still treat the inflation starting point as a fragile disinflation process rather than as a fully confirmed smooth path [MACRO_01].\n\n## New evidence added at T1\n\nThe BCRA REM for December 2024, published on `2025-01-07`, gives a market-expectations anchor before the final cutoff. It points to expected 2025 growth around 4.5% and expected 2025 inflation around 25.9%, plus exchange-rate, fiscal, and monetary expectations. This introduces a clearer quantitative expectation baseline for the IPC trajectory [MACRO_03].\n\nThe IMF Ex-post Evaluation, published on `2025-01-10`, adds external constraints: reserves, exchange-rate normalization, dismantling controls, real interest rates, fiscal consistency, and the social cost of adjustment. The IMF should be modeled as a constraint/agent: support can improve confidence and reserves, but conditionality pushes toward policy consistency and eventual FX normalization [GEO_01].\n\n## Updated causal picture at T1\n\nAt T1, MiroFish should now combine the original social/institutional fragility with a more explicit macro-program structure:\n\n- disinflation is underway but still conditional on fiscal continuity, reserves, and exchange-rate management [MACRO_01];\n- market expectations now point to materially lower 2025 inflation, but those are forecasts rather than outcomes [MACRO_03];\n- IMF scrutiny adds external credibility and external constraints at the same time [GEO_01];\n- social stress and congressional constraints remain the political channels through which the macro program can weaken [SOCIAL_01; POLL_01; INST_01; INST_02].\n\n## Risks to simulate\n\n- Social stress can weaken tolerance to adjustment [SOCIAL_01; POLL_01].\n- Congressional fragility can limit fiscal consolidation or force negotiations [INST_01; INST_02].\n- The macro scenario still depends on fiscal continuity, reserves, exchange-rate policy, and political credibility [MACRO_01].\n- REM expectations may anchor agents, but they are expectations rather than observed inflation outcomes [MACRO_03].\n- IMF constraints make exchange-rate normalization and reserves more central to the inflation path [GEO_01]."
+  },
+  "created_at": "2026-06-16T19:26:53.097293",
+  "completed_at": "2026-06-16T19:28:04.040674",
+  "error": null
+}

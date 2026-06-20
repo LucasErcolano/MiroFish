@@ -1,0 +1,128 @@
+# Operational matrix - Argentina IPC temporal evidence test
+
+experiment_metadata:
+  phase: "S2"
+  issue_source: "#11"
+  line_focus: "temporal evidence inclusion"
+  case_id: "case-c-s2-arg-ipc-line5-gemma"
+  source_case: "CASE-B2-ARG-IPC-2025"
+  question_file: "question.md"
+  system_constraints_file: "system_constraints.md"
+  primary_metric: "IPC horizon score from rubric.md"
+
+model_policy:
+  evaluated_model: "Gemma 3 27B IT"
+  provider_id: "google/gemma-3-27b-it"
+  label: "gemma_temporal_probe"
+
+fixed_simulation_config:
+  rounds: 40
+  density: 2
+  temperature: 0
+  seed: 1
+  output_mode: "structured_json"
+  schema_id: "arg_ipc_2025_v1"
+
+temporal_packages:
+  - id: "T0"
+    max_document_date: "2024-12-31"
+    input_file: "seed_T0.md"
+    label: "base social, institutional and 2024 macro context"
+    sources:
+      - "INST_01"
+      - "INST_02"
+      - "SOCIAL_01"
+      - "POLL_01"
+      - "MACRO_01"
+  - id: "T1"
+    max_document_date: "2025-01-10"
+    input_file: "seed_T1.md"
+    label: "adds early January expectations and IMF constraints"
+    sources:
+      - "INST_01"
+      - "INST_02"
+      - "SOCIAL_01"
+      - "POLL_01"
+      - "MACRO_01"
+      - "MACRO_03"
+      - "GEO_01"
+  - id: "T2"
+    max_document_date: "2025-01-14"
+    input_file: "seed_T2.md"
+    label: "adds official December IPC and political 2025 framing"
+    sources:
+      - "INST_01"
+      - "INST_02"
+      - "SOCIAL_01"
+      - "POLL_01"
+      - "MACRO_01"
+      - "MACRO_03"
+      - "GEO_01"
+      - "MACRO_02"
+      - "POL_01"
+  - id: "T3"
+    max_document_date: "2025-01-31"
+    input_file: "seed_T3.md"
+    label: "full pre-cutoff package"
+    sources:
+      - "INST_01"
+      - "INST_02"
+      - "SOCIAL_01"
+      - "POLL_01"
+      - "MACRO_01"
+      - "MACRO_03"
+      - "GEO_01"
+      - "MACRO_02"
+      - "POL_01"
+      - "MONETARY_01"
+      - "FISCAL_01"
+      - "MONETARY_02"
+      - "MACRO_04"
+
+run_matrix:
+  - id: "gemma_T0_R40_D2"
+    package: "T0"
+    input_file: "seed_T0.md"
+    rounds: 40
+    density: 2
+  - id: "gemma_T1_R40_D2"
+    package: "T1"
+    input_file: "seed_T1.md"
+    rounds: 40
+    density: 2
+  - id: "gemma_T2_R40_D2"
+    package: "T2"
+    input_file: "seed_T2.md"
+    rounds: 40
+    density: 2
+  - id: "gemma_T3_R40_D2"
+    package: "T3"
+    input_file: "seed_T3.md"
+    rounds: 40
+    density: 2
+
+optional_depth_sweep:
+  note: "Run only after the temporal T0-T3 comparison is complete."
+  package: "T3"
+  conditions:
+    - id: "gemma_T3_R10_D2"
+      rounds: 10
+      density: 2
+    - id: "gemma_T3_R80_D2"
+      rounds: 80
+      density: 2
+    - id: "gemma_T3_R40_D1"
+      rounds: 40
+      density: 1
+    - id: "gemma_T3_R40_D3"
+      rounds: 40
+      density: 3
+
+do_not_upload:
+  - "ground_truth_private.md"
+  - "rubric.md"
+  - "manifest.csv"
+  - "config_matrix.yaml"
+  - "config_matrix_source.yaml"
+  - "internal_notes.md"
+  - "output/"
