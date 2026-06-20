@@ -148,3 +148,58 @@ Slim outputs use `output_llama_line5_slim/` and additionally write a
 Note: as in PR #22, `density` is recorded as an experimental condition. The
 current backend enforces the round count through `max_rounds`; density is not yet
 a separate first-class runtime control.
+
+## Slim Results
+
+The completed slim matrices use the same five Line 5 conditions as PR #22 and
+reuse one graph build per case. All rows below include `worldbuilding_trace.json`,
+`simulation_config.json`, `run_state.json`, `state.json`, report artifacts and
+`eval_result.json`.
+
+### Bolivia Runoff
+
+Ground truth: `paz_gana`, with Paz 54.53%, Quiroga 45.47%, margin +9.06.
+
+| Variant | Prediction | Winner score | Paz | Quiroga | Otros | MAE vote share | Predicted margin | Margin abs error | Parse errors |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `llama_T3_slim_R10_D2` | `quiroga_gana` | 0 | 43.0 | 52.0 | 5.0 | 7.687 | -9.0 | 18.06 | 0 |
+| `llama_T3_slim_R40_D1` | `quiroga_gana` | 0 | 40.0 | 45.0 | 15.0 | 10.000 | -5.0 | 14.06 | 0 |
+| `llama_T3_slim_R40_D2` | `quiroga_gana` | 0 | 42.8 | 51.2 | 6.0 | 7.820 | -8.4 | 17.46 | 0 |
+| `llama_T3_slim_R40_D3` | `quiroga_gana` | 0 | 42.8 | 51.2 | 6.0 | 7.820 | -8.4 | 17.46 | 0 |
+| `llama_T3_slim_R80_D2` | `quiroga_gana` | 0 | 43.0 | 52.0 | 5.0 | 7.687 | -9.0 | 18.06 | 0 |
+
+In this case, increasing rounds or density did not reverse the dominant polling
+signal in the evidence packet. The model remained anchored on a Quiroga win even
+though the post-event ground truth was a Paz win.
+
+### Copa America Final
+
+Ground truth: Argentina won the 2024 Copa America final.
+
+| Variant | Prediction | Score | Confidence | Winner probability | Winner range | Goal margin | Parse errors |
+|---|---|---:|---:|---:|---|---|---:|
+| `llama_T3_slim_R10_D2` | Argentina | 4/5 | 0.70 | 0.475 | 0.45-0.50 | 1.0 [0.0, 2.0] | 0 |
+| `llama_T3_slim_R40_D1` | Argentina | 5/5 | 0.70 | 0.475 | 0.45-0.50 | 1.0 [0.0, 2.0] | 0 |
+| `llama_T3_slim_R40_D2` | Argentina | 5/5 | 0.70 | 0.475 | 0.45-0.50 | 1.0 [0.0, 2.0] | 0 |
+| `llama_T3_slim_R40_D3` | Argentina | 5/5 | 0.70 | 0.475 | 0.45-0.50 | 1.0 [0.0, 2.0] | 0 |
+| `llama_T3_slim_R80_D2` | Argentina | 5/5 | 0.70 | 0.475 | 0.45-0.50 | 1.0 [0.0, 2.0] | 0 |
+
+The Copa America matrix is almost invariant across conditions. All variants
+predict Argentina with the same probability and margin, which suggests that
+additional rounds do not add much when the evidence packet already contains a
+strong and consistent pre-event favorite.
+
+## Cross-Case Interpretation
+
+The IPC results from PR #22 show one meaningful depth effect: `R80-D2` moved to a
+more explicit disinflation path while most other conditions stayed close to each
+other. Bolivia and Copa America show the opposite pattern: when evidence includes
+a strong prior signal, such as polls or market/model odds, the simulation tends
+to preserve that signal instead of exploring a contrary outcome.
+
+This suggests a useful follow-up experiment for the multi-agent setting: split
+evidence across agents instead of giving all agents the same packet. Some agents
+could receive poll/market signals, others qualitative context, institutional
+risks or counterevidence. Under that setup, extra rounds may matter more because
+agents would need to negotiate between partially different evidence views instead
+of converging immediately on the same dominant prior.

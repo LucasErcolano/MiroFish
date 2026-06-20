@@ -1,0 +1,98 @@
+{
+  "predicted_winner": "Argentina",
+  "confidence": 0.7,
+  "winner_probability_point": 0.475,
+  "winner_probability_range": {
+    "winner_min": 0.45,
+    "winner_max": 0.5
+  },
+  "predicted_goal_margin": {
+    "winner_goals_margin_point": 1.0,
+    "winner_goals_margin_min": 0.0,
+    "winner_goals_margin_max": 2.0,
+    "rationale": "Based on historical performance and recent form, Argentina is expected to have a slight advantage over Colombia."
+  },
+  "probability_calibration": {
+    "method": "Model-based probability estimation",
+    "confidence_rationale": "The confidence level is based on the strength of the evidence, including Argentina's historical performance, recent form, and market odds.",
+    "range_rationale": "The probability range is estimated based on the uncertainty of the outcome, considering factors such as team performance, injuries, and tactical decisions."
+  },
+  "probability_drivers": [
+    {
+      "factor": "Historical performance",
+      "direction": "Argentina",
+      "source_id": [
+        "COPA_T3_SLIM_01"
+      ]
+    },
+    {
+      "factor": "Recent form",
+      "direction": "Argentina",
+      "source_id": [
+        "COPA_T3_SLIM_02"
+      ]
+    },
+    {
+      "factor": "Market odds",
+      "direction": "Argentina",
+      "source_id": [
+        "COPA_T3_SLIM_03"
+      ]
+    }
+  ],
+  "justification": [
+    {
+      "claim": "Argentina has a strong historical performance in Copa America",
+      "source_id": [
+        "SLIM_01"
+      ]
+    },
+    {
+      "claim": "Argentina has been in good recent form, with a win over Canada in the semifinals",
+      "source_id": [
+        "SLIM_02"
+      ]
+    },
+    {
+      "claim": "Argentina has a higher market odds of winning the tournament",
+      "source_id": [
+        "SLIM_03"
+      ]
+    }
+  ],
+  "uncertainty": [
+    {
+      "factor": "Injuries to key players",
+      "source_id": [
+        "SLIM_02"
+      ]
+    },
+    {
+      "factor": "Tactical decisions by the coaches",
+      "source_id": [
+        "SLIM_04"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "claim": "Argentina has a strong squad with players like Lionel Messi and Angel Di Maria",
+      "source_id": [
+        "SLIM_04"
+      ]
+    },
+    {
+      "claim": "Colombia has a good team with players like James Rodriguez and Luis Diaz",
+      "source_id": [
+        "SLIM_04"
+      ]
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2024-07-13",
+    "temporal_package": "T3_slim",
+    "model": "meta-llama/llama-3.3-70b-instruct",
+    "simulation_id": "sim_ff326656404f",
+    "graph_id": "mirofish_bb802559676c4df2"
+  }
+}

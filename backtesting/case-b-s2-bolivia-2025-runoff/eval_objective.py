@@ -8,14 +8,14 @@ from pathlib import Path
 
 
 PAZ_WIN_RE = re.compile(
-    r"(prediccion\s*(?:principal)?\s*:\s*)?(paz|rodrigo paz).{0,80}(gana|ganara|vence|vencera|se impone)",
+    r"(prediccion\s*(?:principal)?\s*[:：]\s*)?(paz|rodrigo paz).{0,80}(gana|ganara|vence|vencera|se impone|gana la eleccion|赢得|获胜|胜出|领先|最有可能)",
     re.IGNORECASE | re.DOTALL,
 )
 QUIROGA_WIN_RE = re.compile(
-    r"(prediccion\s*(?:principal)?\s*:\s*)?(quiroga|tuto).{0,80}(gana|ganara|vence|vencera|se impone)",
+    r"(prediccion\s*(?:principal)?\s*[:：]\s*)?(quiroga|tuto|jorge quiroga).{0,80}(gana|ganara|vence|vencera|se impone|gana la eleccion|赢得|获胜|胜出|领先|最有可能)",
     re.IGNORECASE | re.DOTALL,
 )
-PREDICTION_LINE_RE = re.compile(r"prediccion(?:\s+principal)?\s*:\s*([^\n]+)", re.IGNORECASE)
+PREDICTION_LINE_RE = re.compile(r"prediccion(?:\s+principal)?\s*[:：]\s*([^\n]+)", re.IGNORECASE)
 
 GROUND_TRUTH_VOTE_SHARES = {
     "paz": 54.53,
@@ -25,18 +25,21 @@ GROUND_TRUTH_VOTE_SHARES = {
 GROUND_TRUTH_MARGIN = 9.06
 
 VOTE_SHARE_PATTERNS = {
-    "paz": re.compile(r"(rodrigo paz|paz)\s*[:\-]\s*([0-9]+(?:[.,][0-9]+)?)\s*%?", re.IGNORECASE),
+    "paz": re.compile(
+        r"(rodrigo paz|paz)[^\n0-9%]{0,40}([0-9]+(?:[.,][0-9]+)?)\s*%",
+        re.IGNORECASE,
+    ),
     "quiroga": re.compile(
-        r"(jorge\s+quiroga|tuto\s+quiroga|quiroga|tuto)\s*[:\-]\s*([0-9]+(?:[.,][0-9]+)?)\s*%?",
+        r"(jorge\s+quiroga|tuto\s+quiroga|quiroga|tuto)[^\n0-9%]{0,40}([0-9]+(?:[.,][0-9]+)?)\s*%",
         re.IGNORECASE,
     ),
     "otros": re.compile(
-        r"(otros\s*/\s*blanco\s*/\s*nulo|otros|blanco|nulo)\s*[:\-]\s*([0-9]+(?:[.,][0-9]+)?)\s*%?",
+        r"(otros\s*/\s*blanco\s*/\s*nulo|otros|blanco|nulo|其他/空白/无效票|其他|空白|无效票)[^\n0-9%]{0,40}([0-9]+(?:[.,][0-9]+)?)\s*%",
         re.IGNORECASE,
     ),
 }
 MARGIN_RE = re.compile(
-    r"margen(?:\s+estimado)?[^\n:]*[:\-]\s*([+-]?[0-9]+(?:[.,][0-9]+)?)",
+    r"(?:margen(?:\s+estimado)?|差距|领先)[^\n:：-]*[:：-]?\s*([+-]?[0-9]+(?:[.,][0-9]+)?)\s*(?:puntos|个百分点)?",
     re.IGNORECASE,
 )
 
@@ -81,6 +84,8 @@ def mean_absolute_error(predicted: dict[str, float]) -> float | None:
 
 
 def infer_margin(text: str, shares: dict[str, float], prediction: str | None) -> float | None:
+    if "paz" in shares and "quiroga" in shares:
+        return round(shares["paz"] - shares["quiroga"], 3)
     match = MARGIN_RE.search(text)
     if match:
         margin = parse_number(match.group(1))
@@ -89,8 +94,6 @@ def infer_margin(text: str, shares: dict[str, float], prediction: str | None) ->
         if prediction == "paz_gana":
             return abs(margin)
         return margin
-    if "paz" in shares and "quiroga" in shares:
-        return round(shares["paz"] - shares["quiroga"], 3)
     return None
 
 

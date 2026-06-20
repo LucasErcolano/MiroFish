@@ -1,0 +1,26 @@
+{
+  "case_id": "bolivia_2025_runoff_s2",
+  "variant": "llama_T3_slim_R40_D3",
+  "model_policy": "llama_line5_probe_slim",
+  "seed": 1,
+  "prediction": "quiroga_gana",
+  "ground_truth": "paz_gana",
+  "winner_score": 0,
+  "score": 0,
+  "parsed_vote_shares": {
+    "paz": 42.8,
+    "quiroga": 51.2,
+    "otros": 6.0
+  },
+  "ground_truth_vote_shares": {
+    "paz": 54.53,
+    "quiroga": 45.47,
+    "otros": 0.0
+  },
+  "mae_vote_share": 7.82,
+  "predicted_margin": -8.4,
+  "ground_truth_margin": 9.06,
+  "margin_abs_error": 17.46,
+  "parse_errors": 0,
+  "leak_flags": []
+}

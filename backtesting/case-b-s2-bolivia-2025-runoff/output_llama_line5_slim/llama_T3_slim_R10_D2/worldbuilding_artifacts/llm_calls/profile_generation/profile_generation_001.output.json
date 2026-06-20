@@ -1,0 +1,9 @@
+{
+  "stage": "profile_generation",
+  "model": "meta-llama/llama-3.3-70b-instruct",
+  "output_text": "{\n  \"bio\": \"MAS官方账号，分享机构动态、政策信息和最新新闻，欢迎关注\",\n  \"persona\": \"MAS是玻利维亚的一个政治机构，主要职能是制定和实施国家政策。账号定位为官方信息发布平台，目标受众为玻利维亚公民和关注玻利维亚政治的外国人。发言风格正式、专业，常用表达为政策解读和新闻发布。发布内容特点为政策信息、新闻动态和官方声明，发布频率为每周几次，活跃时间段为工作日。立场态度为中立、客观，面对争议的处理方式为发布官方声明。特殊说明为代表玻利维亚政府的立场，运营习惯为发布官方信息和回复网民咨询。机构记忆为玻利维亚政治事件的参与者和关注者，曾参与过多次重大事件的讨论和决策\",\n  \"age\": 30,\n  \"gender\": \"other\",\n  \"mbti\": \"ISTJ\",\n  \"country\": \"玻利维亚\",\n  \"profession\": \"政府机构\",\n  \"interested_topics\": [\"政治\", \"经济\", \"社会\"]\n}",
+  "entity_name": "MAS",
+  "entity_type": "Organization",
+  "attempt": 1,
+  "finish_reason": "stop"
+}

@@ -1,0 +1,755 @@
+{
+  "simulation_id": "sim_2ad7dffbcba4",
+  "runner_status": "completed",
+  "current_round": 40,
+  "total_rounds": 40,
+  "simulated_hours": 0,
+  "total_simulation_hours": 120,
+  "progress_percent": 100.0,
+  "twitter_current_round": 40,
+  "reddit_current_round": 40,
+  "twitter_simulated_hours": 0,
+  "reddit_simulated_hours": 0,
+  "twitter_running": false,
+  "reddit_running": false,
+  "twitter_completed": true,
+  "reddit_completed": true,
+  "twitter_actions_count": 130,
+  "reddit_actions_count": 10,
+  "total_actions_count": 140,
+  "started_at": "2026-06-18T21:59:17.565382",
+  "updated_at": "2026-06-18T22:07:56.902135",
+  "completed_at": "2026-06-18T22:08:06.911259",
+  "error": null,
+  "process_pid": 2126325,
+  "recent_actions": [
+    {
+      "round_num": 40,
+      "timestamp": "2026-06-18T22:07:55.284707",
+      "platform": "twitter",
+      "agent_id": 2,
+      "agent_name": "Copa America",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Get ready for the ultimate football experience! Copa America is just around the corner, and we've got you covered with the latest updates, scores, and highlights. Stay tuned for more! #CopaAmerica #FootballFever",
+        "post_id": 71
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 39,
+      "timestamp": "2026-06-18T22:07:23.429974",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "FanDuel",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 19,
+        "target_user_name": "World Cup"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 38,
+      "timestamp": "2026-06-18T22:06:51.323245",
+      "platform": "twitter",
+      "agent_id": 24,
+      "agent_name": "MasseyRatings",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "2",
+        "new_post_id": 70,
+        "original_content": "Copa America 2024决赛将在Hard Rock Stadium举行，两队的球迷们都非常渴望看到自己的球队赢得冠军。",
+        "original_author_name": "FanDuel",
+        "quote_content": "Copa America 2024决赛将在Hard Rock Stadium举行，两队的球迷们都非常渴望看到自己的球队赢得冠军。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 38,
+      "timestamp": "2026-06-18T22:06:51.323186",
+      "platform": "twitter",
+      "agent_id": 16,
+      "agent_name": "Opta",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Opta的分析中，球丽们也能可以收到推带。",
+        "post_id": 69
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 38,
+      "timestamp": "2026-06-18T22:06:51.323113",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "FanDuel",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello, I'm fanduel_164, a leading sports data analysis and betting platform. I'm excited to share my insights and analysis for the Copa America 2024.",
+        "post_id": 68
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 38,
+      "timestamp": "2026-06-18T22:06:51.322981",
+      "platform": "twitter",
+      "agent_id": 15,
+      "agent_name": "Hard Rock Stadium",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 18
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 37,
+      "timestamp": "2026-06-18T22:06:19.414128",
+      "platform": "twitter",
+      "agent_id": 16,
+      "agent_name": "Opta",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Opta的分析中，球丽们也能可以收到推带。",
+        "post_id": 67
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 37,
+      "timestamp": "2026-06-18T22:06:19.413940",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "FanDuel",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "2",
+        "new_post_id": 66,
+        "original_content": "Copa America 2024决赛将在Hard Rock Stadium举行，两队的球迷们都非常渴望看到自己的球队赢得冠军。",
+        "original_author_name": "FanDuel",
+        "quote_content": "Hello, I'm fanduel_164, a professional sports data analysis and betting platform. I'm excited to share my insights and analysis for the Copa America 2024."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 36,
+      "timestamp": "2026-06-18T22:05:49.383477",
+      "platform": "twitter",
+      "agent_id": 15,
+      "agent_name": "Hard Rock Stadium",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 17
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 35,
+      "timestamp": "2026-06-18T22:05:18.586698",
+      "platform": "twitter",
+      "agent_id": 5,
+      "agent_name": "World Cup",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "The World Cup is the highest level of international football competition, and it's a great event for football fans around the world. The official World Cup account is a professional sports event account, and its target audience is global football fans. The core function is to provide the latest World Cup schedule, scores, team introductions, and other information.",
+        "post_id": 65
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 35,
+      "timestamp": "2026-06-18T22:05:18.586546",
+      "platform": "twitter",
+      "agent_id": 24,
+      "agent_name": "MasseyRatings",
+      "action_type": "LIKE_POST",
+      "action_args": {
+        "post_id": "2",
+        "like_id": 8,
+        "post_content": "Copa America 2024决赛将在Hard Rock Stadium举行，两队的球迷们都非常渴望看到自己的球队赢得冠军。",
+        "post_author_name": "FanDuel"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 34,
+      "timestamp": "2026-06-18T22:04:45.419972",
+      "platform": "twitter",
+      "agent_id": 27,
+      "agent_name": "Ecuador",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Ecuador、一、我是我",
+        "post_id": 64
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 33,
+      "timestamp": "2026-06-18T22:04:15.357395",
+      "platform": "twitter",
+      "agent_id": 24,
+      "agent_name": "MasseyRatings",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 33,
+      "timestamp": "2026-06-18T22:04:15.356987",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "FanDuel",
+      "action_type": "LIKE_POST",
+      "action_args": {
+        "post_id": "2",
+        "like_id": 7,
+        "post_content": "Copa America 2024决赛将在Hard Rock Stadium举行，两队的球迷们都非常渴望看到自己的球队赢得冠军。",
+        "post_author_name": "FanDuel"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-18T22:03:45.555855",
+      "platform": "twitter",
+      "agent_id": 21,
+      "agent_name": "Rodrigo De Paul",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "30",
+        "new_post_id": 63,
+        "original_content": "Let's talk about football! Who's your favorite team?",
+        "original_author_name": "Rodrigo De Paul",
+        "quote_content": "Recently, Argentina's star player, Rodrigo De Paul, expressed his excitement about the upcoming World Cup. He said, “I’m really looking forward to the World Cup, it’s going to be a great tournament!”"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-18T22:03:45.555793",
+      "platform": "twitter",
+      "agent_id": 18,
+      "agent_name": "Emiliano Martinez",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "53",
+        "new_post_id": 62,
+        "original_content": "",
+        "original_author_name": "Emiliano Martinez",
+        "quote_content": "我是元联球中国来的"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-18T22:03:45.555745",
+      "platform": "twitter",
+      "agent_id": 20,
+      "agent_name": "Luis Diaz",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 61,
+        "original_content": "Opta的分析中，球丽们也能可以收到推带。",
+        "original_author_name": "Opta"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-18T22:03:45.555697",
+      "platform": "twitter",
+      "agent_id": 26,
+      "agent_name": "Jhon Arias",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "49",
+        "new_post_id": 60,
+        "original_content": "Hello, I'm Jhon Arias, a professional footballer from Colombia. I'm excited to share my training life, match experiences, and personal thoughts with you all. Let's chat about football!",
+        "original_author_name": "Jhon Arias",
+        "quote_content": "I'm so excited to share my passion for football with all of you!"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-18T22:03:45.555646",
+      "platform": "twitter",
+      "agent_id": 23,
+      "agent_name": "Camilo Vargas",
+      "action_type": "LIKE_POST",
+      "action_args": {
+        "post_id": "48",
+        "like_id": 6,
+        "post_content": "Hello, I am julian_alvarez_844, a professional football player from Argentina. I am excited to share my experiences and thoughts about football with all of you. Let's talk about the beautiful game!",
+        "post_author_name": "Julian Alvarez"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-18T22:03:45.555596",
+      "platform": "twitter",
+      "agent_id": 17,
+      "agent_name": "Enzo Fernandez",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 59,
+        "original_content": "Welcome to Copa America! Follow us for the latest updates on the tournament.",
+        "original_author_name": "Copa America"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-18T22:03:45.555540",
+      "platform": "twitter",
+      "agent_id": 16,
+      "agent_name": "Opta",
+      "action_type": "LIKE_POST",
+      "action_args": {
+        "post_id": "32",
+        "like_id": 5,
+        "post_content": "Opta的分析中，球丽们也能可以收到推带。",
+        "post_author_name": "Opta"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-18T22:03:45.555480",
+      "platform": "twitter",
+      "agent_id": 24,
+      "agent_name": "MasseyRatings",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 16,
+        "target_user_name": "Uruguay"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-18T22:03:45.555348",
+      "platform": "twitter",
+      "agent_id": 22,
+      "agent_name": "James Rodriguez",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T22:03:15.334205",
+      "platform": "twitter",
+      "agent_id": 9,
+      "agent_name": "Argentina",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "39",
+        "new_post_id": 58,
+        "original_content": "2022 一東和国足球與会 大午和名子 长日人民走动 东华 走村 2024 三十中国足球與会",
+        "original_author_name": "Argentina",
+        "quote_content": "2022 一東和国足球以會 大明和名子 长日人民跑 東華 跑村 2024 三十中国足球以會"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T22:03:15.334156",
+      "platform": "twitter",
+      "agent_id": 26,
+      "agent_name": "Jhon Arias",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 15
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T22:03:15.334085",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "FanDuel",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "2",
+        "new_post_id": 57,
+        "original_content": "Copa America 2024决赛将在Hard Rock Stadium举行，两队的球迷们都非常渴望看到自己的球队赢得冠军。",
+        "original_author_name": "FanDuel",
+        "quote_content": "Hello, I'm fanduel_164, a leading sports data analysis and betting platform. I'm excited to share my insights and analysis for the Copa America 2024."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T22:03:15.334040",
+      "platform": "twitter",
+      "agent_id": 22,
+      "agent_name": "James Rodriguez",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello, I'm James Rodriguez, a Colombian football player. I'm excited to share my experiences and thoughts with you all!",
+        "post_id": 56
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T22:03:15.333991",
+      "platform": "twitter",
+      "agent_id": 20,
+      "agent_name": "Luis Diaz",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "34",
+        "new_post_id": 55,
+        "original_content": "Welcome to my page! I'm Camilo Vargas, a Colombian football player. Share your passion for football with me! #football #colombia",
+        "original_author_name": "Camilo Vargas",
+        "quote_content": "I really agree with this post, football is a great sport!"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T22:03:15.333945",
+      "platform": "twitter",
+      "agent_id": 24,
+      "agent_name": "MasseyRatings",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Our team of experienced sports analysts and data scientists are excited to provide professional analysis and insights for the Copa America 2024.",
+        "post_id": 54
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T22:03:15.333896",
+      "platform": "twitter",
+      "agent_id": 18,
+      "agent_name": "Emiliano Martinez",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 53,
+        "original_content": "Albiceleste Estoy Aquí",
+        "original_author_name": "Emiliano Martinez"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T22:03:15.333850",
+      "platform": "twitter",
+      "agent_id": 3,
+      "agent_name": "Jhon Cordoba",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 14,
+        "target_user_name": "Julian Alvarez"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T22:03:15.333803",
+      "platform": "twitter",
+      "agent_id": 17,
+      "agent_name": "Enzo Fernandez",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 13,
+        "target_user_name": "Copa America"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T22:03:15.333753",
+      "platform": "twitter",
+      "agent_id": 23,
+      "agent_name": "Camilo Vargas",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 12,
+        "target_user_name": "Julian Alvarez"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T22:03:15.333703",
+      "platform": "twitter",
+      "agent_id": 13,
+      "agent_name": "Julian Alvarez",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T22:03:15.333649",
+      "platform": "twitter",
+      "agent_id": 28,
+      "agent_name": "Angel Di Maria",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T22:03:15.333584",
+      "platform": "twitter",
+      "agent_id": 21,
+      "agent_name": "Rodrigo De Paul",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 52,
+        "original_content": "Let's talk about football! Who's your favorite team?",
+        "original_author_name": "Rodrigo De Paul"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T22:03:15.333451",
+      "platform": "twitter",
+      "agent_id": 16,
+      "agent_name": "Opta",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 51,
+        "original_content": "Opta的分析中，球丽们也能可以收到推带。",
+        "original_author_name": "Opta"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T22:02:47.924286",
+      "platform": "twitter",
+      "agent_id": 22,
+      "agent_name": "James Rodriguez",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "26",
+        "new_post_id": 50,
+        "original_content": "Hello, I'm Jhon Cordoba, a Colombian football player. I'm excited to share my football experiences and stories with you all. Let's explore the world of football together!",
+        "original_author_name": "Jhon Cordoba",
+        "quote_content": "Nice to meet you, Jhon! I'm James Rodriguez, also a Colombian football player. Let's share our experiences and thoughts about football!"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T22:02:47.924238",
+      "platform": "twitter",
+      "agent_id": 26,
+      "agent_name": "Jhon Arias",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello, I'm Jhon Arias, a professional footballer from Colombia. I'm excited to share my training life, match experiences, and personal thoughts with you all. Let's chat about football!",
+        "post_id": 49
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T22:02:47.924197",
+      "platform": "twitter",
+      "agent_id": 13,
+      "agent_name": "Julian Alvarez",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello, I am julian_alvarez_844, a professional football player from Argentina. I am excited to share my experiences and thoughts about football with all of you. Let's talk about the beautiful game!",
+        "post_id": 48
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T22:02:47.924154",
+      "platform": "twitter",
+      "agent_id": 17,
+      "agent_name": "Enzo Fernandez",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Looking forward to winning the World Cup with my Argentinian teammates",
+        "post_id": 47
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T22:02:47.924103",
+      "platform": "twitter",
+      "agent_id": 7,
+      "agent_name": "Richard Rios",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "26",
+        "new_post_id": 46,
+        "original_content": "Hello, I'm Jhon Cordoba, a Colombian football player. I'm excited to share my football experiences and stories with you all. Let's explore the world of football together!",
+        "original_author_name": "Jhon Cordoba",
+        "quote_content": "Nice to meet you, Jhon! I'm Richard Rios, a Colombian football player as well. Let's share our experiences and connect with other football enthusiasts!"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T22:02:47.924062",
+      "platform": "twitter",
+      "agent_id": 4,
+      "agent_name": "Davinson Sanchez",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello everyone, I'm Davinson Sanchez, and I'm excited to share my thoughts on the latest football matches and news. Let's discuss!",
+        "post_id": 45
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T22:02:47.924018",
+      "platform": "twitter",
+      "agent_id": 28,
+      "agent_name": "Angel Di Maria",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello, this is Angel Di Maria, Argentina national team player. Welcome to follow my game and life dynamics.",
+        "post_id": 44
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T22:02:47.923971",
+      "platform": "twitter",
+      "agent_id": 0,
+      "agent_name": "Lautaro Martinez",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "13",
+        "new_post_id": 43,
+        "original_content": "乌拉圭国家足球队准备好了，Copa America 2024冠军在等待！",
+        "original_author_name": "Uruguay",
+        "quote_content": "I am excited for Copa America 2024!"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T22:02:47.923928",
+      "platform": "twitter",
+      "agent_id": 18,
+      "agent_name": "Emiliano Martinez",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Albiceleste Estoy Aquí",
+        "post_id": 42
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T22:02:47.923886",
+      "platform": "twitter",
+      "agent_id": 12,
+      "agent_name": "Daniel Munoz",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 11
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T22:02:47.923839",
+      "platform": "twitter",
+      "agent_id": 9,
+      "agent_name": "Argentina",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 10
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T22:02:47.923794",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "Colombia",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 9
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T22:02:47.923750",
+      "platform": "twitter",
+      "agent_id": 20,
+      "agent_name": "Luis Diaz",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 8
+      },
+      "result": null,
+      "success": true
+    }
+  ],
+  "rounds_count": 0
+}

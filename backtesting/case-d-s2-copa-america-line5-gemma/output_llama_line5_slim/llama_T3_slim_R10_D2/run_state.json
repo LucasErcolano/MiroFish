@@ -1,0 +1,293 @@
+{
+  "simulation_id": "sim_47e7598677ec",
+  "runner_status": "completed",
+  "current_round": 10,
+  "total_rounds": 10,
+  "simulated_hours": 0,
+  "total_simulation_hours": 120,
+  "progress_percent": 100.0,
+  "twitter_current_round": 10,
+  "reddit_current_round": 10,
+  "twitter_simulated_hours": 0,
+  "reddit_simulated_hours": 0,
+  "twitter_running": false,
+  "reddit_running": false,
+  "twitter_completed": true,
+  "reddit_completed": true,
+  "twitter_actions_count": 9,
+  "reddit_actions_count": 10,
+  "total_actions_count": 19,
+  "started_at": "2026-06-18T21:52:02.139298",
+  "updated_at": "2026-06-18T21:52:32.157008",
+  "completed_at": "2026-06-18T21:52:32.157221",
+  "error": null,
+  "process_pid": 2083527,
+  "recent_actions": [
+    {
+      "round_num": 10,
+      "timestamp": "2026-06-18T21:52:31.609646",
+      "platform": "twitter",
+      "agent_id": 27,
+      "agent_name": "Ecuador",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "1",
+        "new_post_id": 4,
+        "original_content": "FanDuel的预测模型认为Argentina赢的概率是47.6%，你怎么看？",
+        "original_author_name": "Copa America",
+        "quote_content": "Ecuador的预测模型认为Ecuador赢的概率是50.2%，我们一起发布了要点你的看法"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 10,
+      "timestamp": "2026-06-18T21:52:31.609519",
+      "platform": "twitter",
+      "agent_id": 16,
+      "agent_name": "Opta",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "1",
+        "new_post_id": 3,
+        "original_content": "FanDuel的预测模型认为Argentina赢的概率是47.6%，你怎么看？",
+        "original_author_name": "Copa America",
+        "quote_content": "Opta的预测模型认为Argentina赢的概率是48.5%，我们为你带来此游戏的分析。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 9,
+      "timestamp": "2026-06-18T21:52:29.264803",
+      "platform": "twitter",
+      "agent_id": 24,
+      "agent_name": "MasseyRatings",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "1",
+        "new_post_id": 2,
+        "original_content": "FanDuel的预测模型认为Argentina赢的概率是47.6%，你怎么看？",
+        "original_author_name": "Copa America",
+        "quote_content": "We at MasseyRatings agree with FanDuel's prediction model. Our own analysis suggests that Argentina has a 48.2% chance of winning."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 9,
+      "timestamp": "2026-06-18T21:52:29.264674",
+      "platform": "twitter",
+      "agent_id": 2,
+      "agent_name": "Copa America",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "FanDuel的预测模型认为Argentina赢的概率是47.6%，你怎么看？",
+        "post_id": 1
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 9,
+      "timestamp": "2026-06-18T21:52:23.937826",
+      "platform": "reddit",
+      "agent_id": 2,
+      "agent_name": "Copa America",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "FanDuel的预测模型认为Argentina赢的概率是47.6%，你怎么看？",
+        "post_id": 5
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 9,
+      "timestamp": "2026-06-18T21:52:23.937779",
+      "platform": "reddit",
+      "agent_id": 2,
+      "agent_name": "Copa America",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Colombia队在近期的比赛中表现出了什么样的特点？",
+        "post_id": 4
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 9,
+      "timestamp": "2026-06-18T21:52:23.937717",
+      "platform": "reddit",
+      "agent_id": 2,
+      "agent_name": "Copa America",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Lionel Messi在本届Copa America中的表现如何？",
+        "post_id": 3
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 9,
+      "timestamp": "2026-06-18T21:52:23.937660",
+      "platform": "reddit",
+      "agent_id": 2,
+      "agent_name": "Copa America",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Argentina队历史上对阵Colombia队的战绩如何？",
+        "post_id": 2
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 9,
+      "timestamp": "2026-06-18T21:52:23.937545",
+      "platform": "reddit",
+      "agent_id": 2,
+      "agent_name": "Copa America",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "谁会赢得Copa America 2024冠军？",
+        "post_id": 1
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-18T21:52:17.493021",
+      "platform": "reddit",
+      "agent_id": 2,
+      "agent_name": "Copa America",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "FanDuel的预测模型认为Argentina赢的概率是47.6%，你怎么看？"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-18T21:52:17.492964",
+      "platform": "reddit",
+      "agent_id": 2,
+      "agent_name": "Copa America",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Colombia队在近期的比赛中表现出了什么样的特点？"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-18T21:52:17.492902",
+      "platform": "reddit",
+      "agent_id": 2,
+      "agent_name": "Copa America",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Lionel Messi在本届Copa America中的表现如何？"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-18T21:52:17.492835",
+      "platform": "reddit",
+      "agent_id": 2,
+      "agent_name": "Copa America",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Argentina队历史上对阵Colombia队的战绩如何？"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-18T21:52:17.492759",
+      "platform": "reddit",
+      "agent_id": 2,
+      "agent_name": "Copa America",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "谁会赢得Copa America 2024冠军？"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-18T21:52:17.402610",
+      "platform": "twitter",
+      "agent_id": 2,
+      "agent_name": "Copa America",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "FanDuel的预测模型认为Argentina赢的概率是47.6%，你怎么看？"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-18T21:52:17.402552",
+      "platform": "twitter",
+      "agent_id": 2,
+      "agent_name": "Copa America",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Colombia队在近期的比赛中表现出了什么样的特点？"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-18T21:52:17.402492",
+      "platform": "twitter",
+      "agent_id": 2,
+      "agent_name": "Copa America",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Lionel Messi在本届Copa America中的表现如何？"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-18T21:52:17.402428",
+      "platform": "twitter",
+      "agent_id": 2,
+      "agent_name": "Copa America",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Argentina队历史上对阵Colombia队的战绩如何？"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-18T21:52:17.402356",
+      "platform": "twitter",
+      "agent_id": 2,
+      "agent_name": "Copa America",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "谁会赢得Copa America 2024冠军？"
+      },
+      "result": null,
+      "success": true
+    }
+  ],
+  "rounds_count": 0
+}

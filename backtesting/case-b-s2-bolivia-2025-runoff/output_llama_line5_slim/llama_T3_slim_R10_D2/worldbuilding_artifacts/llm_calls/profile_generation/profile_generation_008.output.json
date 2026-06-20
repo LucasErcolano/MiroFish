@@ -1,0 +1,9 @@
+{
+  "stage": "profile_generation",
+  "model": "meta-llama/llama-3.3-70b-instruct",
+  "output_text": "```json\n{\n  \"bio\": \"Samuel Doria Medina是一位政治家，支持Rodrigo Paz。曾参与过多次政治活动，并在社会中有一定影响力。\",\n  \"persona\": \"Samuel Doria Medina是一位55岁的政治家，职业是政治家，教育背景是大学毕业。所在地是玻利维亚。他的重要经历包括支持Rodrigo Paz，并参与过多次政治活动。他的人物背景是与Rodrigo Paz和Jorge Quiroga有关，社会关系良好。他的性格特征是INTJ类型，核心性格是果断、自信，情绪表达方式是直接、坦率。社交媒体行为是发帖频率中等，内容偏好是政治和社会话题，互动风格是直接、坦率，语言特点是正式、专业。立场观点是支持Rodrigo Paz和反对MAS。独特特征是具有强烈的政治理念和社会责任感。个人记忆是他支持Rodrigo Paz，并参与过多次政治活动。\",\n  \"age\": 55,\n  \"gender\": \"male\",\n  \"mbti\": \"INTJ\",\n  \"country\": \"玻利维亚\",\n  \"profession\": \"政治家\",\n  \"interested_topics\": [\"政治\", \"社会\", \"经济\"]\n}\n```",
+  "entity_name": "Samuel Doria Medina",
+  "entity_type": "Person",
+  "attempt": 1,
+  "finish_reason": "stop"
+}

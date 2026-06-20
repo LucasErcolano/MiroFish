@@ -1,0 +1,7 @@
+{
+  "stage": "config_event",
+  "model": "meta-llama/llama-3.3-70b-instruct",
+  "output_text": "{\n    \"hot_topics\": [\"bolivia\", \"presidential election\", \"runoff\", \"economy\", \"MAS\", \"IMF\", \"United States\"],\n    \"narrative_direction\": \"随着选举的临近，舆论的焦点将集中在各候选人的经济政策、对MAS的态度以及对国际关系的看法上。Quiroga和Paz两位候选人的竞争将会非常激烈，外界对他们能否带领玻利维亚走出经济危机、改善与美国的关系等问题进行了广泛的讨论。\",\n    \"initial_posts\": [\n        {\"content\": \"Quiroga和Paz两位候选人在经济政策上的对比将会是本次选举的焦点。Quiroga主张更为激进的经济改革，而Paz则强调渐进式的经济转型。\", \"poster_type\": \"Person\"},\n        {\"content\": \"MAS的支持率直线下降，这将会对本次选举产生重大影响。许多选民开始寻找替代性的选择。\", \"poster_type\": \"Organization\"},\n        {\"content\": \"美国官员最近会见了玻利维亚的总统候选人，讨论了改善两国关系的可能性。这一事件对选举结果有着重要的影响。\", \"poster_type\": \"GovernmentOfficial\"}\n    ],\n    \"reasoning\": \"通过分析选举过程中的关键事件、候选人的政策主张以及外界的反应，可以看出本次选举的结果将会受到多种因素的影响，包括经济政策、对MAS的态度、国际关系等。\"\n}",
+  "attempt": 1,
+  "finish_reason": "stop"
+}

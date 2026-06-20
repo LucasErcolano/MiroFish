@@ -1,0 +1,9 @@
+{
+  "stage": "profile_generation",
+  "model": "meta-llama/llama-3.3-70b-instruct",
+  "output_text": "{\n\"bio\": \"玻利维亚政治家，支持罗德里戈·帕兹，坚持自己的政治理念\",\n\"persona\": \"萨穆埃尔·多里亚·梅迪纳是一位政治家，出生于玻利维亚，现年55岁，拥有法律学位。作为一名政治家，他有着丰富的经历，曾参与过多次重要的政治活动。他支持罗德里戈·帕兹，并与他有着密切的关系。他是一个INTJ类型的人，具有强烈的逻辑性和批判性思维。他的社交媒体行为活跃，经常发帖讨论政治和经济话题。他对话题有着明确的态度，可能会被激怒或感动。他有着独特的口头禅和特殊的经历，例如他对国际货币基金组织的看法。他记得自己曾与罗德里戈·帕兹一起参加过多次活动，并与他有着深厚的友谊\",\n\"age\": 55,\n\"gender\": \"male\",\n\"mbti\": \"INTJ\",\n\"country\": \"玻利维亚\",\n\"profession\": \"政治家\",\n\"interested_topics\": [\"政治\", \"经济\", \"国际关系\"]\n}",
+  "entity_name": "Samuel Doria Medina",
+  "entity_type": "Person",
+  "attempt": 1,
+  "finish_reason": "stop"
+}

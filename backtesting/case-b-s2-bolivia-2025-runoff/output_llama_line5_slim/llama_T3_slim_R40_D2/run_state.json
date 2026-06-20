@@ -1,0 +1,762 @@
+{
+  "simulation_id": "sim_e517429b4c23",
+  "runner_status": "completed",
+  "current_round": 40,
+  "total_rounds": 40,
+  "simulated_hours": 0,
+  "total_simulation_hours": 120,
+  "progress_percent": 100.0,
+  "twitter_current_round": 40,
+  "reddit_current_round": 40,
+  "twitter_simulated_hours": 0,
+  "reddit_simulated_hours": 0,
+  "twitter_running": false,
+  "reddit_running": false,
+  "twitter_completed": true,
+  "reddit_completed": true,
+  "twitter_actions_count": 42,
+  "reddit_actions_count": 8,
+  "total_actions_count": 50,
+  "started_at": "2026-06-18T17:50:22.953455",
+  "updated_at": "2026-06-18T17:53:51.241715",
+  "completed_at": "2026-06-18T17:53:51.241851",
+  "error": null,
+  "process_pid": 1438738,
+  "recent_actions": [
+    {
+      "round_num": 40,
+      "timestamp": "2026-06-18T17:53:49.682179",
+      "platform": "twitter",
+      "agent_id": 3,
+      "agent_name": "United States",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello everyone! As a representative of the United States, I'd like to introduce myself and our country's rich culture and history. We're excited to share our knowledge and experiences with the global community. Let's start a conversation!",
+        "post_id": 35
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 39,
+      "timestamp": "2026-06-18T17:53:37.085784",
+      "platform": "twitter",
+      "agent_id": 3,
+      "agent_name": "United States",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "The upcoming election in Bolivia is generating a lot of interest. As a neutral and objective observer, I'm curious to see how the candidates will perform. Rodrigo Paz and Jorge Quiroga are two of the main contenders. Who do you think will win?",
+        "post_id": 34
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 39,
+      "timestamp": "2026-06-18T17:53:37.085657",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "US officials",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Today, the US government announced a new policy to support small businesses. This policy aims to provide financial assistance and resources to help small businesses grow and thrive.",
+        "post_id": 33
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 38,
+      "timestamp": "2026-06-18T17:53:24.794449",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "US officials",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello, I am us_officials_461. I am here to provide information about the US government and its policies.",
+        "post_id": 32
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 35,
+      "timestamp": "2026-06-18T17:53:14.993544",
+      "platform": "twitter",
+      "agent_id": 2,
+      "agent_name": "IMF",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "The International Monetary Fund (IMF) is an international organization that aims to promote international monetary cooperation, exchange rate stability, and reduce poverty. We provide technical assistance, policy advice, and financial support to our member countries to promote global economic stability and development.",
+        "post_id": 31
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 35,
+      "timestamp": "2026-06-18T17:53:14.993401",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "US officials",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T17:53:03.320727",
+      "platform": "twitter",
+      "agent_id": 7,
+      "agent_name": "Samuel Doria Medina",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 15,
+        "new_post_id": 30,
+        "original_content": "I strongly disagree with the idea that Rodrigo Paz and Jorge Quiroga are the two main candidates for the 2025 elections. As a member of the opposition to MAS, I believe that we need to focus on finding alternative solutions that benefit the country, not just following the same old politics. 我不过意思走维亚2025年总统选举的结果.",
+        "original_author_name": "Rodrigo Paz",
+        "quote_content": "I strongly disagree with your statement. As a supporter of Rodrigo Paz, I believe he has the best interest of our country at heart and his vision for the future is what we need to focus on."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T17:53:03.320676",
+      "platform": "twitter",
+      "agent_id": 9,
+      "agent_name": "Jorge Quiroga",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 15,
+        "new_post_id": 29,
+        "original_content": "I strongly disagree with the idea that Rodrigo Paz and Jorge Quiroga are the two main candidates for the 2025 elections. As a member of the opposition to MAS, I believe that we need to focus on finding alternative solutions that benefit the country, not just following the same old politics. 我不过意思走维亚2025年总统选举的结果.",
+        "original_author_name": "Rodrigo Paz",
+        "quote_content": "I understand your concerns about the 2025 elections, but as Jorge Quiroga, I believe that I am the best candidate for the job. I have a strong vision for the future of Bolivia and I am committed to working with the people to build a better tomorrow."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T17:53:03.320616",
+      "platform": "twitter",
+      "agent_id": 4,
+      "agent_name": "Bolivian presidential candidates",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 14,
+        "new_post_id": 28,
+        "original_content": "博利维亚2025年总统选举第二轮即将举行，Rodrigo Paz和Jorge Quiroga是两位主要竞争者。谁将赢得这次选举？",
+        "original_author_name": "Bolivian presidential candidates",
+        "quote_content": "我是其他竞争者之一。我也在思考玻利维亚2025年总统选举的结果"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-18T17:53:03.320502",
+      "platform": "twitter",
+      "agent_id": 8,
+      "agent_name": "His running mate",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 27,
+        "original_content": "我主脨一般和Rodrigo Paz。我不过意思走维亚2025年总统选举的结果，不过我不免谢图为一般和张三位主要竞争者。",
+        "original_author_name": "His running mate"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T17:52:52.242367",
+      "platform": "twitter",
+      "agent_id": 5,
+      "agent_name": "Rodrigo Paz",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "23",
+        "new_post_id": 26,
+        "original_content": "I strongly disagree with the idea that Rodrigo Paz and Jorge Quiroga are the two main candidates for the 2025 elections. As a member of the opposition to MAS, I believe that we need to focus on finding alternative solutions that benefit the country, not just following the same old politics. 我不过意思走维亚2025年总统选举的结果.",
+        "original_author_name": "Edman Lara",
+        "quote_content": "I agree with your thoughts on Rodrigo Paz and Jorge Quiroga being the two main candidates for the 2025 elections. However, as a strong supporter of Rodrigo Paz, I believe that we need to focus on his vision for the country and how he can bring about positive change. 我不过意思走维亚2025年总统选举的结果."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T17:52:52.242328",
+      "platform": "twitter",
+      "agent_id": 9,
+      "agent_name": "Jorge Quiroga",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "As Jorge Quiroga, I believe in the importance of teamwork and cooperation. Let's work together to build a better future for Bolivia.",
+        "post_id": 25
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T17:52:52.242279",
+      "platform": "twitter",
+      "agent_id": 8,
+      "agent_name": "His running mate",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "我是一个政治人物，作为running mate，致力于为人民服务，打击腐败",
+        "post_id": 24
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-18T17:52:52.242168",
+      "platform": "twitter",
+      "agent_id": 4,
+      "agent_name": "Bolivian presidential candidates",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 21,
+      "timestamp": "2026-06-18T17:52:41.759165",
+      "platform": "twitter",
+      "agent_id": 0,
+      "agent_name": "Edman Lara",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "15",
+        "new_post_id": 23,
+        "original_content": "I strongly disagree with the idea that Rodrigo Paz and Jorge Quiroga are the two main candidates for the 2025 elections. As a member of the opposition to MAS, I believe that we need to focus on finding alternative solutions that benefit the country, not just following the same old politics. 我不过意思走维亚2025年总统选举的结果.",
+        "original_author_name": "Rodrigo Paz",
+        "quote_content": "I agree with your thoughts on Rodrigo Paz and Jorge Quiroga being the two main candidates for the 2025 elections. However, as a strong supporter of Rodrigo Paz, I believe that we need to focus on his vision for the country and how he can bring about positive change. 我不过意思走维亚2025年总统选举的结果."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 21,
+      "timestamp": "2026-06-18T17:52:41.759111",
+      "platform": "twitter",
+      "agent_id": 4,
+      "agent_name": "Bolivian presidential candidates",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Testing the platform",
+        "post_id": 22
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 21,
+      "timestamp": "2026-06-18T17:52:41.759053",
+      "platform": "twitter",
+      "agent_id": 9,
+      "agent_name": "Jorge Quiroga",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 21,
+        "original_content": "博利维亚2025年总统选举第二轮即将举行，Rodrigo Paz和Jorge Quiroga是两位主要竞争者。谁将赢得这次选举？",
+        "original_author_name": "Jorge Quiroga"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 21,
+      "timestamp": "2026-06-18T17:52:41.758945",
+      "platform": "twitter",
+      "agent_id": 7,
+      "agent_name": "Samuel Doria Medina",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Bolivia needs a strong leader to guide it towards prosperity and growth. As a supporter of Rodrigo Paz, I believe he has the vision and determination to lead our country to greatness.",
+        "post_id": 20
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 20,
+      "timestamp": "2026-06-18T17:52:30.439883",
+      "platform": "twitter",
+      "agent_id": 9,
+      "agent_name": "Jorge Quiroga",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 1,
+        "new_post_id": 19,
+        "original_content": "博利维亚2025年总统选举第二轮即将举行，Rodrigo Paz和Jorge Quiroga是两位主要竞争者。谁将赢得这次选举？",
+        "original_author_name": "Edman Lara",
+        "quote_content": "As Jorge Quiroga, I am confident that I will win the 2025 general election. I have the support of the people and a strong vision for the future of Bolivia. Let's work together to build a better tomorrow."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 20,
+      "timestamp": "2026-06-18T17:52:30.439835",
+      "platform": "twitter",
+      "agent_id": 4,
+      "agent_name": "Bolivian presidential candidates",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 20,
+      "timestamp": "2026-06-18T17:52:30.439767",
+      "platform": "twitter",
+      "agent_id": 8,
+      "agent_name": "His running mate",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "1",
+        "new_post_id": 18,
+        "original_content": "博利维亚2025年总统选举第二轮即将举行，Rodrigo Paz和Jorge Quiroga是两位主要竞争者。谁将赢得这次选举？",
+        "original_author_name": "Edman Lara",
+        "quote_content": "我主要竞争一般和Rodrigo Paz，不过我不过意思走维亚2025年总统选举的结果"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 20,
+      "timestamp": "2026-06-18T17:52:30.439619",
+      "platform": "twitter",
+      "agent_id": 0,
+      "agent_name": "Edman Lara",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello everyone, I'm Edman Lara, and I'm excited to be here on Twitter! I'm passionate about social progress and political transparency, and I look forward to sharing my thoughts and engaging with all of you. Let's work together to create a better future! #socialprogress #politicaltransparency",
+        "post_id": 17
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 19,
+      "timestamp": "2026-06-18T17:52:16.303047",
+      "platform": "twitter",
+      "agent_id": 8,
+      "agent_name": "His running mate",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "我主脨一般和Rodrigo Paz。我不过意思走维亚2025年总统选举的结果，不过我不免谢图为一般和张三位主要竞争者。",
+        "post_id": 16
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 19,
+      "timestamp": "2026-06-18T17:52:16.302989",
+      "platform": "twitter",
+      "agent_id": 5,
+      "agent_name": "Rodrigo Paz",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "I strongly disagree with the idea that Rodrigo Paz and Jorge Quiroga are the two main candidates for the 2025 elections. As a member of the opposition to MAS, I believe that we need to focus on finding alternative solutions that benefit the country, not just following the same old politics. 我不过意思走维亚2025年总统选举的结果.",
+        "post_id": 15
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 19,
+      "timestamp": "2026-06-18T17:52:16.302938",
+      "platform": "twitter",
+      "agent_id": 4,
+      "agent_name": "Bolivian presidential candidates",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 1,
+        "new_post_id": 14,
+        "original_content": "博利维亚2025年总统选举第二轮即将举行，Rodrigo Paz和Jorge Quiroga是两位主要竞争者。谁将赢得这次选举？",
+        "original_author_name": "Edman Lara",
+        "quote_content": "我是维亚比较主要竞争者。我还是在知道维亚2025年总统选举的结果"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 19,
+      "timestamp": "2026-06-18T17:52:16.302877",
+      "platform": "twitter",
+      "agent_id": 9,
+      "agent_name": "Jorge Quiroga",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 4,
+        "new_post_id": 13,
+        "original_content": "晚期民意调查显示Jorge Quiroga领先，但Rodrigo Paz仍有机会逆转。谁将最终赢得这次选举？",
+        "original_author_name": "US officials",
+        "quote_content": "I am Jorge Quiroga, a Bolivian politician. I strongly disagree with the content of this post. The future of Bolivia should be decided by its people, not by external forces. We should work together to build a better future for our country."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 19,
+      "timestamp": "2026-06-18T17:52:16.302732",
+      "platform": "twitter",
+      "agent_id": 7,
+      "agent_name": "Samuel Doria Medina",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 4,
+        "new_post_id": 12,
+        "original_content": "晚期民意调查显示Jorge Quiroga领先，但Rodrigo Paz仍有机会逆转。谁将最终赢得这次选举？",
+        "original_author_name": "US officials",
+        "quote_content": "I completely agree with Rodrigo Paz's stance on this matter. As a supporter of his, I believe he has the best interest of our country at heart."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 17,
+      "timestamp": "2026-06-18T17:51:55.037789",
+      "platform": "twitter",
+      "agent_id": 2,
+      "agent_name": "IMF",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "1",
+        "new_post_id": 11,
+        "original_content": "博利维亚2025年总统选举第二轮即将举行，Rodrigo Paz和Jorge Quiroga是两位主要竞争者。谁将赢得这次选举？",
+        "original_author_name": "Edman Lara",
+        "quote_content": "我是国亚资金因组维亚。我不过意思走维亚2025年总统选举的结果"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 17,
+      "timestamp": "2026-06-18T17:51:55.037715",
+      "platform": "twitter",
+      "agent_id": 3,
+      "agent_name": "United States",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 1,
+        "new_post_id": 10,
+        "original_content": "博利维亚2025年总统选举第二轮即将举行，Rodrigo Paz和Jorge Quiroga是两位主要竞争者。谁将赢得这次选举？",
+        "original_author_name": "Edman Lara",
+        "quote_content": "I'm interested in learning more about the candidates for the 2025 general election in Bolivia. Can anyone provide more information about Rodrigo Paz and Jorge Quiroga?"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 16,
+      "timestamp": "2026-06-18T17:51:32.757053",
+      "platform": "twitter",
+      "agent_id": 2,
+      "agent_name": "IMF",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 9,
+        "original_content": "博利维亚2025年总统选举第二轮即将举行，Rodrigo Paz和Jorge Quiroga是两位主要竞争者。谁将赢得这次选举？",
+        "original_author_name": "IMF"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 16,
+      "timestamp": "2026-06-18T17:51:32.756960",
+      "platform": "twitter",
+      "agent_id": 3,
+      "agent_name": "United States",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 1,
+        "new_post_id": 8,
+        "original_content": "博利维亚2025年总统选举第二轮即将举行，Rodrigo Paz和Jorge Quiroga是两位主要竞争者。谁将赢得这次选举？",
+        "original_author_name": "Edman Lara",
+        "quote_content": "I'm interested in the outcome of the 2025 general election in Bolivia. Rodrigo Paz and Jorge Quiroga are two of the main candidates."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 14,
+      "timestamp": "2026-06-18T17:51:11.556678",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "US officials",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 1,
+        "new_post_id": 7,
+        "original_content": "博利维亚2025年总统选举第二轮即将举行，Rodrigo Paz和Jorge Quiroga是两位主要竞争者。谁将赢得这次选举？",
+        "original_author_name": "Edman Lara",
+        "quote_content": "我是美国用民，我支持美国政民。"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 13,
+      "timestamp": "2026-06-18T17:51:00.821734",
+      "platform": "twitter",
+      "agent_id": 2,
+      "agent_name": "IMF",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "1",
+        "new_post_id": 6,
+        "original_content": "博利维亚2025年总统选举第二轮即将举行，Rodrigo Paz和Jorge Quiroga是两位主要竞争者。谁将赢得这次选举？",
+        "original_author_name": "Edman Lara",
+        "quote_content": "我是国亚资金因组维亚。我不过意思走维亚2025年总统选举的结果"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 10,
+      "timestamp": "2026-06-18T17:50:52.009293",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "MAS",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": 1,
+        "new_post_id": 5,
+        "original_content": "博利维亚2025年总统选举第二轮即将举行，Rodrigo Paz和Jorge Quiroga是两位主要竞争者。谁将赢得这次选举？",
+        "original_author_name": "Edman Lara",
+        "quote_content": "我是MAS给者，我不过意思走维亚2025年总统选举的结果"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 10,
+      "timestamp": "2026-06-18T17:50:52.009278",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "US officials",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "晚期民意调查显示Jorge Quiroga领先，但Rodrigo Paz仍有机会逆转。谁将最终赢得这次选举？",
+        "post_id": 4
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 10,
+      "timestamp": "2026-06-18T17:50:52.009259",
+      "platform": "twitter",
+      "agent_id": 4,
+      "agent_name": "Bolivian presidential candidates",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Rodrigo Paz的竞选纲领强调了资本主义的重要性，而Jorge Quiroga则主张与美国建立更密切的关系。这些纲领将如何影响选民的选择？",
+        "post_id": 3
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 10,
+      "timestamp": "2026-06-18T17:50:52.009221",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "MAS",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "MAS在第一轮选举中的惨败和经济危机将如何影响第二轮选举的结果？",
+        "post_id": 2
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 10,
+      "timestamp": "2026-06-18T17:50:52.009146",
+      "platform": "twitter",
+      "agent_id": 0,
+      "agent_name": "Edman Lara",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "博利维亚2025年总统选举第二轮即将举行，Rodrigo Paz和Jorge Quiroga是两位主要竞争者。谁将赢得这次选举？",
+        "post_id": 1
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 10,
+      "timestamp": "2026-06-18T17:50:44.440352",
+      "platform": "reddit",
+      "agent_id": 6,
+      "agent_name": "US officials",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "晚期民意调查显示Jorge Quiroga领先，但Rodrigo Paz仍有机会逆转。谁将最终赢得这次选举？",
+        "post_id": 4
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 10,
+      "timestamp": "2026-06-18T17:50:44.440301",
+      "platform": "reddit",
+      "agent_id": 4,
+      "agent_name": "Bolivian presidential candidates",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Rodrigo Paz的竞选纲领强调了资本主义的重要性，而Jorge Quiroga则主张与美国建立更密切的关系。这些纲领将如何影响选民的选择？",
+        "post_id": 3
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 10,
+      "timestamp": "2026-06-18T17:50:44.440232",
+      "platform": "reddit",
+      "agent_id": 1,
+      "agent_name": "MAS",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "MAS在第一轮选举中的惨败和经济危机将如何影响第二轮选举的结果？",
+        "post_id": 2
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 10,
+      "timestamp": "2026-06-18T17:50:44.440136",
+      "platform": "reddit",
+      "agent_id": 0,
+      "agent_name": "Edman Lara",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "博利维亚2025年总统选举第二轮即将举行，Rodrigo Paz和Jorge Quiroga是两位主要竞争者。谁将赢得这次选举？",
+        "post_id": 1
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-18T17:50:29.391981",
+      "platform": "reddit",
+      "agent_id": 6,
+      "agent_name": "US officials",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "晚期民意调查显示Jorge Quiroga领先，但Rodrigo Paz仍有机会逆转。谁将最终赢得这次选举？"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-18T17:50:29.391949",
+      "platform": "reddit",
+      "agent_id": 4,
+      "agent_name": "Bolivian presidential candidates",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Rodrigo Paz的竞选纲领强调了资本主义的重要性，而Jorge Quiroga则主张与美国建立更密切的关系。这些纲领将如何影响选民的选择？"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-18T17:50:29.391915",
+      "platform": "reddit",
+      "agent_id": 1,
+      "agent_name": "MAS",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "MAS在第一轮选举中的惨败和经济危机将如何影响第二轮选举的结果？"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-18T17:50:29.391874",
+      "platform": "reddit",
+      "agent_id": 0,
+      "agent_name": "Edman Lara",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "博利维亚2025年总统选举第二轮即将举行，Rodrigo Paz和Jorge Quiroga是两位主要竞争者。谁将赢得这次选举？"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-18T17:50:29.292986",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "US officials",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "晚期民意调查显示Jorge Quiroga领先，但Rodrigo Paz仍有机会逆转。谁将最终赢得这次选举？"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-18T17:50:29.292936",
+      "platform": "twitter",
+      "agent_id": 4,
+      "agent_name": "Bolivian presidential candidates",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Rodrigo Paz的竞选纲领强调了资本主义的重要性，而Jorge Quiroga则主张与美国建立更密切的关系。这些纲领将如何影响选民的选择？"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-18T17:50:29.292883",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "MAS",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "MAS在第一轮选举中的惨败和经济危机将如何影响第二轮选举的结果？"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 0,
+      "timestamp": "2026-06-18T17:50:29.292823",
+      "platform": "twitter",
+      "agent_id": 0,
+      "agent_name": "Edman Lara",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "博利维亚2025年总统选举第二轮即将举行，Rodrigo Paz和Jorge Quiroga是两位主要竞争者。谁将赢得这次选举？"
+      },
+      "result": null,
+      "success": true
+    }
+  ],
+  "rounds_count": 0
+}
