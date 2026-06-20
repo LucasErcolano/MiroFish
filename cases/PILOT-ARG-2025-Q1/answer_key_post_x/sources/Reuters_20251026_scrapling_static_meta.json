@@ -1,0 +1,14 @@
+{
+  "url": "https://www.reuters.com/world/americas/argentines-vote-high-stakes-test-mileis-libertarian-vision-2025-10-26/",
+  "fetched_at": "2026-05-21T20:50:39.192300",
+  "fetcher": "scrapling.Fetcher.get",
+  "status": 401,
+  "reason": "",
+  "html_bytes": 0,
+  "text_bytes": 0,
+  "html_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "contains_expected_title_terms": false,
+  "contains_block_message": false,
+  "text_head": ""
+}

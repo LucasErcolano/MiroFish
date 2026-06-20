@@ -1,0 +1,165 @@
+{
+  "total": 107877,
+  "agrupaciones": [
+    {
+      "nombre": "ALIANZA LA LIBERTAD AVANZA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "21",
+          "Votos": 37109,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "ALIANZA LA LIBERTAD AVANZA"
+        }
+      ],
+      "votos": 37109,
+      "porcentaje": "38.56",
+      "idAgrupacion": "21",
+      "color": "#743bbc"
+    },
+    {
+      "nombre": "FUERZA PATRIA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "120",
+          "Votos": 29831,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FUERZA PATRIA"
+        }
+      ],
+      "votos": 29831,
+      "porcentaje": "31.00",
+      "idAgrupacion": "120",
+      "color": "#63b5e5"
+    },
+    {
+      "nombre": "DEFENDAMOS TIERRA DEL FUEGO",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "246",
+          "Votos": 19945,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "DEFENDAMOS TIERRA DEL FUEGO"
+        }
+      ],
+      "votos": 19945,
+      "porcentaje": "20.72",
+      "idAgrupacion": "246",
+      "color": "#376d9c"
+    },
+    {
+      "nombre": "FRENTE DE IZQUIERDA Y DE TRABAJADORES - UNIDAD",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "247",
+          "Votos": 3125,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE DE IZQUIERDA Y DE TRABAJADORES - UNIDAD"
+        }
+      ],
+      "votos": 3125,
+      "porcentaje": "3.25",
+      "idAgrupacion": "247",
+      "color": "#ef2b2d"
+    },
+    {
+      "nombre": "PROVINCIAS UNIDAS",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "244",
+          "Votos": 3040,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "PROVINCIAS UNIDAS"
+        }
+      ],
+      "votos": 3040,
+      "porcentaje": "3.16",
+      "idAgrupacion": "244",
+      "color": "#ff5800"
+    },
+    {
+      "nombre": "FRENTE PATRIOTA FEDERAL",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "11",
+          "Votos": 1380,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE PATRIOTA FEDERAL"
+        }
+      ],
+      "votos": 1380,
+      "porcentaje": "1.43",
+      "idAgrupacion": "11",
+      "color": "#0086be"
+    },
+    {
+      "nombre": "MOVIMIENTO AL SOCIALISMO",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "99",
+          "Votos": 953,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "MOVIMIENTO AL SOCIALISMO"
+        }
+      ],
+      "votos": 953,
+      "porcentaje": "0.99",
+      "idAgrupacion": "99",
+      "color": "#ea675f"
+    },
+    {
+      "nombre": "PARTIDO FRENTE GRANDE",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "245",
+          "Votos": 857,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "PARTIDO FRENTE GRANDE"
+        }
+      ],
+      "votos": 857,
+      "porcentaje": "0.89",
+      "idAgrupacion": "245",
+      "color": "#1106a0"
+    }
+  ],
+  "NULO": 3941,
+  "RECURRIDO": 138,
+  "COMANDO": 0,
+  "IMPUGNADO": 8,
+  "EN BLANCO": 7550,
+  "IdDistrito": 24,
+  "Distrito": "TIERRA DEL FUEGO AeIAS",
+  "MesasEscrutadas": 453,
+  "Electores": 1990599,
+  "Votantes": 107877,
+  "ParticipacionSobreEscrutado": 5.42,
+  "Año": 2025,
+  "Recuento": "Provisorio",
+  "IdEleccion": 2,
+  "Elecciones": "GENERALES",
+  "IdCargo": 3,
+  "Cargo": "DIPUTADO NACIONAL",
+  "positivos": 96240,
+  "blancos": 7550,
+  "impugnados": 8,
+  "nulos": 3941,
+  "recurridos": 138,
+  "comando": 0,
+  "union": 146
+}
