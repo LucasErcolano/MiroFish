@@ -198,3 +198,46 @@ tests/
   test_run_bundle.py
   test_checkpoints_temporal.py
 ```
+
+## 10. Bitácora de ejecución y selección de caso (run real)
+
+### Fase 1 — smoke validado (DeepInfra, modelo exacto)
+
+- Entorno real: Neo4j + backend Flask + Graphiti, `LLM_MODEL_NAME=google/gemma-3-27b-it`
+  vía DeepInfra (OpenAI-compatible), embeddings `BAAI/bge-m3` (1024-dim).
+- **Case A (Copa América, simple/autoverificable)** corrido end-to-end como smoke:
+  ontología → grafo (Graphiti) → 17 personas → 1 ronda. Validó el pipeline completo
+  **y** las métricas de Línea 6 sobre salida real de Gemma-3.
+  - `n_personas=17`, `categorical_diversity_index=0.532`, `Self-BLEU=0.012`
+    (≈0 → muy diversas), `distinct-2=0.965`, `Vendi(bge-m3)=3.735`.
+  - Costo real: **~1¢**. El pipeline es barato; el presupuesto no es la restricción.
+
+### Decisión: caso de comparación = **Case C (balotaje Bolivia 2025)**
+
+En vez de rankear empíricamente A/B/C por entropía de personas, se **eligió Case C
+por diseño** como caso de comparación de modelos para la Fase 2. Razón:
+
+- El objetivo de la Fase 2 es **discriminar entre modelos**; conviene el escenario
+  donde los modelos **más divergen**.
+- Case C es el más **rico y abierto** (politico-social, 8 fuentes, ≥20 entidades
+  relevantes, múltiples hipótesis causales en competencia, documento distractor),
+  así que maximiza la superficie de divergencia entre modelos.
+- Case A (evento simple) y Case B (cuantitativo estructurado) son más acotados y
+  dejan menos margen de divergencia inter-modelo.
+- Pragmática: Case A costó ~1¢ y quedó como punto de referencia validado; correr
+  B y C solo para rankear agrega tiempo con poco valor de decisión dado el
+  argumento cualitativo claro a favor de C.
+
+### Modelos para Fase 2 (exactos, idealmente un solo proveedor)
+
+DeepInfra **no** sirve el `Qwen3-8B` exacto (su Qwen3 denso más chico es 14B). El
+único proveedor con los **tres exactos** (`qwen/qwen3-8b`, `google/gemma-3-27b-it`,
+`meta-llama/llama-3.3-70b`) es **OpenRouter**. Gemma-3 y Llama-3.3 también están en
+DeepInfra. Plan: correr en DeepInfra lo posible (Gemma-3, Llama-3.3) y financiar
+**OpenRouter** solo para `Qwen3-8B`.
+
+### Profundidad de simulación
+
+Las corridas reales de los compañeros usaron **10 rondas** (`max_rounds=10`,
+`total_simulation_hours=72`, plataforma `parallel`). Fase 2 usa **10 rondas**
+(entrevistas de checkpoint en 0 / 5 / 10).
