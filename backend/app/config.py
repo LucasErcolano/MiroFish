@@ -129,6 +129,18 @@ class Config:
     
     # Experimental Memory (Spike S1)
     USE_EXPERIMENTAL_MEMORY = os.environ.get('USE_EXPERIMENTAL_MEMORY', 'False').lower() == 'true'
+    
+    # Worldbuilding Planning & Capture (Spike S3)
+    PLANNING_CAPTURE_ENABLED = os.environ.get('PLANNING_CAPTURE_ENABLED', 'True').lower() == 'true'
+    SIMILARITY_THRESHOLD = float(os.environ.get('SIMILARITY_THRESHOLD', '0.85'))
+    
+    # Deep Search (Spike S3)
+    ENABLE_DEEP_SEARCH = os.environ.get('ENABLE_DEEP_SEARCH', 'False').lower() == 'true'
+    DEEP_SEARCH_API_KEY = os.environ.get('DEEP_SEARCH_API_KEY', '')
+    DEEP_SEARCH_PROVIDER = os.environ.get('DEEP_SEARCH_PROVIDER', 'tavily')
+    GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+    TAVILY_API_KEY = os.environ.get('TAVILY_API_KEY', '')
+    
     DATA_DIR = os.path.join(os.path.dirname(__file__), '../data')
 
     @classmethod

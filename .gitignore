@@ -5,10 +5,31 @@
 .env.bak-*
 .env.*.bak
 ..env.swp
-# Python/cache artifacts
+# Python / cache artifacts
 __pycache__/
+*$py.class
+*.so
 *.py[cod]
+*.egg
 *.egg-info/
+*.manifest
+*.spec
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+.installed.cfg
+MANIFEST
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -34,3 +55,20 @@ seed_mvp.md
 # Local backup/temp files
 backend/uv.lock.bak
 *.localbak.*
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache/
+.pytest_cache/
+cover/
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
