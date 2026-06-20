@@ -1,0 +1,449 @@
+[
+  {
+    "ts": "2026-06-18T18:19:28.306522+00:00",
+    "method": "POST",
+    "path": "/api/graph/ontology/generate",
+    "status_code": 200,
+    "request": {
+      "multipart_fields": {
+        "simulation_requirement": "Predict the requested scenario using only the supplied seed material.",
+        "project_name": "MVP Fusion Panel Custom"
+      },
+      "files": [
+        {
+          "name": "seed_fusion.md",
+          "sha256": "dc91c43619353e3485eed8c262c1e32504ec20989ba66eeacdd3d5b7713f274f",
+          "bytes": 341
+        }
+      ]
+    },
+    "response": {
+      "data": {
+        "analysis_summary": "The entity and relationship types are designed to reflect real-world interactions on social media, focusing on various roles individuals and organizations play in public discourse.",
+        "files": [
+          {
+            "filename": "seed_fusion.md",
+            "size": 341
+          }
+        ],
+        "ontology": {
+          "edge_types": [
+            {
+              "attributes": [],
+              "description": "Indicates one entity follows another.",
+              "name": "FOLLOWS",
+              "source_targets": [
+                {
+                  "source": "PublicFigure",
+                  "target": "PublicFigure"
+                },
+                {
+                  "source": "Influencer",
+                  "target": "Influencer"
+                },
+                {
+                  "source": "CommunityGroup",
+                  "target": "PublicFigure"
+                }
+              ]
+            },
+            {
+              "attributes": [],
+              "description": "Indicates one entity comments on another's post.",
+              "name": "COMMENTS_ON",
+              "source_targets": [
+                {
+                  "source": "PublicFigure",
+                  "target": "MediaOutlet"
+                },
+                {
+                  "source": "Influencer",
+                  "target": "MediaOutlet"
+                },
+                {
+                  "source": "Expert",
+                  "target": "PublicFigure"
+                }
+              ]
+            },
+            {
+              "attributes": [],
+              "description": "Indicates one entity shares content from another.",
+              "name": "SHARES",
+              "source_targets": [
+                {
+                  "source": "Influencer",
+                  "target": "MediaOutlet"
+                },
+                {
+                  "source": "CommunityGroup",
+                  "target": "PublicFigure"
+                },
+                {
+                  "source": "Company",
+                  "target": "MediaOutlet"
+                }
+              ]
+            },
+            {
+              "attributes": [],
+              "description": "Indicates one entity responds to another's statement.",
+              "name": "RESPONDS_TO",
+              "source_targets": [
+                {
+                  "source": "PublicFigure",
+                  "target": "PublicFigure"
+                },
+                {
+                  "source": "Expert",
+                  "target": "MediaOutlet"
+                },
+                {
+                  "source": "GovernmentAgency",
+                  "target": "CommunityGroup"
+                }
+              ]
+            },
+            {
+              "attributes": [],
+              "description": "Indicates one entity supports another's cause or statement.",
+              "name": "SUPPORTS",
+              "source_targets": [
+                {
+                  "source": "NonProfitOrganization",
+                  "target": "CommunityGroup"
+                },
+                {
+                  "source": "PublicFigure",
+                  "target": "NonProfitOrganization"
+                },
+                {
+                  "source": "Expert",
+                  "target": "PublicFigure"
+                }
+              ]
+            },
+            {
+              "attributes": [],
+              "description": "Indicates two entities work together on a project.",
+              "name": "COLLABORATES_WITH",
+              "source_targets": [
+                {
+                  "source": "Company",
+                  "target": "NonProfitOrganization"
+                },
+                {
+                  "source": "GovernmentAgency",
+                  "target": "CommunityGroup"
+                },
+                {
+                  "source": "MediaOutlet",
+                  "target": "PublicFigure"
+                }
+              ]
+            }
+          ],
+          "entity_types": [
+            {
+              "attributes": [
+                {
+                  "description": "The complete name of the public figure.",
+                  "name": "full_name",
+                  "type": "text"
+                },
+                {
+                  "description": "The profession or role of the public figure.",
+                  "name": "occupation",
+                  "type": "text"
+                }
+              ],
+              "description": "A notable individual who influences public opinion.",
+              "examples": [
+                "John Doe",
+                "Jane Smith"
+              ],
+              "name": "PublicFigure"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The official name of the company.",
+                  "name": "org_name",
+                  "type": "text"
+                },
+                {
+                  "description": "The sector in which the company operates.",
+                  "name": "industry",
+                  "type": "text"
+                }
+              ],
+              "description": "A business entity that operates for profit.",
+              "examples": [
+                "Tech Innovations Inc.",
+                "Green Energy Solutions"
+              ],
+              "name": "Company"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The name of the media outlet.",
+                  "name": "org_name",
+                  "type": "text"
+                },
+                {
+                  "description": "The type of media outlet (e.g., newspaper, TV, online).",
+                  "name": "type",
+                  "type": "text"
+                }
+              ],
+              "description": "An organization that disseminates news and information.",
+              "examples": [
+                "Global News Network",
+                "The Daily Times"
+              ],
+              "name": "MediaOutlet"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The name of the government agency.",
+                  "name": "org_name",
+                  "type": "text"
+                },
+                {
+                  "description": "The primary function or responsibility of the agency.",
+                  "name": "function",
+                  "type": "text"
+                }
+              ],
+              "description": "A governmental body responsible for public administration.",
+              "examples": [
+                "Environmental Protection Agency",
+                "Department of Health"
+              ],
+              "name": "GovernmentAgency"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The name of the non-profit organization.",
+                  "name": "org_name",
+                  "type": "text"
+                },
+                {
+                  "description": "The mission statement of the organization.",
+                  "name": "mission",
+                  "type": "text"
+                }
+              ],
+              "description": "An organization that operates for charitable purposes.",
+              "examples": [
+                "Save the Children",
+                "World Wildlife Fund"
+              ],
+              "name": "NonProfitOrganization"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The complete name of the influencer.",
+                  "name": "full_name",
+                  "type": "text"
+                },
+                {
+                  "description": "The social media platform where the influencer is active.",
+                  "name": "platform",
+                  "type": "text"
+                }
+              ],
+              "description": "A person who has the power to affect the purchasing decisions of others.",
+              "examples": [
+                "Alice Johnson",
+                "Mark Thompson"
+              ],
+              "name": "Influencer"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The complete name of the expert.",
+                  "name": "full_name",
+                  "type": "text"
+                },
+                {
+                  "description": "The area of expertise of the expert.",
+                  "name": "field_of_expertise",
+                  "type": "text"
+                }
+              ],
+              "description": "A person with specialized knowledge in a particular field.",
+              "examples": [
+                "Dr. Emily Carter",
+                "Professor Robert Lee"
+              ],
+              "name": "Expert"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The name of the community group.",
+                  "name": "org_name",
+                  "type": "text"
+                },
+                {
+                  "description": "The main focus or interest of the group.",
+                  "name": "focus_area",
+                  "type": "text"
+                }
+              ],
+              "description": "A group representing a specific community or interest.",
+              "examples": [
+                "Local Environmental Advocates",
+                "Youth Leadership Council"
+              ],
+              "name": "CommunityGroup"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The complete name of the person.",
+                  "name": "full_name",
+                  "type": "text"
+                }
+              ],
+              "description": "Any individual person not classified under a specific type.",
+              "examples": [
+                "Random Citizen",
+                "Anonymous User"
+              ],
+              "name": "Person"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The name of the organization.",
+                  "name": "org_name",
+                  "type": "text"
+                }
+              ],
+              "description": "Any organization not classified under a specific type.",
+              "examples": [
+                "Generic Organization",
+                "Unknown Group"
+              ],
+              "name": "Organization"
+            }
+          ]
+        },
+        "project_id": "proj_8c82980813da",
+        "project_name": "MVP Fusion Panel Custom",
+        "total_text_length": 365
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T18:19:54.618052+00:00",
+    "method": "POST",
+    "path": "/api/graph/build",
+    "status_code": 200,
+    "request": {
+      "json": {
+        "project_id": "proj_8c82980813da"
+      },
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "message": "Graph build task started. Query progress via /task/68aca1cf-ca9a-4456-bb5d-86da767cad50.",
+        "project_id": "proj_8c82980813da",
+        "task_id": "68aca1cf-ca9a-4456-bb5d-86da767cad50"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T18:19:54.624210+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/68aca1cf-ca9a-4456-bb5d-86da767cad50",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T18:19:54.620634",
+        "error": null,
+        "message": "Initializing graph build service...",
+        "metadata": {},
+        "progress": 0,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "68aca1cf-ca9a-4456-bb5d-86da767cad50",
+        "task_type": "构建图谱: MVP Fusion Panel Custom",
+        "updated_at": "2026-06-18T18:19:54.623687"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T18:19:56.632383+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/68aca1cf-ca9a-4456-bb5d-86da767cad50",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T18:19:54.620634",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "68aca1cf-ca9a-4456-bb5d-86da767cad50",
+        "task_type": "构建图谱: MVP Fusion Panel Custom",
+        "updated_at": "2026-06-18T18:19:55.469663"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T18:19:58.637824+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/68aca1cf-ca9a-4456-bb5d-86da767cad50",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T18:19:54.620634",
+        "error": "Traceback (most recent call last):\n  File \"/tmp/MiroFish/backend/app/api/graph.py\", line 440, in build_task\n    episode_uuids = builder.add_text_batches(\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/services/graph_builder.py\", line 363, in add_text_batches\n    batch_result = self.backend.add_batch(\n                   ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/graph/graphiti_backend.py\", line 536, in add_batch\n    results.append(self.add_text(graph_id=graph_id, data=str(data or \"\")))\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/graph/graphiti_backend.py\", line 541, in add_text\n    return self._run(self._add_text_async(graph_id=graph_id, data=data))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/graph/graphiti_backend.py\", line 201, in _run\n    return self._bridge.run(coro)\n           ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/graph/graphiti_backend.py\", line 107, in run\n    return future.result()\n           ^^^^^^^^^^^^^^^\n  File \"/opt/data/profiles/mirofish/home/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/concurrent/futures/_base.py\", line 456, in result\n    return self.__get_result()\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/opt/data/profiles/mirofish/home/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/concurrent/futures/_base.py\", line 401, in __get_result\n    raise self._exception\n  File \"/tmp/MiroFish/backend/app/graph/graphiti_backend.py\", line 476, in _add_text_async\n    extracted_nodes = await extract_nodes(\n                      ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/graphiti_core/utils/maintenance/node_operations.py\", line 89, in extract_nodes\n    extracted_entities = await _extract_nodes_single(llm_client, episode, context)\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/graphiti_core/utils/maintenance/node_operations.py\", line 140, in _extract_nodes_single\n    llm_response = await _call_extraction_llm(llm_client, episode, context)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/graphiti_core/utils/maintenance/node_operations.py\", line 165, in _call_extraction_llm\n    return await llm_client.generate_response(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/graphiti_core/llm_client/openai_generic_client.py\", line 169, in generate_response\n    response = await self._generate_response(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/graphiti_core/llm_client/openai_generic_client.py\", line 123, in _generate_response\n    response = await self.client.chat.completions.create(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/openai/resources/chat/completions/completions.py\", line 2556, in create\n    return await self._post(\n           ^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/openai/_base_client.py\", line 1794, in post\n    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/openai/_base_client.py\", line 1594, in request\n    raise self._make_status_error_from_response(err.response) from None\nopenai.APIStatusError: Error code: 402 - {'error': {'message': 'This request requires more credits, or fewer max_tokens. You requested up to 16384 tokens, but can only afford 11296. To increase, visit https://openrouter.ai/settings/credits and add more credits', 'code': 402, 'metadata': {'provider_name': None, 'previous_errors': [{'code': 402, 'message': 'This request requires more credits, or fewer max_tokens. You requested up to 16384 tokens, but can only afford 11296. To increase, visit https://openrouter.ai/settings/credits and add more credits'}, {'code': 402, 'message': 'This request requires more credits, or fewer max_tokens. You requested up to 16384 tokens, but can only afford 11296. To increase, visit https://openrouter.ai/settings/credits and add more credits'}]}}, 'user_id': 'user_3B7sfnkPdhZuJfzOXS3WYq97AgD'}\n",
+        "message": "Build failed: Error code: 402 - {'error': {'message': 'This request requires more credits, or fewer max_tokens. You requested up to 16384 tokens, but can only afford 11296. To increase, visit https://openrouter.ai/settings/credits and add more credits', 'code': 402, 'metadata': {'provider_name': None, 'previous_errors': [{'code': 402, 'message': 'This request requires more credits, or fewer max_tokens. You requested up to 16384 tokens, but can only afford 11296. To increase, visit https://openrouter.ai/settings/credits and add more credits'}, {'code': 402, 'message': 'This request requires more credits, or fewer max_tokens. You requested up to 16384 tokens, but can only afford 11296. To increase, visit https://openrouter.ai/settings/credits and add more credits'}]}}, 'user_id': 'user_3B7sfnkPdhZuJfzOXS3WYq97AgD'}",
+        "metadata": {},
+        "progress": 15,
+        "progress_detail": {},
+        "result": null,
+        "status": "failed",
+        "task_id": "68aca1cf-ca9a-4456-bb5d-86da767cad50",
+        "task_type": "构建图谱: MVP Fusion Panel Custom",
+        "updated_at": "2026-06-18T18:19:57.667552"
+      },
+      "success": true
+    },
+    "error": null
+  }
+]

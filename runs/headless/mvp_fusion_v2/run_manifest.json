@@ -1,0 +1,14 @@
+{
+  "status": "BLOCKED",
+  "reason": "Remote end closed connection without response",
+  "is_model_output": false,
+  "is_real_mirofish_system": false,
+  "real_mirofish_flow_invoked": true,
+  "failure_stage": "frontend_replay_backend_api",
+  "num_rounds_or_epochs_requested": 1,
+  "num_rounds_or_epochs": 0,
+  "num_agents_configured": 0,
+  "num_agents": 0,
+  "started_at": "2026-06-18T17:17:30.510572+00:00",
+  "completed_at": "2026-06-18T17:22:29.615754+00:00"
+}

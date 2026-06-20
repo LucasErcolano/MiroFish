@@ -1,0 +1,398 @@
+[
+  {
+    "ts": "2026-06-18T19:02:17.075217+00:00",
+    "method": "POST",
+    "path": "/api/graph/ontology/generate",
+    "status_code": 200,
+    "request": {
+      "multipart_fields": {
+        "simulation_requirement": "Predict the requested scenario using only the supplied seed material.",
+        "project_name": "MVP Fusion Ultra Cheap"
+      },
+      "files": [
+        {
+          "name": "seed_fusion.md",
+          "sha256": "dc91c43619353e3485eed8c262c1e32504ec20989ba66eeacdd3d5b7713f274f",
+          "bytes": 341
+        }
+      ]
+    },
+    "response": {
+      "data": {
+        "analysis_summary": "The input text is a technical test seed for a pipeline validation. To simulate social media discourse around this, I identified key roles in the software development lifecycle (Engineers, PMs, QA) and the broader ecosystem (Tech Companies, Journalists, Regulators). I provided specific roles for the technical context and ensured the required Person and Organization fallback types are present to handle any generic entities mentioned in a wider simulation.",
+        "files": [
+          {
+            "filename": "seed_fusion.md",
+            "size": 341
+          }
+        ],
+        "ontology": {
+          "edge_types": [
+            {
+              "attributes": [],
+              "description": "Employment relationship between a person and an organization",
+              "name": "WORKS_FOR",
+              "source_targets": [
+                {
+                  "source": "SoftwareEngineer",
+                  "target": "TechCompany"
+                },
+                {
+                  "source": "ProductManager",
+                  "target": "TechCompany"
+                },
+                {
+                  "source": "QualityAssuranceSpecialist",
+                  "target": "TechCompany"
+                },
+                {
+                  "source": "Person",
+                  "target": "Organization"
+                }
+              ]
+            },
+            {
+              "attributes": [],
+              "description": "Belonging to a specific internal team or group",
+              "name": "MEMBER_OF",
+              "source_targets": [
+                {
+                  "source": "Person",
+                  "target": "DevelopmentTeam"
+                },
+                {
+                  "source": "SoftwareEngineer",
+                  "target": "DevelopmentTeam"
+                }
+              ]
+            },
+            {
+              "attributes": [],
+              "description": "The act of testing or verifying a system/pipeline",
+              "name": "VALIDATES",
+              "source_targets": [
+                {
+                  "source": "QualityAssuranceSpecialist",
+                  "target": "TechCompany"
+                },
+                {
+                  "source": "BetaTester",
+                  "target": "TechCompany"
+                }
+              ]
+            },
+            {
+              "attributes": [],
+              "description": "Media coverage of a company or its technology",
+              "name": "REPORTS_ON",
+              "source_targets": [
+                {
+                  "source": "TechJournalist",
+                  "target": "TechCompany"
+                }
+              ]
+            },
+            {
+              "attributes": [],
+              "description": "Oversight provided by a regulatory body",
+              "name": "REGULATES",
+              "source_targets": [
+                {
+                  "source": "RegulatoryBody",
+                  "target": "TechCompany"
+                }
+              ]
+            },
+            {
+              "attributes": [],
+              "description": "Professional cooperation between two entities",
+              "name": "COLLABORATES_WITH",
+              "source_targets": [
+                {
+                  "source": "DevelopmentTeam",
+                  "target": "DevelopmentTeam"
+                },
+                {
+                  "source": "TechCompany",
+                  "target": "TechCompany"
+                }
+              ]
+            },
+            {
+              "attributes": [],
+              "description": "Public or internal endorsement of a project/entity",
+              "name": "SUPPORTS",
+              "source_targets": [
+                {
+                  "source": "BetaTester",
+                  "target": "TechCompany"
+                },
+                {
+                  "source": "Person",
+                  "target": "Organization"
+                }
+              ]
+            }
+          ],
+          "entity_types": [
+            {
+              "attributes": [
+                {
+                  "description": "Specific role such as Backend Engineer or AI Researcher",
+                  "name": "technical_role",
+                  "type": "text"
+                },
+                {
+                  "description": "Field of expertise, e.g., LLM Orchestration",
+                  "name": "expertise_area",
+                  "type": "text"
+                }
+              ],
+              "description": "Technical professionals involved in developing the Fusion pipeline",
+              "examples": [
+                "Lead Pipeline Architect",
+                "Fusion Validation Engineer"
+              ],
+              "name": "SoftwareEngineer"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The specific product or feature they manage",
+                  "name": "product_scope",
+                  "type": "text"
+                },
+                {
+                  "description": "Level of authority over the smoke test budget",
+                  "name": "budget_authority",
+                  "type": "text"
+                }
+              ],
+              "description": "Individuals responsible for the simulation requirements and cost budget",
+              "examples": [
+                "Fusion Product Owner",
+                "Simulation Manager"
+              ],
+              "name": "ProductManager"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The specific module being validated",
+                  "name": "test_focus",
+                  "type": "text"
+                }
+              ],
+              "description": "Personnel focused on validation and smoke testing the pipeline",
+              "examples": [
+                "QA Lead",
+                "Validation Specialist"
+              ],
+              "name": "QualityAssuranceSpecialist"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The industry sector, e.g., AI Infrastructure",
+                  "name": "company_industry",
+                  "type": "text"
+                },
+                {
+                  "description": "Position in the AI model routing market",
+                  "name": "market_position",
+                  "type": "text"
+                }
+              ],
+              "description": "Corporate entities developing AI infrastructure like OpenRouter",
+              "examples": [
+                "OpenRouter",
+                "AI Labs Inc"
+              ],
+              "name": "TechCompany"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The primary goal of the team",
+                  "name": "team_mission",
+                  "type": "text"
+                }
+              ],
+              "description": "Specific internal groups working on the Fusion deliberation pipeline",
+              "examples": [
+                "Fusion Core Team",
+                "Validation Squad"
+              ],
+              "name": "DevelopmentTeam"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The region or sector they regulate",
+                  "name": "jurisdiction",
+                  "type": "text"
+                }
+              ],
+              "description": "External agencies that might monitor AI safety and validation standards",
+              "examples": [
+                "AI Ethics Board",
+                "Tech Standards Agency"
+              ],
+              "name": "RegulatoryBody"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The media outlet they write for",
+                  "name": "publication_name",
+                  "type": "text"
+                }
+              ],
+              "description": "Media professionals reporting on AI pipeline breakthroughs",
+              "examples": [
+                "AI News Reporter",
+                "Tech Blogger"
+              ],
+              "name": "TechJournalist"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The access level of the tester",
+                  "name": "user_tier",
+                  "type": "text"
+                }
+              ],
+              "description": "External users testing the SIMULATION_LLM override features",
+              "examples": [
+                "Early Adopter",
+                "Enterprise Beta User"
+              ],
+              "name": "BetaTester"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The full legal name of the individual",
+                  "name": "full_name",
+                  "type": "text"
+                },
+                {
+                  "description": "Brief personal background",
+                  "name": "biography",
+                  "type": "text"
+                }
+              ],
+              "description": "Fallback type for any natural person not fitting specific roles",
+              "examples": [
+                "John Doe",
+                "Jane Smith"
+              ],
+              "name": "Person"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The official name of the organization",
+                  "name": "org_name",
+                  "type": "text"
+                },
+                {
+                  "description": "General category of the organization",
+                  "name": "org_type",
+                  "type": "text"
+                }
+              ],
+              "description": "Fallback type for any organization not fitting specific categories",
+              "examples": [
+                "Local Community Group",
+                "Generic Foundation"
+              ],
+              "name": "Organization"
+            }
+          ]
+        },
+        "project_id": "proj_996f10849a15",
+        "project_name": "MVP Fusion Ultra Cheap",
+        "total_text_length": 365
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:03:47.149773+00:00",
+    "method": "POST",
+    "path": "/api/graph/build",
+    "status_code": 200,
+    "request": {
+      "json": {
+        "project_id": "proj_996f10849a15"
+      },
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "message": "Graph build task started. Query progress via /task/60fd3176-8264-42cb-bfed-3de0c14a2dd2.",
+        "project_id": "proj_996f10849a15",
+        "task_id": "60fd3176-8264-42cb-bfed-3de0c14a2dd2"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:03:47.156522+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/60fd3176-8264-42cb-bfed-3de0c14a2dd2",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:03:47.152703",
+        "error": null,
+        "message": "Initializing graph build service...",
+        "metadata": {},
+        "progress": 0,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "60fd3176-8264-42cb-bfed-3de0c14a2dd2",
+        "task_type": "构建图谱: MVP Fusion Ultra Cheap",
+        "updated_at": "2026-06-18T19:03:47.155181"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:03:49.164209+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/60fd3176-8264-42cb-bfed-3de0c14a2dd2",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:03:47.152703",
+        "error": "Traceback (most recent call last):\n  File \"/tmp/MiroFish/backend/app/api/graph.py\", line 440, in build_task\n    episode_uuids = builder.add_text_batches(\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/services/graph_builder.py\", line 363, in add_text_batches\n    batch_result = self.backend.add_batch(\n                   ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/graph/graphiti_backend.py\", line 536, in add_batch\n    results.append(self.add_text(graph_id=graph_id, data=str(data or \"\")))\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/graph/graphiti_backend.py\", line 541, in add_text\n    return self._run(self._add_text_async(graph_id=graph_id, data=data))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/graph/graphiti_backend.py\", line 201, in _run\n    return self._bridge.run(coro)\n           ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/graph/graphiti_backend.py\", line 107, in run\n    return future.result()\n           ^^^^^^^^^^^^^^^\n  File \"/opt/data/profiles/mirofish/home/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/concurrent/futures/_base.py\", line 456, in result\n    return self.__get_result()\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/opt/data/profiles/mirofish/home/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/concurrent/futures/_base.py\", line 401, in __get_result\n    raise self._exception\n  File \"/tmp/MiroFish/backend/app/graph/graphiti_backend.py\", line 476, in _add_text_async\n    extracted_nodes = await extract_nodes(\n                      ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/graphiti_core/utils/maintenance/node_operations.py\", line 89, in extract_nodes\n    extracted_entities = await _extract_nodes_single(llm_client, episode, context)\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/graphiti_core/utils/maintenance/node_operations.py\", line 140, in _extract_nodes_single\n    llm_response = await _call_extraction_llm(llm_client, episode, context)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/graphiti_core/utils/maintenance/node_operations.py\", line 165, in _call_extraction_llm\n    return await llm_client.generate_response(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/graphiti_core/llm_client/openai_generic_client.py\", line 169, in generate_response\n    response = await self._generate_response(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/graphiti_core/llm_client/openai_generic_client.py\", line 123, in _generate_response\n    response = await self.client.chat.completions.create(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/openai/resources/chat/completions/completions.py\", line 2556, in create\n    return await self._post(\n           ^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/openai/_base_client.py\", line 1794, in post\n    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/openai/_base_client.py\", line 1594, in request\n    raise self._make_status_error_from_response(err.response) from None\nopenai.APIStatusError: Error code: 402 - {'error': {'message': 'This request requires more credits, or fewer max_tokens. You requested up to 4096 tokens, but can only afford 1127. To increase, visit https://openrouter.ai/settings/credits and add more credits', 'code': 402, 'metadata': {'provider_name': None, 'previous_errors': [{'code': 402, 'message': 'This request requires more credits, or fewer max_tokens. You requested up to 4096 tokens, but can only afford 1127. To increase, visit https://openrouter.ai/settings/credits and add more credits'}, {'code': 402, 'message': 'This request requires more credits, or fewer max_tokens. You requested up to 4096 tokens, but can only afford 1127. To increase, visit https://openrouter.ai/settings/credits and add more credits'}]}}, 'user_id': 'user_3B7sfnkPdhZuJfzOXS3WYq97AgD'}\n",
+        "message": "Build failed: Error code: 402 - {'error': {'message': 'This request requires more credits, or fewer max_tokens. You requested up to 4096 tokens, but can only afford 1127. To increase, visit https://openrouter.ai/settings/credits and add more credits', 'code': 402, 'metadata': {'provider_name': None, 'previous_errors': [{'code': 402, 'message': 'This request requires more credits, or fewer max_tokens. You requested up to 4096 tokens, but can only afford 1127. To increase, visit https://openrouter.ai/settings/credits and add more credits'}, {'code': 402, 'message': 'This request requires more credits, or fewer max_tokens. You requested up to 4096 tokens, but can only afford 1127. To increase, visit https://openrouter.ai/settings/credits and add more credits'}]}}, 'user_id': 'user_3B7sfnkPdhZuJfzOXS3WYq97AgD'}",
+        "metadata": {},
+        "progress": 15,
+        "progress_detail": {},
+        "result": null,
+        "status": "failed",
+        "task_id": "60fd3176-8264-42cb-bfed-3de0c14a2dd2",
+        "task_type": "构建图谱: MVP Fusion Ultra Cheap",
+        "updated_at": "2026-06-18T19:03:49.135631"
+      },
+      "success": true
+    },
+    "error": null
+  }
+]

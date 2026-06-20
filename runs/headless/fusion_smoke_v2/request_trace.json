@@ -1,0 +1,52 @@
+[
+  {
+    "ts": "2026-06-18T21:33:00.706330+00:00",
+    "method": "POST",
+    "path": "/api/graph/ontology/generate",
+    "status_code": 500,
+    "request": {
+      "multipart_fields": {
+        "simulation_requirement": "Predict the requested scenario using only the supplied seed material.",
+        "project_name": "MVP Fusion Smoke v2"
+      },
+      "files": [
+        {
+          "name": "seed_fusion_smoke.md",
+          "sha256": "777c0473978e97466d7a6e274331fa718b462519fa66bdc780baf5d716689c7c",
+          "bytes": 986
+        }
+      ]
+    },
+    "response": {
+      "error": "Primary LLM failed and no Boost LLM configured. Set LLM_BOOST_API_KEY, LLM_BOOST_BASE_URL, LLM_BOOST_MODEL_NAME in .env",
+      "success": false,
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/MiroFish/backend/app/api/graph.py\", line 218, in generate_ontology\n    ontology = generator.generate(\n               ^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/services/ontology_generator.py\", line 217, in generate\n    result = self.llm_client.chat_json(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/utils/llm_client.py\", line 365, in chat_json\n    raise ValueError(\nValueError: Primary LLM failed and no Boost LLM configured. Set LLM_BOOST_API_KEY, LLM_BOOST_BASE_URL, LLM_BOOST_MODEL_NAME in .env\n"
+    },
+    "error": "HTTP Error 500: INTERNAL SERVER ERROR"
+  },
+  {
+    "ts": "2026-06-18T21:35:14.405804+00:00",
+    "method": "POST",
+    "path": "/api/graph/ontology/generate",
+    "status_code": 500,
+    "request": {
+      "multipart_fields": {
+        "simulation_requirement": "Predict the requested scenario using only the supplied seed material.",
+        "project_name": "MVP Fusion Smoke v2"
+      },
+      "files": [
+        {
+          "name": "seed_fusion_smoke.md",
+          "sha256": "777c0473978e97466d7a6e274331fa718b462519fa66bdc780baf5d716689c7c",
+          "bytes": 986
+        }
+      ]
+    },
+    "response": {
+      "error": "Primary LLM failed and no Boost LLM configured. Set LLM_BOOST_API_KEY, LLM_BOOST_BASE_URL, LLM_BOOST_MODEL_NAME in .env",
+      "success": false,
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/MiroFish/backend/app/api/graph.py\", line 218, in generate_ontology\n    ontology = generator.generate(\n               ^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/services/ontology_generator.py\", line 217, in generate\n    result = self.llm_client.chat_json(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/utils/llm_client.py\", line 365, in chat_json\n    raise ValueError(\nValueError: Primary LLM failed and no Boost LLM configured. Set LLM_BOOST_API_KEY, LLM_BOOST_BASE_URL, LLM_BOOST_MODEL_NAME in .env\n"
+    },
+    "error": "HTTP Error 500: INTERNAL SERVER ERROR"
+  }
+]

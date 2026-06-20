@@ -1,0 +1,1774 @@
+[
+  {
+    "ts": "2026-06-18T19:06:11.010796+00:00",
+    "method": "POST",
+    "path": "/api/graph/ontology/generate",
+    "status_code": 200,
+    "request": {
+      "multipart_fields": {
+        "simulation_requirement": "Predict the requested scenario using only the supplied seed material.",
+        "project_name": "MVP Fusion Cheap"
+      },
+      "files": [
+        {
+          "name": "seed_fusion.md",
+          "sha256": "dc91c43619353e3485eed8c262c1e32504ec20989ba66eeacdd3d5b7713f274f",
+          "bytes": 341
+        }
+      ]
+    },
+    "response": {
+      "data": {
+        "analysis_summary": "The input text is a technical test seed for an AI pipeline (OpenRouter Fusion). To simulate public opinion around such a technical event, I have designed entities that represent the technical ecosystem: developers, PMs, QA specialists, the companies building the tool, the media reporting on it, and the regulatory bodies overseeing AI. I included the mandatory Person and Organization fallback types to ensure any incidental actors in the simulation are captured.",
+        "files": [
+          {
+            "filename": "seed_fusion.md",
+            "size": 341
+          }
+        ],
+        "ontology": {
+          "edge_types": [
+            {
+              "attributes": [],
+              "description": "An individual is employed by an organization",
+              "name": "WORKS_FOR",
+              "source_targets": [
+                {
+                  "source": "SoftwareEngineer",
+                  "target": "TechCompany"
+                },
+                {
+                  "source": "ProductManager",
+                  "target": "TechCompany"
+                },
+                {
+                  "source": "QualityAssuranceSpecialist",
+                  "target": "TechCompany"
+                },
+                {
+                  "source": "Person",
+                  "target": "Organization"
+                }
+              ]
+            },
+            {
+              "attributes": [],
+              "description": "An entity tests or validates a specific pipeline or seed",
+              "name": "VALIDATES",
+              "source_targets": [
+                {
+                  "source": "QualityAssuranceSpecialist",
+                  "target": "TechCompany"
+                },
+                {
+                  "source": "SoftwareEngineer",
+                  "target": "TechCompany"
+                }
+              ]
+            },
+            {
+              "attributes": [],
+              "description": "A media outlet publishes information about a company or person",
+              "name": "REPORTS_ON",
+              "source_targets": [
+                {
+                  "source": "TechMediaOutlet",
+                  "target": "TechCompany"
+                },
+                {
+                  "source": "TechMediaOutlet",
+                  "target": "Person"
+                }
+              ]
+            },
+            {
+              "attributes": [],
+              "description": "A regulatory body oversees the operations of a company",
+              "name": "REGULATES",
+              "source_targets": [
+                {
+                  "source": "RegulatoryBody",
+                  "target": "TechCompany"
+                }
+              ]
+            },
+            {
+              "attributes": [],
+              "description": "A person belongs to a specific community or organization",
+              "name": "MEMBER_OF",
+              "source_targets": [
+                {
+                  "source": "Person",
+                  "target": "DeveloperCommunity"
+                },
+                {
+                  "source": "SoftwareEngineer",
+                  "target": "DeveloperCommunity"
+                }
+              ]
+            },
+            {
+              "attributes": [],
+              "description": "Two entities work together on a project or validation",
+              "name": "COLLABORATES_WITH",
+              "source_targets": [
+                {
+                  "source": "TechCompany",
+                  "target": "ResearchInstitute"
+                },
+                {
+                  "source": "SoftwareEngineer",
+                  "target": "SoftwareEngineer"
+                }
+              ]
+            },
+            {
+              "attributes": [],
+              "description": "An entity expresses a negative opinion or finds a bug in another's work",
+              "name": "CRITICIZES",
+              "source_targets": [
+                {
+                  "source": "DeveloperCommunity",
+                  "target": "TechCompany"
+                },
+                {
+                  "source": "Person",
+                  "target": "TechCompany"
+                }
+              ]
+            }
+          ],
+          "entity_types": [
+            {
+              "attributes": [
+                {
+                  "description": "Specific role such as Backend Engineer or AI Researcher",
+                  "name": "technical_role",
+                  "type": "text"
+                },
+                {
+                  "description": "Field of expertise, e.g., LLM Orchestration",
+                  "name": "expertise_area",
+                  "type": "text"
+                }
+              ],
+              "description": "Technical professionals involved in developing the simulation pipeline",
+              "examples": [
+                "Lead Developer",
+                "Fusion Pipeline Engineer"
+              ],
+              "name": "SoftwareEngineer"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The specific product or feature they manage",
+                  "name": "product_scope",
+                  "type": "text"
+                }
+              ],
+              "description": "Individuals managing the requirements and validation of the test seed",
+              "examples": [
+                "Simulation Product Manager",
+                "QA Lead"
+              ],
+              "name": "ProductManager"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The specific metric or pipeline they are validating",
+                  "name": "test_focus",
+                  "type": "text"
+                }
+              ],
+              "description": "Professionals responsible for smoke tests and validation runs",
+              "examples": [
+                "Validation Engineer",
+                "Smoke Test Specialist"
+              ],
+              "name": "QualityAssuranceSpecialist"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "Industry sector, e.g., Artificial Intelligence",
+                  "name": "company_industry",
+                  "type": "text"
+                },
+                {
+                  "description": "Headquarters location",
+                  "name": "hq_location",
+                  "type": "text"
+                }
+              ],
+              "description": "Corporate entities developing the OpenRouter Fusion pipeline",
+              "examples": [
+                "OpenRouter",
+                "AI Lab"
+              ],
+              "name": "TechCompany"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "Primary area of academic study",
+                  "name": "research_focus",
+                  "type": "text"
+                }
+              ],
+              "description": "Academic or private institutes researching LLM deliberation",
+              "examples": [
+                "AI Safety Institute",
+                "Computational Linguistics Lab"
+              ],
+              "name": "ResearchInstitute"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "Type of media, e.g., Tech Blog, News Site",
+                  "name": "media_type",
+                  "type": "text"
+                }
+              ],
+              "description": "Media entities reporting on AI pipeline updates and benchmarks",
+              "examples": [
+                "TechCrunch",
+                "AI News Daily"
+              ],
+              "name": "TechMediaOutlet"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The region or sector they regulate",
+                  "name": "jurisdiction",
+                  "type": "text"
+                }
+              ],
+              "description": "Government or industry bodies overseeing AI safety and standards",
+              "examples": [
+                "AI Ethics Board",
+                "Digital Standards Agency"
+              ],
+              "name": "RegulatoryBody"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "Where the community gathers, e.g., Discord, GitHub",
+                  "name": "community_platform",
+                  "type": "text"
+                }
+              ],
+              "description": "Groups of developers interacting with the API and simulation tools",
+              "examples": [
+                "OpenRouter Dev Group",
+                "LLM Enthusiasts"
+              ],
+              "name": "DeveloperCommunity"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The full legal name of the person",
+                  "name": "full_name",
+                  "type": "text"
+                },
+                {
+                  "description": "Social media username",
+                  "name": "social_handle",
+                  "type": "text"
+                }
+              ],
+              "description": "Fallback type for any natural person not fitting specific roles",
+              "examples": [
+                "John Doe",
+                "Anonymous User"
+              ],
+              "name": "Person"
+            },
+            {
+              "attributes": [
+                {
+                  "description": "The official name of the organization",
+                  "name": "org_name",
+                  "type": "text"
+                },
+                {
+                  "description": "General category of the organization",
+                  "name": "org_type",
+                  "type": "text"
+                }
+              ],
+              "description": "Fallback type for any organization not fitting specific categories",
+              "examples": [
+                "Local Tech Club",
+                "Generic Foundation"
+              ],
+              "name": "Organization"
+            }
+          ]
+        },
+        "project_id": "proj_b3c35596bd66",
+        "project_name": "MVP Fusion Cheap",
+        "total_text_length": 365
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:07:38.740424+00:00",
+    "method": "POST",
+    "path": "/api/graph/build",
+    "status_code": 200,
+    "request": {
+      "json": {
+        "project_id": "proj_b3c35596bd66"
+      },
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "message": "Graph build task started. Query progress via /task/c15bc0fa-0f04-4570-9301-be0f3e4074d7.",
+        "project_id": "proj_b3c35596bd66",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:07:38.747151+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Initializing graph build service...",
+        "metadata": {},
+        "progress": 0,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:38.745476"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:07:40.755024+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:07:42.760959+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:07:44.765724+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:07:46.770741+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:07:48.776039+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:07:50.780739+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:07:52.785819+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:07:54.791167+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:07:56.795966+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:07:58.801156+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:00.805971+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:02.811167+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:04.816138+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:06.820741+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:08.825882+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:10.830942+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:12.836228+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:14.841521+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:16.846584+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:18.851706+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:20.856719+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:22.862270+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:24.868129+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:26.872961+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:28.878157+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:30.883240+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:32.888909+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:34.894144+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:36.899168+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:38.904552+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:40.909892+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:42.915888+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:44.921089+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:46.927025+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:48.932447+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:50.938322+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:52.944899+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:54.951931+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:56.958599+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:08:58.964610+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:09:00.971044+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:09:02.977421+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:09:04.983745+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:09:06.990133+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:09:08.996384+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:09:11.002394+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:09:13.009418+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:09:15.018170+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:09:17.024287+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:09:19.030749+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:09:21.037445+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": null,
+        "message": "Sending batch 1/1 (1 chunks)...",
+        "metadata": {},
+        "progress": 55,
+        "progress_detail": {},
+        "result": null,
+        "status": "processing",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:07:39.556375"
+      },
+      "success": true
+    },
+    "error": null
+  },
+  {
+    "ts": "2026-06-18T19:09:23.044550+00:00",
+    "method": "GET",
+    "path": "/api/graph/task/c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+    "status_code": 200,
+    "request": {
+      "json": {},
+      "params": {}
+    },
+    "response": {
+      "data": {
+        "created_at": "2026-06-18T19:07:38.743131",
+        "error": "Traceback (most recent call last):\n  File \"/tmp/MiroFish/backend/app/api/graph.py\", line 440, in build_task\n    episode_uuids = builder.add_text_batches(\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/services/graph_builder.py\", line 363, in add_text_batches\n    batch_result = self.backend.add_batch(\n                   ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/graph/graphiti_backend.py\", line 536, in add_batch\n    results.append(self.add_text(graph_id=graph_id, data=str(data or \"\")))\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/graph/graphiti_backend.py\", line 541, in add_text\n    return self._run(self._add_text_async(graph_id=graph_id, data=data))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/graph/graphiti_backend.py\", line 201, in _run\n    return self._bridge.run(coro)\n           ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/MiroFish/backend/app/graph/graphiti_backend.py\", line 107, in run\n    return future.result()\n           ^^^^^^^^^^^^^^^\n  File \"/opt/data/profiles/mirofish/home/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/concurrent/futures/_base.py\", line 456, in result\n    return self.__get_result()\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/opt/data/profiles/mirofish/home/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/concurrent/futures/_base.py\", line 401, in __get_result\n    raise self._exception\n  File \"/tmp/MiroFish/backend/app/graph/graphiti_backend.py\", line 476, in _add_text_async\n    extracted_nodes = await extract_nodes(\n                      ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/graphiti_core/utils/maintenance/node_operations.py\", line 89, in extract_nodes\n    extracted_entities = await _extract_nodes_single(llm_client, episode, context)\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/graphiti_core/utils/maintenance/node_operations.py\", line 140, in _extract_nodes_single\n    llm_response = await _call_extraction_llm(llm_client, episode, context)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/graphiti_core/utils/maintenance/node_operations.py\", line 165, in _call_extraction_llm\n    return await llm_client.generate_response(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/graphiti_core/llm_client/openai_generic_client.py\", line 169, in generate_response\n    response = await self._generate_response(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/.mvpvenv/lib/python3.11/site-packages/graphiti_core/llm_client/openai_generic_client.py\", line 131, in _generate_response\n    return json.loads(result)\n           ^^^^^^^^^^^^^^^^^^\n  File \"/opt/data/profiles/mirofish/home/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/__init__.py\", line 346, in loads\n    return _default_decoder.decode(s)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/data/profiles/mirofish/home/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/decoder.py\", line 337, in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/data/profiles/mirofish/home/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/json/decoder.py\", line 355, in raw_decode\n    raise JSONDecodeError(\"Expecting value\", s, err.value) from None\njson.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n",
+        "message": "Build failed: Expecting value: line 1 column 1 (char 0)",
+        "metadata": {},
+        "progress": 15,
+        "progress_detail": {},
+        "result": null,
+        "status": "failed",
+        "task_id": "c15bc0fa-0f04-4570-9301-be0f3e4074d7",
+        "task_type": "构建图谱: MVP Fusion Cheap",
+        "updated_at": "2026-06-18T19:09:22.324450"
+      },
+      "success": true
+    },
+    "error": null
+  }
+]

@@ -1,0 +1,21 @@
+{
+  "base_url": "http://localhost:5001",
+  "flow_provenance": "frontend_replay_backend_api",
+  "project_name": "MVP Fusion DeepInfra",
+  "files": [
+    {
+      "path": "/tmp/seed_fusion.md",
+      "sha256": "dc91c43619353e3485eed8c262c1e32504ec20989ba66eeacdd3d5b7713f274f",
+      "bytes": 341
+    }
+  ],
+  "simulation_requirement": "Predict the requested scenario using only the supplied seed material.",
+  "platform": "parallel",
+  "max_rounds": 1,
+  "enable_graph_memory_update": true,
+  "force": true,
+  "use_llm_for_profiles": true,
+  "parallel_profile_count": 5,
+  "generate_report": false,
+  "started_at": "2026-06-18T19:46:22.856341+00:00"
+}
