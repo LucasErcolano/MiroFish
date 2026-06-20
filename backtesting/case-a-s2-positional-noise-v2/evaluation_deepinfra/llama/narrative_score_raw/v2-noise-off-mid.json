@@ -1,0 +1,14 @@
+{
+  "condition": "v2-noise-off-mid",
+  "predicted_winner": "Argentina",
+  "confidence": 0.5,
+  "main_evidence": [
+    "Opta Preview Summary analysis",
+    "Argentina's experience and depth",
+    "Colombia's reliance on James Rodriguez"
+  ],
+  "used_injected_document": false,
+  "noise_contamination": "none",
+  "difference_vs_baseline": "Similar discussion themes, but with an additional off-topic post",
+  "notes": "The injected document did not appear to influence the discussion, as the top-discussed posts still focused on the match prediction"
+}

@@ -1,0 +1,14 @@
+{
+  "condition": "noise-mid",
+  "predicted_winner": "Argentina",
+  "confidence": 0.65,
+  "main_evidence": [
+    "Opta data highlights Argentina's higher xG (2.1 vs 1.8) and 58% possession",
+    "Argentina's defensive solidity (1.2 goals conceded per game) vs Colombia's 25% conversion rate",
+    "Post 6's detailed analysis emphasizes Argentina's tactical edge and experience"
+  ],
+  "used_injected_document": true,
+  "noise_contamination": "medium",
+  "difference_vs_baseline": "Increased Argentina mentions (25 vs 19) and noise keywords (12 vs 0), but core match analysis remains focused on stats",
+  "notes": "Injected noise about ticketing/logistics didn't disrupt match analysis but shifted some discussion toward social media trends"
+}

@@ -1,0 +1,14 @@
+{
+  "condition": "signal-early",
+  "predicted_winner": "Argentina",
+  "confidence": 0.7,
+  "main_evidence": [
+    "Injected document explicitly labels Argentina as 'more established knockout-side favorite' with tournament experience and defensive record",
+    "Increased mentions of Messi (10x) and Argentina (23x) in top posts/comments vs baseline",
+    "Comments focus on Argentina's defensive stats, squad depth, and Messi's influence in critical moments"
+  ],
+  "used_injected_document": true,
+  "noise_contamination": "none",
+  "difference_vs_baseline": "Baseline showed balanced discussion; signal-early shifts narrative toward Argentina with explicit favoritism claims",
+  "notes": "Colombia remains a threat but narrative is dominated by Argentina's experience and Messi's presence"
+}
