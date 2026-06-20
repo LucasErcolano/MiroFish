@@ -1,0 +1,182 @@
+{
+  "total": 435475,
+  "agrupaciones": [
+    {
+      "nombre": "LA LIBERTAD AVANZA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "83",
+          "Votos": 127666,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "LA LIBERTAD AVANZA"
+        }
+      ],
+      "votos": 127666,
+      "porcentaje": "33.36",
+      "idAgrupacion": "83",
+      "color": "#743bbc"
+    },
+    {
+      "nombre": "LA NEUQUINIDAD",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "118",
+          "Votos": 120772,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "LA NEUQUINIDAD"
+        }
+      ],
+      "votos": 120772,
+      "porcentaje": "31.56",
+      "idAgrupacion": "118",
+      "color": "#5dedba"
+    },
+    {
+      "nombre": "FUERZA PATRIA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "115",
+          "Votos": 50281,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FUERZA PATRIA"
+        }
+      ],
+      "votos": 50281,
+      "porcentaje": "13.14",
+      "idAgrupacion": "115",
+      "color": "#63b5e5"
+    },
+    {
+      "nombre": "FUERZA LIBERTARIA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "114",
+          "Votos": 27521,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FUERZA LIBERTARIA"
+        }
+      ],
+      "votos": 27521,
+      "porcentaje": "7.19",
+      "idAgrupacion": "114",
+      "color": "#152d49"
+    },
+    {
+      "nombre": "MÁS POR NEUQUÉN",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "117",
+          "Votos": 23350,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "MÁS POR NEUQUÉN"
+        }
+      ],
+      "votos": 23350,
+      "porcentaje": "6.10",
+      "idAgrupacion": "117",
+      "color": "#1f3566"
+    },
+    {
+      "nombre": "FRENTE DE IZQUIERDA Y DE TRABAJADORES - UNIDAD",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "81",
+          "Votos": 17271,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE DE IZQUIERDA Y DE TRABAJADORES - UNIDAD"
+        }
+      ],
+      "votos": 17271,
+      "porcentaje": "4.51",
+      "idAgrupacion": "81",
+      "color": "#ef2b2d"
+    },
+    {
+      "nombre": "DESARROLLO CIUDADANO",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "249",
+          "Votos": 8209,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "DESARROLLO CIUDADANO"
+        }
+      ],
+      "votos": 8209,
+      "porcentaje": "2.15",
+      "idAgrupacion": "249",
+      "color": "#9b2a62"
+    },
+    {
+      "nombre": "INSTRUMENTO ELECTORAL POR LA UNIDAD POPULAR",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "16",
+          "Votos": 4329,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "INSTRUMENTO ELECTORAL POR LA UNIDAD POPULAR"
+        }
+      ],
+      "votos": 4329,
+      "porcentaje": "1.13",
+      "idAgrupacion": "16",
+      "color": "#2b438d"
+    },
+    {
+      "nombre": "MOVIMIENTO AL SOCIALISMO",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "99",
+          "Votos": 3279,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "MOVIMIENTO AL SOCIALISMO"
+        }
+      ],
+      "votos": 3279,
+      "porcentaje": "0.86",
+      "idAgrupacion": "99",
+      "color": "#ea675f"
+    }
+  ],
+  "NULO": 11659,
+  "IMPUGNADO": 117,
+  "RECURRIDO": 502,
+  "COMANDO": 0,
+  "EN BLANCO": 40519,
+  "IdDistrito": 15,
+  "Distrito": "NEUQUÉN",
+  "MesasEscrutadas": 1747,
+  "Electores": 8140902,
+  "Votantes": 435475,
+  "ParticipacionSobreEscrutado": 5.35,
+  "Año": 2025,
+  "Recuento": "Provisorio",
+  "IdEleccion": 2,
+  "Elecciones": "GENERALES",
+  "IdCargo": 3,
+  "Cargo": "DIPUTADO NACIONAL",
+  "positivos": 382678,
+  "blancos": 40519,
+  "impugnados": 117,
+  "nulos": 11659,
+  "recurridos": 502,
+  "comando": 0,
+  "union": 619
+}
