@@ -1,0 +1,148 @@
+{
+  "total": 424283,
+  "agrupaciones": [
+    {
+      "nombre": "ALIANZA LA LIBERTAD AVANZA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "94",
+          "Votos": 151415,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "ALIANZA LA LIBERTAD AVANZA"
+        }
+      ],
+      "votos": 151415,
+      "porcentaje": "37.23",
+      "idAgrupacion": "94",
+      "color": "#743bbc"
+    },
+    {
+      "nombre": "FRENTE JUJUY CRECE",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "90",
+          "Votos": 81454,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE JUJUY CRECE"
+        }
+      ],
+      "votos": 81454,
+      "porcentaje": "20.03",
+      "idAgrupacion": "90",
+      "color": "#e6603a"
+    },
+    {
+      "nombre": "FRENTE FUERZA PATRIA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "92",
+          "Votos": 63112,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE FUERZA PATRIA"
+        }
+      ],
+      "votos": 63112,
+      "porcentaje": "15.52",
+      "idAgrupacion": "92",
+      "color": "#63b5e5"
+    },
+    {
+      "nombre": "FRENTE PRIMERO JUJUY AVANZA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "91",
+          "Votos": 61539,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE PRIMERO JUJUY AVANZA"
+        }
+      ],
+      "votos": 61539,
+      "porcentaje": "15.13",
+      "idAgrupacion": "91",
+      "color": "#04376e"
+    },
+    {
+      "nombre": "FRENTE DE IZQUIERDA Y DE TRABAJADORES - UNIDAD",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "9",
+          "Votos": 40095,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE DE IZQUIERDA Y DE TRABAJADORES - UNIDAD"
+        }
+      ],
+      "votos": 40095,
+      "porcentaje": "9.86",
+      "idAgrupacion": "9",
+      "color": "#ef2b2d"
+    },
+    {
+      "nombre": "FRENTE LIBERAL",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "93",
+          "Votos": 5806,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "FRENTE LIBERAL"
+        }
+      ],
+      "votos": 5806,
+      "porcentaje": "1.43",
+      "idAgrupacion": "93",
+      "color": "#462363"
+    },
+    {
+      "nombre": "TRANSFORMACIÓN LIBERTARIA",
+      "listas": [
+        {
+          "lista": "",
+          "idAgrupacion": "95",
+          "Votos": 3308,
+          "idlista": "0",
+          "tipoVoto": "POSITIVO",
+          "Agrupacion": "TRANSFORMACIÓN LIBERTARIA"
+        }
+      ],
+      "votos": 3308,
+      "porcentaje": "0.81",
+      "idAgrupacion": "95",
+      "color": "#e6603a"
+    }
+  ],
+  "EN BLANCO": 4342,
+  "COMANDO": 0,
+  "IMPUGNADO": 51,
+  "NULO": 12607,
+  "RECURRIDO": 554,
+  "IdDistrito": 10,
+  "Distrito": "JUJUY",
+  "MesasEscrutadas": 1806,
+  "Electores": 7236840,
+  "Votantes": 424283,
+  "ParticipacionSobreEscrutado": 5.86,
+  "Año": 2025,
+  "Recuento": "Provisorio",
+  "IdEleccion": 2,
+  "Elecciones": "GENERALES",
+  "IdCargo": 3,
+  "Cargo": "DIPUTADO NACIONAL",
+  "positivos": 406729,
+  "blancos": 4342,
+  "impugnados": 51,
+  "nulos": 12607,
+  "recurridos": 554,
+  "comando": 0,
+  "union": 605
+}
