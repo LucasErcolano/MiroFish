@@ -963,7 +963,8 @@ class ReportAgent:
         simulation_id: str,
         simulation_requirement: str,
         llm_client: Optional[LLMClient] = None,
-        zep_tools: Optional[ZepToolsService] = None
+        zep_tools: Optional[ZepToolsService] = None,
+        wiki_context: Optional[str] = None
     ):
         """
         初始化Report Agent
@@ -974,6 +975,12 @@ class ReportAgent:
             simulation_requirement: 模拟需求描述
             llm_client: LLM客户端（可选）
             zep_tools: Zep工具服务（可选）
+            wiki_context: Optional pre-compiled wiki audit context for prior knowledge
+                         injection. When provided, it is prepended to planning and
+                         section-generation prompts as supplementary reference
+                         material. It does NOT replace Zep/GraphRAG searches — it is
+                         additive background knowledge. If None or empty, behaviour
+                         is identical to the pre-integration baseline.
         """
         self.graph_id = graph_id
         self.simulation_id = simulation_id
@@ -984,6 +991,10 @@ class ReportAgent:
             llm_client=self.llm,
             simulation_id=self.simulation_id
         )
+        
+        # Wiki audit context — supplementary prior-knowledge layer.
+        # Gracefully degrades: if None, no wiki context is injected.
+        self.wiki_context: Optional[str] = wiki_context
         
         # 工具定义
         self.tools = self._define_tools()
@@ -1241,6 +1252,28 @@ class ReportAgent:
             related_facts_json=json.dumps(context.get('related_facts', [])[:10], ensure_ascii=False, indent=2),
         )
 
+        # --- Wiki audit context injection (optional, additive) ---
+        # If wiki_context is provided, append it to the user prompt as
+        # supplementary prior knowledge. This does NOT replace Zep/GraphRAG
+        # search results — it is additive background that the agent may
+        # reference for traceability and cross-referencing.
+        if self.wiki_context:
+            user_prompt += (
+                "\n\n"
+                "<wiki_audit_context>\n"
+                "[PRIOR KNOWLEDGE — NOT GROUND TRUTH. Verify claims with tool calls.]\n"
+                "The following wiki audit context was compiled from the simulation's\n"
+                "knowledge base prior to report generation. Use it as background\n"
+                "reference for planning sections, but always confirm key facts\n"
+                "with insight_forge / panorama_search / quick_search before citing.\n"
+                "When referencing wiki-derived information, note it as\n"
+                "\"(per wiki audit)\" for traceability.\n"
+                "---\n"
+                f"{self.wiki_context}\n"
+                "---\n"
+                "</wiki_audit_context>"
+            )
+
         try:
             response = self.llm.chat_json(
                 messages=[
@@ -1330,6 +1363,27 @@ class ReportAgent:
             tools_description=self._get_tools_description(),
         )
         system_prompt = f"{system_prompt}\n\n{get_language_instruction()}"
+
+        # --- Wiki audit context injection (optional, additive) ---
+        # Append wiki context to the system prompt so the ReACT section
+        # generator can reference compiled knowledge for traceability.
+        # This is marked as prior knowledge, NOT a substitute for tool calls.
+        if self.wiki_context:
+            system_prompt += (
+                "\n\n"
+                "<wiki_audit_context>\n"
+                "[PRIOR KNOWLEDGE — NOT GROUND TRUTH. Verify claims with tool calls.]\n"
+                "The following wiki audit context was compiled from the simulation's\n"
+                "knowledge base prior to report generation. Use it as background\n"
+                "reference when writing this section, but always confirm key facts\n"
+                "with insight_forge / panorama_search / quick_search before citing.\n"
+                "When referencing wiki-derived information, note it as\n"
+                "\"(per wiki audit)\" for traceability and sourcing.\n"
+                "---\n"
+                f"{self.wiki_context}\n"
+                "---\n"
+                "</wiki_audit_context>"
+            )
 
         # 构建用户prompt - 每个已完成章节各传入最大4000字
         if previous_sections:
