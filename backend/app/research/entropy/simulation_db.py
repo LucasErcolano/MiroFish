@@ -101,11 +101,23 @@ def output_diversity(posts: Sequence[dict], embedder=None, with_embeddings: bool
     return report
 
 
-def _bucket_index(value, lo, hi, n_buckets) -> int:
-    if hi <= lo:
-        return 0
-    frac = (value - lo) / (hi - lo)
-    return min(n_buckets - 1, int(frac * n_buckets))
+def _rank_bucketer(posts, n_buckets):
+    """
+    Map each distinct created_at to an early..late bucket by rank quantile.
+
+    Robust to both integer time-steps (twitter) and ISO datetime strings
+    (reddit), since both sort correctly within a single run.
+    """
+    times = sorted({p["created_at"] for p in posts if p.get("created_at") is not None})
+    n = len(times)
+    rank = {t: i for i, t in enumerate(times)}
+
+    def bucket(value):
+        if n == 0:
+            return 0
+        return min(n_buckets - 1, int(rank[value] / n * n_buckets))
+
+    return bucket, n
 
 
 def temporal_drift_from_posts(
@@ -122,10 +134,9 @@ def temporal_drift_from_posts(
     drift across buckets (Self-BLEU = repetition; embedding endpoint distance).
     Also reports population-level early-vs-late drift over the whole post sets.
     """
-    times = [p["created_at"] for p in posts if p.get("created_at") is not None]
-    if not times:
+    bucket, n_times = _rank_bucketer(posts, n_buckets)
+    if n_times == 0:
         return {"aggregate": {"n_personas_with_drift": 0}, "per_persona": {}}
-    lo, hi = min(times), max(times)
 
     # author -> bucket -> [texts]
     by_author: dict = {}
@@ -134,7 +145,7 @@ def temporal_drift_from_posts(
         t = p.get("created_at")
         if t is None:
             continue
-        b = _bucket_index(t, lo, hi, n_buckets)
+        b = bucket(t)
         by_author.setdefault(p["user_id"], {}).setdefault(b, []).append(p["content"])
         buckets_all.setdefault(b, []).append(p["content"])
 
