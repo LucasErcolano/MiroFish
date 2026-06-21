@@ -239,5 +239,29 @@ DeepInfra. Plan: correr en DeepInfra lo posible (Gemma-3, Llama-3.3) y financiar
 ### Profundidad de simulación
 
 Las corridas reales de los compañeros usaron **10 rondas** (`max_rounds=10`,
-`total_simulation_hours=72`, plataforma `parallel`). Fase 2 usa **10 rondas**
-(entrevistas de checkpoint en 0 / 5 / 10).
+`total_simulation_hours=72`, plataforma `parallel`, modelo `gemini-2.5-flash-lite`).
+
+## 11. Hallazgo Fase 2 — la simulación se cuelga con modelos grandes
+
+Al intentar correr la simulación multi-ronda en el caso Bolivia, **se congela en la
+ronda 1** (el primer paso donde el agente *decide una acción* vía tool-calling) con
+**gemma-3-27B y llama-3.3-70B** (ambos probados).
+
+Diagnóstico con evidencia → es un **deadlock LOCAL de OASIS**, NO de DeepInfra ni de hardware:
+- DeepInfra responde el mismo pedido (prompt largo + tools) en 6–10s (probado directo).
+- Durante el cuelgue, las conexiones a DeepInfra están idle (cola 0/0); el proceso usa ~2.8% CPU.
+- Con 2–3 agentes (poca RAM) igual cuelga → no es memoria; bajar `semaphore` 30→4→2 no ayuda.
+- Modelos chicos/rápidos NO cuelgan (los compañeros usaron `gemini-2.5-flash-lite`).
+
+**Implicancia:** las métricas C+D (diversidad de salida + deriva temporal) **no son
+obtenibles para gemma/llama en esta máquina**; una máquina más grande no lo arregla.
+
+**Plan adoptado:**
+- Comparar los 3 modelos con **A (diversidad entre personas) + B (planning)** — solo necesitan
+  `prepare`, andan para todos. Resultado gemma: cat_div 0.753, persona Vendi 8.36.
+- Para **C+D / ver la evolución**, usar un modelo chico que sí corre la sim:
+  **qwen3-8b vía OpenRouter** (es uno de los 3 objetivos y es chico).
+- La **deriva temporal** se mide desde los **posts por ronda** del `*_simulation.db`
+  (módulo `simulation_db`), no desde entrevistas (cuyo env es frágil).
+
+> Estado operativo y pasos para retomar: `runs/linea6/HANDOFF.md`.

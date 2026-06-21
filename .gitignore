@@ -6,3 +6,9 @@ __pycache__/
 
 # Headless runner artifacts (see AI_HEADLESS_RUNNER.md)
 runs/
+
+# Backend runtime data (uploads, logs, local data) — not source
+backend/uploads/
+backend/data/
+backend/logs/
+log/
