@@ -11,8 +11,9 @@
 - **Constante**: grafo (`mirofish_ddd25234e70a42a0`), proyecto/requirement (`proj_3954cf6591cd`,
   balotaje Bolivia), document_text, locale **es**.
 - **Varía**: solo el modelo (`LLM_MODEL_NAME`).
-- **Cómo**: A+B vía `prepare` (personas + planning). C + composición de acciones vía sim de
-  48 rondas (`run_reddit_simulation.py --max-rounds 48 --no-wait`). D no es confiable acá.
+- **Cómo**: A+B vía `prepare` (personas + planning). C + D + composición de acciones vía sim
+  (`run_reddit_simulation.py --no-wait`); para el corte limpio de C/D ambos modelos se corrieron
+  **2 días** (gemma `--max-rounds 96`, llama `--max-rounds 48` por su `time_config` de 60-min).
 
 ## A — Diversidad entre personas (prepare, español)
 
@@ -48,30 +49,32 @@ Fuentes: `phase2_gemma_full.json` (gemma #1, run original headless), `phase2_gem
 Ambos mayormente neutrales. `reasoning_chars` es **inestable** (la corrida zh dio 220) → no
 sobre-interpretar como señal de modelo.
 
-## C — Diversidad de salida (sim de 48 rondas, cada modelo sobre SUS personas)
+## C — Diversidad de salida (cada modelo sobre SUS personas)
 
-**Dirección consistente: los posts de llama son menos diversos que los de gemma, en TODOS los
-cortes medidos** (pooled, posts-only, N-igual; sobre personas de gemma y propias de llama).
+**Hallazgo robusto: los posts de llama son marcadamente menos diversos que los de gemma.**
+Comparación **limpia** — ambos modelos corridos **2 días** (misma densidad de conversación),
+**equal-N=39**, posts-only, personas propias, idioma es:
 
-| Métrica (posts-only, **N=18 c/u**) | Gemma | Llama |
+| Métrica (posts-only, **N=39 c/u, ambos 2 días**) | Gemma | Llama |
 |---|---|---|
-| distinct-2 (↑ = diverso) | 0.752 | 0.254 |
-| Self-BLEU (↓ = diverso) | 0.264 | 0.822 |
+| distinct-2 (↑ = diverso) | 0.624 | **0.152** |
+| Self-BLEU (↓ = diverso) | 0.408 | **0.902** |
 
-Sims: `sim_d0caf4b44174` (gemma, 18 posts / 1 día / 30-min-ronda) y `sim_f1d62eb2d5f1`
-(llama, 50 posts / 2 días / 60-min-ronda, su `time_config`).
+Sims: `sim_gemma_2day` (gemma, 39 posts / 96 rondas / 30-min) y `sim_f1d62eb2d5f1`
+(llama, 50 posts / 48 rondas / 60-min). El gap (~4× distinct-2, ~2.2× Self-BLEU) **persiste en
+TODOS los cortes** (1 día, 2 días, equal-N; personas de gemma y propias de llama).
 
-> **Acotación honesta (el "~3×" NO es limpio):**
-> - **equal-N ≠ equal-context.** Submuestreé a N=18 (saca el confound de *cantidad*), pero los 18
->   de llama salen de una conversación más larga/densa sobre una pregunta binaria angosta
->   ("¿Paz o Quiroga?") → el eco sube por densidad de conversación, no solo por modelo. La
->   *magnitud* (3×) no es separable de la asimetría de longitud de run.
-> - **Sin regla de varianza.** A diferencia de A (2 muestras de gemma), C es **una corrida por
->   modelo**. La credibilidad está en el tamaño de efecto + dirección consistente, no en repetición.
-> - **Sin mecanismo.** Tensión real medida: las **personas** de llama son MÁS diversas (Vendi 9.2
->   vs 8.4) pero sus **posts** MENOS → NO es "personas homogéneas → posts repetitivos". Claim
->   descriptivo (end-to-end, los posts de llama convergen más), sin causa atribuida.
-> - El **único corte limpio** sería correr gemma con el mismo `time_config` de 2 días (ver §D).
+> **Por qué esto SÍ es limpio (a diferencia del primer corte):**
+> - **Densidad de conversación controlada.** El confound era real: gemma a 1 día/18 posts daba
+>   Self-BLEU 0.264, pero a 2 días/39 posts sube a 0.408 (conversación más larga → más eco, sin
+>   importar el modelo). Con ambos a 2 días el confound se neutraliza y el gap **persiste**.
+> - **Conservador:** gemma corrió 96 rondas (vs 48 de llama) → MÁS oportunidades de eco, y aún
+>   así es más diverso. Si algo, subestima el gap.
+> - **Sin regla de varianza** (a diferencia de A): una corrida por modelo. La credibilidad está en
+>   el tamaño de efecto grande + dirección consistente en todos los cortes, no en repetición.
+> - **Sin mecanismo.** Tensión real: las **personas** de llama son MÁS diversas (Vendi 9.2 vs 8.4)
+>   pero sus **posts** MENOS → NO es "personas homogéneas → posts repetitivos". Claim descriptivo
+>   (end-to-end, los posts de llama convergen más), sin causa atribuida.
 
 ## Composición de acciones — la señal inter-modelo MÁS limpia (sin pooling)
 
@@ -93,28 +96,36 @@ conductual clara en la selección de acción — no es artefacto de pooling ni d
 > sistema), no una decisión del modelo. Las acciones de sistema se cancelan; la divergencia real
 > está en las acciones **discrecionales** (posts/comments/likes), lo que refuerza el hallazgo.
 
-## D — Deriva temporal intra-persona
+## D — Deriva temporal intra-persona (ambos 2 días, posts-only)
 
-**Ahora medible** con un run más largo. El run de llama clean-C (50 posts / 2 días) junta
-suficientes posts por autor: **14 personas con deriva** posts-only (36 pooled), mean Self-BLEU
-0.55, endpoint-dist 0.09 (deriva embedding chica inicio→fin). El run de gemma (18 posts / 1 día)
-solo tiene 2 personas con ≥2 posts → **no comparable a esta escala**.
+**Corrobora C: las personas de gemma derivan más en el tiempo; las de llama son más estáticas.**
 
-> Para una D comparable entre modelos hace falta correr gemma con un `time_config` de escala
-> similar (p.ej. forzar 2 días / 60-min-ronda). Pendiente.
+| | Gemma 2d | Llama 2d |
+|---|---|---|
+| personas con ≥2 posts | 6 | 14 |
+| Self-BLEU intra-persona (↓ = más deriva) | **0.086** | 0.552 |
+| endpoint-dist embedding (↑ = más deriva) | **0.405** | 0.089 |
+
+Gemma cambia mucho lo que dice una misma persona a lo largo del run (Self-BLEU bajo, gran
+movimiento embedding inicio→fin); llama repite más (Self-BLEU alto, deriva embedding chica) —
+consistente con que la salida de llama es más repetitiva (C).
+
+> Caveat: distinto N de personas con deriva (6 vs 14) y single-run. La dirección es consistente
+> con C, no una medición independiente fuerte.
 
 ## Resumen
 
 - **Lo más sólido** (efectos grandes, dirección consistente): (1) ambos modelos corren la sim
-  end-to-end (no había deadlock); (2) composición de acciones (llama comenta, gemma postea, ~3.5×);
-  (3) gemma escribe personas **~3× más largas**; (4) **persona Vendi** mayor en llama (9.2 vs 8.4,
-  gap ~6× el jitter, con regla de varianza).
-- **Dirección clara, magnitud no limpia:** los **posts de llama son menos diversos** en todos los
-  cortes (a N=18: distinct-2 0.25 vs 0.75, Self-BLEU 0.82 vs 0.26). Pero single-run y la magnitud
-  se confunde con la densidad de conversación (run de 2 días vs 1) → no afirmar "~3×" como limpio.
+  end-to-end (no había deadlock); (2) **diversidad de salida**: posts de llama mucho menos
+  diversos (a densidad pareja + N igual: distinct-2 0.62 vs 0.15, Self-BLEU 0.41 vs 0.90),
+  corroborado por D (gemma deriva más en el tiempo); (3) composición de acciones (llama comenta,
+  gemma postea, ~3.5×); (4) gemma escribe personas **~3× más largas**; (5) **persona Vendi** mayor
+  en llama (9.2 vs 8.4, gap ~6× el jitter, con regla de varianza).
+  - Caveats: C y D son **single-run** (sin regla de varianza como A); la dirección es consistente
+    en todos los cortes pero la magnitud exacta no está validada por repetición.
 - **Dentro del ruido (no concluir dirección):** `cat_div` (jitter ≈ gap) y persona Self-BLEU
   (gemma reproduce 0.436/0.437; llama 0.459, gap chico).
-- **Pendiente:** Qwen3-8B (OpenRouter); C limpia de llama (sim sobre personas propias); D (runs largos).
+- **Pendiente:** Qwen3-8B (bloqueado por crédito OpenRouter). Repetir runs para varianza de C/D.
 
 ## Artefactos
 
@@ -123,9 +134,10 @@ A+B (personas propias, español):
 - `phase2_gemma_standalone_es.json` — gemma A (2da muestra, chequeo de varianza).
 - `phase2_llama_cleanAB_es.json` — llama A+B limpio.
 
-C+D (cada modelo sobre SUS personas):
-- gemma: `phase2_gemma_full.json` / `phase2_gemma-3-27b_postsonly.json` (sim `sim_d0caf4b44174`).
-- llama: `phase2_llama_cleanC.json` / `phase2_llama_cleanC_postsonly.json` (sim `sim_f1d62eb2d5f1`).
+C+D (cada modelo sobre SUS personas; comparación limpia = ambos 2 días):
+- gemma 2-día: `phase2_gemma_2day_postsonly.json` (sim `sim_gemma_2day`, 39 posts) — **el corte limpio**.
+- gemma 1-día: `phase2_gemma_full.json` / `phase2_gemma-3-27b_postsonly.json` (sim `sim_d0caf4b44174`).
+- llama 2-día: `phase2_llama_cleanC.json` / `phase2_llama_cleanC_postsonly.json` (sim `sim_f1d62eb2d5f1`).
 - (histórico, personas de gemma reusadas) `phase2_llama_full.json` / `_postsonly.json` (sim `sim_d0caf4b44174_llama`).
 
 Driver reutilizable: `prepare_only_AB.py`. Comparación N-igual de C: ver §C (submuestreo a 18 posts).
