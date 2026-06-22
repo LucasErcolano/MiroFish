@@ -70,8 +70,11 @@ TODOS los cortes** (1 día, 2 días, equal-N; personas de gemma y propias de lla
 >   importar el modelo). Con ambos a 2 días el confound se neutraliza y el gap **persiste**.
 > - **Conservador:** gemma corrió 96 rondas (vs 48 de llama) → MÁS oportunidades de eco, y aún
 >   así es más diverso. Si algo, subestima el gap.
-> - **Sin regla de varianza** (a diferencia de A): una corrida por modelo. La credibilidad está en
->   el tamaño de efecto grande + dirección consistente en todos los cortes, no en repetición.
+> - **Con regla de varianza (3 corridas por modelo).** Equal-N=10 entre las 6 corridas:
+>   gemma distinct-2 media **0.874** [0.854–0.909] vs llama **0.329** [0.278–0.367]; gemma
+>   Self-BLEU media **0.109** [0.052–0.165] vs llama **0.727** [0.689–0.749]. **Los rangos NO se
+>   solapan** y el gap (~0.55) es ~6-10× el spread intra-modelo → tan sólido como A. (La actividad
+>   sí varía mucho run-a-run: gemma 10-39 posts, llama 40-50 — gemma más errático en cuánto postea.)
 > - **Sin mecanismo.** Tensión real: las **personas** de llama son MÁS diversas (Vendi 9.2 vs 8.4)
 >   pero sus **posts** MENOS → NO es "personas homogéneas → posts repetitivos". Claim descriptivo
 >   (end-to-end, los posts de llama convergen más), sin causa atribuida.
@@ -121,11 +124,13 @@ consistente con que la salida de llama es más repetitiva (C).
   corroborado por D (gemma deriva más en el tiempo); (3) composición de acciones (llama comenta,
   gemma postea, ~3.5×); (4) gemma escribe personas **~3× más largas**; (5) **persona Vendi** mayor
   en llama (9.2 vs 8.4, gap ~6× el jitter, con regla de varianza).
-  - Caveats: C y D son **single-run** (sin regla de varianza como A); la dirección es consistente
-    en todos los cortes pero la magnitud exacta no está validada por repetición.
+  - C ahora **variance-checked** (3 corridas/modelo, rangos no solapados — ver §C). D sigue
+    single-run a escala (las repeticiones de gemma juntaron pocos posts) → dirección consistente con
+    C pero sin regla de varianza propia.
 - **Dentro del ruido (no concluir dirección):** `cat_div` (jitter ≈ gap) y persona Self-BLEU
   (gemma reproduce 0.436/0.437; llama 0.459, gap chico).
-- **Pendiente:** Qwen3-8B (bloqueado por crédito OpenRouter). Repetir runs para varianza de C/D.
+- **Pendiente:** Qwen3-8B (bloqueado por crédito OpenRouter). Varianza de D (las repeticiones de
+  gemma juntaron pocos posts → pocas personas con ≥2 posts; haría falta forzar más actividad).
 
 ## Artefactos
 
@@ -139,5 +144,6 @@ C+D (cada modelo sobre SUS personas; comparación limpia = ambos 2 días):
 - gemma 1-día: `phase2_gemma_full.json` / `phase2_gemma-3-27b_postsonly.json` (sim `sim_d0caf4b44174`).
 - llama 2-día: `phase2_llama_cleanC.json` / `phase2_llama_cleanC_postsonly.json` (sim `sim_f1d62eb2d5f1`).
 - (histórico, personas de gemma reusadas) `phase2_llama_full.json` / `_postsonly.json` (sim `sim_d0caf4b44174_llama`).
+- **Varianza de C** (3 corridas/modelo): sims `sim_gemma_2day{,_r2,_r3}` y `sim_f1d62eb2d5f1`/`sim_llama_2day_r{2,3}`.
 
 Driver reutilizable: `prepare_only_AB.py`. Comparación N-igual de C: ver §C (submuestreo a 18 posts).
