@@ -99,22 +99,21 @@ conductual clara en la selección de acción — no es artefacto de pooling ni d
 > sistema), no una decisión del modelo. Las acciones de sistema se cancelan; la divergencia real
 > está en las acciones **discrecionales** (posts/comments/likes), lo que refuerza el hallazgo.
 
-## D — Deriva temporal intra-persona (ambos 2 días, posts-only)
+## D — Deriva temporal intra-persona (variance-checked, 3 corridas/modelo)
 
-**Corrobora C: las personas de gemma derivan más en el tiempo; las de llama son más estáticas.**
+**Las personas de gemma cambian mucho a lo largo del run; las de llama son estáticas (se repiten).**
+Métrica: Self-BLEU intra-persona entre los posts de una misma persona en el tiempo (↓ = más deriva).
+Rangos sobre las 3 corridas por modelo — **no se solapan**:
 
-| | Gemma 2d | Llama 2d |
+| Self-BLEU intra-persona | Gemma (media [rango]) | Llama (media [rango]) |
 |---|---|---|
-| personas con ≥2 posts | 6 | 14 |
-| Self-BLEU intra-persona (↓ = más deriva) | **0.086** | 0.552 |
-| endpoint-dist embedding (↑ = más deriva) | **0.405** | 0.089 |
+| posts-only | 0.073 [0.062–0.086] | 0.663 [0.552–0.792] |
+| pooled posts+comments | 0.052 [0.023–0.080] | 0.568 [0.509–0.599] |
 
-Gemma cambia mucho lo que dice una misma persona a lo largo del run (Self-BLEU bajo, gran
-movimiento embedding inicio→fin); llama repite más (Self-BLEU alto, deriva embedding chica) —
-consistente con que la salida de llama es más repetitiva (C).
-
-> Caveat: distinto N de personas con deriva (6 vs 14) y single-run. La dirección es consistente
-> con C, no una medición independiente fuerte.
+(n personas con ≥2 ítems, pooled: gemma 5–10, llama 36–39.) El endpoint-distance embedding
+apunta igual (gemma 0.405 = gran movimiento inicio→fin, llama 0.089 = chico). **Corrobora C** y
+con regla de varianza propia. Caveat: la magnitud del Self-BLEU es N-sensible; lo robusto es la
+**separación** (gemma ≪ llama en todas las corridas), no el valor exacto.
 
 ## Resumen
 
@@ -124,13 +123,11 @@ consistente con que la salida de llama es más repetitiva (C).
   corroborado por D (gemma deriva más en el tiempo); (3) composición de acciones (llama comenta,
   gemma postea, ~3.5×); (4) gemma escribe personas **~3× más largas**; (5) **persona Vendi** mayor
   en llama (9.2 vs 8.4, gap ~6× el jitter, con regla de varianza).
-  - C ahora **variance-checked** (3 corridas/modelo, rangos no solapados — ver §C). D sigue
-    single-run a escala (las repeticiones de gemma juntaron pocos posts) → dirección consistente con
-    C pero sin regla de varianza propia.
+  - **C y D ahora variance-checked** (3 corridas/modelo, rangos no solapados en ambas — §C, §D).
+    Tan sólidos como A. Solo falta la varianza inter-corrida de las métricas de A (1 par) y qwen.
 - **Dentro del ruido (no concluir dirección):** `cat_div` (jitter ≈ gap) y persona Self-BLEU
   (gemma reproduce 0.436/0.437; llama 0.459, gap chico).
-- **Pendiente:** Qwen3-8B (bloqueado por crédito OpenRouter). Varianza de D (las repeticiones de
-  gemma juntaron pocos posts → pocas personas con ≥2 posts; haría falta forzar más actividad).
+- **Pendiente:** Qwen3-8B (bloqueado por crédito OpenRouter).
 
 ## Artefactos
 
