@@ -583,7 +583,26 @@ class RedditSimulationRunner:
         
         await self.env.reset()
         print("环境初始化完成\n")
-        
+
+        # 安全网：env.step() 只 gather agent 任务，不包含 platform_task。
+        # 若 platform 协程崩溃，所有 agent 会永远等待 channel 响应而静默死锁，
+        # 且异常被吞掉。这里把 platform 崩溃直接打印出来（含 traceback），
+        # 把静默死锁变成可诊断的显式失败。
+        def _on_platform_done(task):
+            if task.cancelled():
+                return
+            exc = task.exception()
+            if exc is not None:
+                import traceback as _tb
+                # flush 显式：stdout 重定向到文件时是块缓冲；platform 崩溃后
+                # agent 会死锁、进程不退出，不 flush 的话 traceback 永远写不进日志。
+                print("\n!!! PLATFORM TASK CRASHED — agents will deadlock "
+                      "waiting for its channel response !!!", flush=True)
+                _tb.print_exception(type(exc), exc, exc.__traceback__,
+                                    file=sys.stdout)
+                sys.stdout.flush()
+        self.env.platform_task.add_done_callback(_on_platform_done)
+
         # 初始化IPC处理器
         self.ipc_handler = IPCHandler(self.simulation_dir, self.env, self.agent_graph)
         self.ipc_handler.update_status("running")

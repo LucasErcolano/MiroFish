@@ -241,27 +241,81 @@ DeepInfra. Plan: correr en DeepInfra lo posible (Gemma-3, Llama-3.3) y financiar
 Las corridas reales de los compañeros usaron **10 rondas** (`max_rounds=10`,
 `total_simulation_hours=72`, plataforma `parallel`, modelo `gemini-2.5-flash-lite`).
 
-## 11. Hallazgo Fase 2 — la simulación se cuelga con modelos grandes
+## 11. Fase 2 — Gemma SÍ corre la simulación end-to-end (corrección del hallazgo previo)
 
-Al intentar correr la simulación multi-ronda en el caso Bolivia, **se congela en la
-ronda 1** (el primer paso donde el agente *decide una acción* vía tool-calling) con
-**gemma-3-27B y llama-3.3-70B** (ambos probados).
+> **Corrección (2026-06-22).** Una versión anterior de esta sección afirmaba que la
+> sim se "colgaba en la ronda 1" con modelos grandes (deadlock local de OASIS) y que
+> C+D eran inobtenibles para gemma/llama. **Re-investigado con evidencia directa: era
+> un falso positivo.** Gemma-3-27B corre la simulación completa sin colgarse. C+D SÍ
+> son obtenibles para gemma. Lo que sigue documenta la causa real.
 
-Diagnóstico con evidencia → es un **deadlock LOCAL de OASIS**, NO de DeepInfra ni de hardware:
-- DeepInfra responde el mismo pedido (prompt largo + tools) en 6–10s (probado directo).
-- Durante el cuelgue, las conexiones a DeepInfra están idle (cola 0/0); el proceso usa ~2.8% CPU.
-- Con 2–3 agentes (poca RAM) igual cuelga → no es memoria; bajar `semaphore` 30→4→2 no ayuda.
-- Modelos chicos/rápidos NO cuelgan (los compañeros usaron `gemini-2.5-flash-lite`).
+### Síntoma original y causa real
 
-**Implicancia:** las métricas C+D (diversidad de salida + deriva temporal) **no son
-obtenibles para gemma/llama en esta máquina**; una máquina más grande no lo arregla.
+El proceso quedaba a ~2.8% CPU, conexiones a DeepInfra idle, sin avanzar → se
+interpretó como deadlock. La evidencia decisiva está en el `simulation.log` del run
+que quedó "colgado": `模拟循环完成` / **`总耗时: 0.0s`** / `进入等待命令模式`. O sea:
 
-**Plan adoptado:**
-- Comparar los 3 modelos con **A (diversidad entre personas) + B (planning)** — solo necesitan
-  `prepare`, andan para todos. Resultado gemma: cat_div 0.753, persona Vendi 8.36.
-- Para **C+D / ver la evolución**, usar un modelo chico que sí corre la sim:
-  **qwen3-8b vía OpenRouter** (es uno de los 3 objetivos y es chico).
-- La **deriva temporal** se mide desde los **posts por ronda** del `*_simulation.db`
-  (módulo `simulation_db`), no desde entrevistas (cuyo env es frágil).
+1. **0 agentes activados en las rondas tempranas.** Con `max_rounds` corto (6, 10) las
+   rondas caen en horas 0–7 (off-peak, multiplicador 0.05; además los `active_hours`
+   por agente arrancan en h8). La cuenta `int(uniform(3,5)·0.05) = 0` → **0 agentes/ronda**.
+   El loop pasó todas las rondas vacías al instante (`总耗时: 0.0s`) sin una sola llamada LLM.
+   Recién en hora 8+ se activan agentes (~1–2.4/ronda; ~5.5 en el pico nocturno h19–22).
+2. **Modo espera-de-comandos.** El runner sin `--no-wait` entra en el loop IPC y queda
+   idle haciendo polling (~2.8% CPU, sin red) **por diseño** — lo que se leyó como cuelgue.
+
+### Reproducción (aislada, mismo path que usa el backend — subprocess de `run_reddit_simulation.py`)
+
+| Caso | Agentes concurrentes | Resultado |
+|---|---|---|
+| A (Copa América) | 3 | ✅ 8.2s, platform limpio |
+| C (Bolivia) | 15 | ✅ 20.8s |
+| C — estrés | 40 | ✅ 31.0s |
+| **C — run completo (gemma)** | `--max-rounds 48 --no-wait` | ✅ **339.6s, exit 0, env cerrado limpio** |
+| **C — run completo (llama-3.3-70B)** | `--max-rounds 48 --no-wait` | ✅ **716.2s, exit 0, env cerrado limpio** |
+
+Los runs completos generaron contenido real ejercitando 7 tipos de acción (refresh,
+create_post, create_comment, like_post, like_comment, dislike_post, sign_up) **sin
+crashear el platform**: gemma 18 posts + 16 comments (13 autores); llama 10 posts + 57
+comments (32 autores). **Tanto gemma como llama corren end-to-end** → el viejo reclamo
+"ambos modelos grandes cuelgan" queda refutado empíricamente.
+
+> **Acotación honesta:** no se ejercitaron los 13 tipos de acción (faltan follow/mute/
+> search/trend/do_nothing). La afirmación correcta es "gemma corre end-to-end un run
+> completo de 48 rondas sin colgarse", no "ningún path de acción puede romper OASIS".
+
+### Bug latente real arreglado: muerte silenciosa del `platform_task`
+
+`OasisEnv.step()` hace `asyncio.gather()` **solo** sobre las corrutinas de agentes, NO
+sobre `platform_task`. Si `platform.running()` crashea procesando una acción, los agentes
+quedan esperando para siempre la respuesta del channel y la excepción se traga sin log
+→ **cuelgue silencioso indistinguible del estado idle de arriba**. `run_reddit_simulation.py`
+ahora registra `platform_task.add_done_callback(...)` que imprime el traceback del crash,
+convirtiendo ese cuelgue silencioso en una falla diagnosticable.
+
+### Plan actualizado para la comparación de 3 modelos
+
+- **A+B+C+D para los 3 modelos directo** (ya no hace falta limitar C+D a un modelo chico).
+  Correr por modelo: `LLM_MODEL_NAME=<modelo>` + `run_reddit_simulation.py --no-wait
+  --max-rounds 48` (cubre h8→h23: mañana→trabajo→pico, el arco que C+D necesitan) →
+  `entropy_phase2_analysis.py`. **Gemma y Llama-3.3-70B hechos** (C+D):
+  `runs/linea6/phase2_{gemma,llama}_full.json` (pooled) + `_postsonly.json`. Qwen3-8B:
+  mismo flujo vía OpenRouter (pendiente de crédito).
+
+  **Señal inter-modelo limpia = composición de acciones** (de la `trace` table, sin artefactos):
+  llama comenta abrumadoramente (**57 comments / 10 posts**), gemma postea (**18 posts / 16 comments**).
+  Divergencia conductual clara en la selección de acción.
+
+  **Diversidad de texto (C): ojo con el confound de composición.** La métrica `output_diversity`
+  poolea posts+comments; los comments cortos/reactivos sobre un mismo tema solapan n-gramas casi
+  sin importar el modelo. El gap pooled (gemma Self-BLEU 0.304 vs llama **0.903**) era **mayormente
+  artefacto** (llama 85% comments). **Solo-posts** (`--no-comments`) el gap se achica mucho:
+  gemma Self-BLEU 0.264 / distinct-2 0.752 vs llama 0.412 / 0.614 → llama algo más repetitivo,
+  gap modesto. Muestra chica (10–18 posts) → preliminar. (Vendi posts-only 4.55 vs 3.61 está
+  confundido por N: gemma tiene 18 posts, llama 10.)
+- ⚠️ El run de llama reusó las personas de gemma (sim dir copiado) → su métrica **A** es la de
+  gemma. Para un A limpio de llama: re-`prepare` con grafo propio. C (texto/acciones) sí es de llama.
+- **Deriva temporal (D) NO es confiable con estos runs cortos:** solo-posts gemma tiene 2 personas
+  con ≥2 posts y llama 0 (la métrica necesita ≥2 por autor). Para D hace falta un run más
+  largo / más activo (más rondas en horas pico, o subir actividad sin cambiar el diseño del caso).
 
 > Estado operativo y pasos para retomar: `runs/linea6/HANDOFF.md`.
