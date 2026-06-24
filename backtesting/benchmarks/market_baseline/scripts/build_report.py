@@ -116,16 +116,16 @@ def interpretation() -> list[str]:
     return [
         "## Interpretation",
         "",
-        "- Bolivia shows the intended temporal behavior clearly: after T1, both MiroFish and the first-round proxy favor Paz, but the late T3 poll moves the market/proxy toward Quiroga and MiroFish also shifts toward Quiroga. The final ground truth favored Paz, so the late poll acted as a strong but misleading signal.",
-        "- Copa has no explicit market proxy in T0/T1, then T2/T3 add market/model probabilities around Argentina. MiroFish remains close to that market anchor and predicts Argentina correctly.",
-        "- IPC is only partly market-comparable in this one-shot because the available proxy is annual REM inflation, not monthly paths. The benchmark therefore treats monthly rows as MiroFish-only and compares accumulated 2025 where the REM anchor is available.",
+        "- Bolivia is comparable across all T after adding external pre-cutoff proxies. T0 is a weak first-round poll proxy against Paz, T1 flips toward Paz using first-round results, and T2/T3 direct runoff polls favor Quiroga. The final ground truth favored Paz, so the late direct polls acted as strong but misleading market/proxy signals.",
+        "- IPC now has REM comparisons for February, April and accumulated 2025 at every T. July and December monthly targets remain non-comparable under strict publication-date rules because the January 2025 REM was published after the T3 cutoff.",
+        "- Copa is comparable across all T, but proxy quality changes over time: T0 uses a rough pre-tournament outright model normalized over the eventual finalists, while T1-T3 use a cleaner two-way lift-trophy bookmaker proxy. The later DraftKings 2024-07-14 price is excluded because the canonical cutoff is 2024-07-13.",
         "",
         "## Caveats",
         "",
-        "- Market/proxy rows use only signals already present in the temporal evidence packages; this is not an external odds-history research pass.",
+        "- Market/proxy rows use external deep-research signals only when publication dates satisfy the temporal cutoff.",
         "- `UNAVAILABLE` rows are intentionally left out of market-adjusted aggregates.",
-        "- Bolivia T1/T2 proxies are not direct runoff odds; they use first-round relative Paz/Quiroga information and are marked `LOW` quality.",
-        "- IPC annual REM is a market-expectations proxy for accumulated inflation, not a direct monthly forecast.",
+        "- Bolivia T0/T1 proxies are not direct runoff odds; they use first-round relative Paz/Quiroga information and are marked lower quality than direct runoff polls.",
+        "- Copa T0 is not a direct final matchup price; it is a normalized pre-tournament title-probability proxy.",
         "",
     ]
 
@@ -149,4 +149,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
