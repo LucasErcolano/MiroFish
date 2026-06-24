@@ -4,6 +4,9 @@ Step2: Zep实体读取与过滤、OASIS模拟准备与运行（全程自动化�
 """
 
 import os
+import json
+import math
+from pathlib import Path
 import traceback
 from flask import request, jsonify, send_file
 
@@ -18,6 +21,158 @@ from ..utils.locale import t, get_locale, set_locale
 from ..models.project import ProjectManager
 
 logger = get_logger('mirofish.api.simulation')
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+RUNS_ROOT = Path(os.environ.get("MIROFISH_RUNS_DIR", REPO_ROOT / "runs")).resolve()
+
+
+def _simulation_dir(simulation_id: str) -> Path:
+    return Path(Config.UPLOAD_FOLDER).resolve() / "simulations" / simulation_id
+
+
+def _safe_artifact_path(base_dir: Path, rel_path: str, allowed_suffixes: tuple[str, ...]) -> Path:
+    if not rel_path or rel_path.startswith(("/", "\\")) or ".." in Path(rel_path).parts:
+        raise ValueError("invalid path")
+    target = (base_dir / rel_path).resolve()
+    base = base_dir.resolve()
+    if target != base and base not in target.parents:
+        raise ValueError("path traversal rejected")
+    if allowed_suffixes and target.suffix not in allowed_suffixes:
+        raise ValueError("unsupported file type")
+    return target
+
+
+def _read_jsonl(path: Path) -> list[dict]:
+    if not path.is_file():
+        return []
+    records = []
+    with path.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                item = json.loads(line)
+                if isinstance(item, dict):
+                    records.append(item)
+            except json.JSONDecodeError:
+                logger.warning(f"Skipping malformed JSONL line in {path}")
+    return records
+
+
+def _percentile(values: list[float], percentile: float) -> float:
+    if not values:
+        return 0.0
+    ordered = sorted(values)
+    index = max(0, min(len(ordered) - 1, math.ceil((percentile / 100.0) * len(ordered)) - 1))
+    return round(float(ordered[index]), 2)
+
+
+def _aggregate_telemetry(records: list[dict]) -> dict:
+    by_model: dict[str, dict] = {}
+    totals = {
+        "calls": 0,
+        "errors": 0,
+        "parse_errors": 0,
+        "tokens_in": 0,
+        "tokens_out": 0,
+        "cost_usd_est": 0.0,
+        "latency_ms": 0.0,
+    }
+
+    for record in records:
+        model = record.get("model") or "unknown"
+        bucket = by_model.setdefault(
+            model,
+            {
+                "model": model,
+                "provider": record.get("provider") or "",
+                "calls": 0,
+                "errors": 0,
+                "parse_errors": 0,
+                "tokens_in": 0,
+                "tokens_out": 0,
+                "cost_usd_est": 0.0,
+                "latencies_ms": [],
+            },
+        )
+        tokens_in = int(record.get("tokens_in") or 0)
+        tokens_out = int(record.get("tokens_out") or 0)
+        cost = float(record.get("cost_usd_est") or record.get("cost_usd") or 0.0)
+        latency = float(record.get("latency_ms") or 0.0)
+        has_error = bool(record.get("error"))
+        parse_error = record.get("output_valid_json") is False
+
+        bucket["calls"] += 1
+        bucket["errors"] += 1 if has_error else 0
+        bucket["parse_errors"] += 1 if parse_error else 0
+        bucket["tokens_in"] += tokens_in
+        bucket["tokens_out"] += tokens_out
+        bucket["cost_usd_est"] += cost
+        if latency:
+            bucket["latencies_ms"].append(latency)
+
+        totals["calls"] += 1
+        totals["errors"] += 1 if has_error else 0
+        totals["parse_errors"] += 1 if parse_error else 0
+        totals["tokens_in"] += tokens_in
+        totals["tokens_out"] += tokens_out
+        totals["cost_usd_est"] += cost
+        totals["latency_ms"] += latency
+
+    per_model = []
+    for bucket in by_model.values():
+        latencies = bucket.pop("latencies_ms")
+        calls = bucket["calls"]
+        bucket["cost_usd_est"] = round(bucket["cost_usd_est"], 8)
+        bucket["latency_p50_ms"] = _percentile(latencies, 50)
+        bucket["latency_p95_ms"] = _percentile(latencies, 95)
+        bucket["mean_latency_ms"] = round(sum(latencies) / len(latencies), 2) if latencies else 0.0
+        bucket["error_rate"] = round(bucket["errors"] / calls, 4) if calls else 0.0
+        bucket["parse_error_rate"] = round(bucket["parse_errors"] / calls, 4) if calls else 0.0
+        per_model.append(bucket)
+
+    totals["cost_usd_est"] = round(totals["cost_usd_est"], 8)
+    totals["latency_ms"] = round(totals["latency_ms"], 2)
+    totals["latency_p50_ms"] = _percentile([float(r.get("latency_ms") or 0.0) for r in records if r.get("latency_ms")], 50)
+    totals["latency_p95_ms"] = _percentile([float(r.get("latency_ms") or 0.0) for r in records if r.get("latency_ms")], 95)
+    totals["mean_latency_ms"] = round(totals["latency_ms"] / totals["calls"], 2) if totals["calls"] else 0.0
+
+    return {
+        "totals": totals,
+        "per_model": sorted(per_model, key=lambda item: item["model"]),
+    }
+
+
+def _json_contains_value(value, needle: str) -> bool:
+    if isinstance(value, dict):
+        return any(_json_contains_value(v, needle) for v in value.values())
+    if isinstance(value, list):
+        return any(_json_contains_value(v, needle) for v in value)
+    return value == needle
+
+
+def _list_fusion_verdicts_for_sim(simulation_id: str) -> list[dict]:
+    if not RUNS_ROOT.exists():
+        return []
+    verdicts = []
+    for path in sorted(RUNS_ROOT.glob("headless/fusion_*/verdict_raw.json")):
+        rel_path = path.relative_to(REPO_ROOT).as_posix() if REPO_ROOT in path.parents else path.name
+        include = False
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            include = _json_contains_value(data, simulation_id)
+        except Exception:
+            include = False
+
+        if include:
+            verdicts.append({
+                "path": rel_path,
+                "name": path.parent.name,
+                "size": path.stat().st_size,
+                "modified_at": path.stat().st_mtime,
+            })
+    return verdicts
 
 
 # Interview prompt 优化前缀
@@ -2582,6 +2737,196 @@ def get_interview_history():
             "error": str(e),
             "traceback": traceback.format_exc()
         }), 500
+
+
+# ============== Observability artifact endpoints (Issue #32) ==============
+
+@simulation_bp.route('/<simulation_id>/artifacts', methods=['GET'])
+def get_simulation_artifacts(simulation_id: str):
+    """Return a read-only manifest of observability artifacts for a simulation."""
+    try:
+        sim_dir = _simulation_dir(simulation_id)
+        wiki_dir = sim_dir / "wiki"
+        telemetry_path = sim_dir / "llm_telemetry.jsonl"
+        audit_path = sim_dir / "model_routing_audit.jsonl"
+        verdicts = _list_fusion_verdicts_for_sim(simulation_id)
+
+        return jsonify({
+            "success": True,
+            "simulation_id": simulation_id,
+            "wiki": wiki_dir.is_dir(),
+            "telemetry": telemetry_path.is_file(),
+            "audit": audit_path.is_file(),
+            "fusion_verdicts": verdicts,
+            "paths": {
+                "simulation_dir": str(sim_dir),
+                "wiki": str(wiki_dir) if wiki_dir.exists() else None,
+                "telemetry": str(telemetry_path) if telemetry_path.exists() else None,
+                "routing_audit": str(audit_path) if audit_path.exists() else None,
+            },
+        })
+    except Exception as e:
+        logger.error(f"读取模拟 artifacts 失败: {str(e)}")
+        return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
+
+
+@simulation_bp.route('/<simulation_id>/wiki', methods=['GET'])
+def get_simulation_wiki(simulation_id: str):
+    """Return the wiki page tree for a simulation."""
+    try:
+        wiki_dir = _simulation_dir(simulation_id) / "wiki"
+        pages = []
+        if not wiki_dir.is_dir():
+            return jsonify({"success": True, "simulation_id": simulation_id, "pages": []})
+
+        root_names = ["index", "agents", "timeline", "sources", "contradictions"]
+        for name in root_names:
+            path = wiki_dir / f"{name}.md"
+            if path.is_file():
+                pages.append({
+                    "path": path.relative_to(wiki_dir).as_posix(),
+                    "kind": "root",
+                    "title": name.replace("_", " ").title(),
+                    "size": path.stat().st_size,
+                    "modified_at": path.stat().st_mtime,
+                })
+
+        meta_path = wiki_dir / "wiki_meta.json"
+        if meta_path.is_file():
+            pages.append({
+                "path": "wiki_meta.json",
+                "kind": "meta",
+                "title": "Wiki Metadata",
+                "size": meta_path.stat().st_size,
+                "modified_at": meta_path.stat().st_mtime,
+            })
+
+        for kind, folder in [("entity", "entities"), ("claim", "claims")]:
+            folder_path = wiki_dir / folder
+            if not folder_path.is_dir():
+                continue
+            for path in sorted(folder_path.glob("*.md")):
+                pages.append({
+                    "path": path.relative_to(wiki_dir).as_posix(),
+                    "kind": kind,
+                    "title": path.stem.replace("_", " "),
+                    "size": path.stat().st_size,
+                    "modified_at": path.stat().st_mtime,
+                })
+
+        return jsonify({"success": True, "simulation_id": simulation_id, "pages": pages})
+    except Exception as e:
+        logger.error(f"读取模拟 wiki 失败: {str(e)}")
+        return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
+
+
+@simulation_bp.route('/<simulation_id>/wiki/page', methods=['GET'])
+def get_simulation_wiki_page(simulation_id: str):
+    """Return raw markdown/JSON content for one wiki page."""
+    try:
+        wiki_dir = _simulation_dir(simulation_id) / "wiki"
+        rel_path = request.args.get("path", "")
+        try:
+            target = _safe_artifact_path(wiki_dir, rel_path, (".md", ".json"))
+        except ValueError as exc:
+            return jsonify({"success": False, "error": str(exc)}), 400
+
+        if not target.is_file():
+            return jsonify({"success": False, "error": "not found"}), 404
+
+        return jsonify({
+            "success": True,
+            "simulation_id": simulation_id,
+            "path": rel_path,
+            "content": target.read_text(encoding="utf-8"),
+            "size": target.stat().st_size,
+            "modified_at": target.stat().st_mtime,
+        })
+    except Exception as e:
+        logger.error(f"读取 wiki 页面失败: {str(e)}")
+        return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
+
+
+@simulation_bp.route('/<simulation_id>/telemetry', methods=['GET'])
+def get_simulation_telemetry(simulation_id: str):
+    """Return aggregated LLM telemetry for a simulation."""
+    try:
+        telemetry_path = _simulation_dir(simulation_id) / "llm_telemetry.jsonl"
+        records = _read_jsonl(telemetry_path)
+        aggregated = _aggregate_telemetry(records)
+        return jsonify({
+            "success": True,
+            "simulation_id": simulation_id,
+            "records_count": len(records),
+            "records": records,
+            **aggregated,
+        })
+    except Exception as e:
+        logger.error(f"读取 telemetry 失败: {str(e)}")
+        return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
+
+
+@simulation_bp.route('/<simulation_id>/routing-audit', methods=['GET'])
+def get_simulation_routing_audit(simulation_id: str):
+    """Return post-run model routing audit records for a simulation."""
+    try:
+        audit_path = _simulation_dir(simulation_id) / "model_routing_audit.jsonl"
+        records = _read_jsonl(audit_path)
+        return jsonify({
+            "success": True,
+            "simulation_id": simulation_id,
+            "records_count": len(records),
+            "records": records,
+        })
+    except Exception as e:
+        logger.error(f"读取 routing audit 失败: {str(e)}")
+        return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
+
+
+@simulation_bp.route('/<simulation_id>/fusion-verdicts', methods=['GET'])
+def get_simulation_fusion_verdicts(simulation_id: str):
+    """Return Fusion verdict files that reference this simulation."""
+    try:
+        return jsonify({
+            "success": True,
+            "simulation_id": simulation_id,
+            "verdicts": _list_fusion_verdicts_for_sim(simulation_id),
+        })
+    except Exception as e:
+        logger.error(f"读取 Fusion verdict 列表失败: {str(e)}")
+        return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
+
+
+@simulation_bp.route('/<simulation_id>/fusion-verdict', methods=['GET'])
+def get_simulation_fusion_verdict(simulation_id: str):
+    """Return one Fusion verdict file by path."""
+    try:
+        rel_path = request.args.get("path", "")
+        base_dir = REPO_ROOT
+        try:
+            target = _safe_artifact_path(base_dir, rel_path, (".json",))
+        except ValueError as exc:
+            return jsonify({"success": False, "error": str(exc)}), 400
+
+        runs_headless = (RUNS_ROOT / "headless").resolve()
+        if runs_headless not in target.parents:
+            return jsonify({"success": False, "error": "path is outside fusion artifacts"}), 400
+        if target.name != "verdict_raw.json" or not target.is_file():
+            return jsonify({"success": False, "error": "not found"}), 404
+
+        data = json.loads(target.read_text(encoding="utf-8"))
+        if simulation_id and not _json_contains_value(data, simulation_id):
+            return jsonify({"success": False, "error": "verdict does not reference simulation"}), 404
+
+        return jsonify({
+            "success": True,
+            "simulation_id": simulation_id,
+            "path": rel_path,
+            "data": data,
+        })
+    except Exception as e:
+        logger.error(f"读取 Fusion verdict 失败: {str(e)}")
+        return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
 
 
 @simulation_bp.route('/env-status', methods=['POST'])

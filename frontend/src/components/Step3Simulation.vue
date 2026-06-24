@@ -103,6 +103,38 @@
       </div>
     </div>
 
+    <section class="routing-audit-panel">
+      <button class="routing-toggle" @click="routingExpanded = !routingExpanded">
+        <span>Model Routing Audit</span>
+        <span class="routing-meta">{{ routingAuditRows.length }} routes</span>
+      </button>
+      <div v-if="routingExpanded" class="routing-body">
+        <div v-if="routingAuditRows.length === 0" class="routing-empty">
+          Routing audit not available. Run with a model map to enable per-agent routing telemetry.
+        </div>
+        <table v-else class="routing-table">
+          <thead>
+            <tr>
+              <th>Agent</th>
+              <th>Role</th>
+              <th>Provider</th>
+              <th>Model</th>
+              <th>Source</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(row, idx) in routingAuditRows" :key="`${row.agent_id}-${idx}`">
+              <td class="mono">{{ row.agent_id }}</td>
+              <td>{{ row.role || '-' }}</td>
+              <td>{{ row.provider || '-' }}</td>
+              <td>{{ row.model || '-' }}</td>
+              <td><span class="route-chip" :class="`route-chip--${row.source || 'default'}`">{{ row.source || 'default' }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <!-- Main Content: Dual Timeline -->
     <div class="main-content-area" ref="scrollContainer">
       <!-- Timeline Header -->
@@ -296,6 +328,7 @@ import {
   getRunStatusDetail
 } from '../api/simulation'
 import { generateReport } from '../api/report'
+import { useSimulationArtifacts } from '../composables/useSimulationArtifacts'
 
 const { t } = useI18n()
 
@@ -325,6 +358,8 @@ const runStatus = ref({})
 const allActions = ref([]) // 所有动作（增量累积）
 const actionIds = ref(new Set()) // 用于去重的动作ID集合
 const scrollContainer = ref(null)
+const routingExpanded = ref(false)
+const { audit, load: loadArtifacts } = useSimulationArtifacts(() => props.simulationId)
 
 // Computed
 // 按时间顺序显示动作（最新的在最后面，即底部）
@@ -359,6 +394,8 @@ const twitterElapsedTime = computed(() => {
 const redditElapsedTime = computed(() => {
   return formatElapsedTime(runStatus.value.reddit_current_round || 0)
 })
+
+const routingAuditRows = computed(() => audit.value?.records || [])
 
 // Methods
 const addLog = (msg) => {
@@ -689,6 +726,7 @@ watch(() => props.systemLogs?.length, () => {
 
 onMounted(() => {
   addLog(t('log.step3Init'))
+  loadArtifacts()
   if (props.simulationId) {
     doStartSimulation()
   }
@@ -719,6 +757,83 @@ onUnmounted(() => {
   border-bottom: 1px solid #EAEAEA;
   z-index: 10;
   height: 64px;
+}
+
+.routing-audit-panel {
+  border-bottom: 1px solid #EAEAEA;
+  background: #FFF;
+  flex-shrink: 0;
+}
+
+.routing-toggle {
+  width: 100%;
+  border: 0;
+  background: #FAFAFA;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.routing-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #6B7280;
+}
+
+.routing-body {
+  max-height: 220px;
+  overflow: auto;
+  padding: 12px 24px;
+}
+
+.routing-empty {
+  color: #6B7280;
+  font-size: 12px;
+}
+
+.routing-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.routing-table th,
+.routing-table td {
+  border-bottom: 1px solid #E5E7EB;
+  padding: 8px;
+  text-align: left;
+}
+
+.routing-table th {
+  color: #6B7280;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.route-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #F3F4F6;
+  color: #374151;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.route-chip--by_agent_id {
+  background: #DBEAFE;
+  color: #1D4ED8;
+}
+
+.route-chip--by_role {
+  background: #FEF3C7;
+  color: #B45309;
 }
 
 .status-group {

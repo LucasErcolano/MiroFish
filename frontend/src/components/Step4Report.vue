@@ -14,6 +14,25 @@
             <h1 class="main-title">{{ reportOutline.title }}</h1>
             <p class="sub-title">{{ reportOutline.summary }}</p>
             <div class="header-divider"></div>
+            <div v-if="wikiStats" class="wiki-stats-card">
+              <div class="wiki-stat">
+                <span>Total pages</span>
+                <strong>{{ wikiStats.total }}</strong>
+              </div>
+              <div class="wiki-stat">
+                <span>Entities</span>
+                <strong>{{ wikiStats.entities }}</strong>
+              </div>
+              <div class="wiki-stat">
+                <span>Claims</span>
+                <strong>{{ wikiStats.claims }}</strong>
+              </div>
+              <div class="wiki-stat">
+                <span>Updated</span>
+                <strong>{{ wikiStats.updated }}</strong>
+              </div>
+            </div>
+            <FusionVerdictPanel v-if="latestFusionVerdict" :verdict="latestFusionVerdict" />
           </div>
 
           <!-- Sections List -->
@@ -380,6 +399,12 @@
         <span class="log-title">CONSOLE OUTPUT</span>
         <span class="log-id">{{ reportId || 'NO_REPORT' }}</span>
       </div>
+      <details v-if="deepSearchLogs.length > 0" class="deep-search-trace">
+        <summary>Deep Search trace · {{ deepSearchLogs.length }}</summary>
+        <div class="deep-search-line" v-for="(log, idx) in deepSearchLogs" :key="`deep-${idx}`">
+          {{ log }}
+        </div>
+      </details>
       <div class="log-content" ref="logContent">
         <div class="log-line" v-for="(log, idx) in consoleLogs" :key="idx">
           <span class="log-msg" :class="getLogLevelClass(log)">{{ log }}</span>
@@ -393,7 +418,12 @@
 import { ref, computed, watch, onMounted, onUnmounted, nextTick, h, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { marked } from 'marked'
 import { getAgentLog, getConsoleLog } from '../api/report'
+import FusionVerdictPanel from './report/FusionVerdictPanel.vue'
+import { useSimulationArtifacts } from '../composables/useSimulationArtifacts'
+
+marked.setOptions({ gfm: true, breaks: false })
 
 const router = useRouter()
 const { t } = useI18n()
@@ -430,6 +460,13 @@ const leftPanel = ref(null)
 const rightPanel = ref(null)
 const logContent = ref(null)
 const showRawResult = reactive({})
+const latestFusionVerdict = ref(null)
+const {
+  wiki,
+  verdicts,
+  load: loadArtifacts,
+  loadFusionVerdict
+} = useSimulationArtifacts(() => props.simulationId)
 
 // Toggle functions
 const toggleRawResult = (timestamp, event) => {
@@ -1827,6 +1864,29 @@ const workflowSteps = computed(() => {
   return steps
 })
 
+const wikiStats = computed(() => {
+  const pages = wiki.value?.pages || []
+  if (!pages.length) return null
+  const latest = pages.reduce((max, page) => Math.max(max, Number(page.modified_at || 0)), 0)
+
+  return {
+    total: pages.length,
+    entities: pages.filter(page => page.kind === 'entity').length,
+    claims: pages.filter(page => page.kind === 'claim').length,
+    updated: latest ? new Date(latest * 1000).toLocaleDateString() : '-'
+  }
+})
+
+const deepSearchLogs = computed(() => {
+  return consoleLogs.value.filter(log => {
+    const text = String(log || '').toLowerCase()
+    return text.includes('deep_search')
+      || text.includes('deep search')
+      || text.includes('tavily')
+      || text.includes('max_date')
+  })
+})
+
 // Methods
 const addLog = (msg) => {
   emit('add-log', msg)
@@ -1873,107 +1933,8 @@ const truncateText = (text, maxLen) => {
 
 const renderMarkdown = (content) => {
   if (!content) return ''
-  
-  // 去掉开头的二级标题（## xxx），因为章节标题已在外层显示
-  let processedContent = content.replace(/^##\s+.+\n+/, '')
-  
-  // 处理代码块
-  let html = processedContent.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre class="code-block"><code>$2</code></pre>')
-  
-  // 处理行内代码
-  html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>')
-  
-  // 处理标题
-  html = html.replace(/^#### (.+)$/gm, '<h5 class="md-h5">$1</h5>')
-  html = html.replace(/^### (.+)$/gm, '<h4 class="md-h4">$1</h4>')
-  html = html.replace(/^## (.+)$/gm, '<h3 class="md-h3">$1</h3>')
-  html = html.replace(/^# (.+)$/gm, '<h2 class="md-h2">$1</h2>')
-  
-  // 处理引用块
-  html = html.replace(/^> (.+)$/gm, '<blockquote class="md-quote">$1</blockquote>')
-  
-  // 处理列表 - 支持子列表
-  html = html.replace(/^(\s*)- (.+)$/gm, (match, indent, text) => {
-    const level = Math.floor(indent.length / 2)
-    return `<li class="md-li" data-level="${level}">${text}</li>`
-  })
-  html = html.replace(/^(\s*)(\d+)\. (.+)$/gm, (match, indent, num, text) => {
-    const level = Math.floor(indent.length / 2)
-    return `<li class="md-oli" data-level="${level}">${text}</li>`
-  })
-
-  // 包装无序列表
-  html = html.replace(/(<li class="md-li"[^>]*>.*?<\/li>\s*)+/g, '<ul class="md-ul">$&</ul>')
-  // 包装有序列表
-  html = html.replace(/(<li class="md-oli"[^>]*>.*?<\/li>\s*)+/g, '<ol class="md-ol">$&</ol>')
-
-  // 清理列表项之间的所有空白
-  html = html.replace(/<\/li>\s+<li/g, '</li><li')
-  // 清理列表开始标签后的空白
-  html = html.replace(/<ul class="md-ul">\s+/g, '<ul class="md-ul">')
-  html = html.replace(/<ol class="md-ol">\s+/g, '<ol class="md-ol">')
-  // 清理列表结束标签前的空白
-  html = html.replace(/\s+<\/ul>/g, '</ul>')
-  html = html.replace(/\s+<\/ol>/g, '</ol>')
-  
-  // 处理粗体和斜体
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>')
-  html = html.replace(/_(.+?)_/g, '<em>$1</em>')
-  
-  // 处理分隔线
-  html = html.replace(/^---$/gm, '<hr class="md-hr">')
-  
-  // 处理换行 - 空行变成段落分隔，单换行变成 <br>
-  html = html.replace(/\n\n/g, '</p><p class="md-p">')
-  html = html.replace(/\n/g, '<br>')
-  
-  // 包装在段落中
-  html = '<p class="md-p">' + html + '</p>'
-  
-  // 清理空段落
-  html = html.replace(/<p class="md-p"><\/p>/g, '')
-  html = html.replace(/<p class="md-p">(<h[2-5])/g, '$1')
-  html = html.replace(/(<\/h[2-5]>)<\/p>/g, '$1')
-  html = html.replace(/<p class="md-p">(<ul|<ol|<blockquote|<pre|<hr)/g, '$1')
-  html = html.replace(/(<\/ul>|<\/ol>|<\/blockquote>|<\/pre>)<\/p>/g, '$1')
-  // 清理块级元素前后的 <br> 标签
-  html = html.replace(/<br>\s*(<ul|<ol|<blockquote)/g, '$1')
-  html = html.replace(/(<\/ul>|<\/ol>|<\/blockquote>)\s*<br>/g, '$1')
-  // 清理 <p><br> 紧跟块级元素的情况（多余空行导致）
-  html = html.replace(/<p class="md-p">(<br>\s*)+(<ul|<ol|<blockquote|<pre|<hr)/g, '$2')
-  // 清理连续的 <br> 标签
-  html = html.replace(/(<br>\s*){2,}/g, '<br>')
-  // 清理块级元素后紧跟的段落开始标签前的 <br>
-  html = html.replace(/(<\/ol>|<\/ul>|<\/blockquote>)<br>(<p|<div)/g, '$1$2')
-
-  // 修复非连续有序列表的编号：当单项 <ol> 被段落内容隔开时，保持编号递增
-  const tokens = html.split(/(<ol class="md-ol">(?:<li class="md-oli"[^>]*>[\s\S]*?<\/li>)+<\/ol>)/g)
-  let olCounter = 0
-  let inSequence = false
-  for (let i = 0; i < tokens.length; i++) {
-    if (tokens[i].startsWith('<ol class="md-ol">')) {
-      const liCount = (tokens[i].match(/<li class="md-oli"/g) || []).length
-      if (liCount === 1) {
-        olCounter++
-        if (olCounter > 1) {
-          tokens[i] = tokens[i].replace('<ol class="md-ol">', `<ol class="md-ol" start="${olCounter}">`)
-        }
-        inSequence = true
-      } else {
-        olCounter = 0
-        inSequence = false
-      }
-    } else if (inSequence) {
-      if (/<h[2-5]/.test(tokens[i])) {
-        olCounter = 0
-        inSequence = false
-      }
-    }
-  }
-  html = tokens.join('')
-
-  return html
+  const processedContent = content.replace(/^##\s+.+\n+/, '')
+  return marked.parse(processedContent)
 }
 
 const getTimelineItemClass = (log, idx, total) => {
@@ -2175,8 +2136,23 @@ const stopPolling = () => {
   }
 }
 
+const loadObservabilityArtifacts = async () => {
+  if (!props.simulationId) return
+
+  await loadArtifacts()
+  const latest = verdicts.value?.[0]
+  if (!latest?.path) return
+
+  try {
+    latestFusionVerdict.value = await loadFusionVerdict(latest.path)
+  } catch (err) {
+    console.warn('Failed to fetch fusion verdict:', err)
+  }
+}
+
 // Lifecycle
 onMounted(() => {
+  loadObservabilityArtifacts()
   if (props.reportId) {
     addLog(`Report Agent initialized: ${props.reportId}`)
     startPolling()
@@ -2205,6 +2181,11 @@ watch(() => props.reportId, (newId) => {
     startPolling()
   }
 }, { immediate: true })
+
+watch(() => props.simulationId, () => {
+  latestFusionVerdict.value = null
+  loadObservabilityArtifacts()
+})
 </script>
 
 <style scoped>
@@ -2415,6 +2396,34 @@ watch(() => props.reportId, (newId) => {
   width: 100%;
 }
 
+.wiki-stats-card {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 14px 0 4px;
+}
+
+.wiki-stat {
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  padding: 10px;
+  background: #FAFAFA;
+}
+
+.wiki-stat span {
+  display: block;
+  font-size: 10px;
+  color: #6B7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.wiki-stat strong {
+  font-size: 14px;
+  color: #111827;
+}
+
 /* Sections List */
 .sections-list {
   display: flex;
@@ -2499,6 +2508,55 @@ watch(() => props.reportId, (newId) => {
 
 .generated-content :deep(p) {
   margin-bottom: 1em;
+}
+
+.generated-content :deep(h1),
+.generated-content :deep(h2),
+.generated-content :deep(h3),
+.generated-content :deep(h4) {
+  font-family: 'Times New Roman', Times, serif;
+  color: #111827;
+  margin-top: 1.5em;
+  margin-bottom: 0.8em;
+  font-weight: 700;
+}
+
+.generated-content :deep(h1) { font-size: 22px; }
+.generated-content :deep(h2) { font-size: 20px; border-bottom: 1px solid #F3F4F6; padding-bottom: 8px; }
+.generated-content :deep(h3) { font-size: 18px; }
+.generated-content :deep(h4) { font-size: 16px; }
+
+.generated-content :deep(ul),
+.generated-content :deep(ol) {
+  padding-left: 24px;
+  margin: 12px 0;
+}
+
+.generated-content :deep(li) {
+  margin: 6px 0;
+}
+
+.generated-content :deep(blockquote) {
+  border-left: 3px solid #E5E7EB;
+  padding-left: 16px;
+  margin: 1.5em 0;
+  color: #6B7280;
+  font-style: italic;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.generated-content :deep(pre) {
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  margin: 1.5em 0;
+}
+
+.generated-content :deep(code) {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
 }
 
 .generated-content :deep(.md-h2),
@@ -5125,6 +5183,29 @@ watch(() => props.reportId, (newId) => {
 .log-title {
   text-transform: uppercase;
   letter-spacing: 0.1em;
+}
+
+.deep-search-trace {
+  margin-bottom: 8px;
+  border: 1px solid #333;
+  border-radius: 6px;
+  background: #050505;
+  padding: 8px;
+}
+
+.deep-search-trace summary {
+  cursor: pointer;
+  color: #93C5FD;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.deep-search-line {
+  color: #BFDBFE;
+  font-size: 11px;
+  line-height: 1.5;
+  margin-top: 6px;
+  word-break: break-word;
 }
 
 .log-content {

@@ -7,11 +7,15 @@ import logging
 import os
 import json
 from typing import List, Dict, Any, Optional
-from tavily import TavilyClient
 from ..config import Config
 from openai import OpenAI
 
 logger = logging.getLogger(__name__)
+
+try:
+    from tavily import TavilyClient
+except ImportError:
+    TavilyClient = None
 
 class DeepSearchService:
     """
@@ -24,6 +28,8 @@ class DeepSearchService:
         self.client = OpenAI(api_key=Config.LLM_API_KEY, base_url=Config.LLM_BASE_URL)
         if not self.tavily_key:
             logger.warning("TAVILY_API_KEY not configured. Deep Search will use LLM Fallback mode exclusively.")
+        elif TavilyClient is None:
+            logger.warning("tavily package is not installed. Deep Search will use LLM Fallback mode exclusively.")
             
     def perform_research(self, theme: str, max_results: int = 5, max_date: Optional[str] = None) -> str:
         """
@@ -34,7 +40,7 @@ class DeepSearchService:
         raw_text = ""
         
         # 1. Search via Tavily (if configured)
-        if self.tavily_key:
+        if self.tavily_key and TavilyClient is not None:
             try:
                 tavily_client = TavilyClient(api_key=self.tavily_key)
                 
@@ -119,4 +125,3 @@ class DeepSearchService:
         except Exception as e:
             logger.error(f"LLM Synthesis failed: {e}")
             return f"Deep Search failed due to an error: {str(e)}"
-
