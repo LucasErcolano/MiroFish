@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import mimetypes
+import re
 import shutil
 import subprocess
 import sys
@@ -189,6 +190,24 @@ def copy_tree_if_exists(src: Path, dst: Path) -> None:
         shutil.copytree(src, dst, dirs_exist_ok=True)
 
 
+def extract_structured_answer_from_report(output_dir: Path) -> Optional[Path]:
+    structured_path = output_dir / "structured_answer.json"
+    report_path = output_dir / "report.md"
+    if structured_path.exists() or not report_path.exists():
+        return structured_path if structured_path.exists() else None
+
+    text = report_path.read_text(encoding="utf-8")
+    candidates = re.findall(r"```(?:json)?\s*(\{.*?\})\s*```", text, flags=re.DOTALL | re.IGNORECASE)
+    for candidate in reversed(candidates):
+        try:
+            payload = json.loads(candidate)
+        except json.JSONDecodeError:
+            continue
+        write_json(structured_path, payload)
+        return structured_path
+    return None
+
+
 def evaluate(case_dir: Path, config: Dict[str, Any], output_dir: Path, variant_id: str) -> Dict[str, Any]:
     experiment = config["experiment_metadata"]
     model_policy = config["model_policy"].get("model_policy", config["model_policy"]["label"])
@@ -203,7 +222,15 @@ def evaluate(case_dir: Path, config: Dict[str, Any], output_dir: Path, variant_i
         str(config["fixed_simulation_config"].get("seed", 1)),
     ]
     if experiment["eval_artifact"] == "structured_answer_json":
-        command.extend(["--structured-answer", str(output_dir / "structured_answer.json")])
+        structured_path = extract_structured_answer_from_report(output_dir)
+        if structured_path is not None:
+            command.extend(["--structured-answer", str(structured_path)])
+        elif (output_dir / "report.md").exists():
+            command.extend(["--report", str(output_dir / "report.md")])
+        else:
+            raise FileNotFoundError(
+                f"Missing structured_answer.json, no JSON block found, and no report.md in {output_dir}"
+            )
     elif experiment["eval_artifact"] == "report_markdown":
         command.extend(["--report", str(output_dir / "report.md")])
     else:
@@ -230,6 +257,30 @@ def shared_graph_cache_path(case_dir: Path, config: Dict[str, Any]) -> Path:
     package = config["line5_package"]
     output_base = case_dir / experiment.get("output_dir", "output_llama_line5")
     return output_base / f"_shared_graph_{package['id']}.json"
+
+
+def read_graph_context_from_run_notes(path: Path) -> Optional[Dict[str, Any]]:
+    if not path.exists():
+        return None
+    text = path.read_text(encoding="utf-8")
+    values: Dict[str, str] = {}
+    for key in ("project_id", "graph_id"):
+        patterns = [
+            rf"^\s*-\s*{key}\s*:\s*`?([^`\s]+)`?\s*$",
+            rf"^\s*-\s*{key.replace('_', ' ')}\s*:\s*`?([^`\s]+)`?\s*$",
+        ]
+        for pattern in patterns:
+            match = re.search(pattern, text, flags=re.IGNORECASE | re.MULTILINE)
+            if match:
+                values[key] = match.group(1)
+                break
+    if not values.get("project_id") or not values.get("graph_id"):
+        return None
+    return {
+        "project_id": values["project_id"],
+        "graph_id": values["graph_id"],
+        "reused_from_run_notes": str(path),
+    }
 
 
 def validate_shared_graph(base_url: str, cached: Dict[str, Any]) -> bool:
@@ -264,6 +315,7 @@ def build_or_reuse_graph(
     reuse_graph = bool(package.get("reuse_graph_project"))
     cache_key = shared_graph_cache_key(config, seed_path)
     cache_file = shared_graph_cache_path(case_dir, config)
+    reuse_from_notes = package.get("reuse_existing_graph_from_run_notes")
 
     if reuse_graph:
         cached = project_cache.get(cache_key)
@@ -274,6 +326,23 @@ def build_or_reuse_graph(
             if cached.get("cache_key") == cache_key and validate_shared_graph(base_url, cached):
                 project_cache[cache_key] = cached
                 return cached
+
+    if reuse_from_notes:
+        notes_path = (REPO_ROOT / reuse_from_notes).resolve()
+        external = read_graph_context_from_run_notes(notes_path)
+        if external and validate_shared_graph(base_url, external):
+            external.update(
+                {
+                    "cache_key": cache_key,
+                    "project_name": f"external:{notes_path.name}",
+                    "input_file": seed_path.name,
+                    "input_sha256": sha256_file(seed_path),
+                }
+            )
+            project_cache[cache_key] = external
+            if reuse_graph:
+                write_json(cache_file, external)
+            return external
 
     project_name = (
         f"{config['experiment_metadata']['case_id']}_{package['id']}_shared_graph"

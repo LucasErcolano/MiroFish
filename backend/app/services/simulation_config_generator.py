@@ -295,13 +295,24 @@ class SimulationConfigGenerator:
         # ========== 步骤1: 生成时间配置 ==========
         report_progress(1, t('progress.generatingTimeConfig'))
         num_entities = len(entities)
-        time_config_result = self._generate_time_config(context, num_entities)
+        time_config_result = self._ensure_json_object(
+            self._generate_time_config(context, num_entities),
+            self._get_default_time_config(num_entities),
+        )
         time_config = self._parse_time_config(time_config_result, num_entities)
         reasoning_parts.append(f"{t('progress.timeConfigLabel')}: {time_config_result.get('reasoning', t('common.success'))}")
         
         # ========== 步骤2: 生成事件配置 ==========
         report_progress(2, t('progress.generatingEventConfig'))
-        event_config_result = self._generate_event_config(context, simulation_requirement, entities)
+        event_config_result = self._ensure_json_object(
+            self._generate_event_config(context, simulation_requirement, entities),
+            {
+                "hot_topics": [],
+                "narrative_direction": "",
+                "initial_posts": [],
+                "reasoning": t('common.success'),
+            },
+        )
         event_config = self._parse_event_config(event_config_result)
         reasoning_parts.append(f"{t('progress.eventConfigLabel')}: {event_config_result.get('reasoning', t('common.success'))}")
         
@@ -446,7 +457,7 @@ class SimulationConfigGenerator:
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": prompt}
                     ],
-                    response_format={"type": "json_object"},
+                    **({} if "qwen" in (self.model_name or "").lower() else {"response_format": {"type": "json_object"}}),
                     temperature=0.7 - (attempt * 0.1)  # 每次重试降低温度
                     # 不设置max_tokens，让LLM自由发挥
                 )
@@ -461,14 +472,14 @@ class SimulationConfigGenerator:
                 
                 # 尝试解析JSON
                 try:
-                    return json.loads(content)
+                    return self._ensure_json_object(json.loads(content))
                 except json.JSONDecodeError as e:
                     logger.warning(f"JSON解析失败 (attempt {attempt+1}): {str(e)[:80]}")
                     
                     # 尝试修复JSON
                     fixed = self._try_fix_config_json(content)
                     if fixed:
-                        return fixed
+                        return self._ensure_json_object(fixed)
                     
                     last_error = e
                     
@@ -497,6 +508,35 @@ class SimulationConfigGenerator:
         content += '}' * open_braces
         
         return content
+
+    def _ensure_json_object(
+        self,
+        value: Any,
+        default: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """Return a dict from model JSON, including double-encoded JSON strings."""
+        if isinstance(value, dict):
+            return value
+
+        if isinstance(value, str):
+            for _ in range(2):
+                try:
+                    parsed = json.loads(value)
+                except json.JSONDecodeError:
+                    parsed = self._try_fix_config_json(value)
+
+                if isinstance(parsed, dict):
+                    return parsed
+                if isinstance(parsed, str):
+                    value = parsed
+                    continue
+                break
+
+        if default is not None:
+            logger.warning("LLM returned non-object JSON for simulation config, using default")
+            return default
+
+        raise ValueError(f"LLM returned non-object JSON: {type(value).__name__}")
     
     def _try_fix_config_json(self, content: str) -> Optional[Dict[str, Any]]:
         """尝试修复配置JSON"""
@@ -520,13 +560,15 @@ class SimulationConfigGenerator:
             json_str = re.sub(r'"[^"\\]*(?:\\.[^"\\]*)*"', fix_string, json_str)
             
             try:
-                return json.loads(json_str)
+                parsed = json.loads(json_str)
+                return parsed if isinstance(parsed, dict) else None
             except:
                 # 尝试移除所有控制字符
                 json_str = re.sub(r'[\x00-\x1f\x7f-\x9f]', ' ', json_str)
                 json_str = re.sub(r'\s+', ' ', json_str)
                 try:
-                    return json.loads(json_str)
+                    parsed = json.loads(json_str)
+                    return parsed if isinstance(parsed, dict) else None
                 except:
                     pass
         
@@ -611,6 +653,9 @@ class SimulationConfigGenerator:
     def _parse_time_config(self, result: Dict[str, Any], num_entities: int) -> TimeSimulationConfig:
         """解析时间配置结果，并验证agents_per_hour值不超过总agent数"""
         # 获取原始值
+        if not isinstance(result, dict):
+            result = self._get_default_time_config(num_entities)
+
         agents_per_hour_min = result.get("agents_per_hour_min", max(1, num_entities // 15))
         agents_per_hour_max = result.get("agents_per_hour_max", max(5, num_entities // 5))
         
@@ -718,6 +763,9 @@ class SimulationConfigGenerator:
     
     def _parse_event_config(self, result: Dict[str, Any]) -> EventConfig:
         """解析事件配置结果"""
+        if not isinstance(result, dict):
+            result = {}
+
         return EventConfig(
             initial_posts=result.get("initial_posts", []),
             scheduled_events=[],

@@ -28,10 +28,25 @@ def load_matrix() -> dict:
         return yaml.safe_load(handle)
 
 
-def matrix_rows(matrix: dict, conditions: list[str]) -> list[dict]:
+def csv_filter(value: str | None) -> set[str] | None:
+    if not value:
+        return None
+    return {item.strip() for item in value.split(",") if item.strip()}
+
+
+def matrix_rows(
+    matrix: dict,
+    conditions: list[str],
+    topics: set[str] | None = None,
+    models: set[str] | None = None,
+) -> list[dict]:
     rows: list[dict] = []
     for topic_key, topic in matrix["topics"].items():
+        if topics and topic_key not in topics:
+            continue
         for model_key, model in matrix["models"].items():
+            if models and model_key not in models:
+                continue
             for condition in conditions:
                 rows.append(
                     {
@@ -136,22 +151,39 @@ def write_markdown(path: Path, rows: list[dict], title: str, scope: str) -> None
 def main() -> int:
     parser = argparse.ArgumentParser(description="Summarize S3 run artifacts into committable tables.")
     parser.add_argument("--full", action="store_true", help="Summarize all seven V3 conditions instead of smoke only.")
+    parser.add_argument("--topics", default=None, help="Comma-separated topic keys to include.")
+    parser.add_argument("--models", default=None, help="Comma-separated model keys to include.")
+    parser.add_argument("--output-dir", default=None, help="Override output directory.")
+    parser.add_argument("--output-stem", default=None, help="Override output filename stem.")
     args = parser.parse_args()
 
     matrix = load_matrix()
+    topic_filter = csv_filter(args.topics)
+    model_filter = csv_filter(args.models)
     if args.full:
         conditions = [condition["id"] for condition in matrix["conditions"]]
         stem = "full_summary"
         title = "S3 Full Matrix Summary"
-        scope = "3 topics x 2 models x 7 conditions"
+        scope = f"{len(matrix['topics'])} topics x {len(matrix['models'])} models x 7 conditions"
     else:
         conditions = list(matrix["smoke_conditions"])
         stem = "smoke_summary"
         title = "S3 Smoke Summary"
-        scope = "3 topics x 2 models x 2 conditions (`baseline-control`, `signal-mid`)"
+        scope = f"{len(matrix['topics'])} topics x {len(matrix['models'])} models x 2 conditions (`baseline-control`, `signal-mid`)"
 
-    rows = [summarize_row(matrix, row) for row in matrix_rows(matrix, conditions)]
-    out_dir = S3_ROOT / "evaluation"
+    rows = [
+        summarize_row(matrix, row)
+        for row in matrix_rows(matrix, conditions, topics=topic_filter, models=model_filter)
+    ]
+    if not rows:
+        raise SystemExit("No S3 rows selected for summary")
+    if args.output_stem:
+        stem = args.output_stem
+    if topic_filter or model_filter:
+        topic_label = ",".join(sorted(topic_filter)) if topic_filter else "all"
+        model_label = ",".join(sorted(model_filter)) if model_filter else "all"
+        scope = f"{scope}; filtered topics={topic_label}; models={model_label}"
+    out_dir = Path(args.output_dir) if args.output_dir else S3_ROOT / "evaluation"
     write_csv(out_dir / f"{stem}.csv", rows)
     (out_dir / f"{stem}.json").write_text(json.dumps(rows, indent=2), encoding="utf-8")
     write_markdown(out_dir / f"{stem}.md", rows, title=title, scope=scope)

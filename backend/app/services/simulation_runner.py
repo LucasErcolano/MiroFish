@@ -316,7 +316,8 @@ class SimulationRunner:
         platform: str = "parallel",  # twitter / reddit / parallel
         max_rounds: int = None,  # 最大模拟轮数（可选，用于截断过长的模拟）
         enable_graph_memory_update: bool = False,  # 是否将活动更新到Zep图谱
-        graph_id: str = None  # Zep图谱ID（启用图谱更新时必需）
+        graph_id: str = None,  # Zep图谱ID（启用图谱更新时必需）
+        no_wait: bool = False,
     ) -> SimulationRunState:
         """
         启动模拟
@@ -422,6 +423,8 @@ class SimulationRunner:
             # 如果指定了最大轮数，添加到命令行参数
             if max_rounds is not None and max_rounds > 0:
                 cmd.extend(["--max-rounds", str(max_rounds)])
+            if no_wait:
+                cmd.append("--no-wait")
             
             # 创建主日志文件，避免 stdout/stderr 管道缓冲区满导致进程阻塞
             main_log_path = os.path.join(sim_dir, "simulation.log")
@@ -1136,6 +1139,7 @@ class SimulationRunner:
         files_to_delete = [
             "run_state.json",
             "simulation.log",
+            "scheduled_events_fired.jsonl",
             "stdout.log",
             "stderr.log",
             "twitter_simulation.db",  # Twitter 平台数据库

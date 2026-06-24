@@ -1,0 +1,287 @@
+{
+  "simulation_id": "sim_b4eb30cd61b1",
+  "project_id": "proj_2daba091908b",
+  "graph_id": "mirofish_e6ae87fa2c91466b",
+  "simulation_requirement": "# Question\n\nCon la informacion disponible en el paquete de evidencia provisto, predecir quien ganara el balotaje presidencial de Bolivia del 19 de octubre de 2025.\n\nResponder exclusivamente en espanol.\n\nLa respuesta debe:\n\n- identificar desde la evidencia cuales son los dos candidatos competitivos del balotaje;\n- elegir una prediccion principal unica, sin responder empate;\n- estimar el porcentaje de voto de los dos candidatos competitivos y de otros/blanco/nulo;\n- estimar el margen entre el ganador predicho y el segundo candidato en puntos;\n- justificar la prediccion usando solo evidencia del contexto entregado;\n- explicar como pesan la crisis economica, el colapso del MAS, la sorpresa de primera vuelta, el contraste de plataformas y la encuesta tardia;\n- mencionar factores de incertidumbre;\n- no usar informacion posterior a la fecha maxima del paquete.\n\nFormato esperado:\n\nCandidatos competitivos identificados:\n- Candidato 1: __\n- Candidato 2: __\n\nPrediccion principal: __ gana\n\nEstimacion de votos:\n- [nombre completo del candidato 1]: __%\n- [nombre completo del candidato 2]: __%\n- Otros / blanco / nulo: __%\n\nMargen estimado ganador-segundo: __ puntos\n\nJustificacion:\n- evidencia 1\n- evidencia 2\n- evidencia 3\n\nIncertidumbre:\n- factor 1\n- factor 2",
+  "time_config": {
+    "total_simulation_hours": 48,
+    "minutes_per_round": 60,
+    "agents_per_hour_min": 1,
+    "agents_per_hour_max": 3,
+    "peak_hours": [
+      19,
+      20,
+      21,
+      22
+    ],
+    "peak_activity_multiplier": 1.5,
+    "off_peak_hours": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "off_peak_activity_multiplier": 0.05,
+    "morning_hours": [
+      7,
+      8
+    ],
+    "morning_activity_multiplier": 0.4,
+    "work_hours": [
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "work_activity_multiplier": 0.7
+  },
+  "agent_configs": [
+    {
+      "agent_id": 0,
+      "entity_uuid": "f8a55c4e-b660-4522-8dfc-7cdc3d8a721b",
+      "entity_name": "Jorge \"Tuto\" Quiroga",
+      "entity_type": "Person",
+      "activity_level": 0.5,
+      "posts_per_hour": 0.3,
+      "comments_per_hour": 0.2,
+      "active_hours": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "response_delay_min": 15,
+      "response_delay_max": 60,
+      "sentiment_bias": 0.2,
+      "stance": "supportive",
+      "influence_weight": 1.7
+    },
+    {
+      "agent_id": 1,
+      "entity_uuid": "cb8727ce-604c-40ec-b3c5-561b4ecb3993",
+      "entity_name": "Rodrigo Paz",
+      "entity_type": "Person",
+      "activity_level": 0.6,
+      "posts_per_hour": 0.4,
+      "comments_per_hour": 0.3,
+      "active_hours": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "response_delay_min": 5,
+      "response_delay_max": 20,
+      "sentiment_bias": 0.1,
+      "stance": "neutral",
+      "influence_weight": 1.1
+    },
+    {
+      "agent_id": 2,
+      "entity_uuid": "ca68b3c1-b096-4c3a-9c44-8c655fae0118",
+      "entity_name": "MAS",
+      "entity_type": "PoliticalParty",
+      "activity_level": 0.2,
+      "posts_per_hour": 0.1,
+      "comments_per_hour": 0.05,
+      "active_hours": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "response_delay_min": 60,
+      "response_delay_max": 240,
+      "sentiment_bias": -1.0,
+      "stance": "opposing",
+      "influence_weight": 2.8
+    },
+    {
+      "agent_id": 3,
+      "entity_uuid": "c940705a-bb9b-4387-8e9a-13d97c1c3633",
+      "entity_name": "United States",
+      "entity_type": "ForeignGovernment",
+      "activity_level": 0.3,
+      "posts_per_hour": 0.15,
+      "comments_per_hour": 0.1,
+      "active_hours": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "response_delay_min": 30,
+      "response_delay_max": 120,
+      "sentiment_bias": 0.0,
+      "stance": "neutral",
+      "influence_weight": 2.2
+    },
+    {
+      "agent_id": 4,
+      "entity_uuid": "a7c576c9-ce23-4478-8181-d13fa3e1aa2b",
+      "entity_name": "Bolivian presidential candidates",
+      "entity_type": "PresidentialCandidate",
+      "activity_level": 0.5,
+      "posts_per_hour": 0.25,
+      "comments_per_hour": 0.2,
+      "active_hours": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "response_delay_min": 10,
+      "response_delay_max": 45,
+      "sentiment_bias": 0.0,
+      "stance": "observer",
+      "influence_weight": 2.0
+    },
+    {
+      "agent_id": 5,
+      "entity_uuid": "765813d1-94e3-4f83-9c97-de63bd11e43e",
+      "entity_name": "Edman Lara",
+      "entity_type": "Person",
+      "activity_level": 0.7,
+      "posts_per_hour": 0.5,
+      "comments_per_hour": 0.4,
+      "active_hours": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "response_delay_min": 2,
+      "response_delay_max": 10,
+      "sentiment_bias": 0.1,
+      "stance": "neutral",
+      "influence_weight": 1.0
+    },
+    {
+      "agent_id": 6,
+      "entity_uuid": "0e84eabb-11ad-44a3-9d0e-86f2e5329a47",
+      "entity_name": "IMF",
+      "entity_type": "EconomicEntity",
+      "activity_level": 0.4,
+      "posts_per_hour": 0.2,
+      "comments_per_hour": 0.15,
+      "active_hours": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "response_delay_min": 15,
+      "response_delay_max": 60,
+      "sentiment_bias": -1.0,
+      "stance": "opposing",
+      "influence_weight": 1.6
+    }
+  ],
+  "event_config": {
+    "initial_posts": [
+      {
+        "content": "最新民调显示，豪尔赫·“图托”·基罗加在玻利维亚总统大选中领先，获得44.9%的支持，罗德里戈·帕斯获得36.5%。经济政策和与IMF的关系是选民关注的重点。",
+        "poster_type": "MediaOutlet",
+        "poster_agent_id": 2
+      },
+      {
+        "content": "作为前总统，豪尔赫·“图托”·基罗加强调与MAS的断裂，并承诺进行亲市场改革和财政调整。他同时表示倾向于与美国加强关系。",
+        "poster_type": "Person",
+        "poster_agent_id": 0
+      },
+      {
+        "content": "罗德里戈·帕斯将“全民资本主义”作为竞选口号，主张去中心化、生产信贷和透明度。他的竞选搭档埃德曼·拉拉以反腐形象吸引了选民。",
+        "poster_type": "Person",
+        "poster_agent_id": 1
+      },
+      {
+        "content": "经济压力、燃料短缺和通货膨胀是导致民众对执政党MAS信心下降的主要因素。此次大选结果将对玻利维亚的经济走向产生重大影响。",
+        "poster_type": "PoliticalParty",
+        "poster_agent_id": 2
+      },
+      {
+        "content": "美国官员与两名总统候选人会晤，强调了改善两国关系的可能性。这表明美国正在密切关注玻利维亚的政治局势。",
+        "poster_type": "ForeignGovernment",
+        "poster_agent_id": 3
+      }
+    ],
+    "scheduled_events": [],
+    "hot_topics": [
+      "2025年玻利维亚总统大选",
+      "罗德里戈·帕斯",
+      "豪尔赫·“图托”·基罗加",
+      "经济危机",
+      "MAS衰落",
+      "IMF",
+      "美国关系"
+    ],
+    "narrative_direction": "舆论围绕着两位候选人帕斯和基罗加展开，经济危机、MAS的衰落以及他们各自的经济政策成为关键议题。基罗加在晚期民调中领先，但帕斯获得了前候选人梅迪纳的支持，增加了竞争的复杂性。美国的关系和IMF的潜在支持也是讨论的焦点。"
+  },
+  "twitter_config": {
+    "platform": "twitter",
+    "recency_weight": 0.4,
+    "popularity_weight": 0.3,
+    "relevance_weight": 0.3,
+    "viral_threshold": 10,
+    "echo_chamber_strength": 0.5
+  },
+  "reddit_config": {
+    "platform": "reddit",
+    "recency_weight": 0.3,
+    "popularity_weight": 0.4,
+    "relevance_weight": 0.3,
+    "viral_threshold": 15,
+    "echo_chamber_strength": 0.6
+  },
+  "llm_model": "google/gemma-3-27b-it",
+  "llm_base_url": "https://api.deepinfra.com/v1/openai",
+  "generated_at": "2026-06-24T12:13:35.288877",
+  "generation_reasoning": "时间配置: 考虑到玻利维亚的政治事件，以及这是大选前的最后几天，民众对政治的关注度会比较高。因此，高峰期设置在晚间19-22点，工作时间保持中等活跃度。考虑到时间截止至10月17日，且大选在10月19日，模拟时间设定为48小时，以覆盖最后两天。早间活跃度有所提升，但不如晚间。凌晨活跃度较低。 | 事件配置: 基于提供的证据，我们分析了两位候选人的竞选策略、晚期民调结果以及影响选举的关键因素，并设计了初始帖子以反映这些信息。帖子类型选择旨在模拟不同实体在选举期间可能发布的观点。 | Agent配置: 成功生成 7 个 | 初始帖子分配: 5 个帖子已分配发布者"
+}

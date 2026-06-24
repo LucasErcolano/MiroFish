@@ -437,10 +437,11 @@ def build_graph():
                 
                 # OpenZep 本地链路在批量抽取时更容易卡在长时间的联合推理里。
                 # 改为单块发送可以显著降低单次处理负载，牺牲吞吐换稳定性。
+                graph_build_batch_size = int(os.environ.get("GRAPH_BUILD_BATCH_SIZE", "1"))
                 episode_uuids = builder.add_text_batches(
                     graph_id,
                     chunks,
-                    batch_size=1 if Config.use_openzep() else 3,
+                    batch_size=graph_build_batch_size,
                     progress_callback=add_progress_callback
                 )
                 

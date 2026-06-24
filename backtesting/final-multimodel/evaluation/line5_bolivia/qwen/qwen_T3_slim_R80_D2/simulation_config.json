@@ -1,0 +1,336 @@
+{
+  "simulation_id": "sim_84a83865ae3e",
+  "project_id": "proj_da8e4263af54",
+  "graph_id": "mirofish_c489d9b4ae344aba",
+  "simulation_requirement": "# Question\n\nCon la informacion disponible en el paquete de evidencia provisto, predecir quien ganara el balotaje presidencial de Bolivia del 19 de octubre de 2025.\n\nResponder exclusivamente en espanol.\n\nLa respuesta debe:\n\n- identificar desde la evidencia cuales son los dos candidatos competitivos del balotaje;\n- elegir una prediccion principal unica, sin responder empate;\n- estimar el porcentaje de voto de los dos candidatos competitivos y de otros/blanco/nulo;\n- estimar el margen entre el ganador predicho y el segundo candidato en puntos;\n- justificar la prediccion usando solo evidencia del contexto entregado;\n- explicar como pesan la crisis economica, el colapso del MAS, la sorpresa de primera vuelta, el contraste de plataformas y la encuesta tardia;\n- mencionar factores de incertidumbre;\n- no usar informacion posterior a la fecha maxima del paquete.\n\nFormato esperado:\n\nCandidatos competitivos identificados:\n- Candidato 1: __\n- Candidato 2: __\n\nPrediccion principal: __ gana\n\nEstimacion de votos:\n- [nombre completo del candidato 1]: __%\n- [nombre completo del candidato 2]: __%\n- Otros / blanco / nulo: __%\n\nMargen estimado ganador-segundo: __ puntos\n\nJustificacion:\n- evidencia 1\n- evidencia 2\n- evidencia 3\n\nIncertidumbre:\n- factor 1\n- factor 2",
+  "time_config": {
+    "total_simulation_hours": 72,
+    "minutes_per_round": 60,
+    "agents_per_hour_min": 5,
+    "agents_per_hour_max": 6,
+    "peak_hours": [
+      19,
+      20,
+      21,
+      22
+    ],
+    "peak_activity_multiplier": 1.5,
+    "off_peak_hours": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "off_peak_activity_multiplier": 0.05,
+    "morning_hours": [
+      6,
+      7,
+      8
+    ],
+    "morning_activity_multiplier": 0.4,
+    "work_hours": [
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "work_activity_multiplier": 0.7
+  },
+  "agent_configs": [
+    {
+      "agent_id": 0,
+      "entity_uuid": "f3a23282-7779-4c19-af17-8a2c2849fbff",
+      "entity_name": "Bolivia",
+      "entity_type": "InternationalEntity",
+      "activity_level": 0.2,
+      "posts_per_hour": 1,
+      "comments_per_hour": 0,
+      "active_hours": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "response_delay_min": 120,
+      "response_delay_max": 360,
+      "sentiment_bias": -0.2,
+      "stance": "observer",
+      "influence_weight": 3.0
+    },
+    {
+      "agent_id": 1,
+      "entity_uuid": "e4a6d0e8-34c2-43bc-8c20-9c17006160dc",
+      "entity_name": "MAS",
+      "entity_type": "PoliticalParty",
+      "activity_level": 0.3,
+      "posts_per_hour": 2,
+      "comments_per_hour": 1,
+      "active_hours": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "response_delay_min": 60,
+      "response_delay_max": 180,
+      "sentiment_bias": -0.5,
+      "stance": "opposing",
+      "influence_weight": 2.8
+    },
+    {
+      "agent_id": 2,
+      "entity_uuid": "b31978fa-bc7d-4ede-adfd-2c7be8dfd6d9",
+      "entity_name": "Edman Lara",
+      "entity_type": "Person",
+      "activity_level": 0.8,
+      "posts_per_hour": 5,
+      "comments_per_hour": 3,
+      "active_hours": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "response_delay_min": 5,
+      "response_delay_max": 20,
+      "sentiment_bias": 0.7,
+      "stance": "supportive",
+      "influence_weight": 1.0
+    },
+    {
+      "agent_id": 3,
+      "entity_uuid": "89393e49-7c7e-4312-937a-685a1fb680b2",
+      "entity_name": "IMF",
+      "entity_type": "EconomicInstitution",
+      "activity_level": 0.5,
+      "posts_per_hour": 3,
+      "comments_per_hour": 2,
+      "active_hours": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22
+      ],
+      "response_delay_min": 10,
+      "response_delay_max": 30,
+      "sentiment_bias": 0.3,
+      "stance": "neutral",
+      "influence_weight": 2.2
+    },
+    {
+      "agent_id": 4,
+      "entity_uuid": "7cf35098-8447-41c8-bfec-3138940adb53",
+      "entity_name": "Bolivian presidential candidates",
+      "entity_type": "Candidate",
+      "activity_level": 0.4,
+      "posts_per_hour": 2,
+      "comments_per_hour": 1,
+      "active_hours": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22
+      ],
+      "response_delay_min": 15,
+      "response_delay_max": 45,
+      "sentiment_bias": 0.0,
+      "stance": "observer",
+      "influence_weight": 1.8
+    },
+    {
+      "agent_id": 5,
+      "entity_uuid": "5df87574-025e-4573-93be-7915781ff774",
+      "entity_name": "Rodrigo Paz",
+      "entity_type": "Person",
+      "activity_level": 0.7,
+      "posts_per_hour": 4,
+      "comments_per_hour": 2,
+      "active_hours": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "response_delay_min": 5,
+      "response_delay_max": 15,
+      "sentiment_bias": 0.6,
+      "stance": "supportive",
+      "influence_weight": 1.1
+    },
+    {
+      "agent_id": 6,
+      "entity_uuid": "594f0072-61e1-4b0c-8bfe-d846bd100180",
+      "entity_name": "Samuel Doria Medina",
+      "entity_type": "Person",
+      "activity_level": 0.8,
+      "posts_per_hour": 3,
+      "comments_per_hour": 2,
+      "active_hours": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "response_delay_min": 5,
+      "response_delay_max": 10,
+      "sentiment_bias": 0.8,
+      "stance": "supportive",
+      "influence_weight": 1.0
+    },
+    {
+      "agent_id": 7,
+      "entity_uuid": "4d42231e-3d9a-46ef-b223-43b42fc91842",
+      "entity_name": "Jorge \"Tuto\" Quiroga",
+      "entity_type": "Person",
+      "activity_level": 0.6,
+      "posts_per_hour": 3,
+      "comments_per_hour": 2,
+      "active_hours": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "response_delay_min": 10,
+      "response_delay_max": 25,
+      "sentiment_bias": 0.4,
+      "stance": "supportive",
+      "influence_weight": 1.5
+    },
+    {
+      "agent_id": 8,
+      "entity_uuid": "090a368d-57ee-4fa7-9eb6-b214badb4c9c",
+      "entity_name": "United States",
+      "entity_type": "InternationalEntity",
+      "activity_level": 0.5,
+      "posts_per_hour": 2,
+      "comments_per_hour": 1,
+      "active_hours": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22
+      ],
+      "response_delay_min": 15,
+      "response_delay_max": 45,
+      "sentiment_bias": 0.2,
+      "stance": "neutral",
+      "influence_weight": 2.0
+    }
+  ],
+  "event_config": {
+    "initial_posts": [
+      {
+        "content": "美国官员与玻利维亚候选人会面，暗示对MAS政府的外交转向，可能影响选民决策。",
+        "poster_type": "InternationalEntity",
+        "poster_agent_id": 0
+      },
+      {
+        "content": "MAS党面临信任危机，经济压力导致支持率持续下滑，补选成为政权更迭关键节点。",
+        "poster_type": "PoliticalParty",
+        "poster_agent_id": 1
+      },
+      {
+        "content": "Rodrigo Paz强调渐进改革，反对IMF主导，其反腐搭档Edman Lara吸引中间选民。",
+        "poster_type": "Candidate",
+        "poster_agent_id": 4
+      },
+      {
+        "content": "IMF潜在支持可能成为Jorge Quiroga核心优势，但其激进经济政策引发争议。",
+        "poster_type": "EconomicInstitution",
+        "poster_agent_id": 3
+      },
+      {
+        "content": "Samuel Doria Medina背书Rodrigo Paz，凸显传统精英阶层对改革派的倾斜。",
+        "poster_type": "Person",
+        "poster_agent_id": 2
+      }
+    ],
+    "scheduled_events": [],
+    "hot_topics": [
+      "经济危机",
+      "MAS崩溃",
+      "首轮意外",
+      "政策平台对比",
+      "民调滞后"
+    ],
+    "narrative_direction": "舆论聚焦经济改革与国际关系博弈，候选人政策差异引发选民分化，民调滞后加剧不确定性。"
+  },
+  "twitter_config": {
+    "platform": "twitter",
+    "recency_weight": 0.4,
+    "popularity_weight": 0.3,
+    "relevance_weight": 0.3,
+    "viral_threshold": 10,
+    "echo_chamber_strength": 0.5
+  },
+  "reddit_config": {
+    "platform": "reddit",
+    "recency_weight": 0.3,
+    "popularity_weight": 0.4,
+    "relevance_weight": 0.3,
+    "viral_threshold": 15,
+    "echo_chamber_strength": 0.6
+  },
+  "llm_model": "qwen/qwen3-8b",
+  "llm_base_url": "https://openrouter.ai/api/v1",
+  "generated_at": "2026-06-24T13:04:10.322508",
+  "generation_reasoning": "时间配置: 针对政治选举话题讨论的模拟配置，目标群体为关注拉美政局的成年用户。晚间19-22点为社交媒体活跃高峰（新闻热议时段），工作日9-18点保持中等活跃度（职场人群碎片化讨论），凌晨低活跃符合现实作息。考虑到选举结果公布前的舆论发酵周期，设置72小时模拟覆盖关键讨论时段。 | 事件配置: 基于实体信息整合经济危机（MAS信任崩塌）、首轮意外（Paz/Quiroga领先）、政策对比（IMF立场分歧）、国际因素（美国外交信号）及民调滞后（关键预测依据）形成舆论框架，各发布者类型严格匹配实体属性。 | Agent配置: 成功生成 9 个 | 初始帖子分配: 5 个帖子已分配发布者"
+}
