@@ -18,6 +18,11 @@
             {{ { graph: $t('main.layoutGraph'), split: $t('main.layoutSplit'), workbench: $t('main.layoutWorkbench') }[mode] }}
           </button>
         </div>
+        <div class="artifact-tabs">
+          <router-link :to="{ name: 'Simulation', params: { simulationId: currentSimulationId } }">Overview</router-link>
+          <router-link :to="{ name: 'SimulationWiki', params: { simulationId: currentSimulationId } }">Wiki</router-link>
+          <router-link :to="{ name: 'SimulationTelemetry', params: { simulationId: currentSimulationId } }">Telemetry</router-link>
+        </div>
       </div>
 
       <div class="header-right">
@@ -337,6 +342,9 @@ onMounted(async () => {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .view-switcher {
@@ -363,6 +371,30 @@ onMounted(async () => {
   background: #FFF;
   color: #000;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.artifact-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  background: #FFF;
+}
+
+.artifact-tabs a {
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6B7280;
+  text-decoration: none;
+}
+
+.artifact-tabs a.router-link-active {
+  background: #111827;
+  color: #FFF;
 }
 
 .header-right {
@@ -436,4 +468,3 @@ onMounted(async () => {
   border-right: 1px solid #EAEAEA;
 }
 </style>
-
