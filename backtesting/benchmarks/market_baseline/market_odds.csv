@@ -1,0 +1,29 @@
+case_id,temporal_package,target,market_source_type,source_id,raw_value,p_market,market_value,quality_flag,notes
+bolivia_2025_runoff_s2,T0,paz_wins,UNAVAILABLE,first_round_poll_context,Pre-first-round polls did not define a Paz-vs-Quiroga runoff market/proxy.,,,UNAVAILABLE,No direct runoff probability available at T0.
+bolivia_2025_runoff_s2,T1,paz_wins,PROXY_ELECTION_FIRST_ROUND,first_round_surprise,"Paz roughly 32%, Quiroga just over 26% in first round.",0.551724,,LOW,Relative Paz share among Paz+Quiroga: 32/(32+26). First-round result is not a direct runoff market.
+bolivia_2025_runoff_s2,T2,paz_wins,PROXY_CARRY_FORWARD,first_round_surprise,No new numeric market/proxy in T2; carrying forward T1 first-round proxy.,0.551724,,LOW,Policy contrast is qualitative; no new numeric runoff odds.
+bolivia_2025_runoff_s2,T3,paz_wins,PROXY_SURVEY,late_poll_quiroga_lead,"Quiroga 44.9%, Paz 36.5%.",0.448403,,MEDIUM,Relative Paz share among Paz+Quiroga: 36.5/(36.5+44.9).
+arg_ipc_2025_temporal,T0,delta_1_feb,UNAVAILABLE,,No numeric market/proxy configured for this target.,,,UNAVAILABLE,Target remains MiroFish-only in this one-shot benchmark.
+arg_ipc_2025_temporal,T0,delta_2_apr,UNAVAILABLE,,No numeric market/proxy configured for this target.,,,UNAVAILABLE,Target remains MiroFish-only in this one-shot benchmark.
+arg_ipc_2025_temporal,T0,delta_3_jul,UNAVAILABLE,,No numeric market/proxy configured for this target.,,,UNAVAILABLE,Target remains MiroFish-only in this one-shot benchmark.
+arg_ipc_2025_temporal,T0,delta_4_dec,UNAVAILABLE,,No numeric market/proxy configured for this target.,,,UNAVAILABLE,Target remains MiroFish-only in this one-shot benchmark.
+arg_ipc_2025_temporal,T0,accumulated_2025,UNAVAILABLE,,No numeric market/proxy configured for this target.,,,UNAVAILABLE,Target remains MiroFish-only in this one-shot benchmark.
+arg_ipc_2025_temporal,T1,delta_1_feb,UNAVAILABLE,,No numeric market/proxy configured for this target.,,,UNAVAILABLE,Target remains MiroFish-only in this one-shot benchmark.
+arg_ipc_2025_temporal,T1,delta_2_apr,UNAVAILABLE,,No numeric market/proxy configured for this target.,,,UNAVAILABLE,Target remains MiroFish-only in this one-shot benchmark.
+arg_ipc_2025_temporal,T1,delta_3_jul,UNAVAILABLE,,No numeric market/proxy configured for this target.,,,UNAVAILABLE,Target remains MiroFish-only in this one-shot benchmark.
+arg_ipc_2025_temporal,T1,delta_4_dec,UNAVAILABLE,,No numeric market/proxy configured for this target.,,,UNAVAILABLE,Target remains MiroFish-only in this one-shot benchmark.
+arg_ipc_2025_temporal,T1,accumulated_2025,PROXY_EXPECTATIONS,MACRO_03,BCRA REM December 2024 expected 2025 inflation around 25.9%.,,25.9,MEDIUM,"Annual market-expectations proxy, not a monthly path forecast."
+arg_ipc_2025_temporal,T2,delta_1_feb,UNAVAILABLE,,No numeric market/proxy configured for this target.,,,UNAVAILABLE,Target remains MiroFish-only in this one-shot benchmark.
+arg_ipc_2025_temporal,T2,delta_2_apr,UNAVAILABLE,,No numeric market/proxy configured for this target.,,,UNAVAILABLE,Target remains MiroFish-only in this one-shot benchmark.
+arg_ipc_2025_temporal,T2,delta_3_jul,UNAVAILABLE,,No numeric market/proxy configured for this target.,,,UNAVAILABLE,Target remains MiroFish-only in this one-shot benchmark.
+arg_ipc_2025_temporal,T2,delta_4_dec,UNAVAILABLE,,No numeric market/proxy configured for this target.,,,UNAVAILABLE,Target remains MiroFish-only in this one-shot benchmark.
+arg_ipc_2025_temporal,T2,accumulated_2025,PROXY_EXPECTATIONS,MACRO_03,BCRA REM December 2024 expected 2025 inflation around 25.9%.,,25.9,MEDIUM,Annual market-expectations proxy carried forward after T2 adds official December IPC.
+arg_ipc_2025_temporal,T3,delta_1_feb,UNAVAILABLE,,No numeric market/proxy configured for this target.,,,UNAVAILABLE,Target remains MiroFish-only in this one-shot benchmark.
+arg_ipc_2025_temporal,T3,delta_2_apr,UNAVAILABLE,,No numeric market/proxy configured for this target.,,,UNAVAILABLE,Target remains MiroFish-only in this one-shot benchmark.
+arg_ipc_2025_temporal,T3,delta_3_jul,UNAVAILABLE,,No numeric market/proxy configured for this target.,,,UNAVAILABLE,Target remains MiroFish-only in this one-shot benchmark.
+arg_ipc_2025_temporal,T3,delta_4_dec,UNAVAILABLE,,No numeric market/proxy configured for this target.,,,UNAVAILABLE,Target remains MiroFish-only in this one-shot benchmark.
+arg_ipc_2025_temporal,T3,accumulated_2025,PROXY_EXPECTATIONS,MACRO_03,BCRA REM December 2024 expected 2025 inflation around 25.9%.,,25.9,MEDIUM,Annual market-expectations proxy remains the strongest explicit market anchor in the T3 package.
+copa_america_2024_final,T0,argentina_wins,UNAVAILABLE,,No market/model probability included in T0 evidence package.,,,UNAVAILABLE,T0 is structural context only.
+copa_america_2024_final,T1,argentina_wins,UNAVAILABLE,,No market/model probability included in T1 evidence package.,,,UNAVAILABLE,T1 adds semifinals and recent form but no odds.
+copa_america_2024_final,T2,argentina_wins,PROXY_ODDS,MARKET_03,FanDuel market price implied Argentina around 47.6 percent to win.,0.476,,HIGH,Pre-final market/model proxy included in T2.
+copa_america_2024_final,T3,argentina_wins,PROXY_ODDS,MARKET_03,FanDuel market price implied Argentina around 47.6 percent to win.,0.476,,HIGH,Same market proxy remains the strongest numeric market signal after T3 additions.
