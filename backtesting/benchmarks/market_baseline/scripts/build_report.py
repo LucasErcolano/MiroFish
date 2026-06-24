@@ -116,16 +116,17 @@ def interpretation() -> list[str]:
     return [
         "## Interpretation",
         "",
-        "- Bolivia is comparable across all T after adding external pre-cutoff proxies. T0 is a weak first-round poll proxy against Paz, T1 flips toward Paz using first-round results, and T2/T3 direct runoff polls favor Quiroga. The final ground truth favored Paz, so the late direct polls acted as strong but misleading market/proxy signals.",
-        "- IPC now has REM comparisons for February, April and accumulated 2025 at every T. July and December monthly targets remain non-comparable under strict publication-date rules because the January 2025 REM was published after the T3 cutoff.",
+        "- Bolivia now has market/proxy signals across all T, but T0 remains non-comparable in the metric table because the saved MiroFish artifact does not expose a parseable `paz_wins` probability. From T1 onward, the comparison is clear: T1 first-round results favor Paz, while T2/T3 direct runoff polls favor Quiroga. The final ground truth favored Paz, so the late direct polls acted as strong but misleading market/proxy signals.",
+        "- IPC now has comparisons for every monthly and accumulated target. February, April and accumulated 2025 use REM values; July and December use Bloomberg/Invecq market-implied bucket averages, marked `MEDIUM` because they are period-average proxies rather than exact month-specific forecasts.",
         "- Copa is comparable across all T, but proxy quality changes over time: T0 uses a rough pre-tournament outright model normalized over the eventual finalists, while T1-T3 use a cleaner two-way lift-trophy bookmaker proxy. The later DraftKings 2024-07-14 price is excluded because the canonical cutoff is 2024-07-13.",
         "",
         "## Caveats",
         "",
         "- Market/proxy rows use external deep-research signals only when publication dates satisfy the temporal cutoff.",
-        "- `UNAVAILABLE` rows are intentionally left out of market-adjusted aggregates.",
+        "- Non-comparable rows are intentionally left out of market-adjusted aggregates.",
         "- Bolivia T0/T1 proxies are not direct runoff odds; they use first-round relative Paz/Quiroga information and are marked lower quality than direct runoff polls.",
         "- Copa T0 is not a direct final matchup price; it is a normalized pre-tournament title-probability proxy.",
+        "- IPC July and December comparisons should be read as bucket-proxy comparisons, not as exact REM month-point comparisons.",
         "",
     ]
 

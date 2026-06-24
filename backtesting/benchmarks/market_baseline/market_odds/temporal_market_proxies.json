@@ -74,6 +74,30 @@
   {
     "case_id": "arg_ipc_2025_temporal",
     "temporal_package": "T0",
+    "target": "delta_3_jul",
+    "market_source_type": "MARKET_BREAKEVEN_BUCKET",
+    "source_id": "BLOOMBERG_INVECQ_2024_12_16",
+    "raw_value": "Market-implied average inflation for June-October 2025: 1.5% m/m.",
+    "p_market": null,
+    "market_value": 1.5,
+    "quality_flag": "MEDIUM",
+    "notes": "Published before T0. July is inside the June-October bucket, so this is a period-average proxy rather than an exact July forecast."
+  },
+  {
+    "case_id": "arg_ipc_2025_temporal",
+    "temporal_package": "T0",
+    "target": "delta_4_dec",
+    "market_source_type": "MARKET_BREAKEVEN_BUCKET",
+    "source_id": "BLOOMBERG_INVECQ_2024_12_16",
+    "raw_value": "Market-implied average inflation for the last three months of 2025: 1.4% m/m.",
+    "p_market": null,
+    "market_value": 1.4,
+    "quality_flag": "MEDIUM",
+    "notes": "Published before T0. December is inside the Q4 bucket, so this is a period-average proxy rather than an exact December forecast."
+  },
+  {
+    "case_id": "arg_ipc_2025_temporal",
+    "temporal_package": "T0",
     "target": "accumulated_2025",
     "market_source_type": "CENTRAL_BANK_SURVEY",
     "source_id": "BCRA_REM_NOV_2024",
@@ -106,6 +130,30 @@
     "market_value": 2.0,
     "quality_flag": "HIGH",
     "notes": "Published on 2025-01-07, before the T1 cutoff."
+  },
+  {
+    "case_id": "arg_ipc_2025_temporal",
+    "temporal_package": "T1",
+    "target": "delta_3_jul",
+    "market_source_type": "MARKET_BREAKEVEN_BUCKET",
+    "source_id": "BLOOMBERG_INVECQ_2024_12_16",
+    "raw_value": "Market-implied average inflation for June-October 2025: 1.5% m/m.",
+    "p_market": null,
+    "market_value": 1.5,
+    "quality_flag": "MEDIUM",
+    "notes": "Still valid before T1. July is inside the June-October bucket, so this is a period-average proxy rather than an exact July forecast."
+  },
+  {
+    "case_id": "arg_ipc_2025_temporal",
+    "temporal_package": "T1",
+    "target": "delta_4_dec",
+    "market_source_type": "MARKET_BREAKEVEN_BUCKET",
+    "source_id": "BLOOMBERG_INVECQ_2024_12_16",
+    "raw_value": "Market-implied average inflation for the last three months of 2025: 1.4% m/m.",
+    "p_market": null,
+    "market_value": 1.4,
+    "quality_flag": "MEDIUM",
+    "notes": "Still valid before T1. December is inside the Q4 bucket, so this is a period-average proxy rather than an exact December forecast."
   },
   {
     "case_id": "arg_ipc_2025_temporal",
@@ -146,6 +194,30 @@
   {
     "case_id": "arg_ipc_2025_temporal",
     "temporal_package": "T2",
+    "target": "delta_3_jul",
+    "market_source_type": "MARKET_BREAKEVEN_BUCKET",
+    "source_id": "BLOOMBERG_INVECQ_2024_12_16",
+    "raw_value": "Market-implied average inflation for June-October 2025: 1.5% m/m.",
+    "p_market": null,
+    "market_value": 1.5,
+    "quality_flag": "MEDIUM",
+    "notes": "Still valid before T2. July is inside the June-October bucket, so this is a period-average proxy rather than an exact July forecast."
+  },
+  {
+    "case_id": "arg_ipc_2025_temporal",
+    "temporal_package": "T2",
+    "target": "delta_4_dec",
+    "market_source_type": "MARKET_BREAKEVEN_BUCKET",
+    "source_id": "BLOOMBERG_INVECQ_2024_12_16",
+    "raw_value": "Market-implied average inflation for the last three months of 2025: 1.4% m/m.",
+    "p_market": null,
+    "market_value": 1.4,
+    "quality_flag": "MEDIUM",
+    "notes": "Still valid before T2. December is inside the Q4 bucket, so this is a period-average proxy rather than an exact December forecast."
+  },
+  {
+    "case_id": "arg_ipc_2025_temporal",
+    "temporal_package": "T2",
     "target": "accumulated_2025",
     "market_source_type": "CENTRAL_BANK_SURVEY",
     "source_id": "BCRA_REM_DEC_2024",
@@ -178,6 +250,30 @@
     "market_value": 2.0,
     "quality_flag": "HIGH",
     "notes": "January 2025 REM was excluded because it was published after the T3 cutoff."
+  },
+  {
+    "case_id": "arg_ipc_2025_temporal",
+    "temporal_package": "T3",
+    "target": "delta_3_jul",
+    "market_source_type": "MARKET_BREAKEVEN_BUCKET",
+    "source_id": "BLOOMBERG_INVECQ_2024_12_16",
+    "raw_value": "Market-implied average inflation for June-October 2025: 1.5% m/m.",
+    "p_market": null,
+    "market_value": 1.5,
+    "quality_flag": "MEDIUM",
+    "notes": "Still valid before T3. July is inside the June-October bucket, so this is a period-average proxy rather than an exact July forecast."
+  },
+  {
+    "case_id": "arg_ipc_2025_temporal",
+    "temporal_package": "T3",
+    "target": "delta_4_dec",
+    "market_source_type": "MARKET_BREAKEVEN_BUCKET",
+    "source_id": "BLOOMBERG_INVECQ_2024_12_16",
+    "raw_value": "Market-implied average inflation for the last three months of 2025: 1.4% m/m.",
+    "p_market": null,
+    "market_value": 1.4,
+    "quality_flag": "MEDIUM",
+    "notes": "Still valid before T3. December is inside the Q4 bucket, so this is a period-average proxy rather than an exact December forecast."
   },
   {
     "case_id": "arg_ipc_2025_temporal",
