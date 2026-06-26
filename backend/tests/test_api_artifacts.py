@@ -31,6 +31,11 @@ def test_artifacts_manifest_returns_available_artifacts(client, tmp_path):
     (sim_dir / "wiki" / "index.md").write_text("# Index", encoding="utf-8")
     (sim_dir / "llm_telemetry.jsonl").write_text("{}\n", encoding="utf-8")
     (sim_dir / "model_routing_audit.jsonl").write_text("{}\n", encoding="utf-8")
+    (sim_dir / "deep_search_result.txt").write_text("Research trace", encoding="utf-8")
+    (sim_dir / "deduplication_summary.json").write_text(
+        json.dumps({"before_entities": 10, "after_entities": 7}),
+        encoding="utf-8",
+    )
 
     response = client.get(f"/api/simulation/{simulation_id}/artifacts")
 
@@ -40,6 +45,10 @@ def test_artifacts_manifest_returns_available_artifacts(client, tmp_path):
     assert body["wiki"] is True
     assert body["telemetry"] is True
     assert body["audit"] is True
+    assert body["deep_search"] is True
+    assert body["deduplication"] is True
+    assert body["paths"]["deep_search"].endswith("deep_search_result.txt")
+    assert body["paths"]["deduplication"].endswith("deduplication_summary.json")
     assert body["fusion_verdicts"] == []
 
 
@@ -142,6 +151,58 @@ def test_routing_audit_endpoint_returns_jsonl_records(client, tmp_path):
     body = response.get_json()
     assert body["records_count"] == 1
     assert body["records"][0]["source"] == "by_role"
+
+
+def test_deduplication_endpoint_returns_summary(client, tmp_path):
+    simulation_id = "sim_dedup"
+    sim_dir = _sim_dir(tmp_path, simulation_id)
+    sim_dir.mkdir(parents=True)
+    summary = {
+        "simulation_id": simulation_id,
+        "status": "completed",
+        "threshold": 0.85,
+        "before_entities": 10,
+        "after_entities": 7,
+        "removed_entities": 3,
+        "reduction_pct": 30.0,
+    }
+    (sim_dir / "deduplication_summary.json").write_text(json.dumps(summary), encoding="utf-8")
+
+    response = client.get(f"/api/simulation/{simulation_id}/deduplication")
+
+    assert response.status_code == 200
+    body = response.get_json()
+    assert body["success"] is True
+    assert body["available"] is True
+    assert body["summary"]["removed_entities"] == 3
+
+
+def test_deduplication_endpoint_returns_empty_state_when_missing(client, tmp_path):
+    simulation_id = "sim_no_dedup"
+    _sim_dir(tmp_path, simulation_id).mkdir(parents=True)
+
+    response = client.get(f"/api/simulation/{simulation_id}/deduplication")
+
+    assert response.status_code == 200
+    body = response.get_json()
+    assert body["success"] is True
+    assert body["available"] is False
+    assert body["summary"] is None
+
+
+def test_deep_search_endpoint_returns_trace(client, tmp_path):
+    simulation_id = "sim_deep_search"
+    sim_dir = _sim_dir(tmp_path, simulation_id)
+    sim_dir.mkdir(parents=True)
+    (sim_dir / "deep_search_result.txt").write_text("Research trace", encoding="utf-8")
+
+    response = client.get(f"/api/simulation/{simulation_id}/deep-search")
+
+    assert response.status_code == 200
+    body = response.get_json()
+    assert body["success"] is True
+    assert body["available"] is True
+    assert body["content"] == "Research trace"
 
 
 def test_fusion_verdicts_list_and_fetch(client, tmp_path):

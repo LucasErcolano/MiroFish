@@ -60,6 +60,7 @@
         />
       </div>
     </main>
+    <ObservabilityDock v-if="simulationId" :simulation-id="simulationId" />
   </div>
 </template>
 
@@ -69,6 +70,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import GraphPanel from '../components/GraphPanel.vue'
 import Step4Report from '../components/Step4Report.vue'
+import ObservabilityDock from '../components/ObservabilityDock.vue'
 import { getProject, getGraphData } from '../api/graph'
 import { getSimulation } from '../api/simulation'
 import { getReport } from '../api/report'
