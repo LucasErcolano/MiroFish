@@ -2749,6 +2749,8 @@ def get_simulation_artifacts(simulation_id: str):
         wiki_dir = sim_dir / "wiki"
         telemetry_path = sim_dir / "llm_telemetry.jsonl"
         audit_path = sim_dir / "model_routing_audit.jsonl"
+        deep_search_path = sim_dir / "deep_search_result.txt"
+        deduplication_path = sim_dir / "deduplication_summary.json"
         verdicts = _list_fusion_verdicts_for_sim(simulation_id)
 
         return jsonify({
@@ -2757,12 +2759,16 @@ def get_simulation_artifacts(simulation_id: str):
             "wiki": wiki_dir.is_dir(),
             "telemetry": telemetry_path.is_file(),
             "audit": audit_path.is_file(),
+            "deep_search": deep_search_path.is_file(),
+            "deduplication": deduplication_path.is_file(),
             "fusion_verdicts": verdicts,
             "paths": {
                 "simulation_dir": str(sim_dir),
                 "wiki": str(wiki_dir) if wiki_dir.exists() else None,
                 "telemetry": str(telemetry_path) if telemetry_path.exists() else None,
                 "routing_audit": str(audit_path) if audit_path.exists() else None,
+                "deep_search": str(deep_search_path) if deep_search_path.exists() else None,
+                "deduplication": str(deduplication_path) if deduplication_path.exists() else None,
             },
         })
     except Exception as e:
@@ -2880,6 +2886,62 @@ def get_simulation_routing_audit(simulation_id: str):
         })
     except Exception as e:
         logger.error(f"读取 routing audit 失败: {str(e)}")
+        return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
+
+
+@simulation_bp.route('/<simulation_id>/deduplication', methods=['GET'])
+def get_simulation_deduplication(simulation_id: str):
+    """Return semantic deduplication summary for a simulation."""
+    try:
+        summary_path = _simulation_dir(simulation_id) / "deduplication_summary.json"
+        if not summary_path.is_file():
+            return jsonify({
+                "success": True,
+                "simulation_id": simulation_id,
+                "available": False,
+                "summary": None,
+            })
+
+        return jsonify({
+            "success": True,
+            "simulation_id": simulation_id,
+            "available": True,
+            "summary": json.loads(summary_path.read_text(encoding="utf-8")),
+        })
+    except json.JSONDecodeError as e:
+        return jsonify({
+            "success": False,
+            "simulation_id": simulation_id,
+            "error": f"invalid deduplication summary: {str(e)}",
+        }), 500
+    except Exception as e:
+        logger.error(f"读取 deduplication summary 失败: {str(e)}")
+        return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
+
+
+@simulation_bp.route('/<simulation_id>/deep-search', methods=['GET'])
+def get_simulation_deep_search(simulation_id: str):
+    """Return Deep Search trace for a simulation."""
+    try:
+        trace_path = _simulation_dir(simulation_id) / "deep_search_result.txt"
+        if not trace_path.is_file():
+            return jsonify({
+                "success": True,
+                "simulation_id": simulation_id,
+                "available": False,
+                "content": "",
+            })
+
+        return jsonify({
+            "success": True,
+            "simulation_id": simulation_id,
+            "available": True,
+            "content": trace_path.read_text(encoding="utf-8"),
+            "size": trace_path.stat().st_size,
+            "modified_at": trace_path.stat().st_mtime,
+        })
+    except Exception as e:
+        logger.error(f"读取 Deep Search trace 失败: {str(e)}")
         return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
 
 

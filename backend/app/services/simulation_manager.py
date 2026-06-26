@@ -7,6 +7,7 @@ OASIS模拟管理器
 import os
 import json
 import shutil
+from pathlib import Path
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -145,6 +146,56 @@ class SimulationManager:
         sim_dir = os.path.join(self.SIMULATION_DATA_DIR, simulation_id)
         os.makedirs(sim_dir, exist_ok=True)
         return sim_dir
+
+    def _write_deduplication_summary(
+        self,
+        simulation_id: str,
+        threshold: float,
+        before_entities: int,
+        after_entities: int,
+        status: str,
+        warnings: Optional[List[str]] = None,
+    ) -> Path:
+        """Persist UI-ready semantic deduplication metrics."""
+        sim_dir = Path(self._get_simulation_dir(simulation_id))
+        removed_entities = max(0, before_entities - after_entities)
+        reduction_pct = round((removed_entities / before_entities) * 100, 2) if before_entities else 0.0
+        payload = {
+            "simulation_id": simulation_id,
+            "status": status,
+            "threshold": threshold,
+            "before_entities": before_entities,
+            "after_entities": after_entities,
+            "removed_entities": removed_entities,
+            "reduction_pct": reduction_pct,
+            "warnings": warnings or [],
+            "generated_at": datetime.now().isoformat(),
+        }
+        path = sim_dir / "deduplication_summary.json"
+        path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+        return path
+
+    def _compile_wiki_artifacts(
+        self,
+        simulation_id: str,
+        case_metadata: Dict[str, Any],
+        documents: Optional[List[Dict[str, Any]]] = None,
+        events: Optional[List[Dict[str, Any]]] = None,
+        retrieved_memories: Optional[List[Dict[str, Any]]] = None,
+    ) -> Dict[str, Any]:
+        """Compile filesystem wiki artifacts without making simulation depend on them."""
+        from .wiki_memory import WikiCompiler, WikiStore
+
+        store = WikiStore(wiki_root=self.SIMULATION_DATA_DIR)
+        compiler = WikiCompiler(store)
+        result = compiler.compile(
+            simulation_id=simulation_id,
+            events=events or [],
+            retrieved_memories=retrieved_memories or [],
+            case_metadata=case_metadata,
+            documents=documents or [],
+        )
+        return {"success": True, **result.to_dict()}
     
     def _save_simulation_state(self, state: SimulationState):
         """保存模拟状态到文件"""
@@ -326,20 +377,43 @@ class SimulationManager:
             )
             
             # ========== Spike S3: Semantic Deduplication ==========
+            dedup_before = len(filtered.entities)
+            dedup_after = dedup_before
+            dedup_status = "skipped"
+            dedup_warnings: List[str] = []
             if Config.SIMILARITY_THRESHOLD > 0:
                 if progress_callback:
                     progress_callback("deduplication", 0, t('progress.deduplicatingAgents'))
                 
-                generator = OasisProfileGenerator()
-                unique_entities = generator.deduplicate_entities(
-                    filtered.entities, 
-                    threshold=Config.SIMILARITY_THRESHOLD
-                )
-                filtered.entities = unique_entities
-                filtered.filtered_count = len(unique_entities)
+                try:
+                    generator = OasisProfileGenerator()
+                    unique_entities = generator.deduplicate_entities(
+                        filtered.entities,
+                        threshold=Config.SIMILARITY_THRESHOLD
+                    )
+                    filtered.entities = unique_entities
+                    filtered.filtered_count = len(unique_entities)
+                    dedup_after = len(unique_entities)
+                    dedup_status = "completed"
+                except Exception as dedup_exc:
+                    dedup_status = "failed"
+                    dedup_warnings.append(str(dedup_exc))
+                    logger.error(f"Semantic deduplication failed: {dedup_exc}")
                 
                 if progress_callback:
-                    progress_callback("deduplication", 100, f"Deduplication complete. {len(unique_entities)} unique agents identified.")
+                    progress_callback("deduplication", 100, f"Deduplication complete. {filtered.filtered_count} unique agents identified.")
+
+            try:
+                self._write_deduplication_summary(
+                    simulation_id=simulation_id,
+                    threshold=Config.SIMILARITY_THRESHOLD,
+                    before_entities=dedup_before,
+                    after_entities=dedup_after,
+                    status=dedup_status,
+                    warnings=dedup_warnings,
+                )
+            except Exception as summary_exc:
+                logger.error(f"Failed to write deduplication summary: {summary_exc}")
 
             state.entities_count = filtered.filtered_count
             state.entity_types = list(filtered.entity_types)
@@ -429,6 +503,62 @@ class SimulationManager:
                     file_path=os.path.join(sim_dir, "twitter_profiles.csv"),
                     platform="twitter"
                 )
+
+            try:
+                documents = [
+                    {
+                        "name": "simulation_input",
+                        "path": "inline:simulation_requirement",
+                        "size": len(document_text or ""),
+                    }
+                ]
+                deep_search_path = os.path.join(sim_dir, "deep_search_result.txt")
+                if os.path.exists(deep_search_path):
+                    documents.append({
+                        "name": "deep_search_result.txt",
+                        "path": deep_search_path,
+                        "size": os.path.getsize(deep_search_path),
+                    })
+
+                wiki_events = [{
+                    "round_num": 0,
+                    "timestamp": datetime.now().isoformat(),
+                    "actions": [
+                        {
+                            "agent_id": profile.user_id,
+                            "agent_name": profile.name or profile.user_name,
+                            "round_num": 0,
+                            "platform": "worldbuilding",
+                            "content": profile.persona or profile.bio,
+                        }
+                        for profile in profiles
+                    ],
+                }]
+                retrieved_memories = [{
+                    "nodes": [entity.to_dict() for entity in filtered.entities],
+                    "edges": [
+                        edge
+                        for entity in filtered.entities
+                        for edge in (entity.related_edges or [])
+                        if isinstance(edge, dict)
+                    ],
+                    "facts": [entity.summary for entity in filtered.entities if entity.summary],
+                }]
+                self._compile_wiki_artifacts(
+                    simulation_id=simulation_id,
+                    case_metadata={
+                        "name": simulation_requirement[:120] if simulation_requirement else simulation_id,
+                        "project_id": state.project_id,
+                        "graph_id": state.graph_id,
+                        "entity_types": list(filtered.entity_types),
+                    },
+                    documents=documents,
+                    events=wiki_events,
+                    retrieved_memories=retrieved_memories,
+                )
+                logger.info(f"Wiki artifacts compiled for simulation {simulation_id}")
+            except Exception as wiki_exc:
+                logger.error(f"Failed to compile wiki artifacts: {wiki_exc}")
             
             if progress_callback:
                 progress_callback(

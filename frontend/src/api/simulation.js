@@ -227,6 +227,22 @@ export const getSimulationRoutingAudit = (simulationId) => {
 }
 
 /**
+ * 获取 Deep Search trace
+ * @param {string} simulationId
+ */
+export const getSimulationDeepSearch = (simulationId) => {
+  return service.get(`/api/simulation/${simulationId}/deep-search`)
+}
+
+/**
+ * 获取语义去重摘要
+ * @param {string} simulationId
+ */
+export const getSimulationDeduplication = (simulationId) => {
+  return service.get(`/api/simulation/${simulationId}/deduplication`)
+}
+
+/**
  * 获取 Fusion verdict 列表
  * @param {string} simulationId
  */
