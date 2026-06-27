@@ -463,7 +463,7 @@ class RedditSimulationRunner:
         # 优先从 .env 读取配置
         llm_api_key = os.environ.get("LLM_API_KEY", "")
         llm_base_url = os.environ.get("LLM_BASE_URL", "")
-        llm_model = os.environ.get("LLM_MODEL_NAME", "")
+        llm_model = os.environ.get("LLM_MODEL_NAME", "").replace("openrouter/", "")
         
         # 如果 .env 中没有，则使用 config 作为备用
         if not llm_model:
@@ -597,6 +597,32 @@ class RedditSimulationRunner:
 
         await asyncio.gather(*[process_agent(i) for i in range(len(agent_info))])
         return agent_graph
+
+    @staticmethod
+    def _resolve_scheduled_round(event: dict, total_rounds: int) -> int:
+        if "round_pct" in event:
+            return min(total_rounds - 1, max(0, int(total_rounds * event["round_pct"])))
+        if "round" in event:
+            return min(total_rounds - 1, max(0, event["round"] - 1))
+        return 0
+
+    def _scheduled_events_for_round(self, round_num: int, total_rounds: int) -> list:
+        if not hasattr(self, "_fired_scheduled_event_keys"):
+            self._fired_scheduled_event_keys = set()
+            
+        due_events = []
+        scheduled_events = self.config.get("event_config", {}).get("scheduled_events", [])
+        
+        for idx, event in enumerate(scheduled_events):
+            event_key = event.get("id", f"idx_{idx}")
+            if event_key in self._fired_scheduled_event_keys:
+                continue
+                
+            trigger_round = self._resolve_scheduled_round(event, total_rounds)
+            if round_num >= trigger_round:
+                due_events.append((event_key, event))
+                
+        return due_events
 
     def _get_active_agents_for_round(
         self, 
@@ -787,6 +813,34 @@ class RedditSimulationRunner:
             # Stamp telemetry records produced during this step with the round.
             if self.telemetry_sink is not None:
                 self.telemetry_sink.current_round = round_num
+
+            # Execute scheduled events before regular LLM actions
+            due_events = self._scheduled_events_for_round(round_num, total_rounds)
+            if due_events:
+                print(f"\n  [Round {round_num + 1}] 执行 {len(due_events)} 个计划事件...")
+                scheduled_actions = {}
+                for event_key, event in due_events:
+                    agent_id = event.get("poster_agent_id", event.get("agent_id", 0))
+                    content = event.get("content", "")
+                    try:
+                        agent = self.env.agent_graph.get_agent(agent_id)
+                        action = ManualAction(
+                            action_type=ActionType.CREATE_POST,
+                            action_args={"content": content}
+                        )
+                        if agent in scheduled_actions:
+                            if not isinstance(scheduled_actions[agent], list):
+                                scheduled_actions[agent] = [scheduled_actions[agent]]
+                            scheduled_actions[agent].append(action)
+                        else:
+                            scheduled_actions[agent] = action
+                        self._fired_scheduled_event_keys.add(event_key)
+                    except Exception as e:
+                        print(f"  警告: 无法执行事件 {event_key}: {e}")
+                
+                if scheduled_actions:
+                    await self.env.step(scheduled_actions)
+                    print(f"  已完成事件发布。")
 
             await self.env.step(actions)
             
