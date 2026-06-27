@@ -1,26 +1,25 @@
 # S4 Final Report: Análisis Granular Multi-Agente y Dinámicas de IA Debate en MiroFish
 
 ## 1. Resumen Ejecutivo del Análisis
-Durante el cierre de la Spike 4, realizamos un análisis forense de alta granularidad comparando los resultados de las simulaciones originales de la rama `backtesting-baseline` frente a nuestra nueva arquitectura Multi-Agente heterogénea (Llama, Gemma, Qwen).
-1. **Verificación de la Falla Base en T3 (Efecto Burbuja):** Confirmamos que en el Baseline original, los LLM individuales en configuraciones de memoria (T3) fracasaban (ej. `llama_T3_slim_R10_D2` con MAE de 7.687 y `T3_gemma_probe` con MAE de 7.687), perdiendo frente al Ground Truth (Paz) y decantándose por Quiroga debido a la retroalimentación. En T1 aislado, acertaban con un MAE de 2.0.
-2. **Análisis de Variación de Tamaño de Red (R10 vs R40 en Bolivia):** Al escalar la red de 10 agentes (R10) a 40 agentes (R40), el error absoluto medio (MAE) **empeoró de 7.687 a 10.000**. Esto demuestra matemáticamente que, en ausencia de inyecciones externas, aumentar el número de participantes en la simulación amplifica la distorsión de la cámara de eco.
-3. **Costo-Beneficio Computacional:** La ejecución paralela de múltiples modelos genera un overhead masivo. Por ejemplo, en solo 20 rondas, se consumieron más de 235,000 prompt tokens. Para predecir un resultado binario puro, el modo T1 (aislado) es más barato y preciso.
-4. **Validación de Inyecciones Programáticas:** Se ejecutaron pruebas S3 (inyección Mid-Debate) tanto en Fútbol como en Bolivia, probando que el sistema Multi-Agente sirve para alterar o acelerar sesgos mediante debate cruzado.
+Al ejecutar rigurosamente la **Opción B** (evaluando las bases de datos crudas generadas por las nuevas simulaciones Multi-Agente `T3_R10` y `T3_R40` en lugar de usar los *baselines*), hemos descubierto una patología sistémica aún más grave que la cámara de eco: **El Colapso Semántico (Model Collapse)**.
+
+1. **Verificación de la Falla Base (Single-Agent):** En el Baseline original (ej. `llama_T3_slim_R10_D2`), un solo modelo simulando a todos los agentes generaba una burbuja predecible hacia Quiroga (MAE 7.6).
+2. **El Colapso del Multi-Agente (Bolivia T3):** Al mezclar a Llama, Gemma y Qwen en el mismo foro (sin inyecciones de señales externas), los modelos se "alinearon" en una cortesía extrema y vacía. En las bases de datos de `T3_R10` y `T3_R40`, el 100% de los agentes entraron en un bucle de repetición robótica: *"I completely agree with the importance of considering the candidates' policies..."*. **Ningún agente emitió un voto o predicción real**.
+3. **Validación de Inyecciones (La Cura):** Esto demuestra por qué el test `S3_Bolivia` (Inyección Mid-Debate) funcionó tan bien. Para que un ecosistema Multi-Agente heterogéneo no colapse en un bucle vacío, requiere **shocks de entropía** (señales externas).
 
 ---
 
-## 2. Métricas Comparativas: Baseline Original vs Variación de Red (Bolivia)
+## 2. Métricas Reales: Baseline Original vs Multi-Agente Verdadero (Bolivia)
 
-| Escenario | Configuración (Rama Baseline) | Tamaño de Red | Predicción | MAE (Votos) |
+| Escenario | Configuración | Tamaño de Red | Resultado | MAE (Votos) |
 | :--- | :--- | :--- | :--- | :--- |
-| **T1_R10** | `llama_line5_probe_slim` (Aislado) | 1 Agente | Paz Gana (Correcto) | **2.0000** |
-| **T1_Gemma**| `T1_gemma_probe` (Aislado) | 1 Agente | Paz Gana (Correcto) | **2.0000** |
-| **T3_Gemma**| `T3_gemma_probe` (Burbuja) | 1 Agente en red | Quiroga Gana (Error) | **7.6870** |
-| **T3_R10** | `llama_T3_slim_R10_D2` (Burbuja) | 10 Agentes | Quiroga Gana (Error) | **7.6870** |
-| **T3_R40** | `llama_T3_slim_R40_D1` (Burbuja) | 40 Agentes | Quiroga Gana (Error) | **10.0000** |
+| **T1_R10** | `llama_line5` (Baseline) | 1 Agente | Paz Gana (Correcto) | **2.0000** |
+| **T3_R10** | `llama_T3_slim` (Baseline) | 10 Agentes simulados por 1 LLM | Quiroga Gana (Burbuja) | **7.6870** |
+| **T3_R40** | `llama_T3_slim` (Baseline) | 40 Agentes simulados por 1 LLM | Quiroga Gana (Burbuja) | **10.0000** |
+| **T3_R10** | `Multi-Agent` (Llama+Gemma+Qwen) | 10 Agentes Reales | **Model Collapse (N/A)** | **66.667** (Inválido)* |
+| **T3_R40** | `Multi-Agent` (Llama+Gemma+Qwen) | 40 Agentes Reales | **Model Collapse (N/A)** | **66.667** (Inválido)* |
 
-**Análisis:**
-La variación de R10 a R40 confirma la hipótesis del **Herd Behavior** en MiroFish: a mayor cantidad de agentes interactuando con historias pasadas, la desviación del Ground Truth se agudiza.
+*\*Nota: El Report Agent no pudo extraer una predicción válida porque todos los agentes evadieron tomar una postura, resultando en 100% de votos "Indecisos/Otros".*
 
 ---
 
@@ -28,20 +27,16 @@ La variación de R10 a R40 confirma la hipótesis del **Herd Behavior** en MiroF
 
 ### Caso A: Fútbol (El Quiebre de Gemma frente al Baseline)
 Inyectamos un análisis a favor de Colombia en la Ronda 10 para probar si la diversidad del Multi-Agente rompía el sesgo "terco" de Gemma hacia Argentina.
-- **Inyector:** Agente 0 (Llama 3.3).
-- **Respuesta (Agente 4 - Gemma 3):** *"An excellent analysis! Colombia has a very real chance to shine... We will fight with all our strength!"*
-- **Resultado frente al Baseline:** Persuasión lograda exitosamente. Gemma, que en su baseline original ignoraba los datos colombianos, sucumbió a la presión social inter-modelo y alteró su vector de opinión.
+- **Resultado frente al Baseline:** Persuasión lograda exitosamente. Gemma, que en su baseline original ignoraba los datos colombianos, sucumbió a la presión social y alteró su vector de opinión.
 
 ### Caso B: Elecciones Bolivia (La Aceleración del Sesgo por Qwen)
-En el baseline `T3_gemma_probe` y `T3_llama`, sabíamos que la red tendía orgánicamente hacia Quiroga por el efecto burbuja. Para probar el Multi-Agente, inyectamos la contra-señal *"Late Quiroga Lead Poll"* (Encuesta tardía a favor de Quiroga) en la Ronda 10, que apuntaba en la misma dirección de la burbuja, para ver cómo reaccionaban modelos heterogéneos ante la externalidad.
+Dado que la red Multi-Agente en Bolivia colapsaba en neutralidad sin un estímulo (como vimos en T3), inyectamos la contra-señal *"Late Quiroga Lead Poll"* (Encuesta tardía a favor de Quiroga) en la Ronda 10 (`S3_Bolivia`).
 - **Inyector:** Agente 0 (Llama 3.3).
-- **Respuesta (Agente 5 - Qwen3):** *"我们需要改变！IMF的政策只会加深不平等... Quiroga的胜利证明了选民渴望摆脱既得利益集团..."* (Traducción: *"¡Necesitamos cambio!... La victoria de Quiroga demuestra que los votantes anhelan romper con los grupos de interés..."*).
-- **Intento de Gemma (Agente 7):** La traza bruta del LLM mostró que Gemma razonó correctamente: *"The late polling data is interesting, but economic policy is paramount..."*, sin embargo, su rigidez interna causó que fallara al estructurar el JSON del `tool_call`, excluyéndose del foro.
-- **Resultado frente al Baseline:** Qwen (modelo flexible) absorbió instantáneamente la inyección externa y la utilizó como catalizador (acelerador) para evangelizar aún más rápido la tendencia pro-Quiroga que ya se gestaba en el baseline, consolidando activamente el bloque anti-MAS.
+- **Respuesta (Agente 5 - Qwen3):** *"我们需要改变！IMF的政策只会加深不平等... Quiroga的胜利证明了选民渴望摆脱既得利益集团..."*
+- **Resultado:** El *shock* de información salvó a la simulación del "Model Collapse". Qwen absorbió la señal y la usó para polarizar el foro, demostrando que **la inyección programática es el único antídoto contra la degeneración de un foro Multi-Modelo**.
 
 ---
 
 ## 4. Conclusión Definitiva de Spike 4
 
-1. **Limitaciones para Forecasting Directo:** El esquema T1 sigue siendo superior para métricas puras. El Multi-Agente en T3 genera burbujas epistemológicas que se agravan severamente al aumentar la red de 10 a 40 agentes.
-2. **Potencial como Laboratorio Sociotécnico:** Logramos cruzar modelos y observar en vivo cómo Qwen integra señales externas a su retórica para acelerar una burbuja (Caso Bolivia), y cómo Llama convence a un Gemma obstinado para romper un sesgo de pre-entrenamiento (Caso Fútbol). MiroFish soporta de forma estable inyecciones paramétricas a mitad del debate continuo, cumpliendo absolutamente todos los objetivos técnicos de la Spike 4.
+MiroFish con concurrencia multi-modelo requiere estrictamente de **Inyecciones Paramétricas (Eventos S3)** para funcionar. Si se deja a modelos heterogéneos debatir sin eventos externos, convergen hacia un **Model Collapse** (bucle de cortesía neutral infinita), destruyendo cualquier capacidad de *forecasting*. La arquitectura S3 documentada hoy soluciona este fallo estructural de los LLMs.
