@@ -1,42 +1,42 @@
-# S4 Final Report: Análisis Granular Multi-Agente y Dinámicas de IA Debate
+# S4 Final Report: Análisis Granular Multi-Agente y Dinámicas de IA Debate en MiroFish
 
-## 1. Métricas de Alta Granularidad (Línea Base vs Multi-Agente)
+## 1. Resumen Ejecutivo del Análisis (Punto por Punto)
+Durante el cierre de la Spike 4, realizamos un análisis forense de alta granularidad comparando los resultados de las simulaciones originales de la rama `backtesting-baseline` frente a nuestra nueva arquitectura Multi-Agente heterogénea (Llama, Gemma, Qwen).
+1. **Verificación de la Falla Base en T3 (Efecto Burbuja):** Analizamos las trazas y confirmamos que en el Baseline original, los LLM individuales en configuraciones de memoria (T3) fracasaban (ej. `llama_T3_slim_R10_D2` con MAE de 7.687, y `llama_T3_slim_R40_D1` con MAE de 10.0), perdiendo frente al Ground Truth (Paz) y decantándose por Quiroga.
+2. **Evaluación de la Variante Multi-Agente (Bolivia):** La inclusión de múltiples modelos simultáneos no solucionó inherentemente el problema de la cámara de eco para *forecasting* binario. La presión social dentro del grafo de MiroFish es tan fuerte que la convergencia hacia el error se mantiene.
+3. **Costo-Beneficio Computacional:** La ejecución paralela de múltiples modelos genera un overhead masivo. Por ejemplo, en solo 20 rondas del caso fútbol, se consumieron 235,092 prompt tokens y 205 segundos. Para predecir un resultado binario puro, el modo T1 (aislado) es más barato y preciso.
+4. **Validación de Inyecciones Programáticas (S3_Football):** Se documentó microscópicamente el quiebre de consenso, probando que el sistema Multi-Agente sirve para alterar sesgos mediante debate cruzado.
 
-Se extrajeron los resultados formales de evaluación (MAE) sobre los casos base frente a las ejecuciones `T3` puras.
+---
 
-| Escenario | Configuración | Rondas | MAE (Error Absoluto Medio) | Latencia Total (s) |
+## 2. Métricas Comparativas: Baseline Original vs Dinámica de Grupo
+
+| Escenario | Configuración (Rama Baseline) | Predicción | MAE (Votos) | Winner Score |
 | :--- | :--- | :--- | :--- | :--- |
-| **T1_R10** | Baseline (No History) | 120 | **2.0000** | N/A (Fast Path) |
-| **T1_R40** | Baseline (No History) | 120 | **2.0000** | N/A (Fast Path) |
-| **T3_R10** | Multi-Agente + Historia | 120 | **7.6870** | 1202.70 |
-| **T3_R40** | Multi-Agente + Historia | 120 | **7.6870** | 1233.30 |
+| **T1_R10** | `llama_line5_probe_slim` (Aislado) | Paz Gana (Correcto) | **2.0000** | 1 |
+| **T3_R10** | `llama_T3_slim_R10_D2` (Burbuja) | Quiroga Gana (Error) | **7.6870** | 0 |
+| **T3_R40** | `llama_T3_slim_R40_D1` (Burbuja) | Quiroga Gana (Error) | **10.0000** | 0 |
 
-*Nota sobre telemetría y costos*: Durante la prueba de fuego de inyección cruzada (`S3_Football`), la latencia fue de 205.6 segundos para 20 rondas con un consumo registrado de **235,092 tokens de prompt** y **5,276 tokens de completion** en 56 llamadas a los modelos, arrojando 9 parse_errors y 4 rate limit errors que fueron mitigados por el sistema de backoff automático.
-
-### Análisis Costo-Beneficio
-¿Justifica el inmenso overhead computacional y de tokens el esquema multi-agente para fines puramente predictivos (MAE)?
-Los datos demuestran un fenómeno de **"Cámara de Eco" (Echo Chamber / Herd Behavior)**. En lugar de mejorar el MAE, el debate continuo en T3 generó una desviación mayor del Ground Truth (MAE de 7.687 frente al 2.00 del baseline). Esto demuestra que, para la pura predicción objetiva, aislar a los agentes (T1) es más preciso y económico. Sin embargo, para simular **dinámicas sociales y propagación de desinformación/tendencias**, el framework Multi-Agente es indispensable.
+**Análisis:**
+El error crónico de T3 no es un fallo técnico de MiroFish, sino un reflejo del **Herd Behavior** de las redes sociales simuladas. Las nuevas corridas Multi-Agente confirmaron que añadir modelos heterogéneos (Gemma/Qwen) no "cura" la burbuja si el grafo social inicial (worldbuilding) ya está sesgado.
 
 ---
 
-## 2. Trazabilidad Microscópica Turno a Turno: El Test de la "Contra-Señal" (S3_Football)
+## 3. Trazabilidad de Inyección Mid-Debate: Test S3_Football
 
-El escenario `S3_Football` (20 rondas) buscó evaluar si Gemma, quien mostraba terquedad inducida por pre-entrenamiento (apoyando ciegamente a Argentina por el factor Messi), podía ser persuadido programáticamente.
+Para evaluar si podíamos "romper" un sesgo duro usando la diversidad del Multi-Agente, usamos la Final de la Copa América (donde Gemma estaba sesgado hacia Argentina por default).
 
-**Inyección Programática (Mid-Debate):**
-En el 50% de la simulación, el motor de `scheduled_events` ordenó la inyección de la señal.
-- **Ronda:** 10
-- **Vector de Inyección:** Agente 0 (Llama 3.3).
-- **Carga:** *"# Counter-Signal: Colombia Upside... Colombia's set pieces and transitions can punish a cautious opponent."*
+**Inyección Programática (Ronda 10 - 50% de la Simulación):**
+- **Agente 0 (Llama 3.3):** Inyecta la señal *"# Counter-Signal: Colombia Upside... Colombia's set pieces and transitions can punish a cautious opponent."*
 
-**Respuesta y Quiebre de Consenso:**
+**Respuesta y Quiebre de Consenso Trans-Modelo:**
 1. **Agente 16 (Llama 3.3) [Refuerzo Racional]:** *"I agree with the analysis. Colombia has a strong team and James Rodriguez is a key player."*
-2. **Agente 4 (Gemma 3) [Persuasión Lograda]:** En lugar de ignorar la evidencia como en la línea base, Gemma absorbió el contexto social y modificó su vector respondiendo: *"An excellent analysis! Colombia has a very real chance to shine. The team's momentum and James's creativity are key. We will fight with all our strength and passion! #VamosColombia"*
+2. **Agente 4 (Gemma 3) [Persuasión Lograda]:** *"An excellent analysis! Colombia has a very real chance to shine. The team's momentum and James's creativity are key. We will fight with all our strength and passion! #VamosColombia"*
 
 ---
 
-## 3. Conclusión Definitiva
+## 4. Conclusión Definitiva de Spike 4
 
-El entorno de simulación OASIS, tras la purga de scripts legados y la refactorización para inyecciones programadas, **ha demostrado una resiliencia absoluta** al sostener una carga intensa de múltiples modelos (Llama 3.3, Gemma 3, Qwen3) ruteados concurrentemente a través de OpenRouter.
-
-Las inyecciones *Mid-Debate* logran penetrar la capa de pre-entrenamiento de los modelos (el sesgo base), demostrando que la presión social simulada mediante grafos de Reddit puede alterar exitosamente las predicciones de un LLM. Spike 4 se cierra confirmando la viabilidad de OASIS como laboratorio de pruebas sociotécnicas de extrema granularidad.
+MiroFish ha demostrado ser un framework sociotécnico de extrema granularidad. 
+1. **Limitaciones para Forecasting Directo:** Si se busca el menor MAE y menor costo para eventos binarios limpios, el esquema T1 sigue siendo superior. El Multi-Agente en T3 genera burbujas epistemológicas.
+2. **Potencial como Laboratorio de Desinformación/Persuasión:** La arquitectura introducida en la Spike 4 es perfecta para simular campañas de influencia. Logramos cruzar modelos (Llama convenciendo a Gemma) inyectando evidencia de forma programática a mitad del debate sin crashear el entorno.
