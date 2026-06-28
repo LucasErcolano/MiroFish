@@ -1,0 +1,70 @@
+experiment_metadata:
+  phase: "final"
+  issue_source: "#18"
+  source_pr: "#22/#29"
+  case_id: "bolivia_2025_runoff_s2_slim"
+  source_case: "case-b-s2-bolivia-2025-runoff"
+  line_focus: "Linea 5 - final multimodel depth check"
+  question_file: "question.md"
+  system_constraints_file: null
+  primary_metric: "winner_score, MAE voto, error de margen"
+  output_dir: "../../runs/final_multimodel/raw_line5/bolivia/gemma"
+  eval_script: "eval_objective.py"
+  eval_artifact: "report_markdown"
+
+model_policy:
+  label: "gemma"
+  provider_id: "google/gemma-3-27b-it"
+  model_policy: "gemma_line5_final_slim"
+  required_backend_base_url: "https://api.deepinfra.com/v1/openai"
+  note: "Started by run_final_line5_matrix.py; backend hot-swap is not supported."
+
+fixed_simulation_config:
+  seed: 1
+  temperature: 0
+  output_mode: "narrative"
+  schema_id: null
+  platform: "parallel"
+  use_llm_for_profiles: true
+  parallel_profile_count: 5
+  enable_graph_memory_update: false
+
+line5_package:
+  id: "T3_slim"
+  label: "slim pre-cutoff Bolivia runoff evidence package"
+  max_document_date: "2025-10-17"
+  input_file: "seed_T3_line5_slim.md"
+  reuse_graph_project: true
+  sources:
+    - "BOL_T3_SLIM_01"
+    - "BOL_T3_SLIM_02"
+    - "BOL_T3_SLIM_03"
+    - "BOL_T3_SLIM_04"
+
+run_matrix:
+  - id: "gemma_T3_slim_R10_D2"
+    package: "T3_slim"
+    input_file: "seed_T3_line5_slim.md"
+    rounds: 10
+    density: 2
+    label: "Low Depth"
+  - id: "gemma_T3_slim_R80_D2"
+    package: "T3_slim"
+    input_file: "seed_T3_line5_slim.md"
+    rounds: 80
+    density: 2
+    label: "High Depth"
+
+do_not_upload:
+  - "ground_truth_private.md"
+  - "eval_objective.py"
+  - "README.md"
+  - "RESULTS.md"
+  - "ISSUE_RESPONSE.md"
+  - "rubric.md"
+  - "manifest.csv"
+  - "testing_protocol.md"
+  - "internal_notes.md"
+  - "output/"
+  - "output_llama_line5/"
+  - "output_llama_line5_slim/"

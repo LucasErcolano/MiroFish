@@ -11,6 +11,7 @@ Zep检索工具服务
 import time
 import json
 import math
+import os
 import re
 from collections import defaultdict
 from typing import Any, Callable, Dict, List, Optional
@@ -22,7 +23,7 @@ from ..utils.embedding_client import EmbeddingClient
 from ..utils.reranker_client import RerankerClient
 from ..utils.logger import get_logger
 from ..utils.llm_client import LLMClient
-from ..utils.locale import t
+from ..utils.locale import get_locale, t
 
 logger = get_logger('mirofish.zep_tools')
 
@@ -438,8 +439,12 @@ class ZepToolsService:
         )
         
         # Fallbacks for legacy code that directly access these
-        from .experimental_memory import ExperimentalMemoryService
-        self.exp_memory = self.provider if isinstance(self.provider, ExperimentalMemoryService) else None
+        if os.getenv("USE_EXPERIMENTAL_MEMORY") == "true":
+            from .experimental_memory import ExperimentalMemoryService
+
+            self.exp_memory = self.provider if isinstance(self.provider, ExperimentalMemoryService) else None
+        else:
+            self.exp_memory = None
         self.backend = getattr(self.provider, 'backend', None)
 
         if self.exp_memory:
@@ -1962,7 +1967,7 @@ class ZepToolsService:
                 simulation_id=simulation_id,
                 interviews=interviews_request,
                 platform=None,  # 不指定platform，双平台采访
-                timeout=180.0   # 双平台需要更长超时
+                timeout=float(os.environ.get("MIROFISH_INTERVIEW_AGENTS_TIMEOUT", "180.0"))
             )
             
             logger.info(t("console.interviewApiReturned", count=api_result.get('interviews_count', 0), success=api_result.get('success')))

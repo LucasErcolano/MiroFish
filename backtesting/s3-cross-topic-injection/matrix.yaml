@@ -52,6 +52,14 @@ models:
     graphiti_llm_model: google/gemma-3-27b-it
     base_url: https://api.deepinfra.com/v1/openai
     key_env: DEEPINFRA_API_KEY
+  qwen:
+    provider: openrouter
+    model: qwen/qwen3-8b
+    graphiti_llm_model: google/gemma-3-27b-it
+    graphiti_base_url: https://api.deepinfra.com/v1/openai
+    graphiti_key_env: DEEPINFRA_API_KEY
+    base_url: https://openrouter.ai/api/v1
+    key_env: OPENROUTER_API_KEY
 topics:
   football:
     label: Argentina vs Colombia Copa America 2024 final

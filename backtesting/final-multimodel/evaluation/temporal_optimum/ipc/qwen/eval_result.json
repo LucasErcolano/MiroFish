@@ -1,0 +1,54 @@
+{
+  "case_id": "case-c-s2-arg-ipc-line5-gemma",
+  "variant": "qwen_ipc_T3_R40_D2",
+  "model_policy": "qwen_temporal_optimum_final",
+  "seed": 1,
+  "ground_truth": {
+    "delta_1_feb": 2.4,
+    "delta_2_apr": 3.7,
+    "delta_3_jul": 3.0,
+    "delta_4_dec": 2.8,
+    "accumulated_2025": 31.5
+  },
+  "delta_1": {
+    "prediction": 25.9,
+    "abs_error": 23.5,
+    "pass": false
+  },
+  "delta_2": {
+    "range": [
+      1.8,
+      3.2
+    ],
+    "range_width": 1.4,
+    "pass": false
+  },
+  "delta_3": {
+    "range": [
+      1.8,
+      3.2
+    ],
+    "range_width": 1.4,
+    "pass": true
+  },
+  "delta_4": {
+    "range": [
+      1.8,
+      3.2
+    ],
+    "range_width": 1.4,
+    "pass": true
+  },
+  "accumulated_2025": {
+    "range": [
+      1.8,
+      3.2
+    ],
+    "pass": false
+  },
+  "score": 2,
+  "max_score": 5,
+  "parse_errors": 0,
+  "leak_flags": [],
+  "artifact_kind": "report_markdown"
+}

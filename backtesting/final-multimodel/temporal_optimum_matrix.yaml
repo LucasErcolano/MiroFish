@@ -1,0 +1,89 @@
+rounds: 40
+density: 2
+models:
+  - llama
+  - qwen
+topics:
+  bolivia:
+    selected_package: T1
+    case_dir: backtesting/case-b-s2-bolivia-2025-runoff
+    case_id: bolivia_2025_runoff_s2
+    source_case: case-b-s2-bolivia-2025-runoff
+    issue_source: "#17"
+    source_pr: "#24"
+    line_focus: "Temporal optimum cross-model validation"
+    question_file: question.md
+    system_constraints_file: null
+    input_file: seed_T1.md
+    reuse_existing_graph_from_run_notes: backtesting/final-multimodel/evaluation/temporal_optimum/bolivia/llama/run_notes.md
+    max_document_date: "2025-08-18"
+    sources:
+      - source-01-pre-first-round-context
+      - source-02-first-round-poll-context
+      - source-03-first-round-surprise
+      - source-04-mas-collapse-runoff
+    output_mode: narrative
+    schema_id: null
+    eval_script: eval_objective.py
+    eval_artifact: report_markdown
+    seed: 1
+  copa:
+    selected_package: T2
+    case_dir: backtesting/case-d-s2-copa-america-line5-gemma
+    case_id: case-d-s2-copa-america-line5-gemma
+    source_case: "Issue #19 Copa America temporal packet"
+    issue_source: "https://github.com/LucasErcolano/MiroFish/issues/19"
+    source_pr: "#22"
+    line_focus: "Temporal optimum cross-model validation"
+    question_file: question.md
+    system_constraints_file: system_constraints.md
+    input_file: seed_T2.md
+    reuse_existing_graph_from_run_notes: backtesting/final-multimodel/evaluation/temporal_optimum/copa/llama/run_notes.md
+    max_document_date: "2024-07-13"
+    sources:
+      - BASE_03
+      - HIST_01
+      - SQUAD_01
+      - FORM_01
+      - FORM_02
+      - MARKET_01
+      - MARKET_02
+      - MARKET_03
+      - MODEL_01
+    output_mode: structured_json
+    schema_id: copa_america_winner_v1
+    eval_script: eval_objective.py
+    eval_artifact: structured_answer_json
+    seed: 20240713
+  ipc:
+    selected_package: T3
+    case_dir: backtesting/case-c-s2-arg-ipc-line5-gemma
+    case_id: case-c-s2-arg-ipc-line5-gemma
+    source_case: CASE-B2-ARG-IPC-2025
+    issue_source: "#11"
+    source_pr: "#25"
+    line_focus: "Temporal optimum cross-model validation"
+    question_file: question.md
+    system_constraints_file: system_constraints.md
+    input_file: seed_T3.md
+    reuse_existing_graph_from_run_notes: backtesting/final-multimodel/evaluation/temporal_optimum/ipc/llama/run_notes.md
+    max_document_date: "2025-01-31"
+    sources:
+      - INST_01
+      - INST_02
+      - SOCIAL_01
+      - POLL_01
+      - MACRO_01
+      - MACRO_03
+      - GEO_01
+      - MACRO_02
+      - POL_01
+      - MONETARY_01
+      - FISCAL_01
+      - MONETARY_02
+      - MACRO_04
+    output_mode: structured_json
+    schema_id: arg_ipc_2025_v1
+    eval_script: eval_objective.py
+    eval_artifact: structured_answer_json
+    seed: 1

@@ -114,8 +114,12 @@ def main() -> int:
         fail("condition IDs do not match V3 canonical set")
     if set(smoke_conditions) != {"baseline-control", "signal-mid"}:
         fail("smoke_conditions must be baseline-control and signal-mid")
-    if set(models) != {"gemma", "llama"}:
-        fail("models must be gemma and llama")
+    if not {"gemma", "llama"}.issubset(set(models)):
+        fail("models must include gemma and llama")
+    for model_key, model in models.items():
+        for field in ["provider", "model", "base_url", "key_env"]:
+            if field not in model:
+                fail(f"{model_key}: missing model field {field}")
     if set(topics) != {"football", "bolivia", "ipc"}:
         fail("topics must be football, bolivia, and ipc")
 
