@@ -1,0 +1,68 @@
+# IPC tri-model multi-agent routing map.
+#
+# Secrets are read from environment variables:
+# - OPENROUTER_API_KEY for qwen/qwen3-8b
+# - DEEPINFRA_API_KEY for Gemma and Llama
+#
+# Keep broad model assignment role-based for IPC. The S3 context can produce a
+# small graph, so the first three generated agents are anchored to guarantee a
+# real tri-model field before role-based routing takes over.
+
+version: 1
+
+default:
+  provider: openrouter
+  model: qwen/qwen3-8b
+  base_url_env: OPENROUTER_BASE_URL
+  api_key_env: OPENROUTER_API_KEY
+  temperature: 0.7
+  seed: null
+
+fallback:
+  enabled: false
+
+by_agent_id:
+  0:
+    provider: openrouter
+    model: qwen/qwen3-8b
+    base_url_env: OPENROUTER_BASE_URL
+    api_key_env: OPENROUTER_API_KEY
+    temperature: 0.7
+    seed: null
+  1:
+    provider: deepinfra
+    model: google/gemma-3-27b-it
+    base_url_env: DEEPINFRA_BASE_URL
+    api_key_env: DEEPINFRA_API_KEY
+    temperature: 0.7
+    seed: null
+  2:
+    provider: deepinfra
+    model: meta-llama/Llama-3.3-70B-Instruct-Turbo
+    base_url_env: DEEPINFRA_BASE_URL
+    api_key_env: DEEPINFRA_API_KEY
+    temperature: 0.7
+    seed: null
+
+by_role:
+  Organization:
+    provider: deepinfra
+    model: google/gemma-3-27b-it
+    base_url_env: DEEPINFRA_BASE_URL
+    api_key_env: DEEPINFRA_API_KEY
+    temperature: 0.7
+    seed: null
+  MediaOutlet:
+    provider: deepinfra
+    model: meta-llama/Llama-3.3-70B-Instruct-Turbo
+    base_url_env: DEEPINFRA_BASE_URL
+    api_key_env: DEEPINFRA_API_KEY
+    temperature: 0.7
+    seed: null
+  FiscalConsultancy:
+    provider: deepinfra
+    model: meta-llama/Llama-3.3-70B-Instruct-Turbo
+    base_url_env: DEEPINFRA_BASE_URL
+    api_key_env: DEEPINFRA_API_KEY
+    temperature: 0.7
+    seed: null

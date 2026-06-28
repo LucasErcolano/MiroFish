@@ -117,20 +117,79 @@ def setup_oasis_logging(log_dir: str):
         logger.propagate = False
 
 
+_OASIS_IMPORT_ERROR = None
+
 try:
     from camel.models import ModelFactory
     from camel.types import ModelPlatformType
     import oasis
     from oasis import (
         ActionType,
+        AgentGraph,
         LLMAction,
         ManualAction,
+        SocialAgent,
+        UserInfo,
         generate_reddit_agent_graph
     )
 except ImportError as e:
     print(f"错误: 缺少依赖 {e}")
     print("请先安装: pip install oasis-ai camel-ai")
-    sys.exit(1)
+    _OASIS_IMPORT_ERROR = e
+    ModelFactory = None
+    ModelPlatformType = None
+    oasis = None
+
+    class ActionType:
+        LIKE_POST = "LIKE_POST"
+        DISLIKE_POST = "DISLIKE_POST"
+        CREATE_POST = "CREATE_POST"
+        CREATE_COMMENT = "CREATE_COMMENT"
+        LIKE_COMMENT = "LIKE_COMMENT"
+        DISLIKE_COMMENT = "DISLIKE_COMMENT"
+        SEARCH_POSTS = "SEARCH_POSTS"
+        SEARCH_USER = "SEARCH_USER"
+        TREND = "TREND"
+        REFRESH = "REFRESH"
+        DO_NOTHING = "DO_NOTHING"
+        FOLLOW = "FOLLOW"
+        MUTE = "MUTE"
+
+    class LLMAction:
+        pass
+
+    class ManualAction:
+        def __init__(self, *args, **kwargs):
+            self.args = args
+            self.kwargs = kwargs
+
+    class AgentGraph:
+        pass
+
+    class SocialAgent:
+        pass
+
+    class UserInfo:
+        pass
+
+    def generate_reddit_agent_graph(*args, **kwargs):
+        raise RuntimeError("Missing OASIS/CAMEL dependencies") from _OASIS_IMPORT_ERROR
+
+
+def _require_oasis_dependencies() -> None:
+    if _OASIS_IMPORT_ERROR is not None:
+        raise RuntimeError(
+            "Missing OASIS/CAMEL dependencies. Install oasis-ai/camel-ai before running simulations."
+        ) from _OASIS_IMPORT_ERROR
+
+
+# Multi-model routing + observability (Issue #21).
+from app.services.model_router import ModelRouter, ModelRoutingError, build_backend
+from app.services.llm_telemetry import (
+    TelemetrySink,
+    instrument_backend,
+    load_prices,
+)
 
 
 # IPC相关常量
@@ -404,7 +463,12 @@ class RedditSimulationRunner:
         ActionType.MUTE,
     ]
     
-    def __init__(self, config_path: str, wait_for_commands: bool = True):
+    def __init__(
+        self,
+        config_path: str,
+        wait_for_commands: bool = True,
+        model_map_path: Optional[str] = None,
+    ):
         """
         初始化模拟运行器
         
@@ -416,6 +480,8 @@ class RedditSimulationRunner:
         self.config = self._load_config()
         self.simulation_dir = os.path.dirname(config_path)
         self.wait_for_commands = wait_for_commands
+        self.model_map_path = model_map_path or self.config.get("model_map_path")
+        self.telemetry_sink = None
         self.env = None
         self.agent_graph = None
         self.ipc_handler = None
@@ -582,6 +648,7 @@ class RedditSimulationRunner:
         - LLM_MODEL_NAME: 模型名称
         """
         # 优先从 .env 读取配置
+        _require_oasis_dependencies()
         llm_api_key = os.environ.get("LLM_API_KEY", "")
         llm_base_url = os.environ.get("LLM_BASE_URL", "")
         llm_model = os.environ.get("LLM_MODEL_NAME", "")
@@ -606,6 +673,107 @@ class RedditSimulationRunner:
             model_platform=ModelPlatformType.OPENAI,
             model_type=llm_model,
         )
+
+    # --- Multi-model routing + observability (Issue #21) ------------------- #
+
+    def _roles_by_agent_id(self) -> Dict[int, Optional[str]]:
+        """Map agent_id -> entity_type from agent_configs."""
+        roles: Dict[int, Optional[str]] = {}
+        for idx, cfg in enumerate(self.config.get("agent_configs", [])):
+            roles[cfg.get("agent_id", idx)] = cfg.get("entity_type")
+        return roles
+
+    def _build_routed_models(self, agent_count: int):
+        """Build agent_id -> instrumented backend map from a model map."""
+        _require_oasis_dependencies()
+        router = ModelRouter.from_file(self.model_map_path)
+        prices_path = os.path.join(_project_root, "configs", "model_prices.yaml")
+        self.telemetry_sink = TelemetrySink(
+            path=os.path.join(self.simulation_dir, "llm_telemetry.jsonl"),
+            prices=load_prices(prices_path),
+        )
+
+        roles = self._roles_by_agent_id()
+        agent_models: Dict[int, Any] = {}
+        routes: List[Dict[str, Any]] = []
+
+        for agent_id in range(agent_count):
+            policy = router.resolve(agent_id, roles.get(agent_id))
+            try:
+                backend = build_backend(policy)
+            except ModelRoutingError:
+                if not router.fallback_enabled:
+                    raise
+                policy = router.resolve(agent_id, None)
+                policy.source = "fallback_default"
+                backend = build_backend(policy)
+
+            agent_models[agent_id] = instrument_backend(
+                backend,
+                context={
+                    "agent_id": agent_id,
+                    "role": policy.role,
+                    "provider": policy.provider,
+                    "model": policy.model,
+                },
+                sink=self.telemetry_sink,
+            )
+            routes.append(policy.to_audit())
+
+        return agent_models, routes
+
+    def _write_model_routing_audit(self, routes: List[Dict[str, Any]]) -> None:
+        """Write redacted per-agent model routes for reproducibility."""
+        audit_path = os.path.join(self.simulation_dir, "model_routing_audit.jsonl")
+        timestamp = datetime.now().isoformat()
+        with open(audit_path, "w", encoding="utf-8") as f:
+            for route in routes:
+                f.write(json.dumps({"timestamp": timestamp, **route}, ensure_ascii=False) + "\n")
+
+        print(f"Model routing audit: {audit_path}")
+        for route in routes:
+            print(
+                "  - agent_id={agent_id} model={model} provider={provider} "
+                "source={source} api_key_set={api_key_set}".format(**route)
+            )
+
+    async def _generate_reddit_agent_graph_with_models(
+        self,
+        profile_path: str,
+        agent_models: Dict[int, Any],
+    ) -> "AgentGraph":
+        """Build an OASIS Reddit agent graph with per-agent model instances."""
+        _require_oasis_dependencies()
+        agent_graph = AgentGraph()
+        with open(profile_path, "r", encoding="utf-8") as file:
+            agent_info = json.load(file)
+
+        async def process_agent(i):
+            profile = {"nodes": [], "edges": [], "other_info": {}}
+            profile["other_info"]["user_profile"] = agent_info[i]["persona"]
+            profile["other_info"]["mbti"] = agent_info[i]["mbti"]
+            profile["other_info"]["gender"] = agent_info[i]["gender"]
+            profile["other_info"]["age"] = agent_info[i]["age"]
+            profile["other_info"]["country"] = agent_info[i]["country"]
+
+            user_info = UserInfo(
+                name=agent_info[i]["username"],
+                description=agent_info[i]["bio"],
+                profile=profile,
+                recsys_type="reddit",
+            )
+
+            agent = SocialAgent(
+                agent_id=i,
+                user_info=user_info,
+                agent_graph=agent_graph,
+                model=agent_models[i],
+                available_actions=self.AVAILABLE_ACTIONS,
+            )
+            agent_graph.add_agent(agent)
+
+        await asyncio.gather(*[process_agent(i) for i in range(len(agent_info))])
+        return agent_graph
     
     def _get_active_agents_for_round(
         self, 
@@ -695,7 +863,9 @@ class RedditSimulationRunner:
         print(f"  - Agent数量: {len(self.config.get('agent_configs', []))}")
         
         print("\n初始化LLM模型...")
-        model = self._create_model()
+        model = None
+        if not self.model_map_path:
+            model = self._create_model()
         
         print("加载Agent Profile...")
         profile_path = self._get_profile_path()
@@ -703,11 +873,22 @@ class RedditSimulationRunner:
             print(f"错误: Profile文件不存在: {profile_path}")
             return
         
-        self.agent_graph = await generate_reddit_agent_graph(
-            profile_path=profile_path,
-            model=model,
-            available_actions=self.AVAILABLE_ACTIONS,
-        )
+        if self.model_map_path:
+            with open(profile_path, "r", encoding="utf-8") as f:
+                profile_count = len(json.load(f))
+            print(f"Using multi-model routing: {self.model_map_path}")
+            agent_models, routes = self._build_routed_models(profile_count)
+            self._write_model_routing_audit(routes)
+            self.agent_graph = await self._generate_reddit_agent_graph_with_models(
+                profile_path=profile_path,
+                agent_models=agent_models,
+            )
+        else:
+            self.agent_graph = await generate_reddit_agent_graph(
+                profile_path=profile_path,
+                model=model,
+                available_actions=self.AVAILABLE_ACTIONS,
+            )
         
         db_path = self._get_db_path()
         if os.path.exists(db_path):
@@ -769,6 +950,9 @@ class RedditSimulationRunner:
             simulated_hour = (simulated_minutes // 60) % 24
             simulated_day = simulated_minutes // (60 * 24) + 1
 
+            if self.telemetry_sink is not None:
+                self.telemetry_sink.current_round = round_num
+
             scheduled_events = self._scheduled_events_for_round(round_num, total_rounds)
             if scheduled_events:
                 scheduled_actions, audit_events = self._build_scheduled_actions(scheduled_events)
@@ -808,6 +992,15 @@ class RedditSimulationRunner:
         print(f"  - 数据库: {db_path}")
         
         # 是否进入等待命令模式
+        if self.telemetry_sink is not None:
+            summary = self.telemetry_sink.summary()
+            print(f"  - LLM telemetry: {self.telemetry_sink.path}")
+            print(
+                "    calls={llm_calls} tokens_in={tokens_in} tokens_out={tokens_out} "
+                "cost_usd_est={cost_usd_est} parse_errors={parse_errors} "
+                "errors={errors}".format(**summary)
+            )
+
         if self.wait_for_commands:
             print("\n" + "=" * 60)
             print("进入等待命令模式 - 环境保持运行")
@@ -865,6 +1058,13 @@ async def main():
         help='模拟完成后立即关闭环境，不进入等待命令模式'
     )
     
+    parser.add_argument(
+        '--model-map',
+        type=str,
+        default=None,
+        help='Per-agent model routing YAML; enables model_routing_audit and LLM telemetry'
+    )
+
     args = parser.parse_args()
     
     # 在 main 函数开始时创建 shutdown 事件
@@ -881,7 +1081,8 @@ async def main():
     
     runner = RedditSimulationRunner(
         config_path=args.config,
-        wait_for_commands=not args.no_wait
+        wait_for_commands=not args.no_wait,
+        model_map_path=args.model_map,
     )
     await runner.run(max_rounds=args.max_rounds)
 

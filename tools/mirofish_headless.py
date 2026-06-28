@@ -46,6 +46,25 @@ def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def parse_iso_timestamp(value: Any) -> Optional[datetime]:
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return parsed
+
+
+def seconds_since_timestamp(value: Any) -> Optional[float]:
+    parsed = parse_iso_timestamp(value)
+    if parsed is None:
+        return None
+    if parsed.tzinfo is None:
+        return max(0.0, time.time() - parsed.timestamp())
+    return max(0.0, datetime.now(timezone.utc).timestamp() - parsed.timestamp())
+
+
 def parse_key_list(raw: Optional[str]) -> List[str]:
     if not raw:
         return []
@@ -413,6 +432,7 @@ class MiroFishHeadlessRunner:
         injection_plan: Optional[Path] = None,
         condition: Optional[str] = None,
         no_wait: bool = False,
+        model_map_path: Optional[Path] = None,
     ) -> Dict[str, Any]:
         files = [Path(p) for p in files]
         for p in files:
@@ -436,6 +456,7 @@ class MiroFishHeadlessRunner:
             "injection_plan": str(injection_plan) if injection_plan else None,
             "condition": condition,
             "no_wait": no_wait,
+            "model_map_path": str(model_map_path) if model_map_path else None,
             "started_at": started_at,
         }
         write_json(self.output_dir / "run_config.json", run_config)
@@ -461,13 +482,14 @@ class MiroFishHeadlessRunner:
                 retry=True,
             )
             graph_task_id = graph_build.get("data", {}).get("task_id")
-            self._wait_graph_task(graph_task_id, poll_timeout_seconds)
+            graph_task = self._wait_graph_task(graph_task_id, poll_timeout_seconds, project_id=project_id)
             project = self.client.request_json("GET", f"/api/graph/project/{project_id}")
             graph_id = project.get("data", {}).get("graph_id")
             if not graph_id:
                 raise MiroFishRunnerError("graph build completed but project has no graph_id")
             # Frontend polls graph data while building; capture final graph too.
-            self.client.request_json("GET", f"/api/graph/data/{graph_id}")
+            graph_data_resp = self.client.request_json("GET", f"/api/graph/data/{graph_id}")
+            graph_data_summary = self._summarize_graph_payload(graph_data_resp)
 
             create_payload = {
                 "project_id": project_id,
@@ -509,6 +531,8 @@ class MiroFishHeadlessRunner:
             }
             if max_rounds:
                 start_payload["max_rounds"] = max_rounds
+            if model_map_path:
+                start_payload["model_map_path"] = str(model_map_path)
             self.client.request_json("POST", "/api/simulation/start", start_payload, retry=True)
             final_run = self._wait_run(simulation_id, poll_timeout_seconds)
             self._capture_simulation_artifacts(simulation_id)
@@ -526,7 +550,8 @@ class MiroFishHeadlessRunner:
                 report_status = self._wait_report(simulation_id, report_task_id, poll_timeout_seconds)
                 report_id = report_id or report_status.get("report_id")
                 if report_id:
-                    self.client.request_json("GET", f"/api/report/{report_id}")
+                    report_payload = self.client.request_json("GET", f"/api/report/{report_id}")
+                    self._write_report_artifacts(report_payload)
 
             completed_rounds = self._extract_completed_rounds(final_run)
             manifest = {
@@ -537,6 +562,8 @@ class MiroFishHeadlessRunner:
                 "real_mirofish_flow_invoked": True,
                 "project_id": project_id,
                 "graph_id": graph_id,
+                "graph_build_task": graph_task,
+                "graph_data_summary": graph_data_summary,
                 "simulation_id": simulation_id,
                 "report_id": report_id,
                 "injection": injection_metadata,
@@ -589,6 +616,7 @@ class MiroFishHeadlessRunner:
         injection_plan: Optional[Path] = None,
         condition: Optional[str] = None,
         no_wait: bool = False,
+        model_map_path: Optional[Path] = None,
     ) -> Dict[str, Any]:
         started_at = utc_now()
         run_config = {
@@ -603,6 +631,7 @@ class MiroFishHeadlessRunner:
             "injection_plan": str(injection_plan) if injection_plan else None,
             "condition": condition,
             "no_wait": no_wait,
+            "model_map_path": str(model_map_path) if model_map_path else None,
             "started_at": started_at,
         }
         write_json(self.output_dir / "run_config.json", run_config)
@@ -631,6 +660,8 @@ class MiroFishHeadlessRunner:
             }
             if max_rounds:
                 start_payload["max_rounds"] = max_rounds
+            if model_map_path:
+                start_payload["model_map_path"] = str(model_map_path)
             self.client.request_json("POST", "/api/simulation/start", start_payload, retry=True)
             final_run = self._wait_run(simulation_id, poll_timeout_seconds)
             self._capture_simulation_artifacts(simulation_id)
@@ -647,6 +678,9 @@ class MiroFishHeadlessRunner:
                 report_task_id = report_resp.get("data", {}).get("task_id")
                 report_status = self._wait_report(simulation_id, report_task_id, poll_timeout_seconds)
                 report_id = report_id or report_status.get("report_id")
+                if report_id:
+                    report_payload = self.client.request_json("GET", f"/api/report/{report_id}")
+                    self._write_report_artifacts(report_payload)
 
             sim_dir = self.repo_root / "backend" / "uploads" / "simulations" / simulation_id
             scheduled_log = sim_dir / "scheduled_events_fired.jsonl"
@@ -698,10 +732,51 @@ class MiroFishHeadlessRunner:
             self._write_hashes()
             raise
 
-    def _wait_graph_task(self, task_id: Optional[str], timeout: int) -> Dict[str, Any]:
+    def _summarize_graph_payload(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        data = payload.get("data", {}) if isinstance(payload, dict) else {}
+        nodes = data.get("nodes") or []
+        edges = data.get("edges") or []
+        return {
+            "node_count": int(data.get("node_count") or len(nodes) or 0),
+            "edge_count": int(data.get("edge_count") or len(edges) or 0),
+        }
+
+    def _try_accept_stale_graph_task(self, task: Dict[str, Any], project_id: str) -> Optional[Dict[str, Any]]:
+        stale_after = int(os.environ.get("MIROFISH_ACCEPT_PARTIAL_GRAPH_AFTER_SECONDS", "0") or "0")
+        if stale_after <= 0:
+            return None
+        stale_seconds = seconds_since_timestamp(task.get("updated_at"))
+        if stale_seconds is None or stale_seconds < stale_after:
+            return None
+
+        project = self.client.request_json("GET", f"/api/graph/project/{project_id}")
+        graph_id = project.get("data", {}).get("graph_id")
+        if not graph_id:
+            return None
+
+        graph_data = self.client.request_json("GET", f"/api/graph/data/{graph_id}")
+        summary = self._summarize_graph_payload(graph_data)
+        min_nodes = int(os.environ.get("MIROFISH_ACCEPT_PARTIAL_GRAPH_MIN_NODES", "5") or "5")
+        min_edges = int(os.environ.get("MIROFISH_ACCEPT_PARTIAL_GRAPH_MIN_EDGES", "5") or "5")
+        if summary["node_count"] < min_nodes or summary["edge_count"] < min_edges:
+            return None
+
+        accepted = dict(task)
+        accepted["status"] = "completed"
+        accepted["accepted_partial_graph"] = True
+        accepted["partial_graph_reason"] = (
+            f"graph task stale for {int(stale_seconds)}s but graph has "
+            f"{summary['node_count']} nodes and {summary['edge_count']} edges"
+        )
+        accepted["graph_id"] = graph_id
+        accepted["graph_data_summary"] = summary
+        return accepted
+
+    def _wait_graph_task(self, task_id: Optional[str], timeout: int, project_id: Optional[str] = None) -> Dict[str, Any]:
         if not task_id:
             raise MiroFishRunnerError("graph/build did not return task_id")
         deadline = time.time() + timeout
+        last_partial_probe = 0.0
         while time.time() < deadline:
             resp = self.client.request_json("GET", f"/api/graph/task/{task_id}")
             task = resp.get("data", {})
@@ -710,11 +785,17 @@ class MiroFishHeadlessRunner:
                 if status != "completed":
                     raise MiroFishRunnerError(f"graph task ended with status {status}: {task}")
                 return task
+            if project_id and time.time() - last_partial_probe >= 30:
+                last_partial_probe = time.time()
+                accepted = self._try_accept_stale_graph_task(task, project_id)
+                if accepted:
+                    return accepted
             time.sleep(self.poll_interval)
         raise TimeoutError("graph task polling timed out")
 
     def _wait_prepare(self, simulation_id: str, task_id: Optional[str], timeout: int) -> Dict[str, Any]:
         deadline = time.time() + timeout
+        stale_after = int(os.environ.get("MIROFISH_PREPARE_STALE_AFTER_SECONDS", "0") or "0")
         while time.time() < deadline:
             payload = {"simulation_id": simulation_id}
             if task_id:
@@ -726,6 +807,13 @@ class MiroFishHeadlessRunner:
                 return task
             if status in {"failed", "cancelled", "error"}:
                 raise MiroFishRunnerError(f"prepare ended with status {status}: {task}")
+            if stale_after > 0:
+                stale_seconds = seconds_since_timestamp(task.get("updated_at"))
+                if stale_seconds is not None and stale_seconds >= stale_after:
+                    raise TimeoutError(
+                        f"prepare task stale for {int(stale_seconds)}s; "
+                        f"status={status}; message={task.get('message')!r}"
+                    )
             time.sleep(self.poll_interval)
         raise TimeoutError("prepare polling timed out")
 
@@ -785,12 +873,58 @@ class MiroFishHeadlessRunner:
             "run_state.json",
             "simulation.log",
             "scheduled_events_fired.jsonl",
+            "model_routing_audit.jsonl",
+            "llm_telemetry.jsonl",
             "reddit_profiles.json",
             "reddit_simulation.db",
         ]:
             src = sim_dir / name
             if src.exists() and src.is_file():
                 shutil.copy2(src, artifact_dir / name)
+        self._capture_experimental_memory_artifacts(simulation_id, artifact_dir)
+
+    def _capture_experimental_memory_artifacts(self, simulation_id: str, artifact_dir: Path) -> None:
+        memory_dir = self.repo_root / "backend" / "data" / "simulations" / simulation_id
+        core_memory = memory_dir / "core_memory.json"
+        chroma_dir = memory_dir / "chroma_db"
+        memory_artifact_dir = artifact_dir / "experimental_memory"
+        memory_artifact_dir.mkdir(parents=True, exist_ok=True)
+
+        chroma_files = [path for path in chroma_dir.rglob("*") if path.is_file()] if chroma_dir.exists() else []
+        evidence = {
+            "simulation_id": simulation_id,
+            "source_dir": str(memory_dir),
+            "memory_dir_exists": memory_dir.exists(),
+            "core_memory_exists": core_memory.exists(),
+            "chroma_db_exists": chroma_dir.exists(),
+            "chroma_file_count": len(chroma_files),
+            "chroma_total_bytes": sum(path.stat().st_size for path in chroma_files),
+            "copied_files": [],
+        }
+        if core_memory.exists() and core_memory.is_file():
+            dst = memory_artifact_dir / "core_memory.json"
+            shutil.copy2(core_memory, dst)
+            evidence["copied_files"].append(str(dst.relative_to(artifact_dir)))
+        legacy_memory = memory_dir / "experimental_memory.json"
+        if legacy_memory.exists() and legacy_memory.is_file():
+            dst = memory_artifact_dir / "experimental_memory.json"
+            shutil.copy2(legacy_memory, dst)
+            evidence["copied_files"].append(str(dst.relative_to(artifact_dir)))
+        write_json(artifact_dir / "experimental_memory_evidence.json", evidence)
+
+    def _write_report_artifacts(self, report_payload: Dict[str, Any]) -> None:
+        data = report_payload.get("data", {}) if isinstance(report_payload, dict) else {}
+        if not isinstance(data, dict):
+            return
+        write_json(self.output_dir / "report_meta.json", data)
+        markdown = (
+            data.get("markdown_content")
+            or data.get("content")
+            or data.get("report_markdown")
+            or data.get("report")
+        )
+        if isinstance(markdown, str) and markdown.strip():
+            (self.output_dir / "mirofish_report_raw.md").write_text(markdown, encoding="utf-8")
 
     @staticmethod
     def _extract_completed_rounds(run_status: Dict[str, Any]) -> int:
@@ -858,6 +992,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--injection-plan", default=None, help="YAML injection plan for scheduled Reddit events.")
     parser.add_argument("--condition", default=None, help="Condition name from --injection-plan, e.g. signal-mid.")
     parser.add_argument("--no-wait-after-run", action="store_true", help="Pass --no-wait to the simulation process.")
+    parser.add_argument("--model-map", default=None, help="Per-agent model routing YAML passed to reddit simulations.")
     parser.add_argument("--accept-language", default="zh")
     parser.add_argument("--start-backend", action="store_true", help="Start npm run backend with Gemini env before replaying.")
     parser.add_argument("--repo-root", default=str(Path(__file__).resolve().parents[1]))
@@ -899,6 +1034,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                 injection_plan=Path(args.injection_plan) if args.injection_plan else None,
                 condition=args.condition,
                 no_wait=args.no_wait_after_run,
+                model_map_path=Path(args.model_map) if args.model_map else None,
             )
         else:
             if not args.files or not args.requirement:
@@ -916,6 +1052,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                 injection_plan=Path(args.injection_plan) if args.injection_plan else None,
                 condition=args.condition,
                 no_wait=args.no_wait_after_run,
+                model_map_path=Path(args.model_map) if args.model_map else None,
             )
         print(json.dumps(sanitize_for_artifact(manifest), ensure_ascii=False, indent=2))
         print(f"Artifacts: {out_dir.resolve()}")

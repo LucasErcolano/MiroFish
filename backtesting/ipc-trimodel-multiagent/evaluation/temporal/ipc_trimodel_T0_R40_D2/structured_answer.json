@@ -1,0 +1,64 @@
+{
+  "delta_1": {
+    "point_estimate": 2.0,
+    "range_min": 1.5,
+    "range_max": 2.5
+  },
+  "delta_2": {
+    "range_min": 1.2,
+    "range_max": 2.0,
+    "trend": "estable"
+  },
+  "delta_3": {
+    "range_min": 1.0,
+    "range_max": 1.8,
+    "trend": "desacelerando",
+    "reason": "Riesgo de presión social y fragilidad institucional según SOCIAL_01 y INST_01"
+  },
+  "delta_4": {
+    "point_estimate": 11.0,
+    "range_min": 10.0,
+    "range_max": 12.5,
+    "program_stability": "incierto",
+    "accumulated_2025_range_min": 10.0,
+    "accumulated_2025_range_max": 12.5
+  },
+  "causal_mechanism": {
+    "dominant_variable": "Ajuste fiscal y gestión cambiaria (MACRO_01)",
+    "main_risk": "Desaceleración por presión social y crisis institucional (SOCIAL_01; INST_01)"
+  },
+  "evidence": [
+    {
+      "claim": "Tendencia de desaceleración inflacionaria basada en BBVA",
+      "source_id": [
+        "MACRO_01"
+      ]
+    },
+    {
+      "claim": "Pobreza del 49.9% en 3Q2024 como indicador de presión social",
+      "source_id": [
+        "SOCIAL_01"
+      ]
+    },
+    {
+      "claim": "Fragilidad institucional con mayoría de 153-87 en Congreso",
+      "source_id": [
+        "INST_01",
+        "INST_02"
+      ]
+    },
+    {
+      "claim": "Riesgo de interrupción por FX, tarifas o confianza (MACRO_01)",
+      "source_id": [
+        "MACRO_01"
+      ]
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2025-01-31",
+    "temporal_package": "T0",
+    "model": "qwen/qwen3-8b",
+    "simulation_id": "sim_e4fb57f07650",
+    "graph_id": "mirofish_ffb9c585aee1469f"
+  }
+}

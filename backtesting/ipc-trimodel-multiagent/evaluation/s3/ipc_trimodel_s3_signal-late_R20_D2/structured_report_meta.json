@@ -1,0 +1,9 @@
+{
+  "report_id": "structured_ipc_trimodel_s3_signal-late_R20_D2",
+  "simulation_id": "sim_00ac4ab6ffa4",
+  "graph_id": "mirofish_4c1683ba85db4896",
+  "status": "completed",
+  "error": null,
+  "output_mode": "structured_json",
+  "schema_id": "arg_ipc_2025_v1"
+}

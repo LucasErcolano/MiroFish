@@ -1,4 +1,4 @@
-"""
+﻿"""
 OASIS Agent Profile生成器
 将Zep图谱中的实体转换为OASIS模拟平台所需的Agent Profile格式
 
@@ -198,7 +198,8 @@ class OasisProfileGenerator:
         
         self.client = OpenAI(
             api_key=self.api_key,
-            base_url=self.base_url
+            base_url=self.base_url,
+            timeout=Config.LLM_REQUEST_TIMEOUT,
         )
         
         # Zep客户端用于检索丰富上下文
@@ -587,7 +588,7 @@ class OasisProfileGenerator:
             )
 
         # 尝试多次生成，直到成功或达到最大重试次数
-        max_attempts = 3
+        max_attempts = Config.OASIS_PROFILE_MAX_ATTEMPTS
         last_error = None
         
         for attempt in range(max_attempts):
@@ -598,8 +599,8 @@ class OasisProfileGenerator:
                         {"role": "system", "content": self._get_system_prompt(is_individual)},
                         {"role": "user", "content": prompt}
                     ],
-                    "temperature": 0.7 - (attempt * 0.1),  # 每次重试降低温度
-                    # 不设置max_tokens，让LLM自由发挥
+                    "temperature": 0.7 - (attempt * 0.1),
+                    "max_tokens": Config.OASIS_PROFILE_MAX_TOKENS,
                 }
                 if "qwen" not in (self.model_name or "").lower():
                     request_kwargs["response_format"] = {"type": "json_object"}

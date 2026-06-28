@@ -1,0 +1,67 @@
+{
+  "delta_1": {
+    "point_estimate": 2.5,
+    "range_min": 1.5,
+    "range_max": 3.5
+  },
+  "delta_2": {
+    "range_min": 1.8,
+    "range_max": 2.8,
+    "trend": "estable"
+  },
+  "delta_3": {
+    "range_min": 1.5,
+    "range_max": 2.5,
+    "trend": "desacelerando",
+    "reason": "Efectos del crawling peg y superávit fiscal, pero presiones Q2 y estrés social limitan la desaceleración."
+  },
+  "delta_4": {
+    "point_estimate": 2.15,
+    "range_min": 1.8,
+    "range_max": 2.5,
+    "program_stability": "incierto",
+    "accumulated_2025_range_min": 100.0,
+    "accumulated_2025_range_max": 120.0
+  },
+  "causal_mechanism": {
+    "dominant_variable": "política cambiaria (crawling peg) y superávit fiscal",
+    "main_risk": "estrés social y limitaciones políticas que podrían frenar ajustes"
+  },
+  "evidence": [
+    {
+      "claim": "Variación mensual febrero 2025 entre 1.5% y 3.5%",
+      "source_id": [
+        "MACRO_02",
+        "MONETARY_01"
+      ]
+    },
+    {
+      "claim": "Tendencia estable en abril 2025",
+      "source_id": [
+        "MACRO_03",
+        "MACRO_01"
+      ]
+    },
+    {
+      "claim": "Rango julio 2025 entre 1.5% y 2.5% con desaceleración",
+      "source_id": [
+        "MACRO_04",
+        "GEO_01"
+      ]
+    },
+    {
+      "claim": "Inflación acumulada 2025 entre 100% y 120%",
+      "source_id": [
+        "MACRO_03",
+        "FISCAL_01"
+      ]
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2025-01-31",
+    "temporal_package": "T3",
+    "model": "qwen/qwen3-8b",
+    "simulation_id": "sim_16208f7f7e38",
+    "graph_id": "mirofish_4ccfbe5332f647c1"
+  }
+}

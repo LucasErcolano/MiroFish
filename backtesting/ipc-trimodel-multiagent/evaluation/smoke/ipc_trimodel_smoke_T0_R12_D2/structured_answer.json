@@ -1,0 +1,58 @@
+{
+  "delta_1": {
+    "point_estimate": 1.5,
+    "range_min": 0.5,
+    "range_max": 2.5
+  },
+  "delta_2": {
+    "range_min": 1.0,
+    "range_max": 2.0,
+    "trend": "estable"
+  },
+  "delta_3": {
+    "range_min": 1.0,
+    "range_max": 2.5,
+    "trend": "estable",
+    "reason": "Continuation of fiscal adjustment and exchange-rate management, but risks from FX corrections or confidence shocks."
+  },
+  "delta_4": {
+    "point_estimate": 10.0,
+    "range_min": 9.0,
+    "range_max": 12.0,
+    "program_stability": "incierto",
+    "accumulated_2025_range_min": 9.0,
+    "accumulated_2025_range_max": 12.0
+  },
+  "causal_mechanism": {
+    "dominant_variable": "fiscal adjustment and exchange-rate management",
+    "main_risk": "correction in FX, tariffs, or confidence"
+  },
+  "evidence": [
+    {
+      "claim": "Desinflation trend continues but faces interruptions",
+      "source_id": [
+        "MACRO_01"
+      ]
+    },
+    {
+      "claim": "Social stress limits tolerance to adjustment",
+      "source_id": [
+        "SOCIAL_01"
+      ]
+    },
+    {
+      "claim": "Congressional fragility impacts fiscal consolidation",
+      "source_id": [
+        "INST_01",
+        "INST_02"
+      ]
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2025-01-31",
+    "temporal_package": "T0",
+    "model": "qwen/qwen3-8b",
+    "simulation_id": "sim_234cbe08a931",
+    "graph_id": "mirofish_9fd3679040894755"
+  }
+}

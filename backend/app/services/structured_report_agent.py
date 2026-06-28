@@ -50,11 +50,11 @@ class StructuredReportAgent:
             graph_id=self.graph_id,
             simulation_requirement=self.simulation_requirement,
             status=ReportStatus.GENERATING,
-            output_mode="structured_json",
-            schema_id=self.schema_id,
-            metadata=self.report_context,
             created_at=datetime.now().isoformat(),
         )
+        report.output_mode = "structured_json"
+        report.schema_id = self.schema_id
+        report.metadata = self.report_context
 
         try:
             if progress_callback:

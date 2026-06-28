@@ -1,0 +1,17 @@
+{
+  "llm_calls": 116,
+  "tokens_in": 2723027,
+  "tokens_out": 54840,
+  "cost_usd_est": 0.0,
+  "errors": 4,
+  "parse_errors": 9,
+  "models": [
+    "google/gemma-3-27b-it",
+    "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+    "qwen/qwen3-8b"
+  ],
+  "providers": [
+    "deepinfra",
+    "openrouter"
+  ]
+}

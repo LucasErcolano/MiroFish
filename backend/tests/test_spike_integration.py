@@ -105,3 +105,31 @@ def test_core_memory_persistence():
     service_reloaded = ExperimentalMemoryService(TEST_SIM_ID)
     assert service_reloaded.core_memory["persona"] == "AI Assistant"
     assert "Help User" in service_reloaded.core_memory["objectives"]
+
+
+def test_core_memory_initializes_from_profiles_without_existing_attribute(setup_test_env):
+    """First initialization with profiles should persist core memory."""
+    from app.services import experimental_memory
+
+    experimental_memory.Config = setup_test_env
+    ExperimentalMemoryService = experimental_memory.ExperimentalMemoryService
+
+    simulation_id = "profile_core_memory_sim"
+    sim_upload_dir = os.path.join(setup_test_env.UPLOAD_FOLDER, "simulations", simulation_id)
+    os.makedirs(sim_upload_dir, exist_ok=True)
+    with open(os.path.join(sim_upload_dir, "reddit_profiles.json"), "w", encoding="utf-8") as f:
+        json.dump(
+            [
+                {
+                    "persona": "Analyst persona",
+                    "interested_topics": ["inflation", "policy"],
+                }
+            ],
+            f,
+        )
+
+    service = ExperimentalMemoryService(simulation_id)
+
+    assert service.core_memory["persona"] == "Analyst persona"
+    assert "inflation" in service.core_memory["objectives"]
+    assert os.path.exists(os.path.join(setup_test_env.DATA_DIR, "simulations", simulation_id, "core_memory.json"))

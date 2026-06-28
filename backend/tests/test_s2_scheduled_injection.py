@@ -47,6 +47,28 @@ def test_scheduled_events_for_round_skips_already_fired():
     assert runner._scheduled_events_for_round(19, 40) == []
 
 
+def test_runner_prefers_cli_model_map_over_config(tmp_path):
+    config_path = tmp_path / "simulation_config.json"
+    config_path.write_text(
+        json.dumps(
+            {
+                "model_map_path": "from-config.yaml",
+                "agent_configs": [],
+                "event_config": {"initial_posts": [], "scheduled_events": []},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    runner = RedditSimulationRunner(
+        config_path=str(config_path),
+        wait_for_commands=False,
+        model_map_path="from-cli.yaml",
+    )
+
+    assert runner.model_map_path == "from-cli.yaml"
+
+
 def test_apply_real_issue19_injection_plan_to_reddit_config(tmp_path):
     sim_id = "sim_issue19_test"
     sim_dir = tmp_path / "backend" / "uploads" / "simulations" / sim_id

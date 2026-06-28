@@ -1507,6 +1507,7 @@ def start_simulation():
         enable_graph_memory_update = data.get('enable_graph_memory_update', False)  # 可选：是否启用图谱记忆更新
         force = data.get('force', False)  # 可选：强制重新开始
         no_wait = data.get('no_wait', False)
+        model_map_path = data.get('model_map_path')
 
         # 验证 max_rounds 参数
         if max_rounds is not None:
@@ -1527,6 +1528,12 @@ def start_simulation():
             return jsonify({
                 "success": False,
                 "error": t('api.invalidPlatform', platform=platform)
+            }), 400
+
+        if model_map_path and platform != 'reddit':
+            return jsonify({
+                "success": False,
+                "error": "model_map_path is only supported for reddit simulations"
             }), 400
 
         # 检查模拟是否已准备好
@@ -1611,7 +1618,8 @@ def start_simulation():
             max_rounds=max_rounds,
             enable_graph_memory_update=enable_graph_memory_update,
             graph_id=graph_id,
-            no_wait=no_wait
+            no_wait=no_wait,
+            model_map_path=model_map_path
         )
         
         # 更新模拟状态
