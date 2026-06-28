@@ -1,0 +1,69 @@
+{
+  "delta_1": {
+    "point_estimate": 2.5,
+    "range_min": 2.0,
+    "range_max": 3.0
+  },
+  "delta_2": {
+    "range_min": 1.8,
+    "range_max": 2.5,
+    "trend": "desacelerando"
+  },
+  "delta_3": {
+    "range_min": 1.5,
+    "range_max": 2.2,
+    "trend": "desacelerando",
+    "reason": "BCRA REM expectations for 2025 inflation (25.9%) suggest gradual decline, but social stress and political risks may introduce volatility [MACRO_03; SOCIAL_01]."
+  },
+  "delta_4": {
+    "point_estimate": 2.5,
+    "range_min": 2.2,
+    "range_max": 2.8,
+    "program_stability": "incierto",
+    "accumulated_2025_range_min": 23.0,
+    "accumulated_2025_range_max": 28.5
+  },
+  "causal_mechanism": {
+    "dominant_variable": "fiscal consolidation and exchange-rate policy",
+    "main_risk": "social stress undermining fiscal adjustments and political instability [SOCIAL_01; INST_01]."
+  },
+  "evidence": [
+    {
+      "claim": "December 2024 IPC was 2.7% monthly, with 117.8% accumulated inflation [MACRO_02].",
+      "source_id": [
+        "MACRO_02"
+      ]
+    },
+    {
+      "claim": "BCRA REM forecasts 2025 inflation at 25.9% and 4.5% growth [MACRO_03].",
+      "source_id": [
+        "MACRO_03"
+      ]
+    },
+    {
+      "claim": "IMF constraints on reserves and FX normalization influence inflation trajectory [GEO_01].",
+      "source_id": [
+        "GEO_01"
+      ]
+    },
+    {
+      "claim": "Social stress and poverty (49.9% in 3Q2024) pose risks to fiscal adjustment [SOCIAL_01].",
+      "source_id": [
+        "SOCIAL_01"
+      ]
+    },
+    {
+      "claim": "Congressional fragility limits fiscal consolidation [INST_01].",
+      "source_id": [
+        "INST_01"
+      ]
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2025-01-31",
+    "temporal_package": "T2",
+    "model": "qwen/qwen3-8b",
+    "simulation_id": "sim_94a103a18abe",
+    "graph_id": "mirofish_5f11d1d74e2e4df3"
+  }
+}

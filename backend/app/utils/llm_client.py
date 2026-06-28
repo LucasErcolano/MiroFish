@@ -160,7 +160,12 @@ class LLMClient:
             cleaned = cleaned.strip()
 
         try:
-            return json.loads(cleaned)
+            parsed = json.loads(cleaned)
+            if isinstance(parsed, str):
+                parsed = json.loads(parsed)
+            if isinstance(parsed, dict):
+                return parsed
+            raise ValueError(f"LLM returned non-object JSON: {type(parsed).__name__}")
         except json.JSONDecodeError:
             raise ValueError(f"LLM返回的JSON格式无效: {cleaned}")
 

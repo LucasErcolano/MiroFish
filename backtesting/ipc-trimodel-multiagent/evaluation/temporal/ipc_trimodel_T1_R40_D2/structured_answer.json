@@ -1,0 +1,63 @@
+{
+  "delta_1": {
+    "point_estimate": 2.5,
+    "range_min": 1.5,
+    "range_max": 3.5
+  },
+  "delta_2": {
+    "range_min": 1.8,
+    "range_max": 3.2,
+    "trend": "desacelerando"
+  },
+  "delta_3": {
+    "range_min": 1.5,
+    "range_max": 2.5,
+    "trend": "desacelerando",
+    "reason": "IMF constraints and BCRA's 2025 inflation target of 25.9% suggest continued disinflation pressure, though social stress risks delays [MACRO_03; GEO_01]."
+  },
+  "delta_4": {
+    "point_estimate": 2.15,
+    "range_min": 1.8,
+    "range_max": 2.5,
+    "program_stability": "incierto",
+    "accumulated_2025_range_min": 24.5,
+    "accumulated_2025_range_max": 27.3
+  },
+  "causal_mechanism": {
+    "dominant_variable": "fiscal continuity and exchange-rate management",
+    "main_risk": "social stress from poverty (49.9% in 3Q2024) could trigger protests, undermining policy credibility [SOCIAL_01]."
+  },
+  "evidence": [
+    {
+      "claim": "BCRA expects 2025 inflation around 25.9%",
+      "source_id": [
+        "MACRO_03"
+      ]
+    },
+    {
+      "claim": "IMF adds external constraints on reserves and exchange-rate normalization",
+      "source_id": [
+        "GEO_01"
+      ]
+    },
+    {
+      "claim": "Social stress from 49.9% poverty could weaken macro program",
+      "source_id": [
+        "SOCIAL_01"
+      ]
+    },
+    {
+      "claim": "BBVA frames Argentina in recovery/desinflation scenario",
+      "source_id": [
+        "MACRO_01"
+      ]
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2025-01-31",
+    "temporal_package": "T1",
+    "model": "qwen/qwen3-8b",
+    "simulation_id": "sim_1f3dcf4247bc",
+    "graph_id": "mirofish_3451746beaba48fe"
+  }
+}

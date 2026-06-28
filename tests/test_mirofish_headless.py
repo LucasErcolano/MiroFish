@@ -1,9 +1,12 @@
 import json
+import sys
 import tempfile
 import threading
 import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from tools.mirofish_frontend_parity_check import check_frontend_replay_parity
 from tools.mirofish_headless import MiroFishHeadlessRunner, build_backend_env, sanitize_for_artifact
@@ -147,6 +150,7 @@ class HeadlessRunnerTests(unittest.TestCase):
                 "platform": "parallel",
                 "force": True,
                 "enable_graph_memory_update": True,
+                "no_wait": False,
                 "max_rounds": 2,
             })
 
@@ -167,6 +171,62 @@ class HeadlessRunnerTests(unittest.TestCase):
             trace_text = json.dumps(trace)
             key_prefix = "AI" + "zaSy"
             self.assertNotIn(key_prefix, trace_text)
+
+    def test_model_map_path_is_sent_to_start_payload(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            input_file = Path(tmp) / "seed.txt"
+            input_file.write_text("seed text", encoding="utf-8")
+            out_dir = Path(tmp) / "run"
+            model_map = Path(tmp) / "model_map.yaml"
+            model_map.write_text("version: 1\n", encoding="utf-8")
+
+            runner = MiroFishHeadlessRunner(
+                base_url=self.base_url,
+                output_dir=out_dir,
+                poll_interval=0,
+                timeout_seconds=5,
+            )
+            runner.run_full_flow(
+                files=[input_file],
+                simulation_requirement="predict test",
+                platform="reddit",
+                max_rounds=1,
+                generate_report=False,
+                model_map_path=model_map,
+            )
+
+            start_payload = next(r["json"] for r in FakeMiroFishHandler.requests_seen if r["path"] == "/api/simulation/start")
+            self.assertEqual(start_payload["platform"], "reddit")
+            self.assertEqual(start_payload["model_map_path"], str(model_map))
+
+    def test_capture_simulation_artifacts_includes_experimental_memory_evidence(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo_root = Path(tmp) / "repo"
+            sim_upload = repo_root / "backend" / "uploads" / "simulations" / "sim_1"
+            sim_upload.mkdir(parents=True)
+            (sim_upload / "simulation_config.json").write_text("{}", encoding="utf-8")
+            memory_dir = repo_root / "backend" / "data" / "simulations" / "sim_1"
+            (memory_dir / "chroma_db").mkdir(parents=True)
+            (memory_dir / "core_memory.json").write_text('{"persona":"p"}', encoding="utf-8")
+            (memory_dir / "chroma_db" / "index.bin").write_bytes(b"123")
+            out_dir = Path(tmp) / "run"
+
+            runner = MiroFishHeadlessRunner(
+                base_url=self.base_url,
+                output_dir=out_dir,
+                repo_root=repo_root,
+                poll_interval=0,
+                timeout_seconds=5,
+            )
+            runner._capture_simulation_artifacts("sim_1")
+
+            evidence = json.loads(
+                (out_dir / "simulation_artifacts" / "experimental_memory_evidence.json").read_text(encoding="utf-8")
+            )
+            self.assertTrue(evidence["core_memory_exists"])
+            self.assertTrue(evidence["chroma_db_exists"])
+            self.assertEqual(evidence["chroma_file_count"], 1)
+            self.assertTrue((out_dir / "simulation_artifacts" / "experimental_memory" / "core_memory.json").exists())
 
     def test_sanitize_and_backend_env_never_write_plain_keys_to_artifacts(self):
         key_prefix = "AI" + "zaSy"

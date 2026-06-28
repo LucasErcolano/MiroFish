@@ -231,6 +231,16 @@ def prepare_topic_model(row: dict, args: argparse.Namespace) -> str:
             retry=True,
         )
         prepare_status = runner._wait_prepare(simulation_id, prepare.get("data", {}).get("task_id"), args.poll_timeout)
+        prepare_result = prepare_status.get("result") or {}
+        if (
+            prepare_result.get("status") == "failed"
+            or prepare_result.get("config_generated") is False
+            or not simulation_config_exists(str(simulation_id))
+        ):
+            raise RuntimeError(
+                "simulation prepare did not produce simulation_config.json "
+                f"for {row['topic']}/{row['model_key']}: {prepare_result.get('error') or prepare_result}"
+            )
         copy_prepared_artifacts(simulation_id, output_dir)
         write_sanitized_json(
             output_dir / "prepared_manifest.json",
@@ -398,6 +408,11 @@ def build_env(model: dict) -> dict:
     key = get_secret(model["key_env"])
     if not key:
         raise RuntimeError(f"missing API key env {model['key_env']}")
+    graphiti_key_env = model.get("graphiti_key_env") or model["key_env"]
+    graphiti_key = get_secret(graphiti_key_env)
+    if not graphiti_key:
+        raise RuntimeError(f"missing API key env {graphiti_key_env}")
+    graphiti_base_url = model.get("graphiti_base_url") or model["base_url"]
     env["LLM_API_KEY"] = key
     env["OPENAI_API_KEY"] = key
     env["LLM_BASE_URL"] = model["base_url"]
@@ -412,11 +427,12 @@ def build_env(model: dict) -> dict:
     set_if_missing(env, "GRAPHITI_USER", "neo4j")
     set_if_missing(env, "GRAPHITI_PASSWORD", "mirofishpassword")
     set_if_missing(env, "GRAPHITI_DATABASE", "neo4j")
-    set_if_missing(env, "GRAPHITI_LLM_API_KEY", key)
-    set_if_missing(env, "GRAPHITI_LLM_BASE_URL", model["base_url"])
+    set_if_missing(env, "GRAPHITI_LLM_API_KEY", graphiti_key)
+    set_if_missing(env, "GRAPHITI_LLM_BASE_URL", graphiti_base_url)
     set_if_missing(env, "GRAPHITI_LLM_MODEL", model.get("graphiti_llm_model") or model["model"])
     set_if_missing(env, "GRAPHITI_LLM_CLIENT_MODE", "generic")
     set_if_missing(env, "GRAPHITI_LLM_MAX_TOKENS", "4096")
+    set_if_missing(env, "MIROFISH_INTERVIEW_AGENTS_TIMEOUT", "45")
 
     openrouter_key = get_secret("OPENROUTER_API_KEY")
     openrouter_base_url = get_secret("OPENROUTER_BASE_URL") or "https://openrouter.ai/api/v1"
@@ -512,10 +528,10 @@ def start_backend(env: dict, model_key: str) -> subprocess.Popen:
     safe_time = utc_now().replace(":", "").replace("+", "Z")
     log_path = log_dir / f"backend-{model_key}-{safe_time}.log"
     log_handle = log_path.open("w", encoding="utf-8")
-    npm_exe = "npm.cmd" if os.name == "nt" else "npm"
+    uv_exe = "uv.exe" if os.name == "nt" else "uv"
     process = subprocess.Popen(
-        [npm_exe, "run", "backend"],
-        cwd=str(REPO_ROOT),
+        [uv_exe, "run", "--frozen", "--python", "3.11", "python", "run.py"],
+        cwd=str(REPO_ROOT / "backend"),
         env=env,
         stdout=log_handle,
         stderr=subprocess.STDOUT,
@@ -637,6 +653,9 @@ def main() -> int:
                 "LLM_BASE_URL": row["model_spec"]["base_url"],
                 "LLM_MODEL_NAME": row["model_spec"]["model"],
                 "key_env": row["model_spec"]["key_env"],
+                "GRAPHITI_LLM_BASE_URL": row["model_spec"].get("graphiti_base_url") or row["model_spec"]["base_url"],
+                "GRAPHITI_LLM_MODEL": row["model_spec"].get("graphiti_llm_model") or row["model_spec"]["model"],
+                "graphiti_key_env": row["model_spec"].get("graphiti_key_env") or row["model_spec"]["key_env"],
             }
             print(json.dumps({"run_id": row["run_id"], "env": safe_env, "output_dir": str(row["output_dir"].relative_to(REPO_ROOT))}, indent=2))
         return 0

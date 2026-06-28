@@ -1,0 +1,56 @@
+{
+  "case_id": "ipc-trimodel-multiagent",
+  "variant": "ipc_trimodel_smoke_T0_R12_D2",
+  "model_policy": "trimodel_multiagent",
+  "seed": 1,
+  "ground_truth": {
+    "delta_1_feb": 2.4,
+    "delta_2_apr": 3.7,
+    "delta_3_jul": 3.0,
+    "delta_4_dec": 2.8,
+    "accumulated_2025": 31.5
+  },
+  "delta_1": {
+    "prediction": 1.5,
+    "abs_error": 0.9,
+    "pass": true
+  },
+  "delta_2": {
+    "range": [
+      1.0,
+      2.0
+    ],
+    "range_width": 1.0,
+    "pass": false
+  },
+  "delta_3": {
+    "range": [
+      1.0,
+      2.5
+    ],
+    "range_width": 1.5,
+    "pass": false
+  },
+  "delta_4": {
+    "prediction": 10.0,
+    "abs_error": 7.2,
+    "range": [
+      9.0,
+      12.0
+    ],
+    "range_width": 3.0,
+    "pass": false
+  },
+  "accumulated_2025": {
+    "range": [
+      9.0,
+      12.0
+    ],
+    "pass": false
+  },
+  "score": 1,
+  "max_score": 5,
+  "parse_errors": 0,
+  "leak_flags": [],
+  "artifact_kind": "structured_answer_json"
+}

@@ -1,0 +1,57 @@
+{
+  "predicted_winner": "Argentina",
+  "confidence": 0.7,
+  "winner_probability_point": 0.504,
+  "winner_probability_range": {
+    "winner_min": 0.451,
+    "winner_max": 0.557
+  },
+  "predicted_goal_margin": {
+    "point": 1,
+    "range": {
+      "min": 0,
+      "max": 2
+    }
+  },
+  "probability_calibration": "根据历史对赛记录和预测模型的预测，Argentina的胜率预测为50.4%。",
+  "probability_drivers": [
+    {
+      "source_id": "Opta模型",
+      "driver": "历史对赛记录"
+    },
+    {
+      "source_id": "FanDuel的市场价格",
+      "driver": "胜率预测"
+    }
+  ],
+  "justification": [
+    {
+      "source_id": "历史对赛记录",
+      "claim": "Argentina在过去15次对赛中赢得了9次。"
+    },
+    {
+      "source_id": "预测模型",
+      "claim": "预测模型预测Argentina在90分钟内赢得比赛的概率为52.1%。"
+    }
+  ],
+  "uncertainty": [
+    {
+      "source_id": "历史对赛记录",
+      "factor": "不确定性"
+    },
+    {
+      "source_id": "预测模型",
+      "factor": "不确定性"
+    }
+  ],
+  "evidence": [
+    {
+      "source_id": "历史对赛记录",
+      "claim": "Argentina在过去15次对赛中赢得了9次。"
+    },
+    {
+      "source_id": "预测模型",
+      "claim": "预测模型预测Argentina在90分钟内赢得比赛的概率为52.1%。"
+    }
+  ]
+}

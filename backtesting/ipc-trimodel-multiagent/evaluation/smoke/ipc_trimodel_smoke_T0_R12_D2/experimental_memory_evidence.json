@@ -1,0 +1,12 @@
+{
+  "simulation_id": "sim_234cbe08a931",
+  "source_dir": "C:\\Users\\joaco\\Documents\\IA\\Year-4\\Semestre-1\\NLP\\MiroFish\\backend\\data\\simulations\\sim_234cbe08a931",
+  "memory_dir_exists": true,
+  "core_memory_exists": true,
+  "chroma_db_exists": true,
+  "chroma_file_count": 1,
+  "chroma_total_bytes": 188416,
+  "copied_files": [
+    "experimental_memory\\core_memory.json"
+  ]
+}

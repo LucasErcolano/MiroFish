@@ -1,0 +1,47 @@
+{
+  "delta_1": {
+    "point_estimate": 3.5,
+    "range_min": 2.5,
+    "range_max": 4.5
+  },
+  "delta_2": {
+    "range_min": 4.0,
+    "range_max": 6.0,
+    "trend": "estable"
+  },
+  "delta_3": {
+    "range_min": 5.0,
+    "range_max": 7.0,
+    "trend": "desacelerando",
+    "reason": "Exchange-rate lag and reserves pressure risks may moderate inflationary pressures by mid-year."
+  },
+  "delta_4": {
+    "point_estimate": 5.5,
+    "range_min": 4.5,
+    "range_max": 6.5,
+    "program_stability": "incierto",
+    "accumulated_2025_range_min": 15.0,
+    "accumulated_2025_range_max": 22.0
+  },
+  "causal_mechanism": {
+    "dominant_variable": "Fiscal/monetary discipline vs. exchange-rate normalization risks",
+    "main_risk": "Pass-through effects of currency depreciation on import prices"
+  },
+  "evidence": [
+    {
+      "claim": "Argentina entered 2025 with disinflation signals but high uncertainty",
+      "source_id": []
+    },
+    {
+      "claim": "Exchange-rate lag, reserves pressure, and pass-through risk cause potential inflation rebound",
+      "source_id": []
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2025-01-31",
+    "temporal_package": "s3-ipc-base-context",
+    "model": "qwen/qwen3-8b",
+    "simulation_id": "sim_909a68add9ad",
+    "graph_id": "mirofish_41649b34e2bf42ce"
+  }
+}

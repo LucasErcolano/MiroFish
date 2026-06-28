@@ -1,0 +1,84 @@
+{
+  "status": "completed",
+  "flow_provenance": "frontend_replay_backend_api",
+  "is_model_output": true,
+  "is_real_mirofish_system": false,
+  "real_mirofish_flow_invoked": true,
+  "project_id": "proj_d4e1a7d85d65",
+  "graph_id": "mirofish_41649b34e2bf42ce",
+  "graph_build_task": {
+    "created_at": "2026-06-28T14:27:14.609671",
+    "error": null,
+    "message": "图谱构建完成",
+    "metadata": {},
+    "progress": 100,
+    "progress_detail": {},
+    "result": {
+      "chunk_count": 5,
+      "edge_count": 9,
+      "graph_id": "mirofish_41649b34e2bf42ce",
+      "node_count": 17,
+      "project_id": "proj_d4e1a7d85d65"
+    },
+    "status": "completed",
+    "task_id": "b615e707-1996-4724-b2cc-081cf2ab5009",
+    "task_type": "构建图谱: IPC trimodel ipc_trimodel_s3_noise-near-mid_R20_D2",
+    "updated_at": "2026-06-28T14:30:44.103746"
+  },
+  "graph_data_summary": {
+    "node_count": 17,
+    "edge_count": 9
+  },
+  "simulation_id": "sim_909a68add9ad",
+  "report_id": null,
+  "injection": {
+    "condition": "noise-near-mid",
+    "scheduled_events_count": 1,
+    "simulation_config_path": "C:\\Users\\joaco\\Documents\\IA\\Year-4\\Semestre-1\\NLP\\MiroFish\\backend\\uploads\\simulations\\sim_909a68add9ad\\simulation_config.json",
+    "scheduled_event_ids": [
+      "ipc-noise-near-mid"
+    ]
+  },
+  "scheduled_events_fired_count": 1,
+  "reddit_db_summary": {
+    "path": "C:\\Users\\joaco\\Documents\\IA\\Year-4\\Semestre-1\\NLP\\MiroFish\\backend\\uploads\\simulations\\sim_909a68add9ad\\reddit_simulation.db",
+    "exists": true,
+    "post_count": 14,
+    "comment_count": 28,
+    "trace_count": 96,
+    "user_count": 11,
+    "scheduled_signal_post_count": 0,
+    "scheduled_noise_post_count": 0,
+    "scheduled_counter_signal_post_count": 0,
+    "scheduled_injection_post_count": 0
+  },
+  "num_rounds_or_epochs_requested": 20,
+  "num_rounds_or_epochs": 0,
+  "final_run_status": {
+    "completed_at": "2026-06-28T14:37:38.820287",
+    "current_round": 0,
+    "error": null,
+    "process_pid": 49584,
+    "progress_percent": 0.0,
+    "reddit_actions_count": 0,
+    "reddit_completed": false,
+    "reddit_current_round": 0,
+    "reddit_running": false,
+    "reddit_simulated_hours": 0,
+    "runner_status": "completed",
+    "simulated_hours": 0,
+    "simulation_id": "sim_909a68add9ad",
+    "started_at": "2026-06-28T14:34:01.665981",
+    "total_actions_count": 0,
+    "total_rounds": 20,
+    "total_simulation_hours": 72,
+    "twitter_actions_count": 0,
+    "twitter_completed": false,
+    "twitter_current_round": 0,
+    "twitter_running": false,
+    "twitter_simulated_hours": 0,
+    "updated_at": "2026-06-28T14:34:01.665981"
+  },
+  "started_at": "2026-06-28T17:26:40.106547+00:00",
+  "completed_at": "2026-06-28T17:37:40.124207+00:00"
+}

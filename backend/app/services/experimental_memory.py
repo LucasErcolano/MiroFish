@@ -114,7 +114,7 @@ class ExperimentalMemoryService(MemoryProvider):
                 "objectives": p.get("interested_topics", []),
                 "key_events": []
             }
-            self.save_core_memory(core)
+            self._write_core_memory(core)
             return core
 
         return {
@@ -140,10 +140,20 @@ class ExperimentalMemoryService(MemoryProvider):
             except: pass
         return []
 
-    def save_core_memory(self, core_data: Dict[str, Any]):
-        self.core_memory.update(core_data)
+    def _write_core_memory(self, core_data: Dict[str, Any]):
+        os.makedirs(self.data_dir, exist_ok=True)
         with open(self.core_memory_path, 'w', encoding='utf-8') as f:
-            json.dump(self.core_memory, f, ensure_ascii=False, indent=2)
+            json.dump(core_data, f, ensure_ascii=False, indent=2)
+
+    def save_core_memory(self, core_data: Dict[str, Any]):
+        current = getattr(self, "core_memory", {
+            "persona": "Standard MiroFish Agent",
+            "objectives": [],
+            "key_events": [],
+        })
+        current.update(core_data)
+        self.core_memory = current
+        self._write_core_memory(self.core_memory)
 
     def add_memories(self, activities: List[Dict[str, Any]]):
         """Add multiple episodes to archival memory (ChromaDB) with Entity Normalization."""

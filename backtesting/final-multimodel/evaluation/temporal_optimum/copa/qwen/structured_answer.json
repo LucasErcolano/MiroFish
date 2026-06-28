@@ -1,0 +1,65 @@
+{
+  "predicted_winner": "Argentina",
+  "confidence": 0.55,
+  "winner_probability_point": 0.504,
+  "winner_probability_range": {
+    "winner_min": 0.45,
+    "winner_max": 0.55
+  },
+  "predicted_goal_margin": {
+    "value": 2,
+    "range": {
+      "min": 1,
+      "max": 3
+    }
+  },
+  "probability_calibration": "基于Opta模型50.4%的直接预测及历史战绩优势，但考虑哥伦比亚的战术威胁和球员状态波动，将置信度调整为55%",
+  "probability_drivers": [
+    {
+      "factor": "阿根廷历史战绩优势",
+      "source_id": "16"
+    },
+    {
+      "factor": "哥伦比亚定位球战术威胁",
+      "source_id": "36"
+    }
+  ],
+  "justification": [
+    {
+      "claim": "阿根廷在15次交锋中7胜3负5平",
+      "source_id": "16"
+    },
+    {
+      "claim": "Opta模型预测阿根廷胜率50.4%",
+      "source_id": "40"
+    },
+    {
+      "claim": "梅西完成全场90分钟并率队晋级",
+      "source_id": "35"
+    }
+  ],
+  "uncertainty": [
+    {
+      "factor": "哥伦比亚球员状态波动",
+      "source_id": "17"
+    },
+    {
+      "factor": "马丁内兹防守稳定性",
+      "source_id": "19"
+    }
+  ],
+  "evidence": [
+    {
+      "claim": "阿根廷15次交锋7胜3负5平",
+      "source_id": "16"
+    },
+    {
+      "claim": "Opta模型预测阿根廷50.4%胜率",
+      "source_id": "40"
+    },
+    {
+      "claim": "哥伦比亚詹姆斯·罗德里格斯的定位球威胁",
+      "source_id": "36"
+    }
+  ]
+}

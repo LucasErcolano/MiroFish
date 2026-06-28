@@ -1,0 +1,51 @@
+{
+  "delta_1": {
+    "point_estimate": 5.2,
+    "range_min": 3.5,
+    "range_max": 7.0
+  },
+  "delta_2": {
+    "range_min": 4.0,
+    "range_max": 8.5,
+    "trend": "estable"
+  },
+  "delta_3": {
+    "range_min": 5.0,
+    "range_max": 7.5,
+    "trend": "desacelerando",
+    "reason": "Seasonal factors and delayed policy effects may temper inflationary pressures"
+  },
+  "delta_4": {
+    "point_estimate": 6.8,
+    "range_min": 55.0,
+    "range_max": 85.0,
+    "program_stability": "incierto",
+    "accumulated_2025_range_min": 50.0,
+    "accumulated_2025_range_max": 90.0
+  },
+  "causal_mechanism": {
+    "dominant_variable": "fiscal/monetary discipline vs exchange-rate pass-through risks",
+    "main_risk": "exchange-rate lag and reserves pressure triggering inflation rebound"
+  },
+  "evidence": [
+    {
+      "claim": "Argentina entered 2025 with disinflation signals but high uncertainty",
+      "source_id": []
+    },
+    {
+      "claim": "Exchange-rate normalization risks linked to BCRA",
+      "source_id": []
+    },
+    {
+      "claim": "Fiscal anchors and crawling-peg policy outcomes uncertain",
+      "source_id": []
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2025-01-31",
+    "temporal_package": "s3-ipc-base-context",
+    "model": "qwen/qwen3-8b",
+    "simulation_id": "sim_5d8a8e42923c",
+    "graph_id": "mirofish_c00722e19e474e22"
+  }
+}

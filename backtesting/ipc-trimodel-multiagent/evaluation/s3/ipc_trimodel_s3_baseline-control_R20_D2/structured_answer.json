@@ -1,0 +1,55 @@
+{
+  "delta_1": {
+    "point_estimate": 3.5,
+    "range_min": 2.5,
+    "range_max": 4.5
+  },
+  "delta_2": {
+    "range_min": 1.5,
+    "range_max": 5.5,
+    "trend": "estable"
+  },
+  "delta_3": {
+    "range_min": 3.0,
+    "range_max": 5.0,
+    "trend": "desacelerando",
+    "reason": "Uncertainty around exchange-rate lag and reserves pressure creates wide range, but disinflation signals suggest slowing trend."
+  },
+  "delta_4": {
+    "point_estimate": 4.0,
+    "range_min": 2.0,
+    "range_max": 6.0,
+    "program_stability": "incierto",
+    "accumulated_2025_range_min": 12.0,
+    "accumulated_2025_range_max": 24.0
+  },
+  "causal_mechanism": {
+    "dominant_variable": "fiscal/monetary discipline and crawling-peg policy",
+    "main_risk": "exchange-rate lag, reserves pressure, and pass-through risk"
+  },
+  "evidence": [
+    {
+      "claim": "Argentina entered 2025 with disinflation signals but high uncertainty",
+      "source_id": []
+    },
+    {
+      "claim": "Key uncertainty: fiscal/monetary discipline vs exchange-rate risks",
+      "source_id": []
+    },
+    {
+      "claim": "BCRA linked to crawling-peg policy and reserves pressure",
+      "source_id": []
+    },
+    {
+      "claim": "IMF focuses on exchange-rate normalization risks",
+      "source_id": []
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2025-01-31",
+    "temporal_package": "s3-ipc-base-context",
+    "model": "qwen/qwen3-8b",
+    "simulation_id": "sim_7075b82d193a",
+    "graph_id": "mirofish_bdb753a963f945b8"
+  }
+}

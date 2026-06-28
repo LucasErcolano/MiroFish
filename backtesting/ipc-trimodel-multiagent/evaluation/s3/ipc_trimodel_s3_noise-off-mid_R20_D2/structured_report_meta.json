@@ -1,0 +1,9 @@
+{
+  "report_id": "structured_ipc_trimodel_s3_noise-off-mid_R20_D2",
+  "simulation_id": "sim_5d8a8e42923c",
+  "graph_id": "mirofish_c00722e19e474e22",
+  "status": "completed",
+  "error": null,
+  "output_mode": "structured_json",
+  "schema_id": "arg_ipc_2025_v1"
+}

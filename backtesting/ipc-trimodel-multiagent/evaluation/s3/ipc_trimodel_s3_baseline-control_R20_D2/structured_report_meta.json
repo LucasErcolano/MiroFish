@@ -1,0 +1,9 @@
+{
+  "report_id": "structured_ipc_trimodel_s3_baseline-control_R20_D2",
+  "simulation_id": "sim_7075b82d193a",
+  "graph_id": "mirofish_bdb753a963f945b8",
+  "status": "completed",
+  "error": null,
+  "output_mode": "structured_json",
+  "schema_id": "arg_ipc_2025_v1"
+}

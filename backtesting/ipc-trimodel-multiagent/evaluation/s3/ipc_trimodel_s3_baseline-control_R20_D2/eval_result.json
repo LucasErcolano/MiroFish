@@ -1,0 +1,56 @@
+{
+  "case_id": "ipc-trimodel-multiagent",
+  "variant": "ipc_trimodel_s3_baseline-control_R20_D2",
+  "model_policy": "trimodel_multiagent",
+  "seed": 1,
+  "ground_truth": {
+    "delta_1_feb": 2.4,
+    "delta_2_apr": 3.7,
+    "delta_3_jul": 3.0,
+    "delta_4_dec": 2.8,
+    "accumulated_2025": 31.5
+  },
+  "delta_1": {
+    "prediction": 3.5,
+    "abs_error": 1.1,
+    "pass": true
+  },
+  "delta_2": {
+    "range": [
+      1.5,
+      5.5
+    ],
+    "range_width": 4.0,
+    "pass": true
+  },
+  "delta_3": {
+    "range": [
+      3.0,
+      5.0
+    ],
+    "range_width": 2.0,
+    "pass": true
+  },
+  "delta_4": {
+    "prediction": 4.0,
+    "abs_error": 1.2,
+    "range": [
+      2.0,
+      6.0
+    ],
+    "range_width": 4.0,
+    "pass": true
+  },
+  "accumulated_2025": {
+    "range": [
+      12.0,
+      24.0
+    ],
+    "pass": false
+  },
+  "score": 4,
+  "max_score": 5,
+  "parse_errors": 0,
+  "leak_flags": [],
+  "artifact_kind": "structured_answer_json"
+}

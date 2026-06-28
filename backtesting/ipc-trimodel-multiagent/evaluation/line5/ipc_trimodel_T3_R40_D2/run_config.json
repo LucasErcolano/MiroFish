@@ -1,0 +1,25 @@
+{
+  "base_url": "http://127.0.0.1:5001",
+  "flow_provenance": "frontend_replay_backend_api",
+  "project_name": "IPC trimodel ipc_trimodel_T3_R40_D2",
+  "files": [
+    {
+      "path": "C:\\Users\\joaco\\Documents\\IA\\Year-4\\Semestre-1\\NLP\\MiroFish\\backtesting\\case-c-s2-arg-ipc-line5-gemma\\seed_T3.md",
+      "sha256": "4989544e66bd2bbf7e75a515ca19405e0c64ac541b3b48e5d045d81a69736ce9",
+      "bytes": 6418
+    }
+  ],
+  "simulation_requirement": "Eres un agente de simulación social. Tienes acceso exclusivamente a los documentos provistos fechados hasta el 31 de enero de 2025. No uses información posterior a esa fecha. Si no tienes evidencia para un claim, dilo explícitamente. Cita el source_id de cada documento que uses.\n\nUsando exclusivamente los documentos provistos fechados hasta el 31 de enero de 2025, analiza la trayectoria inflacionaria argentina y responde en formato estructurado:\n\nRegla obligatoria de estimación:\n- Debes responder siempre con una estimación numérica para los cuatro horizontes pedidos, aunque la evidencia sea incompleta o incierta.\n- No uses `null`, \"no disponible\" ni abstenciones en los campos de predicción.\n- Si falta evidencia directa para un mes, infiere el mejor rango posible usando la evidencia disponible sobre tendencia, inflación anual esperada, inflación mensual reciente, política cambiaria/fiscal, riesgos y contexto social.\n- Expresa la incertidumbre ampliando el rango y explica la razón principal.\n\n1. Predicción Δ1 (febrero 2025 — variación mensual IPC):\n   - Valor puntual estimado (ej: 2.5%).\n   - Rango: entre X% y Y%.\n\n2. Predicción Δ2 (abril 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia: acelerando / estable / desacelerando.\n\n3. Predicción Δ3 (julio 2025 — variación mensual IPC):\n   - Rango estimado: entre X% y Y%.\n   - Dirección de tendencia esperada hacia julio: acelerando / estable / desacelerando.\n   - Razón principal.\n\n4. Predicción Δ4 (diciembre 2025 — variación mensual IPC):\n   - Valor puntual estimado para IPC mensual de diciembre 2025.\n   - Rango estimado para IPC mensual de diciembre 2025: entre X% y Y%.\n   - Sentimiento sobre la estabilidad del programa económico: consolidado / incierto / revertido.\n   - Rango de inflación acumulada 2025 esperada.\n\n5. Mecanismo causal:\n   - Variable dominante en la trayectoria de desinflación.\n   - Principal riesgo que podría revertir el proceso.\n\n6. Evidencia:\n   - Citar source_id por cada claim importante.\n   - No usar datos posteriores al 31/01/2025.",
+  "platform": "reddit",
+  "max_rounds": 40,
+  "enable_graph_memory_update": true,
+  "force": true,
+  "use_llm_for_profiles": true,
+  "parallel_profile_count": 5,
+  "generate_report": false,
+  "injection_plan": null,
+  "condition": null,
+  "no_wait": true,
+  "model_map_path": "C:\\Users\\joaco\\Documents\\IA\\Year-4\\Semestre-1\\NLP\\MiroFish\\backtesting\\ipc-trimodel-multiagent\\model_map_ipc_trimodel.yaml",
+  "started_at": "2026-06-28T14:45:49.574096+00:00"
+}

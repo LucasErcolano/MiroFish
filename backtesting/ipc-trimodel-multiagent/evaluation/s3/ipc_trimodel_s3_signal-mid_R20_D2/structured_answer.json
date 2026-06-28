@@ -1,0 +1,47 @@
+{
+  "delta_1": {
+    "point_estimate": 1.2,
+    "range_min": 0.5,
+    "range_max": 1.5
+  },
+  "delta_2": {
+    "range_min": 0.3,
+    "range_max": 1.2,
+    "trend": "estable"
+  },
+  "delta_3": {
+    "range_min": 0.8,
+    "range_max": 1.5,
+    "trend": "estable",
+    "reason": "Uncertainty around exchange-rate lag and reserves pressure balances disinflation signals from fiscal/monetary discipline"
+  },
+  "delta_4": {
+    "point_estimate": 2.1,
+    "range_min": 1.5,
+    "range_max": 3.5,
+    "program_stability": "incierto",
+    "accumulated_2025_range_min": 6.0,
+    "accumulated_2025_range_max": 10.5
+  },
+  "causal_mechanism": {
+    "dominant_variable": "fiscal/monetary discipline and crawling-peg policy",
+    "main_risk": "exchange-rate lag, reserves pressure, and pass-through risk causing inflation rebound"
+  },
+  "evidence": [
+    {
+      "claim": "Argentina entered 2025 with disinflation signals but high uncertainty",
+      "source_id": []
+    },
+    {
+      "claim": "Key uncertainty: fiscal/monetary discipline vs exchange-rate risks",
+      "source_id": []
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2025-01-31",
+    "temporal_package": "s3-ipc-base-context",
+    "model": "qwen/qwen3-8b",
+    "simulation_id": "sim_191ba44ab4a0",
+    "graph_id": "mirofish_1638d2cb7b7843d8"
+  }
+}

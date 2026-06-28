@@ -1,0 +1,9 @@
+{
+  "report_id": "structured_ipc_trimodel_T1_R40_D2",
+  "simulation_id": "sim_1f3dcf4247bc",
+  "graph_id": "mirofish_3451746beaba48fe",
+  "status": "completed",
+  "error": null,
+  "output_mode": "structured_json",
+  "schema_id": "arg_ipc_2025_v1"
+}

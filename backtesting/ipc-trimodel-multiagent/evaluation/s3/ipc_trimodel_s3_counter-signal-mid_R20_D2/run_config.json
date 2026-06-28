@@ -1,0 +1,25 @@
+{
+  "base_url": "http://127.0.0.1:5001",
+  "flow_provenance": "frontend_replay_backend_api",
+  "project_name": "IPC trimodel ipc_trimodel_s3_counter-signal-mid_R20_D2",
+  "files": [
+    {
+      "path": "C:\\Users\\joaco\\Documents\\IA\\Year-4\\Semestre-1\\NLP\\MiroFish\\backtesting\\s3-cross-topic-injection\\topics\\ipc\\base_context.md",
+      "sha256": "7f70b7a0cd5237f6eb97dc60eb042d97a87cadac232e3e3ebed98be70a1502e6",
+      "bytes": 1771
+    }
+  ],
+  "simulation_requirement": "# IPC Question\n\nPredict Argentina IPC inflation for 2025 at four horizons: February monthly value, April range/direction, July bucket, and December monthly/range. Explain the causal mechanism and evidence.",
+  "platform": "reddit",
+  "max_rounds": 20,
+  "enable_graph_memory_update": true,
+  "force": true,
+  "use_llm_for_profiles": true,
+  "parallel_profile_count": 5,
+  "generate_report": false,
+  "injection_plan": "C:\\Users\\joaco\\Documents\\IA\\Year-4\\Semestre-1\\NLP\\MiroFish\\backtesting\\s3-cross-topic-injection\\topics\\ipc\\injection_plan.yaml",
+  "condition": "counter-signal-mid",
+  "no_wait": true,
+  "model_map_path": "C:\\Users\\joaco\\Documents\\IA\\Year-4\\Semestre-1\\NLP\\MiroFish\\backtesting\\ipc-trimodel-multiagent\\model_map_ipc_trimodel.yaml",
+  "started_at": "2026-06-28T17:15:12.529912+00:00"
+}

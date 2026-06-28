@@ -1,0 +1,66 @@
+{
+  "delta_1": {
+    "point_estimate": 2.5,
+    "range_min": 2.0,
+    "range_max": 3.0
+  },
+  "delta_2": {
+    "range_min": 2.5,
+    "range_max": 3.5,
+    "trend": "estable"
+  },
+  "delta_3": {
+    "range_min": 2.5,
+    "range_max": 3.5,
+    "trend": "estable",
+    "reason": "Exchange rate stability from crawling peg and fiscal surplus, but risks of relative-price adjustments or FX pressures."
+  },
+  "delta_4": {
+    "point_estimate": 25.0,
+    "range_min": 23.0,
+    "range_max": 27.0,
+    "program_stability": "incierto",
+    "accumulated_2025_range_min": 23.0,
+    "accumulated_2025_range_max": 27.0
+  },
+  "causal_mechanism": {
+    "dominant_variable": "crawling peg and fiscal surplus",
+    "main_risk": "social stress and political constraints"
+  },
+  "evidence": [
+    {
+      "claim": "February 2025 IPC range based on crawling peg and December 2024 IPC",
+      "source_id": [
+        "MONETARY_01",
+        "MACRO_02"
+      ]
+    },
+    {
+      "claim": "April 2025 trend stability from fiscal surplus and BCRA expectations",
+      "source_id": [
+        "FISCAL_01",
+        "MACRO_03"
+      ]
+    },
+    {
+      "claim": "July 2025 range influenced by crawling peg and relative-price risks",
+      "source_id": [
+        "MONETARY_01",
+        "MACRO_01"
+      ]
+    },
+    {
+      "claim": "December 2025 accumulated inflation range from BCRA REM expectations",
+      "source_id": [
+        "MACRO_03"
+      ]
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2025-01-31",
+    "temporal_package": "T3",
+    "model": "qwen/qwen3-8b",
+    "simulation_id": "sim_ba767cd635fe",
+    "graph_id": "mirofish_c3446044951c4d7a"
+  }
+}

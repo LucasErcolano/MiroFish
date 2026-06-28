@@ -1,0 +1,57 @@
+{
+  "delta_1": {
+    "point_estimate": 5.2,
+    "range_min": 4.5,
+    "range_max": 6.0
+  },
+  "delta_2": {
+    "range_min": 5.0,
+    "range_max": 7.5,
+    "trend": "estable"
+  },
+  "delta_3": {
+    "range_min": 5.5,
+    "range_max": 8.0,
+    "trend": "acelerando",
+    "reason": "Exchange-rate lag and reserves pressure could trigger pass-through effects, increasing inflationary risks."
+  },
+  "delta_4": {
+    "point_estimate": 6.5,
+    "range_min": 12.0,
+    "range_max": 18.0,
+    "program_stability": "incierto",
+    "accumulated_2025_range_min": 12.0,
+    "accumulated_2025_range_max": 18.0
+  },
+  "causal_mechanism": {
+    "dominant_variable": "Exchange-rate normalization risks",
+    "main_risk": "Pass-through effects from currency depreciation and reserves pressure"
+  },
+  "evidence": [
+    {
+      "claim": "Argentina entered 2025 with disinflation signals but high uncertainty",
+      "source_id": [
+        "source_packet_text"
+      ]
+    },
+    {
+      "claim": "Key uncertainty: exchange-rate lag, reserves pressure, and pass-through risk cause a rebound",
+      "source_id": [
+        "source_packet_text"
+      ]
+    },
+    {
+      "claim": "BCRA's crawling-peg policy and fiscal discipline may sustain disinflation",
+      "source_id": [
+        "source_packet_text"
+      ]
+    }
+  ],
+  "metadata": {
+    "cutoff_date": "2025-01-31",
+    "temporal_package": "s3-ipc-base-context",
+    "model": "qwen/qwen3-8b",
+    "simulation_id": "sim_37db280cbd4d",
+    "graph_id": "mirofish_c90dc94937b0462d"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "report_id": "structured_ipc_trimodel_smoke_T0_R12_D2",
+  "simulation_id": "sim_234cbe08a931",
+  "graph_id": "mirofish_9fd3679040894755",
+  "status": "completed",
+  "error": null,
+  "output_mode": "structured_json",
+  "schema_id": "arg_ipc_2025_v1"
+}
