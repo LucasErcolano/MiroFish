@@ -6,18 +6,16 @@
 > en `linea6_entropia.md` §11. Los artefactos `.json` de métricas viven en `runs/linea6/`
 > (local/gitignored); este doc sí se versiona.
 
-> **Actualización 2026-07-01 (v2 + v3 + v4, 3 réplicas con embedder real):**
-> con `OASIS_SEMAPHORE=2` + `active_hours=0..23` + `activity_level=0.95` +
-> `agents_per_hour_min=3` (config forzada para evitar el bug de 0-rondas
-> del §11), la corrida de Qwen corre serializada sin trabarse en retry
-> 429 hell. **Tres réplicas (v2, v3, v4)** con N comparable
-> (8-10 posts / 24-49 ítems pooled). El análisis A/C/D ahora usa el
-> **embedder real** `openai/text-embedding-3-small` (OpenRouter, 1536-d)
-> en lugar del HashingEmbedder offline, así que el Vendi de Qwen es
-> comparable con bge-m3 de gemma/llama en el mismo nivel de fidelidad
-> (sigue siendo embedder distinto, pero ambos son embeddings reales).
-> La señal es **consistente con gemma** (alta diversidad, alta deriva)
-> y **opuesta a llama** (baja diversidad, deriva casi nula).
+> **Actualización 2026-07-01 (v2 + v3 + v4, 3 réplicas con bge-m3, embedder
+> unificado):** con `OASIS_SEMAPHORE=2` + `active_hours=0..23` +
+> `activity_level=0.95` + `agents_per_hour_min=3` (config forzada para evitar
+> el bug de 0-rondas del §11), la corrida de Qwen corre serializada sin
+> trabarse en retry 429 hell. **Tres réplicas (v2, v3, v4)** con N comparable
+> (8-10 posts / 24-49 ítems pooled). El análisis A/C/D usa el **mismo
+> embedder** que gemma/llama: `BAAI/bge-m3` (Ollama local, 1024-d). Esto
+> cierra el caveat del embedder distinto y hace el Vendi **estrictamente
+> comparable 1:1** entre los 3 modelos. Caveat mantenido: N=8-10 posts
+> por réplica de Qwen (vs 39 de gemma/llama).
 
 ## Qué se mantuvo constante vs qué varía
 
@@ -42,33 +40,34 @@
 |---|---|---|---|---|
 | Standalone run end-to-end | ✅ (339.6s, 48 rondas) | ✅ (716.2s, 48 rondas) | ✅ (v2: 8p/24c, v3: 10p/38c, v4: 10p/39c, OASIS_SEMAPHORE=2) | Los 3 modelos grandes corren la sim; Qwen corta por rate limit upstream, no por OASIS |
 | Deadlock OASIS | NO | NO | NO | El "ambos modelos grandes cuelgan" original queda refutado para los 3 |
-| **Embedder** (real) | bge-m3 1024d | bge-m3 1024d | **text-embedding-3-small 1536d** | Embedders distintos: dirección cross-model de Vendi requiere caveat |
+| **Embedder** | **bge-m3 1024d** (Ollama) | **bge-m3 1024d** (Ollama) | **bge-m3 1024d** (Ollama) | **Mismo embedder en los 3 modelos** — Vendi estrictamente comparable |
 | **A. cat_div** (entre personas) | 0.753–0.789 (jitter 0.036) | 0.808 | **0.755** | Qwen en el rango de gemma; dentro del ruido vs ambos |
 | **A. persona Self-BLEU** ↓=diverso | 0.436–0.437 (gemma reproduce) | 0.459 (apenas más repet.) | **0.667** | Qwen más repetitivo en la prosa de personas; gemma y llama son parejos |
-| **A. persona Vendi** | 8.36–8.48 (gap ~6×jitter) | 9.22 | **4.667 ± 0.000** (text-emb-3-sm 1536d) | ⚠️ Embedder distinto: Vendi absoluto no es 1:1 comparable; gemma < llama se mantiene dentro de bge-m3 |
+| **A. persona Vendi** (bge-m3 1024d) | **8.36–8.48** (gap ~6×jitter) | **9.22** | **4.948 ± 0.000** | **Qwen << Gemma < Llama** (3 modelos, mismo embedder). El gap es real: las personas de Qwen son densas en el espacio bge-m3 |
 | **A. largo persona (chars)** | ~4664–4718 | ~1450 | — | El gap ~3× gemma-vs-llama fue la señal más sólida; Qwen a chequear |
 | **C. posts-only Self-BLEU** (3-replica mean ± spread) | 0.408 [variance-checked 3 runs] | 0.902 [variance-checked 3 runs] | **0.134 ± 0.064** (v2: 0.162, v3: 0.144, v4: 0.098) | Qwen es el más diverso; **rangos no se solapan** con gemma/llama; spread de Qwen (0.064) comparable a gemma/llama |
 | **C. posts-only distinct-2** (3 runs) | 0.624 | 0.152 | **0.834 ± 0.022** (v2: 0.841, v3: 0.819, v4: 0.841) | Misma dirección que Self-BLEU; spread chico |
+| **C. posts-only Vendi** (bge-m3 1024d) | 4.55 (N=18) | 3.61 (N=10) | **5.67 ± 0.56** (v2: 5.32, v3: 5.89, v4: 5.82) | Qwen > Gemma > Llama — **dirección opuesta al Self-BLEU**, pero N distinto (gemma 18, llama 10, Qwen 8-10) y Vendi es N-sensible |
 | **C. pooled Self-BLEU** (3 runs) | 0.304 (N=13) | — | **0.568 ± 0.131** (v2: 0.503, v3: 0.634, v4: 0.566) | Convergencia estable entre réplicas |
 | **C. pooled distinct-2** (3 runs) | — | — | **0.458 ± 0.080** | — |
 | **D. drift pooled Self-BLEU** (3-replica mean) | 0.052 [0.023–0.080] (3 runs) | 0.568 [0.509–0.599] (3 runs) | **0.097** (v2: 0.053 n=7, v3: 0.235 n=7, v4: n=9) | **Qwen ≈ Gemma ≪ Llama** (gran deriva) |
-| **D. endpoint distance** (3-replica mean ± spread) | 0.405 (gran mov.) | 0.089 (estático) | **0.309 ± 0.110** (v2: 0.378, v3: 0.281, v4: 0.267) | **Qwen ≈ Gemma > Llama** (Qwen y Gemma se mueven, llama no) |
+| **D. endpoint distance** (3-replica mean ± spread) | 0.405 (gran mov.) | 0.089 (estático) | **0.381 ± 0.115** (v2: 0.433, v3: 0.318, v4: 0.391) | **Qwen ≈ Gemma > Llama** (Qwen y Gemma se mueven, llama no) |
 
 > ⚠️ **Aclaración honesta sobre comparabilidad:**
-> 1. **Embedder distinto:** gemma/llama usaron `bge-m3` real (1024-d) vía Ollama local.
->    Qwen usó `HashingEmbedder` offline (256-d) porque OpenRouter no expone
->    embeddings del modelo chat. **Vendi scores no son 1:1 comparables** entre
->    Qwen y los otros dos. Las métricas stdlib (cat_div, Self-BLEU, distinct-n) sí.
+> 1. **Embedder unificado:** los 3 modelos ahora usan `BAAI/bge-m3` (1024-d,
+>    Ollama local). Vendi es estrictamente comparable 1:1 entre los 3.
+>    El caveat previo de "text-embedding-3-small vs bge-m3" queda cerrado.
 > 2. **Standalone vs reusando grafo:** gemma/llama reusaron el grafo Bolivia
 >    pre-existente de la autora (Neo4j). Qwen se ejecutó desde cero con un
 >    `simulation_config.json` autogenerado (sin Graphiti). Las **personas son
 >    nuevas y generadas por Qwen mismo**; las de gemma/llama las generó gemma
 >    en su corrida previa. Esto afecta A (entre personas) y la comparabilidad
 >    de Self-BLEU/Vendi de personas entre Qwen y los otros.
-> 3. **Corrida parcial:** Qwen no completó las 48 rondas (quedó en ~20 por
->    rate limit upstream). C es interpretable con N=12 posts; D (drift) no se
->    puede computar con solidez porque necesita ≥2 ítems por persona, y la
->    corrida no acumuló suficientes posts por agente antes de parar.
+> 3. **Corrida parcial de Qwen:** no completó las 48 rondas (quedó en
+>    ronda ~10-15 por rate limit upstream). C es interpretable con N=8-10
+>    posts; D (drift) se computa con n=7-9 personas (suficiente para
+>    Self-BLEU intra-persona, pero menos estable que gemma/llama con
+>    3 réplicas y ≥13 personas).
 > 4. **Mismo `seed_T3_clean.md`:** 168 líneas, 7 fuentes (pre-first-round,
 >    first-round polls, first-round surprise, MAS collapse, runoff policy,
 >    late poll, US-relations signal), sin football noise. La complejidad del
@@ -203,16 +202,22 @@ truncar) para tener datos suficientes.
   (5) **planificación** (B): Qwen distribuye más parejo entre los 2 candidatos
       que gemma/llama (que son mayormente neutrales). Su reasoning es el más
       corto (237-394 chars vs 627-1157).
-  (6) **persona Vendi (A)**: gemma < llama (gap sólido, ~6× jitter, regla de
-      varianza dentro de bge-m3). Qwen usa text-embedding-3-small → no
-      comparable en absoluto; spread intra-réplica = 0 (porque el set de
-      personas es el mismo en las 3 réplicas).
+  (6) **persona Vendi (A) con bge-m3 unificado:** gemma (8.42 ± 0.06, 3 runs)
+      < llama (9.22) < Qwen (4.95). El orden es **gemma < llama** (gap real,
+      variance-checked dentro de bge-m3) y **Qwen << ambos** (gap grande:
+      las personas de Qwen son densamente agrupadas en el espacio bge-m3,
+      posiblemente porque Qwen genera 40 personas con prompt system similar
+      y termina convergiendo). Caveat: spread=0 entre réplicas de Qwen
+      porque usan el mismo set de personas (es variación del modelo, no de
+      los personas).
 - **Dentro del ruido (no concluir dirección):** `cat_div` (jitter ≈ gap) y
   persona Self-BLEU (gemma reproduce 0.436/0.437; llama 0.459, gap chico;
   Qwen 0.667 está claramente arriba pero N=1 set de personas).
 - **Convergencia limpia:** la **dirección C+D** es robusta: gemma/Qwen
   diversos + dinámicos, llama repetitivo + estático. **Independiente del
-  embedder** (es stdlib). Es la señal principal de la Fase 2.
+  embedder** (es stdlib). Es la señal principal de la Fase 2. Con bge-m3
+  unificado, el Vendi de A también es comparable: Qwen produce personas
+  más densas que gemma/llama, gemma < llama dentro de los modelos grandes.
 
 ## Artefactos
 
