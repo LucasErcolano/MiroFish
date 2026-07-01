@@ -6,13 +6,18 @@
 > en `linea6_entropia.md` §11. Los artefactos `.json` de métricas viven en `runs/linea6/`
 > (local/gitignored); este doc sí se versiona.
 
-> **Actualización 2026-07-01 (v2 + v3, 2 réplicas):** con `OASIS_SEMAPHORE=2` +
-> `active_hours=0..23` + `activity_level=0.95` + `agents_per_hour_min=3` (config
-> forzada para evitar el bug de 0-rondas del §11), la corrida de Qwen corre
-> serializada sin trabarse en retry 429 hell. Dos réplicas (v2, v3) en
-> `runs/linea6/sim_qwen_v2/` y `sim_qwen_v3/`. La señal es **consistente con
-> gemma** (alta diversidad, alta deriva) y **opuesta a llama** (baja diversidad,
-> deriva casi nula).
+> **Actualización 2026-07-01 (v2 + v3 + v4, 3 réplicas con embedder real):**
+> con `OASIS_SEMAPHORE=2` + `active_hours=0..23` + `activity_level=0.95` +
+> `agents_per_hour_min=3` (config forzada para evitar el bug de 0-rondas
+> del §11), la corrida de Qwen corre serializada sin trabarse en retry
+> 429 hell. **Tres réplicas (v2, v3, v4)** con N comparable
+> (8-10 posts / 24-49 ítems pooled). El análisis A/C/D ahora usa el
+> **embedder real** `openai/text-embedding-3-small` (OpenRouter, 1536-d)
+> en lugar del HashingEmbedder offline, así que el Vendi de Qwen es
+> comparable con bge-m3 de gemma/llama en el mismo nivel de fidelidad
+> (sigue siendo embedder distinto, pero ambos son embeddings reales).
+> La señal es **consistente con gemma** (alta diversidad, alta deriva)
+> y **opuesta a llama** (baja diversidad, deriva casi nula).
 
 ## Qué se mantuvo constante vs qué varía
 
@@ -33,20 +38,21 @@
 
 ## Resumen ejecutivo de 3 modelos
 
-| Métrica | Gemma-3-27B | Llama-3.3-70B | Qwen3-8B (v2/v3) | Lectura |
+| Métrica | Gemma-3-27B | Llama-3.3-70B | Qwen3-8B (v2/v3/v4) | Lectura |
 |---|---|---|---|---|
-| Standalone run end-to-end | ✅ (339.6s, 48 rondas) | ✅ (716.2s, 48 rondas) | ✅ (v2: 8p/24c ronda ~10; v3: 10p/38c ronda ~15, OASIS_SEMAPHORE=2) | Los 3 modelos grandes corren la sim; Qwen corta por rate limit upstream, no por OASIS |
+| Standalone run end-to-end | ✅ (339.6s, 48 rondas) | ✅ (716.2s, 48 rondas) | ✅ (v2: 8p/24c, v3: 10p/38c, v4: 10p/39c, OASIS_SEMAPHORE=2) | Los 3 modelos grandes corren la sim; Qwen corta por rate limit upstream, no por OASIS |
 | Deadlock OASIS | NO | NO | NO | El "ambos modelos grandes cuelgan" original queda refutado para los 3 |
+| **Embedder** (real) | bge-m3 1024d | bge-m3 1024d | **text-embedding-3-small 1536d** | Embedders distintos: dirección cross-model de Vendi requiere caveat |
 | **A. cat_div** (entre personas) | 0.753–0.789 (jitter 0.036) | 0.808 | **0.755** | Qwen en el rango de gemma; dentro del ruido vs ambos |
 | **A. persona Self-BLEU** ↓=diverso | 0.436–0.437 (gemma reproduce) | 0.459 (apenas más repet.) | **0.667** | Qwen más repetitivo en la prosa de personas; gemma y llama son parejos |
-| **A. persona Vendi** (bge-m3 vs hash) | 8.36–8.48 (gap ~6×jitter) | 9.22 | **5.36** *(hash-256d, no bge-m3)* | ⚠️ NO comparable directo (distinto embedder) |
+| **A. persona Vendi** | 8.36–8.48 (gap ~6×jitter) | 9.22 | **4.667 ± 0.000** (text-emb-3-sm 1536d) | ⚠️ Embedder distinto: Vendi absoluto no es 1:1 comparable; gemma < llama se mantiene dentro de bge-m3 |
 | **A. largo persona (chars)** | ~4664–4718 | ~1450 | — | El gap ~3× gemma-vs-llama fue la señal más sólida; Qwen a chequear |
-| **C. posts-only Self-BLEU** (2-replica mean ± spread) | 0.408 [variance-checked 3 runs] | 0.902 [variance-checked 3 runs] | **0.153 ± 0.018** (v2: 0.162, v3: 0.144) | Qwen es el más diverso; **rangos no se solapan** con gemma/llama |
-| **C. posts-only distinct-2** | 0.624 | 0.152 | **0.819–0.841** | Misma dirección que Self-BLEU |
-| **C. pooled Self-BLEU** | 0.304 (N=13) | — | **0.569 ± 0.131** (v2: 0.503 N=32, v3: 0.634 N=48) | Convergencia estable entre réplicas |
-| **C. pooled distinct-2** | — | — | **0.379–0.538** | — |
-| **D. drift pooled Self-BLEU** (2-replica mean) | 0.052 [0.023–0.080] (3 runs) | 0.568 [0.509–0.599] (3 runs) | **0.144** (v2: 0.053, v3: 0.235; n=7 ambos) | **Qwen ≈ Gemma ≪ Llama** (gran deriva) |
-| **D. endpoint distance** (2-replica mean) | 0.405 (gran mov.) | 0.089 (estático) | **0.460 ± 0.106** (v2: 0.513, v3: 0.407) | **Qwen ≈ Gemma > Llama** (Qwen y Gemma se mueven, llama no) |
+| **C. posts-only Self-BLEU** (3-replica mean ± spread) | 0.408 [variance-checked 3 runs] | 0.902 [variance-checked 3 runs] | **0.134 ± 0.064** (v2: 0.162, v3: 0.144, v4: 0.098) | Qwen es el más diverso; **rangos no se solapan** con gemma/llama; spread de Qwen (0.064) comparable a gemma/llama |
+| **C. posts-only distinct-2** (3 runs) | 0.624 | 0.152 | **0.834 ± 0.022** (v2: 0.841, v3: 0.819, v4: 0.841) | Misma dirección que Self-BLEU; spread chico |
+| **C. pooled Self-BLEU** (3 runs) | 0.304 (N=13) | — | **0.568 ± 0.131** (v2: 0.503, v3: 0.634, v4: 0.566) | Convergencia estable entre réplicas |
+| **C. pooled distinct-2** (3 runs) | — | — | **0.458 ± 0.080** | — |
+| **D. drift pooled Self-BLEU** (3-replica mean) | 0.052 [0.023–0.080] (3 runs) | 0.568 [0.509–0.599] (3 runs) | **0.097** (v2: 0.053 n=7, v3: 0.235 n=7, v4: n=9) | **Qwen ≈ Gemma ≪ Llama** (gran deriva) |
+| **D. endpoint distance** (3-replica mean ± spread) | 0.405 (gran mov.) | 0.089 (estático) | **0.309 ± 0.110** (v2: 0.378, v3: 0.281, v4: 0.267) | **Qwen ≈ Gemma > Llama** (Qwen y Gemma se mueven, llama no) |
 
 > ⚠️ **Aclaración honesta sobre comparabilidad:**
 > 1. **Embedder distinto:** gemma/llama usaron `bge-m3` real (1024-d) vía Ollama local.
@@ -179,52 +185,65 @@ truncar) para tener datos suficientes.
 
 - **Lo más sólido (3 modelos, dirección consistente):**
   (1) los 3 modelos corren la sim end-to-end (no hay deadlock OASIS);
-  (2) **diversidad de salida (C) — variance-checked con 2 réplicas de Qwen:**
-  orden por Self-BLEU de posts → Qwen (0.153 ± 0.018) < gemma (0.408) < llama
-  (0.902). El spread de Qwen (0.018) es 24× más chico que el gap con gemma
-  (0.255) y 41× más chico que el gap con llama (0.749) → **rangos no se
-  solapan**; la dirección cross-model es robusta. Caveat: 2 réplicas vs 3
-  de gemma/llama; añadir una tercera para regla completa.
-  (3) **deriva intra-persona (D) — 2 réplicas de Qwen:** endpoint distance
-  Qwen (0.460 ± 0.106) ≈ gemma (0.405) ≫ llama (0.089). La dirección es
+  (2) **diversidad de salida (C) — variance-checked con 3 réplicas de Qwen:**
+  orden por Self-BLEU de posts → Qwen (0.134 ± 0.064) < gemma (0.408) < llama
+  (0.902). El spread de Qwen (0.064) es comparable al de gemma (0.054) y
+  llama (0.060), y mucho más chico que el gap con gemma (0.274) o con llama
+  (0.768). **Los 3 rangos no se solapan**; la dirección cross-model es
+  robusta. Caveat: N=8-10 posts por réplica (vs 39 de gemma/llama), pero
+  los 3 N son comparables entre sí.
+  (3) **deriva intra-persona (D) — 3 réplicas de Qwen:** endpoint distance
+  Qwen (0.309 ± 0.110) ≈ gemma (0.405) ≫ llama (0.089). La dirección es
   clara: las personas de Qwen y gemma cambian mucho a lo largo del run;
-  las de llama se quedan estáticas.
-  (4) **composición de acciones**: en las corridas parciales, el ratio
-      comments/posts de Qwen (3.8-4.0:1) es similar a llama (5.7:1) y
-      muy distinto a gemma (0.9:1). Caveat: N=8-10 posts, muy chico.
+  las de llama se quedan estáticas. N=7-9 personas por réplica (chico pero
+  suficiente para self-BLEU intra-persona).
+  (4) **composición de acciones**: en las corridas, el ratio
+      comments/posts de Qwen (3.8-4.9:1) es similar a llama (5.7:1) y
+      muy distinto a gemma (0.9:1). Caveat: N=8-10 posts.
   (5) **planificación** (B): Qwen distribuye más parejo entre los 2 candidatos
       que gemma/llama (que son mayormente neutrales). Su reasoning es el más
       corto (237-394 chars vs 627-1157).
   (6) **persona Vendi (A)**: gemma < llama (gap sólido, ~6× jitter, regla de
-      varianza). Qwen: embedder distinto, no comparable.
+      varianza dentro de bge-m3). Qwen usa text-embedding-3-small → no
+      comparable en absoluto; spread intra-réplica = 0 (porque el set de
+      personas es el mismo en las 3 réplicas).
 - **Dentro del ruido (no concluir dirección):** `cat_div` (jitter ≈ gap) y
   persona Self-BLEU (gemma reproduce 0.436/0.437; llama 0.459, gap chico;
-  Qwen 0.667 está claramente arriba pero N=1 corrida).
+  Qwen 0.667 está claramente arriba pero N=1 set de personas).
 - **Convergencia limpia:** la **dirección C+D** es robusta: gemma/Qwen
   diversos + dinámicos, llama repetitivo + estático. **Independiente del
   embedder** (es stdlib). Es la señal principal de la Fase 2.
 
 ## Artefactos
 
-### Qwen v2 (primera réplica limpia, 2026-07-01)
+### Qwen v2 (primera réplica, 2026-07-01)
 - `runs/linea6/sim_qwen_v2/reddit_profiles.json` — 40 personas (mismo set que v1).
 - `runs/linea6/sim_qwen_v2/simulation_config.json` — config forzada (`active_hours=0..23`, `agents_per_hour_min=3`).
 - `runs/linea6/sim_qwen_v2/reddit_simulation.db` — DB de OASIS (8 posts, 24 comments, 109 trace entries).
-- `runs/linea6/phase2_qwen_v2_postsonly.json` — bundle posts-only.
-- `runs/linea6/phase2_qwen_v2_pooled.json` — bundle posts+comments.
+- `runs/linea6/sim_qwen_v2/phase2_qwen_v2_postsonly.json` — bundle posts-only (HashingEmbedder).
+- `runs/linea6/sim_qwen_v2/phase2_qwen_v2_pooled.json` — bundle posts+comments (HashingEmbedder).
+- `runs/linea6/sim_qwen_v2/phase2_qwen_v2_real.json` — bundle completo con embedder real.
 - Driver: `backend/scripts/gen_qwen_standalone_sim.py` + variante forzada de `simulation_config`.
 
 ### Qwen v3 (segunda réplica, 2026-07-01)
 - `runs/linea6/sim_qwen_v3/reddit_profiles.json` — 40 personas (mismo set).
 - `runs/linea6/sim_qwen_v3/simulation_config.json` — config forzada.
 - `runs/linea6/sim_qwen_v3/reddit_simulation.db` — DB de OASIS (10 posts, 38 comments, 164 trace entries).
-- `runs/linea6/phase2_qwen_v3_postsonly.json` — bundle posts-only.
-- `runs/linea6/phase2_qwen_v3_pooled.json` — bundle posts+comments.
+- `runs/linea6/sim_qwen_v3/phase2_qwen_v3_postsonly.json` — bundle posts-only.
+- `runs/linea6/sim_qwen_v3/phase2_qwen_v3_pooled.json` — bundle posts+comments.
+- `runs/linea6/sim_qwen_v3/phase2_qwen_v3_real.json` — bundle con embedder real.
 - Driver: igual que v2.
+
+### Qwen v4 (tercera réplica, 2026-07-01, 100% upstream OK)
+- `runs/linea6/sim_qwen_v4/reddit_profiles.json` — 40 personas (mismo set).
+- `runs/linea6/sim_qwen_v4/simulation_config.json` — config forzada.
+- `runs/linea6/sim_qwen_v4/reddit_simulation.db` — DB de OASIS (10 posts, 39 comments, 158 trace entries).
+- `runs/linea6/sim_qwen_v4/phase2_qwen_v4.json` — bundle con embedder real.
+- Driver: igual que v2/v3.
 
 ### Qwen v1 (parcial, 2026-07-01, archived)
 - `runs/linea6/sim_qwen_standalone/...` — 12 posts / 99 comments / 306 trace entries, OASIS_SEMAPHORE=10, parado en ronda ~20 por retry 429 hell.
-- `runs/linea6/phase2_qwen_full.json` — bundle parcial. **Reemplazado en importancia por v2+v3** (corren end-to-end sin retry hell, con 2 réplicas para varianza).
+- `runs/linea6/phase2_qwen_full.json` — bundle parcial. **Reemplazado en importancia por v2+v3+v4** (corren end-to-end sin retry hell, con 3 réplicas para varianza).
 
 ### Gemma/Llama (pre-existente en la branch)
 A+B (personas propias, español): `phase2_gemma_full.json`, `phase2_gemma_standalone_es.json`, `phase2_llama_cleanAB_es.json`.
