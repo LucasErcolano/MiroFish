@@ -131,6 +131,33 @@ except ImportError as e:
     sys.exit(1)
 
 
+# === Robust retry monkey-patch for Qwen upstream 5xx/429 ===
+import asyncio as _asyncio
+import sqlite3 as _sq
+import openai as _openai_pkg
+from camel.models import openai_model as _om
+_orig_arequest = _om.OpenAIModel._arequest_chat_completion
+async def _patched(self, messages, tools=None):
+    for attempt in range(8):
+        try:
+            return await _orig_arequest(self, messages, tools)
+        except _openai_pkg.InternalServerError as e:
+            wait = min(60, 2 ** attempt)
+            print(f"  [retry {attempt+1}/8] 503 from {self.model_type}, waiting {wait}s", file=sys.stderr, flush=True)
+            await _asyncio.sleep(wait)
+        except _openai_pkg.RateLimitError as e:
+            wait = min(60, 2 ** attempt)
+            print(f"  [retry {attempt+1}/8] 429 from {self.model_type}, waiting {wait}s", file=sys.stderr, flush=True)
+            await _asyncio.sleep(wait)
+        except _openai_pkg.APIConnectionError as e:
+            wait = min(30, 2 ** attempt)
+            print(f"  [retry {attempt+1}/8] conn err, waiting {wait}s", file=sys.stderr, flush=True)
+            await _asyncio.sleep(wait)
+    # If we got here, fall through to one last attempt that will raise naturally
+    return await _orig_arequest(self, messages, tools)
+_om.OpenAIModel._arequest_chat_completion = _patched
+
+
 # IPC相关常量
 IPC_COMMANDS_DIR = "ipc_commands"
 IPC_RESPONSES_DIR = "ipc_responses"
@@ -658,9 +685,54 @@ class RedditSimulationRunner:
                 agent: LLMAction()
                 for _, agent in active_agents
             }
-            
-            await self.env.step(actions)
-            
+
+            # Robust retry: OASIS `update_rec_table` occasionally hits
+            # `sqlite3.OperationalError: attempt to write a readonly database`
+            # when the underlying DB is in WAL mode and a concurrent tx is
+            # active. Reconnect with journal_mode=DELETE on that specific error.
+            for _attempt in range(5):
+                try:
+                    await self.env.step(actions)
+                    break
+                except sqlite3.OperationalError as e:
+                    if "readonly" not in str(e).lower():
+                        raise
+                    sys.stderr.write(f"  [db-retry {_attempt+1}/5] readonly DB, reconnecting with journal_mode=DELETE\n")
+                    sys.stderr.flush()
+                    await _asyncio.sleep(0.5 + 0.5 * _attempt)  # back off
+                    try:
+                        plat = self.env.platform
+                        pu = plat.pl_utils
+                        try:
+                            pu.db.close()
+                        except Exception:
+                            pass
+                    except Exception as ex:
+                        sys.stderr.write(f"  [db-retry] introspect error: {ex}\n")
+                        sys.stderr.flush()
+                        pu = None
+                        plat = None
+                    # Re-open the same DB file. Do NOT force journal_mode
+                    # (it can drop in-flight WAL/SHM files); just reconnect
+                    # with the same mode + a fresh handle. The readonly error
+                    # is a transient sqlite3 state and a new connection
+                    # bypasses it.
+                    new_db = _sq.connect(
+                        self._get_db_path(),
+                        isolation_level=None,
+                        timeout=30.0,
+                        check_same_thread=False,
+                    )
+                    new_db.row_factory = _sq.Row
+                    new_cur = new_db.cursor()
+                    if plat is not None and pu is not None:
+                        plat.db = new_db
+                        plat.db_cursor = new_cur
+                        pu.db = new_db
+                        pu.db_cursor = new_cur
+                    if _attempt == 4:
+                        raise
+
             if (round_num + 1) % 10 == 0 or round_num == 0:
                 elapsed = (datetime.now() - start_time).total_seconds()
                 progress = (round_num + 1) / total_rounds * 100
