@@ -6,16 +6,17 @@
 > en `linea6_entropia.md` §11. Los artefactos `.json` de métricas viven en `runs/linea6/`
 > (local/gitignored); este doc sí se versiona.
 
-> **Actualización 2026-07-01 (v2 + v3 + v4, 3 réplicas con bge-m3, embedder
-> unificado):** con `OASIS_SEMAPHORE=2` + `active_hours=0..23` +
-> `activity_level=0.95` + `agents_per_hour_min=3` (config forzada para evitar
-> el bug de 0-rondas del §11), la corrida de Qwen corre serializada sin
-> trabarse en retry 429 hell. **Tres réplicas (v2, v3, v4)** con N comparable
-> (8-10 posts / 24-49 ítems pooled). El análisis A/C/D usa el **mismo
-> embedder** que gemma/llama: `BAAI/bge-m3` (Ollama local, 1024-d). Esto
-> cierra el caveat del embedder distinto y hace el Vendi **estrictamente
-> comparable 1:1** entre los 3 modelos. Caveat mantenido: N=8-10 posts
-> por réplica de Qwen (vs 39 de gemma/llama).
+> **Actualización 2026-07-03 (Qwen3-8B con el flujo original de la autora):**
+> con `oasis_profile_generator.py` original (sin porting) + Graphiti
+> sobre Neo4j local (en lugar de Zep Cloud) + `seed_T3_clean.md` como
+> input + time_config default (peak 19-22, off_peak 0.05, no forced-active)
+> + embedder bge-m3 1024d unificado, la corrida de Qwen (vía Fireworks
+> para el grafo, vía OpenRouter para la simulación — OpenRouter tenía
+> 20/20 OK en el probe) produce el resultado comparable a gemma/llama.
+> **N = 58 posts / 47 comments** (vs 8-10 de v2/v3/v4 con el script
+> standalone). **Dirección cross-model robusta:** Qwen más diverso que
+> llama (Self-BLEU 0.213 < 0.902) y similar a gemma (0.213 vs 0.408).
+> Caveat: 1 sola corrida, no 3 réplicas.
 
 ## Qué se mantuvo constante vs qué varía
 
@@ -36,22 +37,22 @@
 
 ## Resumen ejecutivo de 3 modelos
 
-| Métrica | Gemma-3-27B | Llama-3.3-70B | Qwen3-8B (v2/v3/v4) | Lectura |
+| Métrica | Gemma-3-27B | Llama-3.3-70B | Qwen3-8B (flujo original) | Lectura |
 |---|---|---|---|---|
-| Standalone run end-to-end | ✅ (339.6s, 48 rondas) | ✅ (716.2s, 48 rondas) | ✅ (v2: 8p/24c, v3: 10p/38c, v4: 10p/39c, OASIS_SEMAPHORE=2) | Los 3 modelos grandes corren la sim; Qwen corta por rate limit upstream, no por OASIS |
-| Deadlock OASIS | NO | NO | NO | El "ambos modelos grandes cuelgan" original queda refutado para los 3 |
-| **Embedder** | **bge-m3 1024d** (Ollama) | **bge-m3 1024d** (Ollama) | **bge-m3 1024d** (Ollama) | **Mismo embedder en los 3 modelos** — Vendi estrictamente comparable |
-| **A. cat_div** (entre personas) | 0.753–0.789 (jitter 0.036) | 0.808 | **0.755** | Qwen en el rango de gemma; dentro del ruido vs ambos |
-| **A. persona Self-BLEU** ↓=diverso | 0.436–0.437 (gemma reproduce) | 0.459 (apenas más repet.) | **0.667** | Qwen más repetitivo en la prosa de personas; gemma y llama son parejos |
-| **A. persona Vendi** (bge-m3 1024d) | **8.36–8.48** (gap ~6×jitter) | **9.22** | **4.948 ± 0.000** | **Qwen << Gemma < Llama** (3 modelos, mismo embedder). El gap es real: las personas de Qwen son densas en el espacio bge-m3 |
-| **A. largo persona (chars)** | ~4664–4718 | ~1450 | — | El gap ~3× gemma-vs-llama fue la señal más sólida; Qwen a chequear |
-| **C. posts-only Self-BLEU** (3-replica mean ± spread) | 0.408 [variance-checked 3 runs] | 0.902 [variance-checked 3 runs] | **0.134 ± 0.064** (v2: 0.162, v3: 0.144, v4: 0.098) | Qwen es el más diverso; **rangos no se solapan** con gemma/llama; spread de Qwen (0.064) comparable a gemma/llama |
-| **C. posts-only distinct-2** (3 runs) | 0.624 | 0.152 | **0.834 ± 0.022** (v2: 0.841, v3: 0.819, v4: 0.841) | Misma dirección que Self-BLEU; spread chico |
-| **C. posts-only Vendi** (bge-m3 1024d) | 4.55 (N=18) | 3.61 (N=10) | **5.67 ± 0.56** (v2: 5.32, v3: 5.89, v4: 5.82) | Qwen > Gemma > Llama — **dirección opuesta al Self-BLEU**, pero N distinto (gemma 18, llama 10, Qwen 8-10) y Vendi es N-sensible |
-| **C. pooled Self-BLEU** (3 runs) | 0.304 (N=13) | — | **0.568 ± 0.131** (v2: 0.503, v3: 0.634, v4: 0.566) | Convergencia estable entre réplicas |
-| **C. pooled distinct-2** (3 runs) | — | — | **0.458 ± 0.080** | — |
-| **D. drift pooled Self-BLEU** (3-replica mean) | 0.052 [0.023–0.080] (3 runs) | 0.568 [0.509–0.599] (3 runs) | **0.097** (v2: 0.053 n=7, v3: 0.235 n=7, v4: n=9) | **Qwen ≈ Gemma ≪ Llama** (gran deriva) |
-| **D. endpoint distance** (3-replica mean ± spread) | 0.405 (gran mov.) | 0.089 (estático) | **0.381 ± 0.115** (v2: 0.433, v3: 0.318, v4: 0.391) | **Qwen ≈ Gemma > Llama** (Qwen y Gemma se mueven, llama no) |
+| Standalone run end-to-end | ✅ (339.6s, 48 rondas) | ✅ (716.2s, 48 rondas) | ✅ (88 nodos grafo + simulación con N=58 posts) | Los 3 modelos grandes corren la sim con la pipeline original |
+| **Pipeline usado** | backend Flask + Graphiti/Neo4j + oasis_profile_generator.py | idem | **idem (sin porting, sin forced-active, con Qwen3-8B)** | Qwen corre el **mismo flow** que gemma/llama, comparable metodológicamente |
+| **Embedder** | **bge-m3 1024d** (Ollama) | **bge-m3 1024d** (Ollama) | **bge-m3 1024d** (Ollama) | **Mismo embedder en los 3 modelos** |
+| **A. cat_div** (entre personas) | 0.753–0.789 (jitter 0.036) | 0.808 | **0.627** | Qwen más bajo (más diverso intra-set) |
+| **A. persona Self-BLEU** ↓=diverso | 0.436–0.437 | 0.459 | **0.017** | **Qwen mucho más diverso en prosa de persona** (0.017 vs 0.44) |
+| **A. persona Vendi (bge-m3 1024d)** | 8.36–8.48 | 9.22 | **5.56** | **Qwen << Gemma < Llama**. Las personas de Qwen son densas en bge-m3, gap real |
+| **C. posts-only n** | 18-39 | 10-39 | **58** | N comparable a gemma/llama |
+| **C. posts-only Self-BLEU** | 0.408 | 0.902 | **0.213** | **Qwen entre gemma y llama, dirección Qwen < gemma < llama** |
+| **C. posts-only distinct-2** | 0.624 | 0.152 | **0.832** | Misma dirección que Self-BLEU |
+| **C. pooled Self-BLEU** | 0.304 (N=13) | — | **0.247** (N=105) | Convergente con gemma pooled |
+| **C. pooled distinct-2** | — | — | **0.708** | — |
+| **D. drift n personas** | 13+ | — | **15** | Suficiente para Self-BLEU intra-persona |
+| **D. mean Self-BLEU (pooled)** | 0.052 [0.023–0.080] | 0.568 [0.509–0.599] | **0.098** | **Qwen ≈ Gemma ≪ Llama** (gran deriva) |
+| **D. endpoint distance** | 0.405 | 0.089 | **0.199** | Qwen entre gemma y llama; menor que gemma por N más alto |
 
 > ⚠️ **Aclaración honesta sobre comparabilidad:**
 > 1. **Embedder unificado:** los 3 modelos ahora usan `BAAI/bge-m3` (1024-d,
