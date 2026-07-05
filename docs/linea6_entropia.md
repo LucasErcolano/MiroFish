@@ -298,8 +298,13 @@ convirtiendo ese cuelgue silencioso en una falla diagnosticable.
   Correr por modelo: `LLM_MODEL_NAME=<modelo>` + `run_reddit_simulation.py --no-wait
   --max-rounds 48` (cubre h8→h23: mañana→trabajo→pico, el arco que C+D necesitan) →
   `entropy_phase2_analysis.py`. **Gemma y Llama-3.3-70B hechos** (C+D):
-  `runs/linea6/phase2_{gemma,llama}_full.json` (pooled) + `_postsonly.json`. Qwen3-8B:
-  mismo flujo vía OpenRouter (pendiente de crédito).
+  `runs/linea6/phase2_{gemma,llama}_full.json` (pooled) + `_postsonly.json`.
+  Qwen3-8B ya tiene un run 2026-07-05 por el flujo backend original vía
+  OpenRouter (`sim_e1c334c38a0c`): 48 rondas exit 0, 74 posts / 96 comments /
+  361 trace / 19 users, analizado en
+  `runs/linea6/phase2_qwen3_8b_original_partial_graph.json`. Caveat: Graphiti
+  procesó 6/7 chunks antes de timeout, así que el grafo es parcial aunque la
+  simulación y el análisis sí terminaron.
 
   **Señal inter-modelo limpia = composición de acciones** (de la `trace` table, sin artefactos):
   llama comenta abrumadoramente (**57 comments / 10 posts**), gemma postea (**18 posts / 16 comments**).

@@ -18,6 +18,20 @@
 > llama (Self-BLEU 0.213 < 0.902) y similar a gemma (0.213 vs 0.408).
 > Caveat: 1 sola corrida, no 3 réplicas.
 
+> **Actualización 2026-07-05 (Qwen3-8B vía OpenRouter, flujo backend original):**
+> se re-ejecutó Qwen3-8B con backend Flask + Graphiti/Neo4j local +
+> `oasis_profile_generator.py` original + `simulation_config_generator.py` original
+> + `run_reddit_simulation.py --max-rounds 48 --no-wait`, usando `seed_T3_clean.md`
+> y embedder real bge-m3 1024d. La simulación terminó exit 0:
+> **74 posts / 96 comments / 361 trace / 19 users**. Caveat metodológico importante:
+> OpenRouter/Qwen hizo timeout en Graphiti en el último chunk del build; se continuó
+> con el grafo parcial usable (**6/7 chunks procesados, 19 entidades filtradas**),
+> por eso el bundle se etiqueta `qwen3-8b-original-partial-graph`. Métricas pooled
+> reales: `n_posts=170` (posts+comments), output Self-BLEU **0.508**,
+> distinct-2 **0.537**, output Vendi **5.564**, drift n=18,
+> mean endpoint distance **0.142**. Artefacto:
+> `runs/linea6/phase2_qwen3_8b_original_partial_graph.json`.
+
 ## Qué se mantuvo constante vs qué varía
 
 - **Constante**: requirement del balotaje Bolivia 2025 (`proj_3954cf6591cd`),
@@ -250,6 +264,12 @@ truncar) para tener datos suficientes.
 ### Qwen v1 (parcial, 2026-07-01, archived)
 - `runs/linea6/sim_qwen_standalone/...` — 12 posts / 99 comments / 306 trace entries, OASIS_SEMAPHORE=10, parado en ronda ~20 por retry 429 hell.
 - `runs/linea6/phase2_qwen_full.json` — bundle parcial. **Reemplazado en importancia por v2+v3+v4** (corren end-to-end sin retry hell, con 3 réplicas para varianza).
+
+### Qwen original-backend OpenRouter partial-graph (2026-07-05)
+- `runs/linea6/qwen_original_manual_20260705_164944/` — ejecución manual backend original: ontology OK, Graphiti/Neo4j local con chunks de 3000 y batch_size=1; falló solo el chunk 7/7 por timeout de OpenRouter/Qwen, pero dejó un grafo usable de 19 entidades.
+- `backend/uploads/simulations/sim_e1c334c38a0c/reddit_simulation.db` — DB OASIS 48 rondas, exit 0: 74 posts, 96 comments, 361 trace entries, 19 users.
+- `runs/linea6/phase2_qwen3_8b_original_partial_graph.json` — bundle Phase-2 con bge-m3 real sobre el run de arriba (`n_posts=170`, output Self-BLEU 0.508, distinct-2 0.537, Vendi 5.564, drift n=18).
+- Cambios operativos necesarios para que el flujo no cuelgue silenciosamente: Qwen sin JSON mode estricto en generadores, retry/backoff en Graphiti add_batch, timeout por episodio Graphiti, y `batch_size=1` para Graphiti/OpenZep.
 
 ### Gemma/Llama (pre-existente en la branch)
 A+B (personas propias, español): `phase2_gemma_full.json`, `phase2_gemma_standalone_es.json`, `phase2_llama_cleanAB_es.json`.

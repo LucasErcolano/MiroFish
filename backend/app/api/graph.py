@@ -435,12 +435,12 @@ def build_graph():
                     progress=15
                 )
                 
-                # OpenZep 本地链路在批量抽取时更容易卡在长时间的联合推理里。
+                # OpenZep/Graphiti 本地链路在批量抽取时更容易卡在长时间的联合推理里。
                 # 改为单块发送可以显著降低单次处理负载，牺牲吞吐换稳定性。
                 episode_uuids = builder.add_text_batches(
                     graph_id,
                     chunks,
-                    batch_size=1 if Config.use_openzep() else 3,
+                    batch_size=1,
                     progress_callback=add_progress_callback
                 )
                 

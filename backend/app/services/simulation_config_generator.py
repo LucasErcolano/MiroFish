@@ -440,13 +440,17 @@ class SimulationConfigGenerator:
         
         for attempt in range(max_attempts):
             try:
+                request_kwargs: Dict[str, Any] = {}
+                if "qwen" not in (self.model_name or "").lower():
+                    request_kwargs["response_format"] = {"type": "json_object"}
+
                 response = self.client.chat.completions.create(
                     model=self.model_name,
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": prompt}
                     ],
-                    response_format={"type": "json_object"},
+                    **request_kwargs,
                     temperature=0.7 - (attempt * 0.1)  # 每次重试降低温度
                     # 不设置max_tokens，让LLM自由发挥
                 )

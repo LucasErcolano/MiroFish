@@ -358,12 +358,39 @@ class GraphBuilderService:
                 for chunk in batch_chunks
             ]
             
-            # 发送到Zep
+            # 发送到Zep / Graphiti. Graphiti-backed runs can hit transient
+            # upstream 429s (especially qwen/qwen3-8b via OpenRouter). Treat
+            # those as retryable here so a long graph build does not die on a
+            # single provider hiccup. This keeps the original graph/profile
+            # pipeline intact while making the transport robust.
+            retry_delays = [10, 20, 40, 80, 120]
+            batch_result = None
+            for attempt in range(len(retry_delays) + 1):
+                try:
+                    batch_result = self.backend.add_batch(
+                        graph_id=graph_id,
+                        episodes=episodes
+                    )
+                    break
+                except Exception as e:
+                    message = str(e)
+                    retryable = any(
+                        marker in message.lower()
+                        for marker in ("rate limit", "429", "temporarily rate-limited", "timeout", "503")
+                    )
+                    if not retryable or attempt >= len(retry_delays):
+                        if progress_callback:
+                            progress_callback(t('progress.batchFailed', batch=batch_num, error=str(e)), 0)
+                        raise
+                    delay = retry_delays[attempt]
+                    if progress_callback:
+                        progress_callback(
+                            f"{t('progress.sendingBatch', current=batch_num, total=total_batches, chunks=len(batch_chunks))} - retry {attempt + 1}/{len(retry_delays)} after transient LLM error: {message[:120]}",
+                            (i + len(batch_chunks)) / total_chunks,
+                        )
+                    time.sleep(delay)
+
             try:
-                batch_result = self.backend.add_batch(
-                    graph_id=graph_id,
-                    episodes=episodes
-                )
                 
                 # 收集返回的 episode uuid
                 if batch_result and isinstance(batch_result, list):

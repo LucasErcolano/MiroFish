@@ -538,7 +538,12 @@ class GraphitiBackend(GraphBackend):
 
     def add_text(self, graph_id: str, data: str) -> Any:
         self._validate_graph_id(graph_id)
-        return self._run(self._add_text_async(graph_id=graph_id, data=data))
+        return self._run(
+            asyncio.wait_for(
+                self._add_text_async(graph_id=graph_id, data=data),
+                timeout=Config.GRAPHITI_ADD_TEXT_TIMEOUT,
+            )
+        )
 
     async def _get_episode_async(self, episode_uuid: str) -> _CompatEpisode:
         from graphiti_core.nodes import EpisodicNode
