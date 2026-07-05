@@ -476,6 +476,15 @@ class RedditSimulationRunner:
         if not llm_model:
             llm_model = self.config.get("llm_model", "gpt-4o-mini")
         
+        # Prompture-backed backend flows use provider/model names such as
+        # "openrouter/qwen/qwen3-8b" for profile/config generation. CAMEL still
+        # talks to OpenAI-compatible endpoints directly, so translate that single
+        # provider prefix back to the model id expected by OpenRouter.
+        if llm_model.startswith("openrouter/"):
+            llm_model = llm_model[len("openrouter/"):]
+            if not llm_base_url:
+                llm_base_url = "https://openrouter.ai/api/v1"
+        
         # 设置 camel-ai 所需的环境变量
         if llm_api_key:
             os.environ["OPENAI_API_KEY"] = llm_api_key

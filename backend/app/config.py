@@ -11,10 +11,13 @@ from dotenv import load_dotenv
 project_root_env = os.path.join(os.path.dirname(__file__), '../../.env')
 
 if os.path.exists(project_root_env):
-    load_dotenv(project_root_env, override=True)
+    # Keep explicit process env vars authoritative. This is required for
+    # multi-provider runs that launch several backend processes from the same
+    # .env with different LLM_MODEL_NAME / FLASK_PORT overrides.
+    load_dotenv(project_root_env, override=False)
 else:
     # 如果根目录没有 .env，尝试加载环境变量（用于生产环境）
-    load_dotenv(override=True)
+    load_dotenv(override=False)
 
 
 class Config:

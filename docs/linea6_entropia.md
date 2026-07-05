@@ -324,3 +324,48 @@ convirtiendo ese cuelgue silencioso en una falla diagnosticable.
   largo / más activo (más rondas en horas pico, o subir actividad sin cambiar el diseño del caso).
 
 > Estado operativo y pasos para retomar: `runs/linea6/HANDOFF.md`.
+
+## 12. Multi-provider paralelo (Prompture, 2026-07-05)
+
+- `backend/app/utils/llm_client.py` ya aceptaba el formato `provider/model`
+  (e.g. `openrouter/qwen/qwen3-8b`) cuando `prompture` está instalado. Esta sesión
+  lo activó: `uv pip install 'prompture>=0.1.0'` dentro de `backend/.venv` (la
+  dep sigue comentada en `requirements.txt`; instalarla es opt-in).
+- Smoke de los 3 modelos contra OpenRouter via Prompture:
+  - gemma `{"ok": true, "model": "gemma"}` 4.7s
+  - llama `{"ok": true, "model": "llama"}` 2.8s
+  - qwen `{"ok": true, "model": "qwen"}` 4.9s
+- 3 backends paralelos en puertos 5010/5011/5012, cada uno con
+  `LLM_MODEL_NAME=openrouter/<modelo>`, `LLM_BASE_URL=""` (Prompture pone el
+  endpoint según provider), `GRAPHITI_LLM_BASE_URL=https://openrouter.ai/api/v1`
+  y `GRAPHITI_LLM_MODEL=<modelo crudo>` para que el cliente OpenAI-compatible
+  de Graphiti pueda llamarlo. Driver: `scripts/run_linea6_multiprovider_parallel.py`.
+- Resultado del run (loop de 48 rondas, plataforma `reddit`):
+  - `sim_6e49710b43e8` (gemma): 32 agentes, 2 posts, 0 comments, 80 trace.
+    Gemma cerró las 48 rondas pero sólo escribió 2 posts — 27 retries 429
+    en agent-config-gen. cat_div 0.859, output distinct-2 0.952, Self-BLEU 0.001,
+    Vendi 1.285 (N chica).
+  - `sim_8633c5a63557` (qwen): 25 agentes, 6 posts, 42 comments, 129 trace.
+    Graphiti 5/7 batches (429 storm), pero la sim prosiguió con grafo parcial.
+    cat_div 0.820, output distinct-2 0.430, Self-BLEU 0.641, Vendi 4.439.
+  - `sim_9ef534050066` (llama): 26 agentes, 9 posts, 28 comments, 170 trace.
+    cat_div 0.840, output distinct-2 0.271, Self-BLEU 0.819, Vendi 4.923.
+- **Lectura:** la **dirección C+D se conserva**: llama < qwen < gemma en
+  diversidad pooled (gemma queda con N=2 posts, así que su ventaja sobre
+  qwen/llama no es concluyente en este set; el corte con Qwen/llama sigue
+  mostrando a llama como el menos diverso). Drift endpoint-distance
+  similar a lo previo: llama 0.266 > qwen 0.225, mismo orden que las
+  corridas 1-a-1. Artefactos en `runs/linea6/multiprovider_parallel_20260705_184644/`.
+- Cambios de código:
+  - `backend/app/config.py`: `load_dotenv(override=True)` → `override=False` para
+    que los process envs (FLASK_PORT/LLM_MODEL_NAME/GRAPHITI_*) ganen sobre .env
+    en corridas multi-proceso. Crítico: sin esto, 3 backends con distintos
+    `LLM_MODEL_NAME` no podían coexistir.
+  - `backend/app/services/graph_builder.py`: `TimeoutError` cuenta como
+    retryable aunque venga sin mensaje; el log ahora muestra `type(e).__name__`.
+  - `backend/scripts/run_reddit_simulation.py` y `run_parallel_simulation.py`
+    normalizan `openrouter/<modelo>` → `<modelo>` + `LLM_BASE_URL=openrouter` antes
+    de instanciar el modelo CAMEL (que sólo entiende OpenAI-compatible).
+  - `tools/mirofish_headless.py`: flag `--graph-chunk-size` que se traduce a
+    `chunk_size` en `POST /api/graph/build`. Sin esto, el headless pisa 500
+    chars y 59 batches por modelo se atragantan.

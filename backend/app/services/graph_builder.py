@@ -374,7 +374,7 @@ class GraphBuilderService:
                     break
                 except Exception as e:
                     message = str(e)
-                    retryable = any(
+                    retryable = isinstance(e, TimeoutError) or any(
                         marker in message.lower()
                         for marker in ("rate limit", "429", "temporarily rate-limited", "timeout", "503")
                     )
@@ -384,8 +384,9 @@ class GraphBuilderService:
                         raise
                     delay = retry_delays[attempt]
                     if progress_callback:
+                        display_message = message or type(e).__name__
                         progress_callback(
-                            f"{t('progress.sendingBatch', current=batch_num, total=total_batches, chunks=len(batch_chunks))} - retry {attempt + 1}/{len(retry_delays)} after transient LLM error: {message[:120]}",
+                            f"{t('progress.sendingBatch', current=batch_num, total=total_batches, chunks=len(batch_chunks))} - retry {attempt + 1}/{len(retry_delays)} after transient LLM error: {display_message[:120]}",
                             (i + len(batch_chunks)) / total_chunks,
                         )
                     time.sleep(delay)

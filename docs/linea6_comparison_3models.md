@@ -18,6 +18,40 @@
 > llama (Self-BLEU 0.213 < 0.902) y similar a gemma (0.213 vs 0.408).
 > Caveat: 1 sola corrida, no 3 réplicas.
 
+> **Actualización 2026-07-05 (3 modelos en simultáneo vía Prompture multi-provider):**
+> se re-ejecutaron gemma-3-27b-it, llama-3.3-70b-instruct y qwen3-8b en paralelo
+> usando la capa opcional de `LLMClient` basada en Prompture (provider/model)
+> expuesta en `backend/app/utils/llm_client.py`. Tres backends independientes
+> (puertos 5010/5011/5012) comparten seed T3, `run_reddit_simulation.py --max-rounds 48`
+> y embedder bge-m3 1024d. Las 3 simulaciones cierran la fase reddit
+> con loop completo (`模拟循环完成`) y se analizan con `entropy_phase2_analysis.py`
+> (pooled + posts-only). Resumen (pooled):
+>
+> | Métrica | Gemma-3-27B | Llama-3.3-70B | Qwen3-8B |
+> |---|---|---|---|
+> | posts / comments / traces / agentes | 2 / 0 / 80 / 32 | 9 / 28 / 170 / 26 | 6 / 42 / 129 / 25 |
+> | Graphiti batches | 7/7 | 7/7 | 5/7 (429s, siguió con parcial) |
+> | cat_div | 0.859 | 0.840 | 0.820 |
+> | persona Self-BLEU | 0.663 | 0.716 | 0.691 |
+> | persona Vendi (bge-m3) | 8.722 | 7.555 | 7.055 |
+> | **output distinct-2 (pooled)** | 0.952 | 0.271 | 0.430 |
+> | **output Self-BLEU (pooled)** | 0.001 | 0.819 | 0.641 |
+> | **output Vendi (pooled)** | 1.285 | 4.923 | 4.439 |
+> | drift n / mean endpoint | 0 / n.a. | 7 / 0.266 | 9 / 0.225 |
+>
+> **Posts-only** (sin comments): gemma 2/0.952/0.001, llama 9/0.449/0.643,
+> qwen 6/0.912/0.060.
+> **Lectura:** la **dirección de diversidad C se conserva inter-multi-provider**
+> (llama < qwen < gemma) y la **drift D** mantiene a llama con mayor endpoint
+> distance y qwen un escalón arriba. Gemma queda con N=2 posts (todos los agentes
+> en horas pico cayeron en `like`/`refresh` antes de que la sim cerrara), por eso
+> el corte pooled de Gemma no es comparable todavía. Artefactos:
+> `runs/linea6/multiprovider_parallel_20260705_184644/{gemma,qwen,llama}/phase2_*_multiprovider_*.json`
+> + `summary.json`. Caveat: OpenRouter aplicó rate-limits agresivos por IP con
+> 3 backends paralelos (Qwen 5/7 batches; Gemma 27 retries 429 en agent config
+> generation). Ver §Multi-provider para los cambios de código que permiten
+> correr los 3 en simultáneo.
+>
 > **Actualización 2026-07-05 (Qwen3-8B vía OpenRouter, flujo backend original):**
 > se re-ejecutó Qwen3-8B con backend Flask + Graphiti/Neo4j local +
 > `oasis_profile_generator.py` original + `simulation_config_generator.py` original
@@ -270,6 +304,15 @@ truncar) para tener datos suficientes.
 - `backend/uploads/simulations/sim_e1c334c38a0c/reddit_simulation.db` — DB OASIS 48 rondas, exit 0: 74 posts, 96 comments, 361 trace entries, 19 users.
 - `runs/linea6/phase2_qwen3_8b_original_partial_graph.json` — bundle Phase-2 con bge-m3 real sobre el run de arriba (`n_posts=170`, output Self-BLEU 0.508, distinct-2 0.537, Vendi 5.564, drift n=18).
 - Cambios operativos necesarios para que el flujo no cuelgue silenciosamente: Qwen sin JSON mode estricto en generadores, retry/backoff en Graphiti add_batch, timeout por episodio Graphiti, y `batch_size=1` para Graphiti/OpenZep.
+
+### Multi-provider paralelo (2026-07-05, vía Prompture)
+- `backend/app/utils/llm_client.py` ya acepta `provider/model` (e.g. `openrouter/qwen/qwen3-8b`) cuando `prompture` está instalado; sin Prompture sigue el camino OpenAI SDK. Esta corrida instala `prompture>=0.1.0` en `backend/.venv` (estaba comentado en `requirements.txt`).
+- `scripts/run_linea6_multiprovider_parallel.py` lanza 3 backends en puertos 5010/5011/5012, cada uno con `LLM_MODEL_NAME=openrouter/<modelo>`. Para que el env del proceso gane sobre `.env` se cambió `load_dotenv(override=True)` a `override=False` en `backend/app/config.py` (los valores que ya están en el process env se preservan; los faltantes se toman del .env).
+- `run_reddit_simulation.py` y `run_parallel_simulation.py` (create_model) ahora leen `LLM_MODEL_NAME` y, si empieza con `openrouter/`, lo traducen a `<modelo>` y fijan `LLM_BASE_URL=https://openrouter.ai/api/v1` para que CAMEL (que sigue hablando OpenAI-compatible) llegue al endpoint correcto.
+- `tools/mirofish_headless.py` aprendió `--graph-chunk-size` para que el `POST /api/graph/build` lleve el chunk a `graphiti_backend.add_text_batches`. Sin esto, la corrida simultánea se atragantaba con 59 batches por modelo a 500 chars cada uno.
+- `backend/app/services/graph_builder.py` ahora trata `TimeoutError` como reintable (no solo los marcadores de texto) y muestra `type(e).__name__` cuando el mensaje viene vacío.
+- `run_id`: `runs/linea6/multiprovider_parallel_20260705_184644/` con subcarpetas `gemma/`, `qwen/`, `llama/` (cada una con `run_config.json`, `request_trace.json`, `backend_env_sanitized.json`, logs, simulaciones) + `summary.json` raíz. Métricas Phase-2 en `phase2_<label>_multiprovider_pooled.json` y `phase2_<label>_multiprovider_postsonly.json` por modelo.
+- Caveat operacional: OpenRouter rate-limita por IP, así que 3 backends en paralelo sufren 429 storms. La pipeline ya reintenta con backoff 10/20/40/80/120 s, pero el bucket de Gemma terminó muy chico (sólo 2 posts en DB) y Qwen sólo completó 5/7 batches de Graphiti.
 
 ### Gemma/Llama (pre-existente en la branch)
 A+B (personas propias, español): `phase2_gemma_full.json`, `phase2_gemma_standalone_es.json`, `phase2_llama_cleanAB_es.json`.

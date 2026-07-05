@@ -314,6 +314,7 @@ class MiroFishHeadlessRunner:
         use_llm_for_profiles: bool = True,
         parallel_profile_count: int = 5,
         generate_report: bool = True,
+        graph_chunk_size: Optional[int] = None,
         poll_timeout_seconds: int = 60 * 60,
     ) -> Dict[str, Any]:
         files = [Path(p) for p in files]
@@ -335,6 +336,7 @@ class MiroFishHeadlessRunner:
             "use_llm_for_profiles": use_llm_for_profiles,
             "parallel_profile_count": parallel_profile_count,
             "generate_report": generate_report,
+            "graph_chunk_size": graph_chunk_size,
             "started_at": started_at,
         }
         write_json(self.output_dir / "run_config.json", run_config)
@@ -356,7 +358,10 @@ class MiroFishHeadlessRunner:
             graph_build = self.client.request_json(
                 "POST",
                 "/api/graph/build",
-                {"project_id": project_id},
+                {
+                    "project_id": project_id,
+                    **({"chunk_size": graph_chunk_size} if graph_chunk_size else {}),
+                },
                 retry=True,
             )
             graph_task_id = graph_build.get("data", {}).get("task_id")
@@ -598,6 +603,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--no-report", action="store_true")
     parser.add_argument("--no-graph-memory-update", action="store_true")
     parser.add_argument("--no-force", action="store_true")
+    parser.add_argument("--graph-chunk-size", type=int, default=None)
     parser.add_argument("--accept-language", default="zh")
     parser.add_argument("--start-backend", action="store_true", help="Start npm run backend with Gemini env before replaying.")
     parser.add_argument("--repo-root", default=str(Path(__file__).resolve().parents[1]))
@@ -634,7 +640,9 @@ def main(argv: Optional[List[str]] = None) -> int:
             platform=args.platform,
             enable_graph_memory_update=not args.no_graph_memory_update,
             force=not args.no_force,
+            parallel_profile_count=5,
             generate_report=not args.no_report,
+            graph_chunk_size=args.graph_chunk_size,
             poll_timeout_seconds=args.poll_timeout,
         )
         print(json.dumps(sanitize_for_artifact(manifest), ensure_ascii=False, indent=2))
