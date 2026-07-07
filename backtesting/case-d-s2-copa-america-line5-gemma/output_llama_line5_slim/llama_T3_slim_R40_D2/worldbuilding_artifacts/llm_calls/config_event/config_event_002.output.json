@@ -1,7 +1,0 @@
-{
-  "stage": "config_event",
-  "model": "meta-llama/llama-3.3-70b-instruct",
-  "output_text": "{\n    \"hot_topics\": [\"Copa America 2024\", \"Argentina vs Colombia\", \"Lionel Messi\", \"James Rodriguez\"],\n    \"narrative_direction\": \"随着Copa America 2024决赛的临近，舆论焦点将集中在比赛的预测和分析上，球迷和专家们将讨论两队的实力、战术和球员表现。随着比赛的进行，舆论将根据比赛结果和球员表现进行转变，赢得比赛的球队将获得更多的关注和赞扬。\",\n    \"initial_posts\": [\n        {\"content\": \"Argentina和Colombia即将在Copa America 2024决赛中对决，谁将赢得冠军？\", \"poster_type\": \"Fan\"},\n        {\"content\": \"Lionel Messi和James Rodriguez是两队的关键球员，他们的表现将决定比赛的结果。\", \"poster_type\": \"Pundit\"},\n        {\"content\": \"Copa America 2024决赛将在Hard Rock Stadium举行，两队的球迷们都非常渴望看到自己的球队赢得冠军。\", \"poster_type\": \"Organization\"},\n        {\"content\": \"Argentina在近几年的比赛中一直表现出色，赢得了多个冠军。但Colombia也不能被低估，他们有着强大的阵容和良好的战术。\", \"poster_type\": \"Coach\"},\n        {\"content\": \"作为一名球迷，我非常期待这场比赛的开始，希望我的球队能够赢得冠军。\", \"poster_type\": \"Fan\"}\n    ],\n    \"reasoning\": \"本事件配置的设计目的是为了模拟Copa America 2024决赛前后的舆论发展，通过设置不同的初始帖子内容和发布者类型，能够反映出球迷、专家和球队组织等不同群体的观点和情绪。通过分析这些帖子内容，可以了解到人们对比赛的预期和关注点，例如球队的实力、球员表现和战术等。\"\n}",
-  "attempt": 1,
-  "finish_reason": "stop"
-}

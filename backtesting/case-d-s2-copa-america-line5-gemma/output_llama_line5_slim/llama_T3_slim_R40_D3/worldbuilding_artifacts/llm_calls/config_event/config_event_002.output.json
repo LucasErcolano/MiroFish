@@ -1,7 +1,0 @@
-{
-  "stage": "config_event",
-  "model": "meta-llama/llama-3.3-70b-instruct",
-  "output_text": "```json\n{\n    \"hot_topics\": [\"Copa America\", \"Argentina\", \"Colombia\", \"Lionel Messi\", \"James Rodriguez\"],\n    \"narrative_direction\": \"预测Copa America 2024冠军\",\n    \"initial_posts\": [\n        {\"content\": \"Copa America 2024冠军预测：Argentina还是Colombia？\", \"poster_type\": \"Organization\"},\n        {\"content\": \"Lionel Messi带领Argentina队，能否再次夺冠！\", \"poster_type\": \"Player\"},\n        {\"content\": \"James Rodriguez的表现将决定Colombia的胜利\", \"poster_type\": \"Player\"},\n        {\"content\": \"FanDuel的市场价格显示Argentina有47.6%的胜率\", \"poster_type\": \"Organization\"},\n        {\"content\": \"Opta估计Argentina在90分钟内赢得的概率为50.4%\", \"poster_type\": \"Organization\"}\n    ],\n    \"reasoning\": \"基于历史数据、球队实力和市场预测，预测Copa America 2024冠军\"\n}\n```",
-  "attempt": 1,
-  "finish_reason": "stop"
-}

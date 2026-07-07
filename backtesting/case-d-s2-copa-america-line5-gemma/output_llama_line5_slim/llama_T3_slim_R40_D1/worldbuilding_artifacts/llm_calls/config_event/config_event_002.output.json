@@ -1,7 +1,0 @@
-{
-  "stage": "config_event",
-  "model": "meta-llama/llama-3.3-70b-instruct",
-  "output_text": "```json\n{\n    \"hot_topics\": [\"Copa America\", \"Argentina\", \"Colombia\", \"Lionel Messi\", \"James Rodriguez\"],\n    \"narrative_direction\": \"预测2024年美洲杯决赛结果，讨论关键球员和球队表现，分析历史数据和最近的比赛表现\",\n    \"initial_posts\": [\n        {\n            \"content\": \"2024年美洲杯决赛即将开始，谁会胜出？\",\n            \"poster_type\": \"MediaOutlet\"\n        },\n        {\n            \"content\": \"阿根廷队近期表现强劲，赢得了15次美洲杯冠军，最近一次是2021年\",\n            \"poster_type\": \"Team\"\n        },\n        {\n            \"content\": \"哥伦比亚队也表现出色，拥有28场不败的记录，最近一次输球是2022年世界杯预选赛对阵阿根廷\",\n            \"poster_type\": \"Team\"\n        },\n        {\n            \"content\": \"FanDuel的市场价格表明阿根廷队有47.6%的胜率，而Opta的模型信号显示阿根廷队有50.4%的胜率\",\n            \"poster_type\": \"Organization\"\n        }\n    ],\n    \"reasoning\": \"基于历史数据、最近的比赛表现和市场信号，预测2024年美洲杯决赛结果\"\n}\n```",
-  "attempt": 1,
-  "finish_reason": "stop"
-}

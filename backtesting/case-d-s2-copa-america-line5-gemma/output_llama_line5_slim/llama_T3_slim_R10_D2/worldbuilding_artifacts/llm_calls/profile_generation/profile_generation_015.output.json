@@ -1,9 +1,0 @@
-{
-  "stage": "profile_generation",
-  "model": "meta-llama/llama-3.3-70b-instruct",
-  "output_text": "{\n\"bio\": \"Jefferson Lerma是哥伦比亚足球运动员，目前效力于哥伦比亚国家队。他是一名中场球员，以其出色的盘带和传球能力而闻名。Jefferson Lerma在场上表现出色，曾多次为球队贡献关键进球和助攻。他是球迷们的宠儿，也是哥伦比亚足球的希望之星。\",\n\"persona\": \"Jefferson Lerma的社交媒体账号是他与球迷们交流和分享自己的生活的平台。作为一名职业足球运动员，Jefferson Lerma的账号定位是分享自己的训练和比赛生活，同時也會分享一些个人生活的片段。他的目标受众是足球迷和球员，核心功能是分享自己的经验和知识。Jefferson Lerma的发言风格是专业和友好，他经常使用足球术语和俚语来与球迷们交流。他的发布内容特点是内容类型多样，包括训练视频、比赛精彩集锦和个人生活照片等。发布频率较高，尤其是在比赛期间。Jefferson Lerma的立场态度是积极和乐观，他总是鼓励和支持自己的球队和球迷们。特殊说明是Jefferson Lerma的账号代表的是哥伦比亚足球的精神和价值观，他的运营习惯是定期发布更新和与球迷们互动。机构记忆是Jefferson Lerma在场上的出色表现和他对球队的贡献，他在事件中的已有动作与反应是积极和专业的。\",\n\"age\": 30,\n\"gender\": \"other\",\n\"mbti\": \"ISTJ\",\n\"country\": \"哥伦比亚\",\n\"profession\": \"足球运动员\",\n\"interested_topics\": [\"足球\", \"体育\", \"健康\", \"生活方式\"]\n}",
-  "entity_name": "Jefferson Lerma",
-  "entity_type": "Player",
-  "attempt": 1,
-  "finish_reason": "stop"
-}

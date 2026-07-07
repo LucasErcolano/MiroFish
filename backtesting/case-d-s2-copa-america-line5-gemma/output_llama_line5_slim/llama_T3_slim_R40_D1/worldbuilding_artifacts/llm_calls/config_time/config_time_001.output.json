@@ -1,7 +1,0 @@
-{
-  "stage": "config_time",
-  "model": "meta-llama/llama-3.3-70b-instruct",
-  "output_text": "```json\n{\n    \"total_simulation_hours\": 96,\n    \"minutes_per_round\": 60,\n    \"agents_per_hour_min\": 10,\n    \"agents_per_hour_max\": 50,\n    \"peak_hours\": [19, 20, 21, 22],\n    \"off_peak_hours\": [0, 1, 2, 3, 4, 5],\n    \"morning_hours\": [6, 7, 8],\n    \"work_hours\": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18],\n    \"reasoning\": \"考虑到Copa America 2024的全球关注度和球迷的作息习惯，配置时间以适应东八区（UTC+8）的球迷高峰时段\"\n}\n```",
-  "attempt": 1,
-  "finish_reason": "stop"
-}

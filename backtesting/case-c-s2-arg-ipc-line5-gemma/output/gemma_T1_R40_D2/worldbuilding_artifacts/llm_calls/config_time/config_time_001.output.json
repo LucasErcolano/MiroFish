@@ -1,7 +1,0 @@
-{
-  "stage": "config_time",
-  "model": "google/gemma-3-27b-it",
-  "output_text": "{\n    \"total_simulation_hours\": 120,\n    \"minutes_per_round\": 60,\n    \"agents_per_hour_min\": 8,\n    \"agents_per_hour_max\": 40,\n    \"peak_hours\": [19, 20, 21, 22],\n    \"off_peak_hours\": [0, 1, 2, 3, 4, 5],\n    \"morning_hours\": [7, 8, 9],\n    \"work_hours\": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18],\n    \"reasoning\": \"该模拟关注阿根廷2025年通货膨胀预测，目标用户群体包括经济学家、分析师、政策制定者和关注经济新闻的公众。考虑到阿根廷的作息习惯和事件的性质（经济预测），选择较长模拟时长120小时。高峰时段设定在晚上，因为人们在下班后更可能关注经济新闻和分析。工作时间保持中等活跃度，早间活跃度略低于工作时间。深夜为低谷时段。Agent数量根据不同时段进行调整，高峰时段激活更多Agent以模拟更活跃的讨论，低谷时段减少Agent数量。\"\n}",
-  "attempt": 1,
-  "finish_reason": "stop"
-}

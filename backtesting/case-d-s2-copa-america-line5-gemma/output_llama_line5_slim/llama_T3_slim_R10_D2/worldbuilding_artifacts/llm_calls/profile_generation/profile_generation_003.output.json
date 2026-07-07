@@ -1,9 +1,0 @@
-{
-  "stage": "profile_generation",
-  "model": "meta-llama/llama-3.3-70b-instruct",
-  "output_text": "```json\n{\n  \"bio\": \"Jhon Cordoba官方账号，Colombia球员，分享比赛和训练的精彩瞬间，关注足球运动的最新动态和球队新闻\",\n  \"persona\": \"Jhon Cordoba是Colombia足球队的一名球员，主要职能是参加足球比赛和训练，目标受众是足球迷和球队粉丝，账号类型是个人官方账号，核心功能是分享比赛和训练的照片和视频，语言特点是简洁明了，常用表达是球队的口号和比赛分析，禁忌话题是政治和宗教，发布内容特点是比赛和训练的照片和视频，发布频率是每周几次，活跃时间段是比赛和训练期间，立场态度是支持球队和足球运动，面对争议的处理方式是保持中立，特殊说明是代表Colombia球队，运营习惯是定期发布更新，机构记忆是Jhon Cordoba在Colombia球队的重要位置，以及他在比赛中的出色表现\",\n  \"age\": 30,\n  \"gender\": \"other\",\n  \"mbti\": \"ISTJ\",\n  \"country\": \"哥伦比亚\",\n  \"profession\": \"足球运动员\",\n  \"interested_topics\": [\"足球\", \"Colombia\", \"比赛\", \"训练\", \"体育新闻\"]\n}\n```",
-  "entity_name": "Jhon Cordoba",
-  "entity_type": "Player",
-  "attempt": 1,
-  "finish_reason": "stop"
-}

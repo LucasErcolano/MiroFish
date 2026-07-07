@@ -1,7 +1,0 @@
-{
-  "stage": "config_event",
-  "model": "meta-llama/llama-3.3-70b-instruct",
-  "output_text": "{\n    \"hot_topics\": [\"Bolivia\", \"presidential election\", \"runoff\", \"Rodrigo Paz\", \"Jorge Quiroga\", \"MAS\", \"IMF\", \"economic crisis\"],\n    \"narrative_direction\": \"预测博利维亚2025年总统选举第二轮的结果，讨论Rodrigo Paz和Jorge Quiroga的竞争，分析经济危机、MAS的衰落、第一轮选举的结果、竞选纲领的差异和晚期民意调查的影响\",\n    \"initial_posts\": [\n        {\"content\": \"博利维亚2025年总统选举第二轮即将举行，Rodrigo Paz和Jorge Quiroga是两位主要竞争者。谁将赢得这次选举？\", \"poster_type\": \"Person\"},\n        {\"content\": \"MAS在第一轮选举中的惨败和经济危机将如何影响第二轮选举的结果？\", \"poster_type\": \"Organization\"},\n        {\"content\": \"Rodrigo Paz的竞选纲领强调了资本主义的重要性，而Jorge Quiroga则主张与美国建立更密切的关系。这些纲领将如何影响选民的选择？\", \"poster_type\": \"PresidentCandidate\"},\n        {\"content\": \"晚期民意调查显示Jorge Quiroga领先，但Rodrigo Paz仍有机会逆转。谁将最终赢得这次选举？\", \"poster_type\": \"GovernmentOfficial\"}\n    ],\n    \"reasoning\": \"基于提供的信息，分析博利维亚2025年总统选举第二轮的各种因素，包括竞选纲领、经济危机、MAS的衰落和晚期民意调查的结果，预测谁将赢得这次选举\"\n}",
-  "attempt": 1,
-  "finish_reason": "stop"
-}

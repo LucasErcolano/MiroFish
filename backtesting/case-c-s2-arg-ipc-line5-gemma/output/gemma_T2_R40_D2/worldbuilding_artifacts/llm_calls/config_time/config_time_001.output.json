@@ -1,7 +1,0 @@
-{
-  "stage": "config_time",
-  "model": "google/gemma-3-27b-it",
-  "output_text": "{\n    \"total_simulation_hours\": 96,\n    \"minutes_per_round\": 30,\n    \"agents_per_hour_min\": 3,\n    \"agents_per_hour_max\": 30,\n    \"peak_hours\": [19, 20, 21, 22],\n    \"off_peak_hours\": [0, 1, 2, 3, 4, 5],\n    \"morning_hours\": [7, 8, 9],\n    \"work_hours\": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18],\n    \"reasoning\": \"该模拟涉及阿根廷通货膨胀预测，目标用户群体包括经济学家、分析师、政府官员、媒体记者和普通民众。考虑到阿根廷的地理位置和作息习惯，以及该事件的专业性和时效性，采用如下时间配置：总时长96小时，覆盖多个工作日和晚间高峰期。每轮30分钟，方便快速迭代和分析。高峰期（晚间19-22点）激活较多Agent，模拟公众讨论和媒体报道；工作时间（9-18点）激活中等数量Agent，模拟专业分析和政府决策；深夜和凌晨激活较少Agent，模拟低活跃状态。早间活跃度适中，模拟新闻的传播和初步讨论。根据实体信息，需要模拟官方机构（如BCRA, INDEC）的工作时间，以及媒体（Americas Quarterly）的全天报道，因此工作时间和晚间高峰期的Agent数量设置较高。\"\n}",
-  "attempt": 1,
-  "finish_reason": "stop"
-}

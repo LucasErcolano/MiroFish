@@ -1,7 +1,0 @@
-condition,status,injected_doc,scheduled_events,fired_round,fired_round_index,posts,comments,traces,argentina_mentions,colombia_mentions,messi_mentions,james_mentions,football_noise_mentions,artifacts
-v2-baseline-control,completed,none,0,,,4,3,16,10,6,0,12,0,runs/s2_issue19_deepinfra/llama/v2-baseline-control-12
-v2-signal-strong-mid,completed,signal-strong,1,6,5,5,2,17,16,8,2,10,0,runs/s2_issue19_deepinfra/llama/v2-signal-strong-mid-12
-v2-signal-weak-mid,completed,signal-weak,1,6,5,5,1,13,14,6,0,10,0,runs/s2_issue19_deepinfra/llama/v2-signal-weak-mid-12
-v2-counter-colombia-mid,completed,counter-colombia,1,6,5,5,2,16,8,12,0,14,0,runs/s2_issue19_deepinfra/llama/v2-counter-colombia-mid-12
-v2-noise-near-mid,completed,noise-near,1,6,5,5,1,13,7,5,1,8,6,runs/s2_issue19_deepinfra/llama/v2-noise-near-mid-12
-v2-noise-off-mid,completed,noise-off,1,6,5,5,2,17,8,6,0,10,4,runs/s2_issue19_deepinfra/llama/v2-noise-off-mid-12

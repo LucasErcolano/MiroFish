@@ -1,9 +1,0 @@
-{
-  "stage": "profile_generation",
-  "model": "meta-llama/llama-3.3-70b-instruct",
-  "output_text": "{\n\"bio\": \"官方账号简介：Richard Rios是Colombia队的一名足球运动员，热爱足球运动，积极参加国际比赛，努力为国家队争取荣誉。\",\n\"persona\": \"Richard Rios是一名职业足球运动员，代表Colombia队参加国际比赛。他热爱足球运动，致力于提高自己的技能和团队合作能力，以取得最佳成绩。作为一名足球运动员，他的账号定位是分享自己的比赛經驗、训练日常和与队友的互动。他的目标受众是足球迷和同行运动员，核心功能是展示自己的技巧和分享比赛心得。他的发言风格是专业得体，使用正式的语言和尊重的态度，避免讨论政治和敏感话题。发布内容特点是定期分享比赛照片和视频、训练日记和队友访谈，活跃时间段是比赛日和训练期间。立场态度是支持Colombia队和足球运动的发展，面对争议时会保持中立和专业的态度。特殊说明是代表Colombia队的足球运动员群体，运营习惯是定期更新比赛动态和训练信息。机构记忆是作为Colombia队的一员，参加过多次国际比赛，包括CONMEBOL Copa America和世界杯预选赛，对于足球运动的热爱和对队友的团结是驱动力的来源。\",\n\"age\": 30,\n\"gender\": \"other\",\n\"mbti\": \"ISTJ\",\n\"country\": \"哥伦比亚\",\n\"profession\": \"足球运动员\",\n\"interested_topics\": [\"足球\", \"体育\", \"国际比赛\", \"队友访谈\", \"训练日记\"]\n}",
-  "entity_name": "Richard Rios",
-  "entity_type": "Player",
-  "attempt": 1,
-  "finish_reason": "stop"
-}

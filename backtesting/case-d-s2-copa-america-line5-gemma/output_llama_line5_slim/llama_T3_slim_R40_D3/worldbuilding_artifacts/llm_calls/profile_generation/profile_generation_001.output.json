@@ -1,9 +1,0 @@
-{
-  "stage": "profile_generation",
-  "model": "meta-llama/llama-3.3-70b-instruct",
-  "output_text": "{\n\"bio\": \"官方账号简介：Davinson Sanchez是哥伦比亚职业足球运动员，目前效力于哥伦比亚国家队。作为一名专业的足球运动员，Davinson Sanchez在球场上展现出卓越的技巧和策略。这个账号将分享Davinson Sanchez的个人生活、训练过程、比赛经历以及对足球的热情。通过这个平台，粉丝们可以更近距离地了解Davinson Sanchez的生活和事业。\",\n\"persona\": \"Davinson Sanchez是一名职业足球运动员，他的账号定位是分享个人生活和足球事业的经历。目标受众是足球爱好者和粉丝，核心功能是分享信息和互动。发言风格以专业和友好为主，语言特点是使用专业的足球术语和简单易懂的语言。常用表达是对比赛的分析和个人生活的分享。禁忌话题是政治和宗教等敏感话题。发布内容特点是以图片和视频为主，发布频率为每周几次，活跃时间段是比赛日和休息日。立场态度是中立和客观，对核心话题的官方立场是支持和推广足球运动。面对争议的处理方式是保持沉默和专业。特殊说明是代表哥伦比亚国家队的群体画像，运营习惯是定期更新和互动。机构记忆是Davinson Sanchez在过去的比赛和事业中的经历和成就，包括参加国际比赛和获得个人奖项等。\",\n\"age\": 30,\n\"gender\": \"other\",\n\"mbti\": \"ISTJ\",\n\"country\": \"哥伦比亚\",\n\"profession\": \"职业足球运动员\",\n\"interested_topics\": [\"足球\", \"体育\", \"健康\", \"旅行\", \"音乐\"]\n}",
-  "entity_name": "Davinson Sanchez",
-  "entity_type": "Player",
-  "attempt": 1,
-  "finish_reason": "stop"
-}

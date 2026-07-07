@@ -1,8 +1,0 @@
-condition,status,injected_doc,fired_round,fired_round_index,scheduled_events,posts,comments,traces,signal_posts,noise_posts,artifacts
-baseline,completed,none,,,0,6,16,48,0,0,runs/s2_issue19/existing-baseline-40
-signal-early,completed,signal,4,3,1,5,15,55,1,0,runs/s2_issue19/existing-signal-early-40-rerun
-signal-mid,completed,signal,20,19,1,5,18,47,1,0,runs/s2_issue19/existing-signal-mid-40
-signal-late,completed,signal,36,35,1,7,17,53,1,0,runs/s2_issue19/existing-signal-late-40
-noise-early,completed,noise,4,3,1,9,15,47,0,1,runs/s2_issue19/existing-noise-early-40
-noise-mid,completed,noise,20,19,1,6,15,56,0,1,runs/s2_issue19/existing-noise-mid-40
-noise-late,completed,noise,36,35,1,7,17,51,0,1,runs/s2_issue19/existing-noise-late-40

@@ -1,7 +1,0 @@
-{
-  "stage": "config_time",
-  "model": "google/gemma-3-27b-it",
-  "output_text": "{\n    \"total_simulation_hours\": 48,\n    \"minutes_per_round\": 30,\n    \"agents_per_hour_min\": 10,\n    \"agents_per_hour_max\": 80,\n    \"peak_hours\": [20, 21, 22],\n    \"off_peak_hours\": [0, 1, 2, 3, 4, 5],\n    \"morning_hours\": [7, 8, 9],\n    \"work_hours\": [10, 11, 12, 13, 14, 15, 16, 17, 18],\n    \"reasoning\": \"模拟的是哥帕美洲杯决赛相关讨论，目标用户群体可能是足球爱好者，且决赛时间为周日，因此晚间（20-22点）是讨论高峰。考虑到比赛可能结束较晚，23点后仍会有一定讨论热度，但活跃度降低。早上7-9点为用户起床后，碎片化时间浏览信息的时间段。工作时间（10-18点）用户注意力相对分散，活跃度适中。模拟时长设置为48小时，覆盖决赛前后两天，以便观察话题演变。\"\n}",
-  "attempt": 1,
-  "finish_reason": "stop"
-}

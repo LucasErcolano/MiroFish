@@ -1,7 +1,0 @@
-{
-  "stage": "config_event",
-  "model": "meta-llama/llama-3.3-70b-instruct",
-  "output_text": "```json\n{\n    \"hot_topics\": [\"Copa America 2024\", \"Argentina\", \"Colombia\", \"Lionel Messi\", \"James Rodriguez\"],\n    \"narrative_direction\": \"随着Copa America 2024决赛的临近，球迷和专家们都在热切讨论比赛的结果。阿根廷队作为卫冕冠军和上届世界杯冠军，拥有强大的阵容和历史优势，而哥伦比亚队则希望通过自己的实力和团队精神来夺取冠军。比赛的结果将取决于两队的策略、球员状态和比赛经验等多种因素。\",\n    \"initial_posts\": [\n        {\"content\": \"Copa America 2024决赛即将开始，阿根廷队和哥伦比亚队谁将夺得冠军？\", \"poster_type\": \"Team\"},\n        {\"content\": \"Lionel Messi在本届比赛中表现如何？他是否能够带领阿根廷队夺得冠军！\", \"poster_type\": \"Player\"},\n        {\"content\": \"哥伦比亚队的James Rodriguez和Luis Diaz将如何对阵阿根廷队的防守？\", \"poster_type\": \"Player\"},\n        {\"content\": \"FanDuel的预测模型显示阿根廷队赢得比赛的概率为47.6%，而Opta的模型显示阿根廷队赢得比赛的概率为50.4%。谁的预测更准确？\", \"poster_type\": \"Organization\"},\n        {\"content\": \"Copa America 2024决赛将在Hard Rock Stadium举行，球场的条件如何？它会对比赛结果产生影响吗？\", \"poster_type\": \"Stadium\"}\n    ],\n    \"reasoning\": \"通过分析热点话题和舆论发展方向，可以看出球迷和专家们都对Copa America 2024决赛的结果非常感兴趣。通过发布不同的帖子内容，可以引发讨论和辩论，促进舆论的发展和深化。\"\n}\n```",
-  "attempt": 1,
-  "finish_reason": "stop"
-}

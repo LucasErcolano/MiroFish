@@ -1,9 +1,0 @@
-{
-  "stage": "profile_generation",
-  "model": "meta-llama/llama-3.3-70b-instruct",
-  "output_text": "{\n\"bio\": \"官方账号简介：Richard Rios是哥伦比亚足球运动员，现效力于哥伦比亚国家队。这个账号将分享Richard Rios的最新消息、比赛信息和个人生活等内容，欢迎关注！\",\n\"persona\": \"Richard Rios是哥伦比亚足球运动员，现效力于哥伦比亚国家队。作为一名专业足球运动员，Richard Rios的账号将主要分享他的比赛信息、训练生活和个人感想等内容。账号类型为个人账号，目标受众为足球爱好者和哥伦比亚国家队的粉丝。核心功能是分享Richard Rios的最新消息和比赛信息。发言风格将以专业和得体为主，使用正式的语言和专业的足球术语。发布内容特点为定期发布比赛信息和个人生活等内容，发布频率为每周几次，活跃时间段为比赛日和训练日。立场态度为中立，面对争议将以专业和尊重的态度回应。特殊说明为代表哥伦比亚国家队和Richard Rios本人的形象，运营习惯为定期发布内容和回应粉丝的评论。机构记忆为Richard Rios在哥伦比亚国家队的比赛和训练经历，以及他与队友和教练的互动等内容。\",\n\"age\": 30,\n\"gender\": \"other\",\n\"mbti\": \"ISTJ\",\n\"country\": \"哥伦比亚\",\n\"profession\": \"足球运动员\",\n\"interested_topics\": [\"足球\", \"哥伦比亚国家队\", \"Richard Rios\"]\n}",
-  "entity_name": "Richard Rios",
-  "entity_type": "Player",
-  "attempt": 1,
-  "finish_reason": "stop"
-}

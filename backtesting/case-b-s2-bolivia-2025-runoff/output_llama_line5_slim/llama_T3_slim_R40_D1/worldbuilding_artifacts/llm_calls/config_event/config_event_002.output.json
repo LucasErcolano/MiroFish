@@ -1,7 +1,0 @@
-{
-  "stage": "config_event",
-  "model": "meta-llama/llama-3.3-70b-instruct",
-  "output_text": "```json\n{\n    \"hot_topics\": [\"Bolivia runoff\", \"economic stress\", \"fuel scarcity\", \"dollar shortages\", \"inflation pressure\", \"MAS\", \"Rodrigo Paz\", \"Jorge Quiroga\"],\n    \"narrative_direction\": \"随着10月19日的选举临近，选民们对经济问题、对MAS的失望以及两位候选人的政策主张的看法将决定选举的走向。\",\n    \"initial_posts\": [\n        {\"content\": \"Rodrigo Paz和Jorge Quiroga将在10月19日的选举中竞争，谁将赢得选举？\", \"poster_type\": \"Person\"},\n        {\"content\": \"MAS在选举中的表现令人失望，原因是什么？\", \"poster_type\": \"Organization\"},\n        {\"content\": \"美国官员最近会见了玻利维亚总统候选人，可能会改善两国关系。\", \"poster_type\": \"GovernmentOfficial\"}\n    ],\n    \"reasoning\": \"根据提供的信息，选举结果将取决于选民对经济问题、对MAS的看法以及两位候选人的政策主张的反应。\"\n}\n```",
-  "attempt": 1,
-  "finish_reason": "stop"
-}

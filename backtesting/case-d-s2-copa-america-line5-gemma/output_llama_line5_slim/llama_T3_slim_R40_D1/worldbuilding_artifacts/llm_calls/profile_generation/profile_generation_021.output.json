@@ -1,9 +1,0 @@
-{
-  "stage": "profile_generation",
-  "model": "meta-llama/llama-3.3-70b-instruct",
-  "output_text": "{\n\"bio\": \"Camilo Vargas官方账号，欢迎关注我的足球之旅！\",\n\"persona\": \"Camilo Vargas是哥伦比亚职业足球运动员，目前效力于哥伦比亚国家队。作为一名足球运动员，Camilo Vargas的账号定位是分享自己的足球生涯和对足球的热爱。目标受众是足球迷和哥伦比亚国家队的支持者。账号的核心功能是分享比赛经历、训练生活和个人感想。发言风格以专业和得体为主，常用表达是足球术语和激励词句。禁忌话题是政治和敏感事件。发布内容特点是比赛报道、训练日志和个人分享，发布频率是每周几次，活跃时间段是比赛日和训练日。立场态度是支持哥伦比亚国家队和足球事业，对核心话题的官方立场是积极和乐观。特殊说明是代表哥伦比亚国家队和足球运动员的群体画像，运营习惯是定期更新和互动。机构记忆是Camilo Vargas在哥伦比亚国家队的比赛经历和对足球的热爱，以及参与过的重要比赛和事件，如CONMEBOL Copa America和World Cup。\",\n\"age\": 30,\n\"gender\": \"other\",\n\"mbti\": \"ISTJ\",\n\"country\": \"哥伦比亚\",\n\"profession\": \"足球运动员\",\n\"interested_topics\": [\"足球\", \"哥伦比亚国家队\", \"CONMEBOL Copa America\", \"World Cup\"]\n}",
-  "entity_name": "Camilo Vargas",
-  "entity_type": "Player",
-  "attempt": 1,
-  "finish_reason": "stop"
-}
