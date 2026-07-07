@@ -4,53 +4,73 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{float}
 \usepackage{hyperref}
 
 \begin{document}
 
-\section{Transición a Arquitecturas Multi-Agente en MiroFish}
+\section{Extensión Multi-Agente: Dinámicas de Debate y Colapso Semántico}
 
-\subsection{Hipótesis y Teoría de la Diversidad de Modelos}
-Tras establecer el comportamiento del sistema mediante un \textit{baseline} basado en un único modelo, procedimos a implementar y evaluar una arquitectura Multi-Agente heterogénea. La teoría subyacente para cruzar tres modelos distintos (Llama-3, Gemma-3 y Qwen-3) en un entorno de debate (foro simulado) radicaba en la explotación de sus sesgos inherentes de pre-entrenamiento y comportamientos de razonamiento. Observamos empíricamente que:
-\begin{itemize}
-    \item \textbf{Llama:} Muestra un comportamiento analítico equilibrado.
-    \item \textbf{Gemma:} Demuestra una fuerte rigidez cognitiva y terquedad frente a sus datos de pre-entrenamiento.
-    \item \textbf{Qwen:} Exhibe alta flexibilidad y permeabilidad ante la inyección de nueva evidencia.
-\end{itemize}
+\subsection{Fundamentación Teórica e Hipótesis de Diversidad Cognitiva}
 
-Nuestra hipótesis inicial dictaba que, al igual que en las sociedades humanas, la diversidad cognitiva de estos modelos actuaría como un mecanismo de control contra la formación de burbujas epistemológicas (Herd Behavior) observadas en el \textit{baseline}. Esperábamos que el debate cruzado entre modelos con distintas predisposiciones obligara a la red a generar consensos más cercanos a la realidad, mejorando la precisión predictiva sin necesidad de intervención externa.
+Tal como se expuso en la sección anterior, los experimentos del \textit{baseline} (operados bajo un esquema de modelo único, específicamente Llama-3) evidenciaron que, en escenarios de memoria compartida (T3), el sistema es propenso a generar cámaras de eco (Herd Behavior). En dicho entorno, la homogeneidad del agente generativo condujo a un sesgo algorítmico auto-reforzado, resultando en desviaciones predictivas significativas (Error Absoluto Medio, o MAE, superior a 7.6).
 
-\subsection{Diseño Experimental de las Pruebas Multi-Agente}
-Para someter a prueba nuestra hipótesis, diseñamos escenarios que evaluaran tanto la capacidad de \textit{Forecasting} (precisión predictiva directa) como el comportamiento del sistema como \textit{Laboratorio Sociotécnico} (dinámicas de influencia y persuasión). Las pruebas se dividieron en dos casos principales, implementando inyecciones de señales externas a mitad del debate (Eventos S3):
+Para mitigar esta distorsión, diseñamos una extensión del entorno MiroFish basada en una arquitectura Multi-Agente heterogénea. Seleccionamos tres modelos fundacionales con arquitecturas y corpus de pre-entrenamiento divergentes: Llama-3 (orientado a la neutralidad analítica), Gemma-3 (caracterizado empíricamente por una alta rigidez cognitiva y apego a sus pesos de entrenamiento) y Qwen-3 (que exhibió un perfil analítico flexible). 
 
-\begin{enumerate}
-    \item \textbf{Caso A (Fútbol - Copa América):} Diseñado para probar la resiliencia de la rigidez de Gemma. En el \textit{baseline}, Gemma falló en reconocer evidencia a favor de Colombia debido a su abrumador sesgo hacia Argentina/Messi. En el foro Multi-Agente, inyectamos una señal a favor de Colombia a mitad del debate para observar si Llama o Qwen podían persuadir a Gemma mediante interacción social.
-    \item \textbf{Caso B (Elecciones Bolivia 2025):} Orientado a evaluar el escalamiento de la red (pruebas con 10 y 40 agentes) y la respuesta a señales exógenas (una encuesta tardía). Este escenario buscaba medir matemáticamente el Error Absoluto Medio (MAE) de los consensos generados.
-\end{enumerate}
+Nuestra hipótesis central postulaba que la interacción concurrente de estas tres arquitecturas emularía de forma más fidedigna un ecosistema social real. Específicamente, proyectamos que la divergencia inherente en sus representaciones latentes actuaría como un mecanismo de regularización endógeno, rompiendo la cámara de eco mediante el debate cruzado y mejorando la precisión predictiva (Forecasting) sin requerir intervención algorítmica externa.
 
-\subsection{Resultados Obtenidos}
+\subsection{Diseño Experimental y Escenarios de Prueba}
 
-Los resultados de las simulaciones Multi-Agente revelaron dinámicas sociotécnicas imprevistas y refutaron parcialmente nuestra hipótesis inicial sobre la auto-regulación de la red.
-
-\subsubsection{El Descubrimiento del \textit{Model Collapse} (Colapso Semántico)}
-El hallazgo más crítico de nuestra experimentación ocurrió en el escenario de Bolivia al evaluar las redes Multi-Agente puras sin intervención (sin inyecciones de señales). A diferencia del \textit{baseline} (donde un solo modelo simulando múltiples agentes formó una cámara de eco con un MAE de 7.6 y 10.0, votando de forma unánime y errónea por un candidato), la red heterogénea (Llama+Gemma+Qwen) sufrió un **Colapso Semántico**.
-
-Al cruzar los modelos, en lugar de generar un debate rico, los agentes convergieron rápidamente hacia un estado de cortesía neutral extrema. Las trazas de la base de datos revelaron que el 100\% de los agentes entró en un bucle infinito de repetición vacía (ej. \textit{"I completely agree with the importance of considering the candidates' policies..."}). Ningún agente se arriesgó a emitir un voto o apoyar a un candidato, resultando en un consenso predictivo nulo (MAE inválido).
-
-\subsubsection{Validación de Inyecciones S3 (La Cura de la Entropía)}
-La introducción de señales externas (Eventos S3) demostró ser el único mecanismo capaz de romper el Colapso Semántico:
-\begin{itemize}
-    \item \textbf{Persuasión (Caso Fútbol):} La inyección de evidencia logró su objetivo. Llama introdujo el análisis de la contra-señal, y Gemma, sometido a la "presión social" inter-modelo del foro, alteró su vector de opinión pre-entrenado, reconociendo públicamente las posibilidades del equipo opuesto.
-    \item \textbf{Aceleración (Caso Bolivia):} La inyección de la encuesta exógena actuó como un shock de entropía. Qwen absorbió inmediatamente la señal externa, rompiendo la cortesía neutral y utilizando la nueva información como catalizador para polarizar el foro.
-\end{itemize}
-
-\subsection{Conclusiones y Comparativa con el Baseline}
-La evaluación de la arquitectura Multi-Agente en MiroFish nos permite extraer conclusiones contundentes en comparación con el \textit{baseline}:
+Para evaluar la red Multi-Agente frente al \textit{baseline}, el diseño experimental se dividió en dos dimensiones evaluativas: la precisión predictiva puramente cuantitativa y el análisis sociotécnico cualitativo frente a estímulos externos (designados en nuestra arquitectura como \textit{Eventos S3: Inyección Mid-Debate}).
 
 \begin{enumerate}
-    \item \textbf{Ineficiencia para Forecasting Directo:} Para predicciones binarias puras, el esquema aislado de un solo modelo (T1) es drásticamente superior. La ejecución Multi-Agente generó un costo transaccional excesivo (consumiendo cientos de miles de tokens de \textit{prompt} en pocas rondas) sin aportar valor predictivo, cayendo en la inacción por el Colapso Semántico.
-    \item \textbf{Fallo Estructural de LLMs Heterogéneos en Cautiverio:} Juntar múltiples modelos de frontera a debatir entre sí sin estímulos externos no genera una "inteligencia colectiva" superior, sino una degradación hacia consensos vacíos.
-    \item \textbf{Éxito como Laboratorio Sociotécnico:} La verdadera utilidad de la arquitectura Multi-Agente reside en su capacidad para modelar la propagación de información. Comprobamos que el sistema es altamente efectivo para simular cómo distintas psicologías (modelos rígidos vs flexibles) reaccionan y se persuaden ante \textbf{shocks de información externa} (Inyecciones S3).
+    \item \textbf{Prueba de Estrés Cognitivo (Caso Copa América):} En el \textit{baseline}, el modelo Gemma-3 demostró una impermeabilidad absoluta frente a métricas favorables a la selección de Colombia, emitiendo predicciones sesgadas hacia Argentina debido a la prevalencia de datos históricos (ej. Lionel Messi) en su pre-entrenamiento. En este experimento, forzamos un debate inter-modelo inyectando información estadística contraria, con el fin de cuantificar si la "presión social" de modelos pares (Llama/Qwen) lograba alterar el vector de opinión de un modelo rígido.
+    \item \textbf{Evaluación de Escalamiento y Entropía (Caso Elecciones Bolivia 2025):} Replicamos el entorno T3 del \textit{baseline} escalando la red poblacional a 10 (R10) y 40 agentes (R40). Adicionalmente, introdujimos un \textit{shock} de información exógena (una encuesta tardía a favor de Quiroga) para medir la capacidad de absorción y propagación de la red frente a la volatilidad informativa.
 \end{enumerate}
+
+\subsection{Análisis de Resultados: El Fenómeno del Colapso Semántico}
+
+Contrario a nuestra hipótesis de auto-regulación, los resultados empíricos demostraron que la mera heterogeneidad de los modelos es insuficiente para generar "inteligencia colectiva". De hecho, el aislamiento del foro Multi-Agente desencadenó una patología sistémica que definimos como \textbf{Colapso Semántico (Model Collapse)}.
+
+\subsubsection{Degeneración del Consenso en Ausencia de Entropía}
+
+Al ejecutar la simulación de las elecciones en Bolivia sin inyecciones externas, observamos que, en lugar de debatir constructivamente, los tres modelos convergieron rápidamente hacia un estado de neutralidad evasiva. El análisis forense de las bases de datos de SQLite (\texttt{reddit\_simulation.db}) reveló que el 100\% de los agentes (tanto en R10 como en R40) entró en un bucle recursivo de validación vacía, produciendo iteraciones idénticas como: \textit{"I completely agree with the importance of considering the candidates' policies..."}. 
+
+Ningún agente generó una predicción procesable, resultando en un fallo total en la extracción del voto. La Tabla \ref{tab:mae_comparison} contrasta el error del \textit{baseline} frente a la anomalía del Multi-Agente.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}llcc@{}}
+        \toprule
+        \textbf{Arquitectura} & \textbf{Configuración} & \textbf{Predicción Dominante} & \textbf{MAE} \\ \midrule
+        Baseline (Single-Agent) & Aislado (T1) & Paz (Correcto) & 2.000 \\
+        Baseline (Single-Agent) & Burbuja T3 (R10) & Quiroga (Sesgo) & 7.687 \\
+        Baseline (Single-Agent) & Burbuja T3 (R40) & Quiroga (Sesgo) & 10.000 \\
+        Multi-Agent (Heterogéneo) & Red T3 (R10) & Indecisos (Colapso) & 66.667* \\
+        Multi-Agent (Heterogéneo) & Red T3 (R40) & Indecisos (Colapso) & 66.667* \\ \bottomrule
+    \end{tabular}
+    \caption{Comparativa de Error Absoluto Medio (MAE). (*) Indica que el error extremo en la variante Multi-Agente se debe al Colapso Semántico, donde el 100\% de la red se abstuvo de tomar una postura, siendo catalogados algorítmicamente como "Otros/Indecisos".}
+    \label{tab:mae_comparison}
+\end{table}
+
+\textit{[NOTA PARA EL AUTOR: Aquí sería ideal insertar un Gráfico de Barras o un Heatmap de interacciones que muestre cómo el "Sentiment" (Sentimiento) se aplana a cero en las Rondas 5 a 10 de la simulación Multi-Agente, en contraste con el baseline donde el sentimiento subía hacia un extremo].}
+
+\subsubsection{Las Inyecciones S3 como Antídoto al Colapso}
+
+El experimento demostró que el \textit{Model Collapse} se previene exclusivamente mediante la introducción de \textbf{shocks de entropía} o señales externas. 
+
+En el Caso Bolivia, la inyección de la "encuesta tardía" (Late Quiroga Lead Poll) actuó como catalizador. Las trazas del sistema registraron que Qwen-3 absorbió instantáneamente la señal (llegando a argumentar en chino nativo contra las políticas del partido MAS) y la utilizó para polarizar el foro. 
+
+De manera similar, en el Caso Fútbol, la inyección analítica introducida por Llama obligó a Gemma a procesar la evidencia empírica (la racha de 28 partidos invicto de Colombia). Las trazas evidenciaron un cambio de paradigma en el agente Gemma, el cual respondió declarando explícitamente: \textit{"An excellent analysis! Colombia has a very real chance to shine..."}. Esto confirma que la rigidez de los modelos puede ser fracturada si la presión del debate está anclada a una señal exógena fuerte.
+
+\subsection{Costo Computacional vs. Utilidad}
+
+Desde la perspectiva de la ingeniería de sistemas, la concurrencia de modelos generó un \textit{overhead} masivo. En simulaciones breves (20 rondas), el consumo superó los 235,000 \textit{prompt tokens}, incurriendo en latencias superiores a 200 segundos por iteración. Este costo es inviable si el único objetivo del sistema es el \textit{Forecasting} binario, labor en la que un modelo aislado (T1) demostró ser drásticamente más preciso y eficiente.
+
+\subsection{Conclusiones de la Arquitectura Multi-Agente}
+
+La integración de arquitecturas heterogéneas refuta la suposición de que "múltiples LLMs razonando juntos" superan axiomáticamente a un modelo individual en tareas predictivas. En entornos aislados, los LLMs tienden a priorizar la cortesía algorítmica (RLHF pre-entrenado), lo que degenera en un Colapso Semántico y destruye la capacidad analítica del sistema.
+
+Sin embargo, como \textbf{Laboratorio Sociotécnico}, la plataforma MiroFish, enriquecida con Inyecciones Mid-Debate (S3), probó ser un entorno excepcionalmente robusto. La capacidad de observar en tiempo real cómo diferentes arquitecturas asimilan, rechazan o amplifican "Fake News" o encuestas reales, permite modelar fenómenos de polarización y persuasión con una granularidad microscópica. El sistema Multi-Agente no sirve para predecir el futuro per se, sino para predecir \textit{cómo reaccionaría} un ecosistema social hiperconectado ante un shock de información.
 
 \end{document}
