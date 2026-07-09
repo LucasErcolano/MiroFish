@@ -311,6 +311,8 @@ class MiroFishHeadlessRunner:
         platform: str = "parallel",
         enable_graph_memory_update: bool = True,
         force: bool = True,
+        no_wait: bool = False,
+        model_map_path: Optional[str] = None,
         use_llm_for_profiles: bool = True,
         parallel_profile_count: int = 5,
         generate_report: bool = True,
@@ -333,6 +335,8 @@ class MiroFishHeadlessRunner:
             "max_rounds": max_rounds,
             "enable_graph_memory_update": enable_graph_memory_update,
             "force": force,
+            "no_wait": no_wait,
+            "model_map_path": model_map_path,
             "use_llm_for_profiles": use_llm_for_profiles,
             "parallel_profile_count": parallel_profile_count,
             "generate_report": generate_report,
@@ -397,9 +401,12 @@ class MiroFishHeadlessRunner:
                 "platform": platform,
                 "force": force,
                 "enable_graph_memory_update": enable_graph_memory_update,
+                "no_wait": no_wait,
             }
             if max_rounds:
                 start_payload["max_rounds"] = max_rounds
+            if model_map_path:
+                start_payload["model_map_path"] = model_map_path
             self.client.request_json("POST", "/api/simulation/start", start_payload, retry=True)
             final_run = self._wait_run(simulation_id, poll_timeout_seconds)
             self._capture_simulation_artifacts(simulation_id)
@@ -603,6 +610,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--no-report", action="store_true")
     parser.add_argument("--no-graph-memory-update", action="store_true")
     parser.add_argument("--no-force", action="store_true")
+    parser.add_argument("--no-wait", action="store_true", help="Pass no_wait=true to /api/simulation/start so OASIS exits after the run loop.")
+    parser.add_argument("--model-map", default=None, help="Per-agent model routing YAML path for reddit simulations.")
     parser.add_argument("--graph-chunk-size", type=int, default=None)
     parser.add_argument("--accept-language", default="zh")
     parser.add_argument("--start-backend", action="store_true", help="Start npm run backend with Gemini env before replaying.")
@@ -640,6 +649,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             platform=args.platform,
             enable_graph_memory_update=not args.no_graph_memory_update,
             force=not args.no_force,
+            no_wait=args.no_wait,
+            model_map_path=args.model_map,
             parallel_profile_count=5,
             generate_report=not args.no_report,
             graph_chunk_size=args.graph_chunk_size,

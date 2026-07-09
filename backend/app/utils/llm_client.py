@@ -7,6 +7,7 @@ Install Prompture for multi-provider support: pip install prompture
 """
 
 import json
+import os
 import re
 from typing import Optional, Dict, Any, List
 
@@ -21,8 +22,7 @@ try:
 except ImportError:
     _HAS_PROMPTURE = False
 
-if not _HAS_PROMPTURE:
-    from openai import OpenAI
+from openai import OpenAI
 
 
 # Provider name → ProviderEnvironment field name
@@ -63,8 +63,12 @@ class LLMClient:
         self.api_key = api_key or Config.LLM_API_KEY
         self.base_url = base_url or Config.LLM_BASE_URL
         self.model = model or Config.LLM_MODEL_NAME
+        self._use_prompture = (
+            _HAS_PROMPTURE
+            and os.environ.get("MIROFISH_LLM_BACKEND", "prompture").lower() != "openai"
+        )
 
-        if _HAS_PROMPTURE:
+        if self._use_prompture:
             self._init_prompture()
         else:
             self._init_openai()
@@ -120,7 +124,7 @@ class LLMClient:
         Returns:
             模型响应文本
         """
-        if _HAS_PROMPTURE:
+        if self._use_prompture:
             content = self._chat_prompture(messages, temperature, max_tokens)
             return strip_think_tags(content)
         else:
@@ -145,7 +149,7 @@ class LLMClient:
         Returns:
             解析后的JSON对象
         """
-        if _HAS_PROMPTURE:
+        if self._use_prompture:
             response = self._chat_prompture(messages, temperature, max_tokens)
             # Prompture's clean_json_text strips think tags + markdown fences
             cleaned = clean_json_text(response)

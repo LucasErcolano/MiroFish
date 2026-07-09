@@ -316,7 +316,9 @@ class SimulationRunner:
         platform: str = "parallel",  # twitter / reddit / parallel
         max_rounds: int = None,  # 最大模拟轮数（可选，用于截断过长的模拟）
         enable_graph_memory_update: bool = False,  # 是否将活动更新到Zep图谱
-        graph_id: str = None  # Zep图谱ID（启用图谱更新时必需）
+        graph_id: Optional[str] = None,  # Zep图谱ID（启用图谱更新时必需）
+        no_wait: bool = False,
+        model_map_path: Optional[str] = None,
     ) -> SimulationRunState:
         """
         启动模拟
@@ -386,12 +388,16 @@ class SimulationRunner:
         
         # 确定运行哪个脚本（脚本位于 backend/scripts/ 目录）
         if platform == "twitter":
+            if model_map_path:
+                raise ValueError("model_map_path is only supported for reddit simulations")
             script_name = "run_twitter_simulation.py"
             state.twitter_running = True
         elif platform == "reddit":
             script_name = "run_reddit_simulation.py"
             state.reddit_running = True
         else:
+            if model_map_path:
+                raise ValueError("model_map_path is only supported for reddit simulations")
             script_name = "run_parallel_simulation.py"
             state.twitter_running = True
             state.reddit_running = True
@@ -422,6 +428,10 @@ class SimulationRunner:
             # 如果指定了最大轮数，添加到命令行参数
             if max_rounds is not None and max_rounds > 0:
                 cmd.extend(["--max-rounds", str(max_rounds)])
+            if no_wait:
+                cmd.append("--no-wait")
+            if model_map_path:
+                cmd.extend(["--model-map", model_map_path])
             
             # 创建主日志文件，避免 stdout/stderr 管道缓冲区满导致进程阻塞
             main_log_path = os.path.join(sim_dir, "simulation.log")
