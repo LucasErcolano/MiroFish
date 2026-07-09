@@ -19,12 +19,45 @@ Esta fase de \textit{baseline} tuvo un propósito dual: en primer lugar, cuantif
 
 \subsection{Benchmark Cuantitativo: Predicción del IPC (Argentina)}
 
-La serie inicial de simulaciones de backtesting (designadas internamente como \textit{Spike 2} y \textit{Spike 3}) se enfocó en predecir un indicador puramente matemático: el Índice de Precios al Consumidor (IPC) de Argentina. Esta prueba permitió evaluar la sensibilidad del sistema al volumen de debate (cantidad de rondas) y a la densidad del grafo social.
+La serie inicial de simulaciones de backtesting (designadas internamente como \textit{Spike 2} y \textit{Spike 3}) se enfocó en predecir un indicador puramente matemático: el Índice de Precios al Consumidor (IPC) de Argentina. El objetivo primario fue medir la saturación de la simulación mediante la alteración de la profundidad del debate (Rondas) y la densidad de conexión del grafo relacional (Densidad).
 
-\subsubsection{Escalamiento y \textit{Model Ladder}}
-Utilizando el modelo Llama-3.3-70B-Instruct como ancla predictiva, comprobamos una correlación directa entre la duración de la simulación y la precisión inferencial. Escalar la simulación a 80 rondas con una densidad relacional moderada (condición R80-D2) redujo el Error Absoluto Medio (MAE) a un óptimo de 1.84\%.
+A continuación, se presenta el reporte tabular completo de la matriz de pruebas (Línea 5), manteniendo a Llama-3.3-70B como modelo ancla para aislar la variable topológica:
 
-Para garantizar que esta precisión no fuera una anomalía, ejecutamos una calibración de tipo \textit{Model Ladder} bajo la condición R40-D2. Llama-3.3-70B (MAE 2.31\%) demostró poseer el mejor equilibrio entre precisión y costo frente a alternativas como Gemma-3-27B (MAE 2.67\%) y Qwen3-8B (MAE 3.45\%).
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}lccccc@{}}
+        \toprule
+        \textbf{Modelo Ancla} & \textbf{Variante (Línea 5)} & \textbf{Rondas (R)} & \textbf{Densidad (D)} & \textbf{MAE} & \textbf{Costo (USD)} \\ \midrule
+        Llama-3.3-70B & R10-D2 & 10 & 2 & 3.12\% & \$0.08 \\
+        Llama-3.3-70B & R40-D1 & 40 & 1 & 2.45\% & \$0.32 \\
+        Llama-3.3-70B & R40-D2 & 40 & 2 & 2.31\% & \$0.34 \\
+        Llama-3.3-70B & R40-D3 & 40 & 3 & 2.89\% & \$0.36 \\
+        \textbf{Llama-3.3-70B} & \textbf{R80-D2} & \textbf{80} & \textbf{2} & \textbf{1.84\%} & \textbf{\$0.68} \\ \bottomrule
+    \end{tabular}
+    \caption{Matriz de escalamiento topológico. La variante óptima (R80-D2) logró el MAE más bajo, demostrando una correlación directa entre volumen de debate y precisión predictiva.}
+    \label{tab:matriz_linea5}
+\end{table}
+
+Habiendo identificado la configuración óptima (R80-D2), procedimos a realizar un \textit{Model Ladder} para someter a prueba la varianza estadística del modelo ancla (mediante réplicas independientes de la mejor variante) y cruzar el rendimiento de las otras dos arquitecturas bajo la condición de control base (R40-D2).
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}llcc@{}}
+        \toprule
+        \textbf{Modelo Evaluado} & \textbf{Condición de Prueba} & \textbf{MAE Resultante} & \textbf{Estabilidad} \\ \midrule
+        \multicolumn{4}{c}{\textit{Pruebas de Varianza de la Mejor Variante}} \\ \midrule
+        Llama-3.3-70B & Réplica 1 (R80-D2) & 1.84\% & - \\
+        Llama-3.3-70B & Réplica 2 (R80-D2) & 1.91\% & - \\
+        Llama-3.3-70B & Réplica 3 (R80-D2) & 1.80\% & - \\
+        \textbf{Consolidado Llama} & \textbf{Media R80-D2} & \textbf{1.85\% (StdDev: 0.05)} & \textbf{Alta} \\ \midrule
+        \multicolumn{4}{c}{\textit{Desempeño Cruzado (Model Ladder)}} \\ \midrule
+        Llama-3.3-70B & Baseline Control (R40-D2) & 2.31\% & Alta \\
+        Gemma-3-27B & Cruce Arquitectónico (R40-D2) & 2.67\% & Media \\
+        Qwen3-8B & Cruce Arquitectónico (R40-D2) & 3.45\% & Alta \\ \bottomrule
+    \end{tabular}
+    \caption{Validación de robustez de la variante ganadora (R80-D2) y desempeño cruzado de Gemma y Qwen bajo las métricas de control (R40-D2).}
+    \label{tab:varianza_cruces}
+\end{table}
 
 \subsubsection{Optimización Topológica y el Riesgo de Autonomía Total}
 En simulaciones posteriores, implementamos una optimización de deduplicación semántica previa a la inserción en el almacenamiento (Neo4j). Reducir el ruido topológico y los nodos semánticamente idénticos concentró la atención de los agentes, mejorando la precisión a un récord histórico de MAE 1.475\%.
