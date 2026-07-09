@@ -70,8 +70,24 @@ No obstante, al intentar dotar al sistema de recolección de contexto 100\% aut�
 
 El entorno del IPC, al ser numérico, enmascaraba las debilidades dialécticas de los LLMs. Para estudiar los fenómenos emergentes de sociología computacional, trasladamos el \textit{baseline} a escenarios de debate abiertos y polarizados (Política en Bolivia y Copa América de Fútbol). Asignamos iterativamente a cada modelo el control total de la simulación para aislar sus debilidades:
 
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}lllc@{}}
+        \toprule
+        \textbf{Modelo Asignado} & \textbf{Escenario (Caso)} & \textbf{Variante de Estrés} & \textbf{Resultado Observado} \\ \midrule
+        Llama-3.3-70B & Balotaje Bolivia & R10 (Baja Profundidad) & MAE 7.6 (Sesgo Alto) \\
+        \textbf{Llama-3.3-70B} & \textbf{Balotaje Bolivia} & \textbf{R40 (Alta Profundidad)} & \textbf{MAE 10.0 (Herd Behavior)} \\ \midrule
+        Gemma-3-27B & Copa América Fútbol & Aislamiento Inicial & Postura: Argentina \\
+        \textbf{Gemma-3-27B} & \textbf{Copa América Fútbol} & \textbf{Inyección Estadísticas (Col)} & \textbf{Terquedad (Ignora Datos)} \\ \midrule
+        Qwen3-8B & Multi-escenario & Aislamiento Inicial & Consenso Neutro \\
+        \textbf{Qwen3-8B} & \textbf{Multi-escenario} & \textbf{Inyección Sorpresa} & \textbf{Absorción Desbalanceada} \\ \bottomrule
+    \end{tabular}
+    \caption{Matriz de Pruebas de Estrés en Escenarios Abiertos. Se resalta en negrita la variante límite que desencadenó la patología sistémica de cada modelo.}
+    \label{tab:estres_abiertas}
+\end{table}
+
 \begin{itemize}
-    \item \textbf{Cámaras de Eco y \textit{Herd Behavior} (Llama-3.3 en Bolivia):} Al someter a Llama-3.3 a simulaciones de debate extendido (escalando de R10 a R40) sobre el balotaje presidencial boliviano, observamos un ciclo destructivo. El modelo retroalimentó de forma recursiva sus propias asunciones, formando una burbuja epistemológica que lo alejó por completo del \textit{Ground Truth}. Esta cámara de eco disparó el MAE de 7.6 (en R10) a un alarmante 10.0 (en R40).
+    \item \textbf{Cámaras de Eco y \textit{Herd Behavior} (Llama-3.3 en Bolivia):} Como expone la Tabla \ref{tab:estres_abiertas}, al someter a Llama-3.3 a simulaciones de debate extendido (escalando de R10 a R40) sobre el balotaje presidencial boliviano, observamos un ciclo destructivo. El modelo retroalimentó de forma recursiva sus propias asunciones, formando una burbuja epistemológica que lo alejó por completo del \textit{Ground Truth}. Esta cámara de eco disparó el MAE de 7.6 a un alarmante 10.0.
     \item \textbf{Terquedad de Pre-entrenamiento (Gemma-3 en Fútbol):} En el escenario deportivo, Gemma-3 demostró una impermeabilidad absoluta frente a la información factual (estadísticas provistas sobre Colombia). El peso de su pre-entrenamiento (sobrerrepresentación del equipo argentino) anuló su capacidad de asimilar evidencia contraria.
     \item \textbf{Permeabilidad Aislada (Qwen3-8B):} Qwen3 exhibió la flexibilidad lógica necesaria para absorber inyecciones de datos sorpresivos, pero al actuar en aislamiento, no lograba replicar un debate equilibrado, inclinando abruptamente el consenso de toda la población simulada.
 \end{itemize}
@@ -82,8 +98,21 @@ Conscientes de las profundas patologías conductuales expuestas en los escenario
 
 Los resultados forenses confirmaron asimetrías severas en el comportamiento generativo de los modelos base:
 
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}lccccc@{}}
+        \toprule
+        \textbf{Modelo Evaluado} & \textbf{Posts Originales} & \textbf{Comentarios} & \textbf{Self-BLEU ($\downarrow$)} & \textbf{Distinct-2 ($\uparrow$)} & \textbf{Deriva Temporal} \\ \midrule
+        Llama-3.3-70B & 10 & 57 & 0.412 & 0.614 & 0.266 \\
+        \textbf{Gemma-3-27B} & \textbf{18} & \textbf{16} & \textbf{0.264*} & \textbf{0.752*} & \textbf{N/A} \\
+        Qwen3-8B & N/A & N/A & N/A & N/A & \textbf{0.225*} \\ \bottomrule
+    \end{tabular}
+    \caption{Resultados cuantitativos de la Línea 6 (Entropía y Diversidad). Las celdas marcadas con asterisco (*) y negrita indican la variante arquitectónica dominante: Gemma lidera contundentemente en diversidad léxica y proactividad, mientras que Qwen lidera en estabilidad ideológica (menor deriva temporal).}
+    \label{tab:entropia_linea6}
+\end{table}
+
 \begin{enumerate}
-    \item \textbf{Composición Conductual y Proactividad:} La distribución de acciones en la plataforma virtual expuso un sesgo conductual masivo. Llama-3.3 es algorítmicamente reactivo: por cada 10 publicaciones originales (\textit{posts}), generó 57 comentarios a terceros. Por el contrario, Gemma-3 mostró un perfil proactivo e independiente, emitiendo 18 publicaciones y 16 comentarios.
+    \item \textbf{Composición Conductual y Proactividad:} La distribución de acciones en la plataforma virtual expuso un sesgo conductual masivo (Tabla \ref{tab:entropia_linea6}). Llama-3.3 es algorítmicamente reactivo: por cada 10 publicaciones originales (\textit{posts}), generó 57 comentarios a terceros. Por el contrario, Gemma-3 mostró un perfil proactivo e independiente, emitiendo 18 publicaciones y 16 comentarios.
     \item \textbf{Entropía Léxica y Repetitividad:} Al filtrar la métrica exclusivamente hacia publicaciones originales, descubrimos que Gemma-3 posee una entropía semántica significativamente mayor, produciendo textos altamente diversos (\textit{Self-BLEU} 0.264, \textit{distinct-2} 0.752). Llama-3.3 demostró una marcada pobreza en su diversidad generativa (\textit{Self-BLEU} 0.412), tendiendo a reciclar estructuras léxicas de manera sistémica.
     \item \textbf{Deriva Temporal (\textit{Intra-Persona Drift}):} Empleando la metodología de \textit{Checkpoints Interview} (encuestas sistemáticas a los agentes simulados al inicio, mitad y cierre de la simulación), cuantificamos la consistencia de las posturas (ideologías). Llama-3.3 sufrió de inestabilidad crónica, exhibiendo una deriva estructural mayor (\textit{Endpoint-distance} de 0.266) que Qwen3 (0.225), probando que las "personas" simuladas por Llama tienden a olvidar o mutar sus posturas originarias si la simulación se prolonga.
 \end{enumerate}
