@@ -1,4 +1,4 @@
-﻿\documentclass{article}
+\documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage[spanish]{babel}
 \usepackage{amsmath}
@@ -15,7 +15,7 @@
 
 \subsection{Propósito y Transición a la Experimentación Empírica}
 
-Una vez establecidos los casos de estudio, la infraestructura de ingestión de datos y la arquitectura base de MiroFish (descritos en la sección anterior), resultó metodológicamente imperativo establecer un \textit{benchmark} riguroso utilizando modelos de lenguaje en aislamiento (paradigma \textit{Single-Agent} / \textit{Single-Model}). 
+Una vez establecidos los casos de estudio, la infraestructura de ingestión de datos y la arquitectura base de MiroFish, resultó metodológicamente imperativo establecer un \textit{benchmark} riguroso utilizando modelos de lenguaje en aislamiento (paradigma \textit{Single-Agent} / \textit{Single-Model}). 
 
 Esta fase tuvo un propósito dual: en primer lugar, cuantificar el rendimiento predictivo puro (\textit{Forecasting}) del sistema frente a los distintos escenarios (económicos, electorales y deportivos); y en segundo lugar, extraer métricas de referencia sobre el comportamiento intrínseco, los sesgos y las deficiencias de cada arquitectura LLM individual antes de introducir la complejidad combinatoria de un entorno Multi-Agente.
 
@@ -88,9 +88,9 @@ Para medir el decaimiento de la certeza predictiva, evaluamos el rendimiento en 
 \end{itemize}
 
 \subsubsection{Inyección de Ruido y Momento de Entrada}
-Adicionalmente, experimentamos alterando el momento de inyección de datos y saturando el entorno con ruido deliberado (ej. \texttt{input\_04\_noise\_dolar.txt}). Bajo condiciones de alta profundidad (R80-D2), la inyección de ruido financiero desencadenó un mecanismo inesperado: el modelo asimiló la especulación social (\textit{Herd Behavior}) de los datos ruidosos, lo que irónicamente lo llevó a predecir con extrema precisión un anclaje recesivo (logrando un récord histórico de MAE 0.9875\% en esa variante aislada). 
+Adicionalmente, experimentamos alterando el momento de inyección de datos y saturando el entorno con ruido deliberado. Bajo condiciones de alta profundidad (R80-D2), la inyección de ruido financiero desencadenó un mecanismo inesperado: el modelo asimiló la especulación social (\textit{Herd Behavior}) de los datos ruidosos, lo que irónicamente lo llevó a predecir con extrema precisión un anclaje recesivo (logrando un récord histórico de MAE 0.9875\% en esa variante aislada). 
 
-Sin embargo, cruzando estos datos con el análisis cualitativo (Tabla \ref{tab:evaluacion_arquitecturas}), confirmamos que el \textit{momento} de la inyección es crítico. Datos (incluso factualmente correctos) inyectados a mitad de debate suelen ser ignorados por arquitecturas con fuertes sesgos de pre-entrenamiento (como Gemma), probando que la asimilación depende del balance entre el "ruido" externo y el tiempo de arraigo de las creencias en la simulación.
+Sin embargo, cruzando estos datos con el análisis cualitativo (Tabla \ref{tab:evaluacion_arquitecturas}), confirmamos que el \textit{momento} de la inyección es crítico. Datos (incluso factualmente correctos) inyectados a mitad de debate suelen ser ignorados por arquitecturas con fuertes sesgos de pre-entrenamiento (como Gemma), probando que la asimilación depende del balance entre el 'ruido' externo y el tiempo de arraigo de las creencias en la simulación.
 
 \subsection{Análisis Intrínseco: Diversidad Léxica y Estabilidad Temporal}
 
@@ -147,7 +147,7 @@ En el \textit{baseline}, al escalar las rondas de debate bajo un solo modelo (Ll
 
 Al replicar esta misma prueba con la red Multi-Agente (sin estímulos externos), nuestra hipótesis de auto-regulación cruzada se vio refutada de forma espectacular. La confrontación de pesos cognitivos distintos no generó una corrección hacia la verdad, sino un \textbf{Colapso Semántico (Model Collapse)}. 
 
-El análisis forense reveló que los agentes (Llama, Gemma y Qwen), forzados a dialogar sin nueva entropía, cayeron en un \textit{deadlock} dialéctico dictado por su alineación ética y asimetrías conductuales (la hiper-reactividad de Llama chocando contra la proactividad desconectada de Gemma, como evidenció el análisis intrínseco). El foro se llenó exclusivamente de iteraciones de cortesía infinita como: \textit{"I completely agree with the importance of considering the candidates' policies..."}. Ningún modelo tomó postura política.
+El análisis forense reveló que los agentes (Llama, Gemma y Qwen), forzados a dialogar sin nueva entropía, cayeron en un \textit{deadlock} dialéctico dictado por su alineación ética y asimetrías conductuales (la hiper-reactividad de Llama chocando contra la proactividad desconectada de Gemma, como evidenció el análisis intrínseco). El foro se llenó exclusivamente de iteraciones de cortesía infinita como: \textit{'I completely agree with the importance of considering the candidates policies...'}. Ningún modelo tomó postura política.
 
 Como resultado, el sistema falló en extraer un consenso válido. El MAE se disparó algorítmicamente a 66.667 debido a un abstencionismo del 100\% (clasificado como Indecisos/Otros). Esto probó que, en cautiverio, la diversidad de modelos degenera en pasividad absoluta.
 
@@ -169,7 +169,7 @@ Como resultado, el sistema falló en extraer un consenso válido. El MAE se disp
 
 En el \textit{baseline}, Gemma-3, actuando en solitario frente al debate de la Copa América, se mostró impenetrable ante las estadísticas a favor de Colombia, manteniendo obstinadamente su voto por Argentina.
 
-Al transicionar al modelo Multi-Agente, inyectamos la misma estadística a mitad de debate, siendo Llama-3.3 el vector de introducción. El resultado fue un éxito rotundo: sometido a la presión argumentativa de sus pares, Gemma-3 fracturó su rigidez de pre-entrenamiento. El rastreo de la base de datos documentó el viraje cognitivo, con Gemma respondiendo: \textit{"An excellent analysis! Colombia has a very real chance to shine..."}. Esto demostró que la influencia inter-modelo es factible y corrige los sesgos del \textit{baseline} si se cataliza mediante datos exógenos.
+Al transicionar al modelo Multi-Agente, inyectamos la misma estadística a mitad de debate, siendo Llama-3.3 el vector de introducción. El resultado fue un éxito rotundo: sometido a la presión argumentativa de sus pares, Gemma-3 fracturó su rigidez de pre-entrenamiento. El rastreo de la base de datos documentó el viraje cognitivo, con Gemma respondiendo: \textit{'An excellent analysis! Colombia has a very real chance to shine...'}. Esto demostró que la influencia inter-modelo es factible y corrige los sesgos del \textit{baseline} si se cataliza mediante datos exógenos.
 
 \subsubsection{Prueba 3: Continuación de Inyección de Ruido (Shock de Entropía Tardío)}
 
@@ -195,5 +195,4 @@ El contraste analítico entre el \textit{baseline} y la arquitectura Multi-Agent
 \end{enumerate}
 
 \end{document}
-
 
