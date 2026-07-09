@@ -3,6 +3,7 @@ import unittest
 import math
 import os
 import tempfile
+from unittest.mock import patch
 
 from app.config import Config
 from app.services.experimental_memory import ExperimentalMemoryService
@@ -19,6 +20,12 @@ class TestExperimentalMemory(unittest.TestCase):
         Config.UPLOAD_FOLDER = os.path.join(self.tmp.name, "uploads")
         Config.GRAPH_SEARCH_APP_EMBEDDER_BASE_URL = None
         Config.GRAPH_SEARCH_APP_EMBEDDER_MODEL = None
+        self.embedder_config_patch = patch.object(
+            Config,
+            "get_graph_search_embedder_config",
+            return_value={"api_key": None, "base_url": None, "model": None},
+        )
+        self.embedder_config_patch.start()
 
         self.simulation_id = "test_sim"
         self.test_dir = os.path.join(Config.DATA_DIR, "simulations", self.simulation_id)
@@ -27,6 +34,7 @@ class TestExperimentalMemory(unittest.TestCase):
         self.service = ExperimentalMemoryService(self.simulation_id)
 
     def tearDown(self):
+        self.embedder_config_patch.stop()
         Config.DATA_DIR = self.old_data_dir
         Config.UPLOAD_FOLDER = self.old_upload_folder
         Config.GRAPH_SEARCH_APP_EMBEDDER_BASE_URL = self.old_embedder_base_url
@@ -69,6 +77,21 @@ class TestExperimentalMemory(unittest.TestCase):
         # but the logic for cosine similarity and storage is what matters most here.
         results = self.service.retrieve("fox", k=1)
         self.assertIn("archival_memory", results)
+
+    def test_offline_fixture_ignores_graphiti_defaults(self):
+        """The test fixture must not activate Chroma from CI defaults."""
+        old_base_url = Config.GRAPHITI_EMBEDDER_BASE_URL
+        old_model = Config.GRAPHITI_EMBEDDER_MODEL
+        Config.GRAPHITI_EMBEDDER_BASE_URL = "http://example.invalid/v1"
+        Config.GRAPHITI_EMBEDDER_MODEL = "qwen3-embedding:8b"
+
+        try:
+            embedder_config = Config.get_graph_search_embedder_config()
+            self.assertFalse(embedder_config["base_url"])
+            self.assertFalse(embedder_config["model"])
+        finally:
+            Config.GRAPHITI_EMBEDDER_BASE_URL = old_base_url
+            Config.GRAPHITI_EMBEDDER_MODEL = old_model
 
 if __name__ == "__main__":
     unittest.main()
