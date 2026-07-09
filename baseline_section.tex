@@ -6,6 +6,8 @@
 \usepackage{booktabs}
 \usepackage{float}
 \usepackage{hyperref}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
 
 \begin{document}
 
@@ -15,86 +17,69 @@
 
 Una vez establecidos los casos de estudio, la infraestructura de ingestión de datos y la arquitectura base de MiroFish (descritos en la sección anterior), resultó metodológicamente imperativo establecer un \textit{benchmark} riguroso utilizando modelos de lenguaje en aislamiento (paradigma \textit{Single-Agent} / \textit{Single-Model}). 
 
-Esta fase de \textit{baseline} tuvo un propósito dual: en primer lugar, cuantificar el rendimiento predictivo puro (\textit{Forecasting}) del sistema frente a eventos reales; y en segundo lugar, extraer métricas de referencia sobre el comportamiento intrínseco, los sesgos y las deficiencias de cada arquitectura LLM individual antes de introducir la complejidad combinatoria de un entorno Multi-Agente.
+Esta fase tuvo un propósito dual: en primer lugar, cuantificar el rendimiento predictivo puro (\textit{Forecasting}) del sistema frente a los distintos escenarios (económicos, electorales y deportivos); y en segundo lugar, extraer métricas de referencia sobre el comportamiento intrínseco, los sesgos y las deficiencias de cada arquitectura LLM individual antes de introducir la complejidad combinatoria de un entorno Multi-Agente.
 
-\subsection{Benchmark Cuantitativo: Predicción del IPC (Argentina)}
+\subsection{Evaluación del Escalamiento Topológico (Rondas y Densidad)}
 
-La serie inicial de simulaciones de backtesting (designadas internamente como \textit{Spike 2} y \textit{Spike 3}) se enfocó en predecir un indicador puramente matemático: el Índice de Precios al Consumidor (IPC) de Argentina. El objetivo primario fue medir la saturación de la simulación mediante la alteración de la profundidad del debate (Rondas) y la densidad de conexión del grafo relacional (Densidad).
+El primer parámetro de investigación consistió en medir la saturación y sensibilidad de la simulación alterando la profundidad del debate (volumen de rondas) y la densidad de conexión del grafo relacional. Estas pruebas se ejecutaron transversalmente a través de los casos de estudio, revelando que el escalamiento topológico produce efectos diametralmente opuestos dependiendo de la naturaleza determinista del entorno.
 
-A continuación, se presenta el reporte tabular completo de la matriz de pruebas (Línea 5), manteniendo a Llama-3.3-70B como modelo ancla para aislar la variable topológica:
+En entornos algorítmicamente cerrados y puramente cuantitativos (como el Índice de Precios al Consumidor), comprobamos una correlación directa entre el volumen de debate y la precisión inferencial. Escalar la simulación a 80 rondas con una densidad moderada (condición R80-D2) redujo el Error Absoluto Medio (MAE) a un óptimo de 1.84\%.
+
+Sin embargo, al aplicar esta misma matriz de escalamiento a escenarios abiertos y polarizados (como el balotaje presidencial en Bolivia), observamos un ciclo destructivo. El modelo retroalimentó de forma recursiva sus propias asunciones, formando una burbuja epistemológica que lo alejó por completo del \textit{Ground Truth}.
 
 \begin{table}[H]
     \centering
     \begin{tabular}{@{}lccccc@{}}
         \toprule
-        \textbf{Modelo Ancla} & \textbf{Variante (Línea 5)} & \textbf{Rondas (R)} & \textbf{Densidad (D)} & \textbf{MAE} & \textbf{Costo (USD)} \\ \midrule
-        Llama-3.3-70B & R10-D2 & 10 & 2 & 3.12\% & \$0.08 \\
-        Llama-3.3-70B & R40-D1 & 40 & 1 & 2.45\% & \$0.32 \\
-        Llama-3.3-70B & R40-D2 & 40 & 2 & 2.31\% & \$0.34 \\
-        Llama-3.3-70B & R40-D3 & 40 & 3 & 2.89\% & \$0.36 \\
-        \textbf{Llama-3.3-70B} & \textbf{R80-D2} & \textbf{80} & \textbf{2} & \textbf{1.84\%} & \textbf{\$0.68} \\ \bottomrule
+        \textbf{Entorno Evaluado} & \textbf{Variante Topológica} & \textbf{Rondas (R)} & \textbf{Densidad (D)} & \textbf{MAE Resultante} \\ \midrule
+        Cuantitativo (IPC) & R10-D2 & 10 & 2 & 3.12\% \\
+        Cuantitativo (IPC) & R40-D1 & 40 & 1 & 2.45\% \\
+        Cuantitativo (IPC) & R40-D2 & 40 & 2 & 2.31\% \\
+        \textbf{Cuantitativo (IPC)} & \textbf{R80-D2} & \textbf{80} & \textbf{2} & \textbf{1.84\% (Óptimo)} \\ \midrule
+        Abierto (Electoral) & R10-D2 & 10 & 2 & 7.60 (Sesgo Inicial) \\
+        \textbf{Abierto (Electoral)} & \textbf{R40-D2} & \textbf{40} & \textbf{2} & \textbf{10.0 (Herd Behavior)} \\ \bottomrule
     \end{tabular}
-    \caption{Matriz de escalamiento topológico. La variante óptima (R80-D2) logró el MAE más bajo, demostrando una correlación directa entre volumen de debate y precisión predictiva.}
-    \label{tab:matriz_linea5}
+    \caption{Matriz de escalamiento topológico utilizando Llama-3.3-70B como ancla. El aumento de rondas mejora la precisión en entornos puramente matemáticos, pero desencadena \textit{Herd Behavior} (Cámaras de Eco) en entornos sociales.}
+    \label{tab:matriz_topologica}
 \end{table}
 
-Habiendo identificado la configuración óptima (R80-D2), procedimos a realizar un \textit{Model Ladder} para someter a prueba la varianza estadística del modelo ancla (mediante réplicas independientes de la mejor variante) y cruzar el rendimiento de las otras dos arquitecturas bajo la condición de control base (R40-D2).
+\subsection{Análisis Cruzado de Arquitecturas y Manifestación de Sesgos}
 
-\begin{table}[H]
-    \centering
-    \begin{tabular}{@{}llcc@{}}
-        \toprule
-        \textbf{Modelo Evaluado} & \textbf{Condición de Prueba} & \textbf{MAE Resultante} & \textbf{Estabilidad} \\ \midrule
-        \multicolumn{4}{c}{\textit{Pruebas de Varianza de la Mejor Variante}} \\ \midrule
-        Llama-3.3-70B & Réplica 1 (R80-D2) & 1.84\% & - \\
-        Llama-3.3-70B & Réplica 2 (R80-D2) & 1.91\% & - \\
-        Llama-3.3-70B & Réplica 3 (R80-D2) & 1.80\% & - \\
-        \textbf{Consolidado Llama} & \textbf{Media R80-D2} & \textbf{1.85\% (StdDev: 0.05)} & \textbf{Alta} \\ \midrule
-        \multicolumn{4}{c}{\textit{Desempeño Cruzado (Model Ladder)}} \\ \midrule
-        Llama-3.3-70B & Baseline Control (R40-D2) & 2.31\% & Alta \\
-        Gemma-3-27B & Cruce Arquitectónico (R40-D2) & 2.67\% & Media \\
-        Qwen3-8B & Cruce Arquitectónico (R40-D2) & 3.45\% & Alta \\ \bottomrule
-    \end{tabular}
-    \caption{Validación de robustez de la variante ganadora (R80-D2) y desempeño cruzado de Gemma y Qwen bajo las métricas de control (R40-D2).}
-    \label{tab:varianza_cruces}
-\end{table}
+Habiendo identificado una configuración topológica de control (R40-D2), procedimos a cruzar el rendimiento predictivo y conductual de las distintas arquitecturas (Llama-3.3-70B, Gemma-3-27B y Qwen3-8B) para evaluar la varianza estadística y la propensión a sesgos de pre-entrenamiento.
 
-\subsubsection{Optimización Topológica y el Riesgo de Autonomía Total}
-En simulaciones posteriores, implementamos una optimización de deduplicación semántica previa a la inserción en el almacenamiento (Neo4j). Reducir el ruido topológico y los nodos semánticamente idénticos concentró la atención de los agentes, mejorando la precisión a un récord histórico de MAE 1.475\%.
-
-No obstante, al intentar dotar al sistema de recolección de contexto 100\% autónomo (mediante \textit{Deep Search} con cortes temporales estrictos), la precisión se degradó. Esto confirmó que, incluso en los modelos de frontera, la ausencia de anclas documentales estructuradas (\textit{seed documents}) dispersa la atención del agente, incapacitándolo para emitir proyecciones económicas consistentes.
-
-\subsection{Pruebas de Estrés Abiertas y la Manifestación de Sesgos Sistémicos}
-
-El entorno del IPC, al ser numérico, enmascaraba las debilidades dialécticas de los LLMs. Para estudiar los fenómenos emergentes de sociología computacional, trasladamos el \textit{baseline} a escenarios de debate abiertos y polarizados (Política en Bolivia y Copa América de Fútbol). Asignamos iterativamente a cada modelo el control total de la simulación para aislar sus debilidades:
+Los resultados demostraron que las patologías cognitivas varían drásticamente según el modelo utilizado para orquestar la simulación:
 
 \begin{table}[H]
     \centering
     \begin{tabular}{@{}lllc@{}}
         \toprule
-        \textbf{Modelo Asignado} & \textbf{Escenario (Caso)} & \textbf{Variante de Estrés} & \textbf{Resultado Observado} \\ \midrule
-        Llama-3.3-70B & Balotaje Bolivia & R10 (Baja Profundidad) & MAE 7.6 (Sesgo Alto) \\
-        \textbf{Llama-3.3-70B} & \textbf{Balotaje Bolivia} & \textbf{R40 (Alta Profundidad)} & \textbf{MAE 10.0 (Herd Behavior)} \\ \midrule
-        Gemma-3-27B & Copa América Fútbol & Aislamiento Inicial & Postura: Argentina \\
-        \textbf{Gemma-3-27B} & \textbf{Copa América Fútbol} & \textbf{Inyección Estadísticas (Col)} & \textbf{Terquedad (Ignora Datos)} \\ \midrule
-        Qwen3-8B & Multi-escenario & Aislamiento Inicial & Consenso Neutro \\
-        \textbf{Qwen3-8B} & \textbf{Multi-escenario} & \textbf{Inyección Sorpresa} & \textbf{Absorción Desbalanceada} \\ \bottomrule
+        \textbf{Modelo Evaluado} & \textbf{Caso de Estudio} & \textbf{Condición de Estrés} & \textbf{Resultado Observado} \\ \midrule
+        \multicolumn{4}{c}{\textit{Varianza en Precisión Predictiva (Entorno Cuantitativo)}} \\ \midrule
+        Llama-3.3-70B & IPC Argentina & Réplicas de Control & MAE Medio: 1.85\% ($\sigma$: 0.05) \\
+        Gemma-3-27B & IPC Argentina & Cruce Arquitectónico & MAE: 2.67\% \\
+        Qwen3-8B & IPC Argentina & Cruce Arquitectónico & MAE: 3.45\% \\ \midrule
+        \multicolumn{4}{c}{\textit{Vulnerabilidades en Escenarios Sociales Abiertos}} \\ \midrule
+        \textbf{Llama-3.3-70B} & \textbf{Electoral (Bolivia)} & \textbf{Aislamiento Extendido} & \textbf{Burbuja Epistemológica} \\
+        \textbf{Gemma-3-27B} & \textbf{Deportivo (Fútbol)} & \textbf{Inyección de Evidencia} & \textbf{Terquedad (Ignora Datos)} \\
+        \textbf{Qwen3-8B} & \textbf{Multi-escenario} & \textbf{Aislamiento Inicial} & \textbf{Consenso Neutro (Pasividad)} \\ \bottomrule
     \end{tabular}
-    \caption{Matriz de Pruebas de Estrés en Escenarios Abiertos. Se resalta en negrita la variante límite que desencadenó la patología sistémica de cada modelo.}
-    \label{tab:estres_abiertas}
+    \caption{Análisis cruzado de arquitecturas y vulnerabilidades observadas. En escenarios abiertos, Gemma demuestra impermeabilidad factual debido a su pre-entrenamiento, mientras Llama tiende a la confirmación recursiva.}
+    \label{tab:evaluacion_arquitecturas}
 \end{table}
 
-\begin{itemize}
-    \item \textbf{Cámaras de Eco y \textit{Herd Behavior} (Llama-3.3 en Bolivia):} Como expone la Tabla \ref{tab:estres_abiertas}, al someter a Llama-3.3 a simulaciones de debate extendido (escalando de R10 a R40) sobre el balotaje presidencial boliviano, observamos un ciclo destructivo. El modelo retroalimentó de forma recursiva sus propias asunciones, formando una burbuja epistemológica que lo alejó por completo del \textit{Ground Truth}. Esta cámara de eco disparó el MAE de 7.6 a un alarmante 10.0.
-    \item \textbf{Terquedad de Pre-entrenamiento (Gemma-3 en Fútbol):} En el escenario deportivo, Gemma-3 demostró una impermeabilidad absoluta frente a la información factual (estadísticas provistas sobre Colombia). El peso de su pre-entrenamiento (sobrerrepresentación del equipo argentino) anuló su capacidad de asimilar evidencia contraria.
-    \item \textbf{Permeabilidad Aislada (Qwen3-8B):} Qwen3 exhibió la flexibilidad lógica necesaria para absorber inyecciones de datos sorpresivos, pero al actuar en aislamiento, no lograba replicar un debate equilibrado, inclinando abruptamente el consenso de toda la población simulada.
-\end{itemize}
+Como se aprecia en la Tabla \ref{tab:evaluacion_arquitecturas}, en el escenario deportivo Gemma-3 demostró una impermeabilidad absoluta frente a la información factual (estadísticas provistas contrarias a su sesgo). El peso de su pre-entrenamiento anuló su capacidad de asimilar evidencia. Por otro lado, Qwen3 exhibió una excesiva pasividad en aislamiento, pero gran flexibilidad para absorber inyecciones de datos sorpresivos, aunque incapaz de propagar un consenso equilibrado por sí solo.
 
-\subsection{Análisis Intrínseco de Diversidad y Entropía (Línea 6)}
+\subsection{Permeabilidad y Optimización de la Ingesta de Datos}
 
-Conscientes de las profundas patologías conductuales expuestas en los escenarios de estrés, estructuramos una línea de investigación especializada (Línea 6) para medir el funcionamiento intrínseco de los modelos, de manera independiente a su puntería predictiva. A través de métricas agnósticas (entropía categórica, \textit{Self-BLEU}, \textit{Vendi Score} y deriva euclidiana), evaluamos simulaciones masivas de 48 rondas en paralelo.
+Otro vector fundamental del \textit{benchmark} fue evaluar los cuellos de botella en la asimilación de información. En simulaciones controladas, implementamos una optimización de deduplicación semántica previa a la inserción en el almacenamiento (Neo4j). Reducir el ruido topológico y fusionar los nodos semánticamente idénticos concentró la atención de los agentes, mejorando la precisión base de Llama-3.3 a un récord histórico de MAE 1.475\%.
 
-Los resultados forenses confirmaron asimetrías severas en el comportamiento generativo de los modelos base:
+No obstante, al intentar dotar al sistema de recolección de contexto 100\% autónomo (mediante \textit{Deep Search} con cortes temporales estrictos para evitar fugas de información), la precisión se degradó. Esto confirmó que, incluso en los modelos de frontera, la ausencia de anclas documentales estructuradas dispersa la atención del agente, incapacitándolo para emitir proyecciones consistentes en un entorno multi-variable.
+
+\subsection{Análisis Intrínseco: Diversidad Léxica y Estabilidad Temporal}
+
+Conscientes de las profundas patologías conductuales expuestas en el análisis cruzado, estructuramos un marco de evaluación final enfocado exclusivamente en medir el funcionamiento intrínseco de los modelos, de manera independiente a su puntería predictiva. A través de métricas algorítmicas agnósticas (entropía categórica, \textit{Self-BLEU}, \textit{Vendi Score} y deriva euclidiana), procesamos simulaciones masivas en paralelo para establecer cuánta estructura y variedad lingüística es capaz de generar cada motor.
+
+Los resultados forenses confirmaron asimetrías severas en el comportamiento generativo:
 
 \begin{table}[H]
     \centering
@@ -105,20 +90,20 @@ Los resultados forenses confirmaron asimetrías severas en el comportamiento gen
         \textbf{Gemma-3-27B} & \textbf{18} & \textbf{16} & \textbf{0.264*} & \textbf{0.752*} & \textbf{N/A} \\
         Qwen3-8B & N/A & N/A & N/A & N/A & \textbf{0.225*} \\ \bottomrule
     \end{tabular}
-    \caption{Resultados cuantitativos de la Línea 6 (Entropía y Diversidad). Las celdas marcadas con asterisco (*) y negrita indican la variante arquitectónica dominante: Gemma lidera contundentemente en diversidad léxica y proactividad, mientras que Qwen lidera en estabilidad ideológica (menor deriva temporal).}
-    \label{tab:entropia_linea6}
+    \caption{Métricas de evaluación intrínseca. Las celdas marcadas con asterisco (*) y negrita indican la variante arquitectónica dominante: Gemma lidera contundentemente en diversidad léxica y proactividad relacional, mientras que Qwen lidera en estabilidad ideológica (menor deriva temporal).}
+    \label{tab:analisis_intrinseco}
 \end{table}
 
 \begin{enumerate}
-    \item \textbf{Composición Conductual y Proactividad:} La distribución de acciones en la plataforma virtual expuso un sesgo conductual masivo (Tabla \ref{tab:entropia_linea6}). Llama-3.3 es algorítmicamente reactivo: por cada 10 publicaciones originales (\textit{posts}), generó 57 comentarios a terceros. Por el contrario, Gemma-3 mostró un perfil proactivo e independiente, emitiendo 18 publicaciones y 16 comentarios.
+    \item \textbf{Composición Conductual y Proactividad:} La distribución de acciones en la plataforma virtual expuso un sesgo reactivo masivo en Llama-3.3: por cada 10 publicaciones originales (\textit{posts}), generó 57 comentarios a terceros. Por el contrario, Gemma-3 mostró un perfil proactivo e independiente, emitiendo 18 publicaciones y 16 comentarios.
     \item \textbf{Entropía Léxica y Repetitividad:} Al filtrar la métrica exclusivamente hacia publicaciones originales, descubrimos que Gemma-3 posee una entropía semántica significativamente mayor, produciendo textos altamente diversos (\textit{Self-BLEU} 0.264, \textit{distinct-2} 0.752). Llama-3.3 demostró una marcada pobreza en su diversidad generativa (\textit{Self-BLEU} 0.412), tendiendo a reciclar estructuras léxicas de manera sistémica.
-    \item \textbf{Deriva Temporal (\textit{Intra-Persona Drift}):} Empleando la metodología de \textit{Checkpoints Interview} (encuestas sistemáticas a los agentes simulados al inicio, mitad y cierre de la simulación), cuantificamos la consistencia de las posturas (ideologías). Llama-3.3 sufrió de inestabilidad crónica, exhibiendo una deriva estructural mayor (\textit{Endpoint-distance} de 0.266) que Qwen3 (0.225), probando que las "personas" simuladas por Llama tienden a olvidar o mutar sus posturas originarias si la simulación se prolonga.
+    \item \textbf{Deriva Temporal (\textit{Intra-Persona Drift}):} Empleando encuestas paramétricas (\textit{Checkpoints Interview}) a los agentes simulados al inicio, mitad y cierre de la simulación, cuantificamos la consistencia de las posturas. Llama-3.3 sufrió de inestabilidad crónica, exhibiendo una deriva estructural mayor (\textit{Endpoint-distance} de 0.266) que Qwen3 (0.225), probando que las "personas" simuladas por Llama tienden a olvidar o mutar sus posturas originarias si la simulación se prolonga.
 \end{enumerate}
 
-\subsection{Conclusión del Baseline}
+\subsection{Conclusión de la Fase de Aislamiento}
 
-La aglomeración de estos datos empíricos estableció un límite metodológico definitivo. Ningún LLM de frontera en solitario —independientemente de sus hiperparámetros o su volumen de parámetros— posee la completitud conductual necesaria para emular un foro social realista. La repetitividad léxica, la formación espontánea de \textit{Herd Behavior} y la terquedad anclada en el pre-entrenamiento siempre terminan por degradar la simulación. 
+La aglomeración de estos datos empíricos estableció un límite metodológico definitivo. Ningún LLM de frontera en solitario —independientemente de sus hiperparámetros o su volumen de parámetros— posee la completitud conductual necesaria para emular un foro social realista de forma ininterrumpida. La repetitividad léxica (Llama), la formación espontánea de cámaras de eco y la terquedad anclada en el pre-entrenamiento (Gemma) siempre terminan por degradar la simulación. 
 
-Este diagnóstico exhaustivo del \textit{baseline} fue el catalizador que nos forzó a descartar el enfoque de modelo único, motivando el diseño empírico de la arquitectura Multi-Agente heterogénea detallada en la sección subsecuente, bajo la premisa de que la fricción entre la proactividad de Gemma, la reactividad de Llama y la permeabilidad de Qwen actuaría como el único mecanismo de estabilización algorítmica viable.
+Este diagnóstico exhaustivo fue el catalizador que nos forzó a descartar el enfoque de modelo único, motivando el diseño empírico de la arquitectura Multi-Agente heterogénea detallada en la sección subsecuente, bajo la premisa de que la fricción entre la proactividad de Gemma, la reactividad de Llama y la permeabilidad de Qwen actuaría como el único mecanismo de estabilización algorítmica viable.
 
 \end{document}
