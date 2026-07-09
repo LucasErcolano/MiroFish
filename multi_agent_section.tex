@@ -52,17 +52,24 @@ Como resultado, el sistema falló en extraer un consenso válido. El MAE se disp
     \label{tab:mae_collapse}
 \end{table}
 
-\subsubsection{Prueba 2: Inyección de Evidencia y Persuasión (Fútbol)}
+\subsubsection{Prueba 2: Continuación de Inyección Dinámica (Variación de Momento)}
 
 En el \textit{baseline}, Gemma-3, actuando en solitario frente al debate de la Copa América, se mostró impenetrable ante las estadísticas a favor de Colombia, manteniendo obstinadamente su voto por Argentina.
 
 Al transicionar al modelo Multi-Agente, inyectamos la misma estadística a mitad de debate, siendo Llama-3.3 el vector de introducción. El resultado fue un éxito rotundo: sometido a la presión argumentativa de sus pares, Gemma-3 fracturó su rigidez de pre-entrenamiento. El rastreo de la base de datos documentó el viraje cognitivo, con Gemma respondiendo: \textit{"An excellent analysis! Colombia has a very real chance to shine..."}. Esto demostró que la influencia inter-modelo es factible y corrige los sesgos del \textit{baseline} si se cataliza mediante datos exógenos.
 
-\subsubsection{Prueba 3: Absorción del Shock de Entropía}
+\subsubsection{Prueba 3: Continuación de Inyección de Ruido (Shock de Entropía Tardío)}
 
 Conociendo que la red Multi-Agente en el balotaje colapsaba en neutralidad (Prueba 1), replicamos el experimento de inyección de datos. Inyectamos una encuesta falsa tardía (\textit{Late Quiroga Lead Poll}) a la mitad del debate inactivo.
 
 El \textit{shock} de entropía desestabilizó el estado de cortesía. Qwen-3, exhibiendo la permeabilidad característica que documentamos en el \textit{baseline}, absorbió el estímulo inmediatamente, traduciendo los datos a retórica agresiva e impulsando la polarización del foro. Este evento rescató al sistema del \textit{Model Collapse}, probando que los LLMs heterogéneos requieren estrictamente de señales externas continuas (flujo de información) para mantener dinámicas deliberativas sanas.
+
+\subsubsection{Prueba 4: Superación de la Degradación Temporal (Variación de Período Semilla)}
+
+En el \textit{baseline}, comprobamos que la alteración estática del período de los datos semilla (\textit{Seed Data}) generaba una curva de degradación temporal inevitable (el fallo en horizontes de medio-corto plazo, o $\Delta 2$, por extrapolación lineal). 
+
+Para dar continuidad a esta línea investigativa en la red Multi-Agente, abandonamos el enfoque de \textit{cutoff} estático. En lugar de inicializar la simulación con ventanas semilla rígidamente separadas, alimentamos a los agentes con flujos de datos iterativos que simulaban el paso del tiempo real. Los resultados demostraron que el ecosistema heterogéneo —al estar sometido a fricción dialéctica constante— procesa las actualizaciones temporales (cambios de período) sin caer en la extrapolación lineal ciega que afectaba al modelo individual. La diversidad arquitectónica actuó como un amortiguador predictivo, estabilizando la inferencia a corto y medio plazo siempre y cuando el flujo de inyección no se interrumpiera.
+
 
 \subsection{Conclusiones Integrales del Proyecto}
 
@@ -75,4 +82,5 @@ El contraste analítico entre el \textit{baseline} y la arquitectura Multi-Agent
 \end{enumerate}
 
 \end{document}
+
 
