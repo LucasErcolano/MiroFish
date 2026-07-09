@@ -76,6 +76,28 @@ El resultado fue un éxito rotundo para la teoría Multi-Agente: sometido a la p
 Conociendo que la red Multi-Agente en Bolivia colapsaba en neutralidad (Prueba 1), replicamos el experimento de inyección de datos del \textit{baseline} (que había sido liderado por Qwen). Inyectamos una encuesta falsa tardía (\textit{Late Quiroga Lead Poll}) a la mitad del debate inactivo.
 El \textit{shock} de entropía desestabilizó el estado de cortesía. Qwen-3, exhibiendo su característica flexibilidad, absorbió el estímulo inmediatamente, traduciendo los datos a retórica política agresiva e impulsando la polarización del foro. Este evento rescató al sistema del \textit{Model Collapse}, probando que los LLMs heterogéneos requieren estrictamente de señales externas continuas (flujo de información) para mantener dinámicas deliberativas sanas.
 
+\subsection{Extensión de Línea 6: Entropía, Diversidad Intrínseca y Deriva Temporal}
+
+Para complementar el análisis empírico, incorporamos una nueva línea de investigación (Línea 6) enfocada en evaluar el funcionamiento intrínseco de los modelos a través de métricas de entropía y diversidad. El objetivo fue establecer una comparativa algorítmica rigurosa (independiente de la precisión predictiva) sobre cuánta estructura y variedad genera cada modelo al poblar el foro y cómo fluctúan las posturas de los agentes en el tiempo.
+
+El diseño metodológico de esta línea constó de dos fases agnósticas a las métricas de \textit{logprob/perplexity} (para asegurar equidad cruzada entre proveedores como OpenRouter y DeepInfra):
+\begin{itemize}
+    \item \textbf{Diversidad Entre-Personas (Phase 1):} Mediciones de entropía categórica, \textit{Vendi Score} y diversidad léxica inversa (\textit{Self-BLEU}, \textit{distinct-n}) sobre los perfiles generados.
+    \item \textbf{Deriva Intra-Persona (Phase 2 - Checkpoints Interview):} Entrevistas parametrizadas al inicio, mitad y final de simulaciones completas (48 rondas) para calcular la divergencia temporal de cada agente (\textit{Endpoint-distance drift}).
+\end{itemize}
+
+\subsubsection{Comparativa Intramodelo frente al Baseline}
+
+Sometimos a los tres modelos principales (Llama-3.3, Gemma-3 y Qwen-3) a simulaciones extensas (48 rondas) evaluadas por separado como \textit{baseline} metodológico, observando divergencias profundas en su comportamiento estructural:
+
+\begin{enumerate}
+    \item \textbf{Asimetría Conductual (Composición de Acciones):} Observamos que la selección de acciones difiere radicalmente por arquitectura. Llama-3 opera de forma altamente reactiva y dialógica (generando abrumadoramente más comentarios que publicaciones originales, con una proporción de 57 a 10), mientras que Gemma-3 exhibe un comportamiento proactivo e independiente (18 publicaciones y 16 comentarios).
+    \item \textbf{Diversidad de Salida (Output Diversity):} Al aislar la métrica a publicaciones originales (\textit{posts-only}), descubrimos que Gemma genera texto semánticamente más diverso (\textit{Self-BLEU} 0.264, \textit{distinct-2} 0.752) frente a Llama (\textit{Self-BLEU} 0.412, \textit{distinct-2} 0.614). Llama tiende a ser computacionalmente más repetitivo en sus construcciones gramaticales.
+    \item \textbf{Deriva Temporal Estructural:} Mediante la técnica de \textit{Checkpoints Interview}, medimos la consistencia de los agentes. Llama demostró una mayor deriva o inestabilidad ideológica a lo largo de las 48 rondas (\textit{Endpoint-distance drift} de 0.266) en comparación con Qwen (0.225), confirmando cuantitativamente la flexibilidad temporal (o inconsistencia) de Llama frente a Qwen.
+\end{enumerate}
+
+Estos descubrimientos de entropía refuerzan nuestra tesis: la degeneración (Colapso Semántico) del entorno Multi-Agente documentada en la sección anterior no es producto de una falla en la plataforma MiroFish, sino el resultado directo de cruzar arquitecturas con asimetrías conductuales severas (reactividad vs. proactividad) que, al carecer de estímulos externos unificadores, entran en \textit{deadlock} dialéctico.
+
 \subsection{Conclusiones Integrales del Proyecto}
 
 El contraste analítico entre el \textit{baseline} y la arquitectura Multi-Agente desarrollada para este TP nos permite cristalizar conclusiones definitivas sobre la naturaleza de la simulación social generativa:
