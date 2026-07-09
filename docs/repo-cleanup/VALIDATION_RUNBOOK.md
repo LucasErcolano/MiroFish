@@ -66,6 +66,14 @@ npm test
 docker compose config --quiet
 ```
 
+Optional Linea 6 tri-model dry-run, no provider keys:
+
+```powershell
+cd backend
+uv run --frozen --python 3.11 python ../scripts/run_linea6_trimodel_model_map.py --out-root ../outputs/linea6_trimodel_dry_run
+cd ..
+```
+
 If `make` is not available on Windows, provide npm or PowerShell equivalents
 and document them in README.
 

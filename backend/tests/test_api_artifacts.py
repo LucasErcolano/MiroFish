@@ -1,3 +1,4 @@
+import atexit
 import json
 from pathlib import Path
 
@@ -17,6 +18,10 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(simulation_api, "RUNS_ROOT", runs_dir)
     app = create_app()
     app.config.update(TESTING=True)
+    try:
+        atexit.unregister(simulation_api.SimulationRunner.cleanup_all_simulations)
+    except ValueError:
+        pass
     return app.test_client()
 
 
@@ -224,3 +229,67 @@ def test_fusion_verdicts_list_and_fetch(client, tmp_path):
     response = client.get(f"/api/simulation/{simulation_id}/fusion-verdict", query_string={"path": path})
     assert response.status_code == 200
     assert response.get_json()["data"]["simulation_id"] == simulation_id
+
+
+def test_start_simulation_forwards_reddit_model_map_and_no_wait(client, monkeypatch):
+    captured = {}
+
+    class FakeState:
+        status = simulation_api.SimulationStatus.READY
+        project_id = "project-1"
+        graph_id = "graph-1"
+
+    class FakeManager:
+        def get_simulation(self, simulation_id):
+            return FakeState()
+
+        def _save_simulation_state(self, state):
+            captured["saved_status"] = state.status
+
+    class FakeRunState:
+        def to_dict(self):
+            return {"runner_status": "running", "process_pid": 123}
+
+    def fake_start_simulation(**kwargs):
+        captured.update(kwargs)
+        return FakeRunState()
+
+    monkeypatch.setattr(simulation_api, "SimulationManager", FakeManager)
+    monkeypatch.setattr(
+        simulation_api.SimulationRunner,
+        "start_simulation",
+        staticmethod(fake_start_simulation),
+    )
+
+    response = client.post(
+        "/api/simulation/start",
+        json={
+            "simulation_id": "sim-model-map",
+            "platform": "reddit",
+            "max_rounds": 3,
+            "no_wait": True,
+            "model_map_path": "model_map.yaml",
+        },
+    )
+
+    assert response.status_code == 200
+    assert captured["simulation_id"] == "sim-model-map"
+    assert captured["platform"] == "reddit"
+    assert captured["max_rounds"] == 3
+    assert captured["no_wait"] is True
+    assert captured["model_map_path"] == "model_map.yaml"
+    assert captured["saved_status"] == simulation_api.SimulationStatus.RUNNING
+
+
+def test_start_simulation_rejects_model_map_for_non_reddit(client):
+    response = client.post(
+        "/api/simulation/start",
+        json={
+            "simulation_id": "sim-model-map",
+            "platform": "parallel",
+            "model_map_path": "model_map.yaml",
+        },
+    )
+
+    assert response.status_code == 400
+    assert "only supported for reddit" in response.get_json()["error"]

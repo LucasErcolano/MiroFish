@@ -191,3 +191,46 @@ Validation:
   paged pool `~0.78 GB`).
 
 Notes: Do not run the optional Graphiti profile again unless explicitly needed.
+
+### 2026-07-09 Entropy / Linea 6 Incremental Update
+
+Date: 2026-07-09
+Source branch/commit: `origin/feat/issue-28-linea6-entropia`
+(`bccfdc7a`, fetched after it advanced from `ccd85ba7`)
+Import method: selective import plus compatibility patches.
+Files/areas touched:
+
+- `backend/app/api/simulation.py`
+- `scripts/run_linea6_trimodel_model_map.py`
+- `scripts/extract_semantic_variance_metrics.py`
+- `backtesting/case-b-s2-bolivia-2025-runoff/model_map_linea6_trimodel_template.yaml`
+- `docs/linea6_entropia.md`
+- `docs/upstream_pr_candidates.md`
+- `docs/repo-cleanup/AGENT_STATE.md`
+- `docs/repo-cleanup/MERGE_LEDGER.md`
+
+Conflicts: no Git merge conflicts. Direct merge still avoided because the
+entropy branch carries older runtime files. `llm_client.py` was not imported:
+the current cleanup branch already uses the OpenAI SDK path directly, so the
+old branch's Prompture escape hatch is not needed.
+Decision: import the trimodel Linea 6 scripts/config and the missing API
+passthrough for Reddit `model_map_path`/`no_wait`; preserve the existing
+multi-model router, telemetry, runner, and headless implementations from the
+stable cleanup branch.
+Validation:
+
+- `uv run --frozen --python 3.11 python -m py_compile app/api/simulation.py
+  ../scripts/run_linea6_trimodel_model_map.py
+  ../scripts/extract_semantic_variance_metrics.py` passed.
+- `uv run --frozen --python 3.11 python
+  ../scripts/run_linea6_trimodel_model_map.py --out-root
+  ../outputs/linea6_trimodel_dry_run` passed; dry-run assigned 12 synthetic
+  agents evenly across Qwen/Gemma/Llama and validated fake telemetry for all
+  three models.
+- `npm test` passed: 218 tests.
+- `npm run smoke-test` passed.
+- Staged artifact scan found no raw runs, DBs, traces, `outputs/`,
+  `node_modules/`, backend uploads/data, or `dist/`.
+- Staged secret scan found no literal API-key/token patterns.
+Notes: `scripts/export_telemetry.py` was already identical to the fetched
+entropy branch blob and was not changed.

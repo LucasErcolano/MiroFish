@@ -40,14 +40,17 @@ Main files:
 
 - `backend/app/services/model_router.py`
 - `backend/app/services/llm_telemetry.py`
+- `backend/app/api/simulation.py`
 - `backend/scripts/run_reddit_simulation.py`
 - `backend/app/services/simulation_runner.py`
+- `tools/mirofish_headless.py`
 - `configs/model_map_example.yaml`
 - `configs/model_map_s2.yaml`
 - `configs/model_prices.yaml`
 
 Usage: pass `--model-map <path>` to the Reddit runner or call
 `SimulationRunner.start_simulation(..., platform="reddit", model_map_path=...)`.
+The API also accepts `model_map_path` and `no_wait` for Reddit simulations.
 
 Dependencies: provider API keys in environment variables such as
 `OPENROUTER_API_KEY` and `DEEPINFRA_API_KEY`.
@@ -139,7 +142,8 @@ Problem: agreement rate does not capture response diversity, collapse, or useful
 variation across providers and checkpoints.
 
 Change: add entropy metrics, checkpoint/persona analysis, simulation DB
-readers, run-bundle export, and Linea 6 comparison docs.
+readers, run-bundle export, Linea 6 comparison docs, and a tri-model model-map
+runner for Qwen/Gemma/Llama inside one simulation.
 
 Main files:
 
@@ -148,7 +152,10 @@ Main files:
 - `backend/scripts/entropy_*.py`
 - `backend/scripts/export_run_bundle.py`
 - `scripts/run_linea6_multiprovider_parallel.py`
+- `scripts/run_linea6_trimodel_model_map.py`
+- `scripts/extract_semantic_variance_metrics.py`
 - `docs/linea6_*.md`
+- `backtesting/case-b-s2-bolivia-2025-runoff/model_map_linea6_trimodel_template.yaml`
 - `tests/test_entropy_metrics.py`
 - `tests/test_checkpoints_temporal.py`
 - `tests/test_run_bundle.py`

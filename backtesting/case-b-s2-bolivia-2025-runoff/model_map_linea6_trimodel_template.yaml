@@ -1,0 +1,49 @@
+# Línea 6 tri-model routing template.
+#
+# Secrets are read only from environment variables:
+# - OPENROUTER_API_KEY for qwen/qwen3-8b
+# - DEEPINFRA_API_KEY for Gemma and Llama
+#
+# Canonical runs should prefer scripts/run_linea6_trimodel_model_map.py, which
+# generates a deterministic by_agent_id map after prepare. This static file is a
+# readable template and fallback for manual runs.
+
+version: 1
+
+default:
+  provider: openrouter
+  model: qwen/qwen3-8b
+  base_url: https://openrouter.ai/api/v1
+  base_url_env: OPENROUTER_BASE_URL
+  api_key_env: OPENROUTER_API_KEY
+  temperature: 0.7
+  seed: null
+
+fallback:
+  enabled: false
+
+by_role:
+  Organization:
+    provider: deepinfra
+    model: google/gemma-3-27b-it
+    base_url: https://api.deepinfra.com/v1/openai
+    base_url_env: DEEPINFRA_BASE_URL
+    api_key_env: DEEPINFRA_API_KEY
+    temperature: 0.7
+    seed: null
+  MediaOutlet:
+    provider: deepinfra
+    model: meta-llama/Llama-3.3-70B-Instruct-Turbo
+    base_url: https://api.deepinfra.com/v1/openai
+    base_url_env: DEEPINFRA_BASE_URL
+    api_key_env: DEEPINFRA_API_KEY
+    temperature: 0.7
+    seed: null
+  FiscalConsultancy:
+    provider: deepinfra
+    model: meta-llama/Llama-3.3-70B-Instruct-Turbo
+    base_url: https://api.deepinfra.com/v1/openai
+    base_url_env: DEEPINFRA_BASE_URL
+    api_key_env: DEEPINFRA_API_KEY
+    temperature: 0.7
+    seed: null

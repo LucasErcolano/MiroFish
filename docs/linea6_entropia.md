@@ -104,6 +104,27 @@ sin red; embeddings opcionales con numpy + embedder).
 | `backend/scripts/entropy_checkpoint_interview.py` | Entrevistas inicio/mitad/final + reporte de deriva (Fase 2, D3/D4). |
 | `backend/scripts/export_run_bundle.py` | Export del dataset pregunta→planning→resultado (PD). |
 | `backend/scripts/entropy_smoke.py` | Smoke end-to-end de todo el pipeline sobre datos sintéticos (sin red). |
+| `scripts/run_linea6_trimodel_model_map.py` | Dry-run sin keys y ejecución paga para Qwen/Gemma/Llama dentro de una misma simulación vía `model_map_path`. |
+| `scripts/extract_semantic_variance_metrics.py` | Extracción offline de varianza semántica/cluster entropy desde runs existentes con embeddings locales Ollama. |
+
+## 4.1. Extensión trimodel vía model map
+
+La variante incremental de Linea 6 ya no requiere tres corridas single-model
+para todo: puede asignar Qwen, Gemma y Llama en una misma simulación Reddit con
+un `model_map_path` generado por agente. El template manual vive en
+`backtesting/case-b-s2-bolivia-2025-runoff/model_map_linea6_trimodel_template.yaml`.
+
+Smoke sin keys:
+
+```bash
+python scripts/run_linea6_trimodel_model_map.py --out-root outputs/linea6_trimodel_dry_run
+```
+
+Ejecución paga, con backend propio y keys en env:
+
+```bash
+python scripts/run_linea6_trimodel_model_map.py --execute --start-backend --rounds 48
+```
 
 ## 5. PD — Export de dataset (pregunta + planning + resultado)
 

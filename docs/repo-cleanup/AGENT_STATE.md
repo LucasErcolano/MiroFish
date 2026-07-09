@@ -4,10 +4,14 @@ Last updated: 2026-07-09
 
 ## Current Status
 
-Cleanup task is in final validation/commit phase. The selective imports from
-`origin/backtesting-feature-augmented` and
-`origin/feat/issue-28-linea6-entropia` have been applied. Runtime/docs/smoke
-stabilization is in place.
+Cleanup task has a validated local baseline commit:
+
+- `012c7be1 chore: prepare stable MiroFish fork`
+
+After that commit, `origin/feat/issue-28-linea6-entropia` advanced from
+`ccd85ba7` to `bccfdc7a`. The new delta is being imported selectively: API
+passthrough for `model_map_path`/`no_wait`, Linea 6 trimodel model-map runner,
+semantic variance extractor, and the Bolivia trimodel model-map template.
 
 Created isolated worktree:
 
@@ -47,9 +51,9 @@ When Joaco says to begin, integrate the stable fork in this order:
 ## Preflight Evidence
 
 - Current branch: `codex/stable-fork-cleanup`
-- Current HEAD: `58af26d52b6778a50ed48fe818000415a36c044e`
-- Branch is ahead of `origin/feat/ui-observability-dock` by the prep commit
-  only.
+- Current HEAD before the incremental entropy import:
+  `012c7be1cec7c25ce1f5bdeb978de5eacba63a11`
+- Branch is ahead of `origin/feat/ui-observability-dock` by two local commits.
 - Re-verified:
   - `origin/backtesting-baseline` is ancestor of
     `origin/backtesting-feature-augmented`.
@@ -89,6 +93,12 @@ Manual runtime patches already applied:
   selectively.
 - Entropy/Linea 6 research package, scripts, tests, docs, and Bolivia temporal
   case imported selectively.
+- Incremental entropy branch update imported:
+  - `backend/app/api/simulation.py` API passthrough for Reddit
+    `model_map_path` and `no_wait`.
+  - `scripts/run_linea6_trimodel_model_map.py`.
+  - `scripts/extract_semantic_variance_metrics.py`.
+  - `backtesting/case-b-s2-bolivia-2025-runoff/model_map_linea6_trimodel_template.yaml`.
 - README quick start, `.env.example`, `Makefile`, root npm commands,
   `examples/minimal_case/`, `scripts/smoke_test.py`, and
   `scripts/run_example.py` added.
@@ -110,6 +120,17 @@ Manual runtime patches already applied:
   - `git diff --check` passed with CRLF warnings only.
   - Changed-path artifact scan found no new raw runs, DBs, request traces,
     `outputs/`, `node_modules/`, `dist/`, backend uploads, or backend data.
+- Incremental entropy update validation:
+  - `uv run --frozen --python 3.11 python -m py_compile app/api/simulation.py
+    ../scripts/run_linea6_trimodel_model_map.py
+    ../scripts/extract_semantic_variance_metrics.py` passed.
+  - `uv run --frozen --python 3.11 python
+    ../scripts/run_linea6_trimodel_model_map.py --out-root
+    ../outputs/linea6_trimodel_dry_run` passed. Dry-run assigned 12 synthetic
+    agents evenly across Qwen/Gemma/Llama and validated fake telemetry for all
+    three models.
+  - `npm test` passed: 218 tests.
+  - `npm run smoke-test` passed.
 - `uv run --frozen --python 3.11 pytest ...` for scheduled injection,
   model-map, Graphiti bypass: 10 passed.
 - Wiki/memory/routing suite: 142 passed.
@@ -139,10 +160,9 @@ the exact counters instead of continuing to run containers.
 
 ## Still Not Done
 
-- Final local commit.
+- Commit the incremental entropy update.
 - No push.
 
 ## Next Step
 
-Stage the final diff, inspect the staged stat, and create the local commit. Do
-not push.
+Inspect artifacts/secrets and create one local follow-up commit. Do not push.
