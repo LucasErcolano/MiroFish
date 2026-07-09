@@ -1,25 +1,30 @@
 {
   "name": "mirofish",
   "version": "0.1.0",
-  "description": "MiroFish - 简洁通用的群体智能引擎，预测万物",
+  "description": "Stable MiroFish research fork with multi-model backtesting and observability",
   "scripts": {
     "setup": "npm install && cd frontend && npm install",
-    "setup:backend": "cd backend && uv sync",
+    "setup:backend": "cd backend && uv sync --python 3.11",
     "setup:all": "npm run setup && npm run setup:backend",
     "dev": "concurrently --kill-others -n \"backend,frontend\" -c \"green,cyan\" \"npm run backend\" \"npm run frontend\"",
-    "backend": "cd backend && uv run python run.py",
+    "backend": "cd backend && uv run --frozen --python 3.11 python run.py",
     "frontend": "cd frontend && npm run dev",
     "build": "cd frontend && npm run build",
     "smoke-test": "cd backend && uv run --frozen --python 3.11 python ../scripts/smoke_test.py",
     "run-example": "cd backend && uv run --frozen --python 3.11 python ../scripts/run_example.py",
-    "test": "cd backend && uv run --frozen --python 3.11 pytest tests/test_api_artifacts.py tests/test_s2_scheduled_injection.py tests/test_simulation_runner_model_map.py tests/test_graphiti_dedup_bypass.py tests/test_model_router.py tests/test_model_routing.py tests/test_experimental_memory.py ../tests/test_entropy_metrics.py ../tests/test_checkpoints_temporal.py ../tests/test_run_bundle.py ../tests/test_simulation_db.py ../tests/test_wiki_memory.py ../tests/test_wiki_memory_additional.py ../tests/test_wiki_compiler.py ../tests/test_wiki_report_integration.py ../tests/test_wiki_smoke.py -q",
-    "docker-up": "docker compose up --build"
+    "test": "uv run --project backend --frozen --python 3.11 pytest -q",
+    "hygiene": "uv run --project backend --frozen --python 3.11 python scripts/check_repo_hygiene.py",
+    "validate-outputs": "uv run --project backend --frozen --python 3.11 python scripts/validate_outputs.py",
+    "check": "npm run hygiene && npm run smoke-test && npm run run-example && npm test && npm run build",
+    "docker-up": "docker compose up --build --wait",
+    "docker-test": "docker compose exec -T mirofish npm run smoke-test",
+    "docker-down": "docker compose down --remove-orphans"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.19.0"
   },
   "license": "AGPL-3.0"
 }

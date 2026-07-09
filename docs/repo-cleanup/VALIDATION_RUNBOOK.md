@@ -20,6 +20,7 @@ Expected:
 - Branch is `codex/stable-fork-cleanup`.
 - Source branches exist.
 - Worktree is clean except intentional prep docs or active changes.
+- Current full-suite baseline: `322 passed`.
 
 ## Branch Relationship Checks
 
@@ -63,6 +64,8 @@ Final target commands to make true:
 npm run smoke-test
 npm run run-example
 npm test
+npm run hygiene
+npm run check
 docker compose config --quiet
 ```
 
@@ -93,7 +96,9 @@ until reboot.
 Minimum expected behavior for the default, lower-memory stack:
 
 ```powershell
-docker compose up --build
+docker compose up --build --wait
+npm run docker-test
+npm run docker-down
 ```
 
 Then verify either:
@@ -120,4 +125,5 @@ Before commit, inspect for accidental raw artifacts:
 
 ```powershell
 rg --files | rg "(^runs/|node_modules|\\.venv|\\.db$|\\.sqlite|request_trace\\.json|worldbuilding_trace\\.json)"
+npm run hygiene
 ```

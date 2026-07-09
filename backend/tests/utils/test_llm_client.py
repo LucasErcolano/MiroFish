@@ -147,12 +147,8 @@ class TestChatRaw:
 # repair_truncated_json: helper de módulo, devuelve Dict | None
 # ---------------------------------------------------------------------------
 
-# NOTA: repair_truncated_json de pr-600 tiene un gap: si la truncación cae
-# después de un valor escalar sin coma ni cierre de array (e.g. '{"a": 1'),
-# phase 1 no encuentra safe point y phase 2 tampoco, devuelve None.
-# En ese caso chat_json cae a Boost fallback. Documentamos con xfail.
-# Si querés arreglarlo upstream, hay que agregar un "cierra brace final
-# si depth_brace > 0 y no hay más chars" en phase 2.
+# Regression coverage for final scalar, nested object, open string, and fence
+# truncation. These cases must be repaired before falling back to Boost.
 
 class TestRepairTruncatedJson:
 
@@ -160,13 +156,11 @@ class TestRepairTruncatedJson:
         result = repair_truncated_json('{"x": 1}')
         assert result == {"x": 1}
 
-    @pytest.mark.xfail(reason="pr-600 phase 1/2 no cierra brace final si no hay safe point")
     def test_closes_missing_brace(self):
         result = repair_truncated_json('{"a": 1')
         assert result is not None
         assert result == {"a": 1}
 
-    @pytest.mark.xfail(reason="truncación sin safe point, cae a None")
     def test_closes_nested_braces(self):
         result = repair_truncated_json('{"outer": {"inner": "x"')
         assert result is not None
@@ -185,7 +179,6 @@ class TestRepairTruncatedJson:
         assert "a" in result
         assert result["a"] == [1, 2]
 
-    @pytest.mark.xfail(reason="truncación mid-string sin safe point, cae a None")
     def test_closes_open_string_returns_dict(self):
         result = repair_truncated_json('{"k": "incomplete')
         assert result is not None
@@ -197,7 +190,6 @@ class TestRepairTruncatedJson:
     def test_empty_returns_none(self):
         assert repair_truncated_json("") is None
 
-    @pytest.mark.xfail(reason="fence-stripping no maneja fence truncado sin cierre completo")
     def test_strips_fences_before_repair(self):
         result = repair_truncated_json('```json\n{"x": 1\n```')
         assert result is not None
@@ -227,7 +219,6 @@ class TestChatJson:
         result = client.chat_json([{"role": "user", "content": "q"}])
         assert result == {"ok": 1}
 
-    @pytest.mark.xfail(reason="repair_truncated_json gap: sin safe point devuelve None → boost fallback needed")
     def test_truncated_output_repaired(self):
         client = _make_client([_make_response('{"a": 1', finish_reason="length")])
         result = client.chat_json([{"role": "user", "content": "q"}])

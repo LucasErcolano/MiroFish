@@ -65,6 +65,8 @@ class WorldbuildingTraceCapture:
         os.makedirs(simulation_dir, exist_ok=True)
         trace_path = os.path.join(simulation_dir, cls.TRACE_FILENAME)
 
+        # Write once so the manifest can include a stable self-reference entry.
+        cls._write_json(trace_path, trace)
         trace["artifact_manifest"] = cls._build_artifact_manifest(simulation_dir)
         cls._write_json(trace_path, trace)
 

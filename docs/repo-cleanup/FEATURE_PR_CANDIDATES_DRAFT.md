@@ -1,7 +1,8 @@
 # Upstream PR Candidates Draft
 
-This is a working draft. The final version should become
-`docs/upstream_pr_candidates.md`.
+This planning draft is superseded by `docs/upstream_pr_candidates.md`. All
+candidates below are integrated on `codex/stable-fork-cleanup`; use the final
+document for current files, usage, dependencies, and upstream review notes.
 
 ## Candidate 1: Simulation Observability Dock
 
@@ -18,7 +19,7 @@ This is a working draft. The final version should become
 ## Candidate 2: Multi-Model Routing And LLM Telemetry
 
 - Source branch: `origin/backtesting-feature-augmented`
-- Status: pending selective import.
+- Status: integrated selectively.
 - Problem: single-model simulations cannot compare heterogeneous providers or
   audit which model produced each agent action.
 - Change: per-agent/role model map, model routing audit, telemetry JSONL/CSV,
@@ -29,7 +30,7 @@ This is a working draft. The final version should become
 ## Candidate 3: Wiki-Backed Report Memory
 
 - Source branch: `origin/backtesting-feature-augmented`
-- Status: pending selective import.
+- Status: integrated selectively.
 - Problem: ReportAgent needs compact, auditable context from simulation memory
   and evidence without replacing the existing graph/memory stack.
 - Change: local wiki store/compiler, report prompt integration, graceful
@@ -39,7 +40,7 @@ This is a working draft. The final version should become
 ## Candidate 4: Scheduled Injection / Backtesting Harness
 
 - Source branch: `origin/backtesting-feature-augmented`
-- Status: pending selective import.
+- Status: integrated selectively.
 - Problem: static input packages do not test whether simulations react to
   signals/noise injected during rounds.
 - Change: scheduled events, temporal packages, condition matrices, compact
@@ -49,7 +50,7 @@ This is a working draft. The final version should become
 ## Candidate 5: Entropy / Linea 6 Analysis
 
 - Source branch: `origin/feat/issue-28-linea6-entropia`
-- Status: pending surgical import.
+- Status: integrated surgically.
 - Problem: agreement rate alone does not measure useful variation or collapse
   across multi-model predictions.
 - Change: entropy metrics, checkpoint interviews, persona/run bundle analysis,
@@ -60,7 +61,7 @@ This is a working draft. The final version should become
 ## Candidate 6: Stable Fork Runtime And Smoke Harness
 
 - Source branch: cleanup branch.
-- Status: pending implementation.
+- Status: implemented and validated.
 - Problem: the fork needs reproducible install/run/test commands for external
   users and evaluators.
 - Change: README quick start, `.env.example`, Docker/Compose path, `make`

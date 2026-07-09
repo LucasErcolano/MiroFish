@@ -8,6 +8,8 @@ from pathlib import Path
 from tools.mirofish_frontend_parity_check import check_frontend_replay_parity
 from tools.mirofish_headless import MiroFishHeadlessRunner, build_backend_env, sanitize_for_artifact
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
 
 class FakeMiroFishHandler(BaseHTTPRequestHandler):
     requests_seen = []
@@ -147,6 +149,7 @@ class HeadlessRunnerTests(unittest.TestCase):
                 "platform": "parallel",
                 "force": True,
                 "enable_graph_memory_update": True,
+                "no_wait": False,
                 "max_rounds": 2,
             })
 
@@ -187,7 +190,7 @@ class HeadlessRunnerTests(unittest.TestCase):
         self.assertEqual(env["LLM_MODEL_NAME"], "gemini-2.5-flash-lite")
 
     def test_static_frontend_parity_check_passes_for_current_api_wrappers(self):
-        result = check_frontend_replay_parity(Path.cwd())
+        result = check_frontend_replay_parity(REPO_ROOT)
         self.assertTrue(result["ok"], result)
         self.assertIn("/api/simulation/start", result["frontend_endpoints"])
         self.assertIn("/api/simulation/start", result["runner_endpoints"])

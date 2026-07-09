@@ -1,5 +1,5 @@
 # Smoke model map: 2 agents pinned to 2 different OpenAI-compatible endpoints.
-# Used by runs/smoke_multimodel/README.md. Keys come from env vars only.
+# Used by examples/multimodel-smoke-evidence/README.md. Keys come from env vars only.
 
 version: 1
 

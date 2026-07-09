@@ -234,3 +234,37 @@ Validation:
 - Staged secret scan found no literal API-key/token patterns.
 Notes: `scripts/export_telemetry.py` was already identical to the fetched
 entropy branch blob and was not changed.
+
+### 2026-07-09 Stable Fork Audit And Hardening
+
+Date: 2026-07-09
+Source branch/commit: local hardening on `codex/stable-fork-cleanup`
+Import method: no source import; focused fixes and repository cleanup.
+Files/areas touched:
+
+- startup/config: limited no-key startup, paused simulation reuse, Graph backend
+  fallback, complete worldbuilding capture settings
+- tests: full-suite discovery, isolation fixes, startup and stable-harness tests
+- reproducibility: output validator, tracked-artifact/secret hygiene gate, CI
+- Docker: healthcheck, no browser auto-open, debug disabled, memory limits,
+  BuildKit dependency caches, explicit wait/test/down commands
+- artifacts: compact multimodel evidence moved from `runs/` to `examples/`;
+  request traces, SQLite DB, and archived HTML with a public browser key removed
+
+Conflicts: none.
+Decision: preserve compact research evidence and source case material while
+removing raw runtime artifacts and making the default stack safe for no-key
+reviewer startup. Keep Graphiti optional.
+Validation so far:
+
+- `npm run check` passed: hygiene, smoke, example, 322 tests, frontend build.
+- root and frontend `npm audit` report zero known vulnerabilities.
+- final Docker image reached `healthy`; backend/frontend returned HTTP 200,
+  container smoke and all 322 Linux tests passed, and frontend built in Linux.
+- runtime log scan found no browser-open error, Flask debugger/PIN, traceback,
+  or child-process exit error.
+- Windows memory returned to normal after stack/Docker/WSL shutdown; kernel
+  pools remained stable throughout both builds.
+- one short OpenRouter `qwen/qwen3-8b` text probe passed without JSON mode.
+
+Notes: no merge to `main`, push, or PR action.

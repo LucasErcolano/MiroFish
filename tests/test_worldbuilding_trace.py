@@ -119,7 +119,7 @@ class WorldbuildingTraceTests(unittest.TestCase):
         self.assertTrue(os.path.exists(trace_path))
         data = json.loads(Path(trace_path).read_text(encoding="utf-8"))
 
-        self.assertEqual(data["trace_version"], 1)
+        self.assertEqual(data["trace_version"], 2)
         self.assertEqual(data["simulation_id"], "sim_test")
         self.assertEqual(data["input_context"]["simulation_requirement"], "predict the election")
         self.assertEqual(data["entity_filtering_trace"]["filtered_count"], 1)

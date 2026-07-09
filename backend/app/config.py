@@ -37,6 +37,9 @@ class Config:
     # Flask配置
     SECRET_KEY = os.environ.get('SECRET_KEY', 'mirofish-secret-key')
     DEBUG = os.environ.get('FLASK_DEBUG', 'True').lower() == 'true'
+    ALLOW_UNCONFIGURED_STARTUP = os.environ.get(
+        'ALLOW_UNCONFIGURED_STARTUP', 'False'
+    ).lower() == 'true'
     
     # JSON配置 - 禁用ASCII转义，让中文直接显示（而不是 \uXXXX 格式）
     JSON_AS_ASCII = False
@@ -146,6 +149,13 @@ class Config:
     
     # Worldbuilding Planning & Capture (Spike S3)
     PLANNING_CAPTURE_ENABLED = os.environ.get('PLANNING_CAPTURE_ENABLED', 'True').lower() == 'true'
+    PLANNING_CAPTURE_MODE = os.environ.get('PLANNING_CAPTURE_MODE', 'capture_only')
+    PLANNING_CAPTURE_SAVE_RAW_ARTIFACTS = os.environ.get(
+        'PLANNING_CAPTURE_SAVE_RAW_ARTIFACTS', 'False'
+    ).lower() == 'true'
+    PLANNING_CAPTURE_REDACT_SECRETS = os.environ.get(
+        'PLANNING_CAPTURE_REDACT_SECRETS', 'True'
+    ).lower() == 'true'
     SIMILARITY_THRESHOLD = float(os.environ.get('SIMILARITY_THRESHOLD', '0.85'))
     
     # Deep Search (Spike S3)

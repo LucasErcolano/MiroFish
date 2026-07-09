@@ -4,14 +4,14 @@ Last updated: 2026-07-09
 
 ## Current Status
 
-Cleanup task has a validated local baseline commit:
+Cleanup task has validated local baseline commits:
 
 - `012c7be1 chore: prepare stable MiroFish fork`
+- `6561bee3 feat: import linea6 trimodel routing update`
 
-After that commit, `origin/feat/issue-28-linea6-entropia` advanced from
-`ccd85ba7` to `bccfdc7a`. The new delta is being imported selectively: API
-passthrough for `model_map_path`/`no_wait`, Linea 6 trimodel model-map runner,
-semantic variance extractor, and the Bolivia trimodel model-map template.
+The incremental entropy delta from `bccfdc7a` is committed. A final local audit
+is now hardening tests, Docker, documentation, artifact hygiene, and secret
+checks. No merge to `main` and no remote write have been performed.
 
 Created isolated worktree:
 
@@ -108,6 +108,24 @@ Manual runtime patches already applied:
 
 ## Validation Evidence So Far
 
+- Final audit gate after hardening:
+  - `npm run check` passed.
+  - Full suite passed: `322 passed`, with no xfail or failure.
+  - Repository hygiene passed with no forbidden tracked artifacts or
+    high-confidence secret findings.
+  - npm audits passed with zero known vulnerabilities for root and frontend
+    lockfiles after compatible lock-only updates.
+  - Frontend Vite 7.3.6 build passed with existing chunk/import warnings only.
+  - Final hardened Docker run reached `healthy`; backend and frontend returned
+    HTTP 200, container smoke passed, the full Linux suite passed, and the
+    frontend built inside the image.
+  - Runtime logs contain no `xdg-open`, Flask debugger/PIN, traceback, or child
+    process exit errors.
+  - One minimal OpenRouter probe against `qwen/qwen3-8b` passed without JSON
+    mode; no key value was printed or persisted.
+  - Docker memory pools stayed stable throughout the heavy build. Docker/WSL
+    shutdown returned host memory to normal without reboot.
+
 - Final post-reboot validation:
   - `uv run --frozen --python 3.11 python -m py_compile ...` passed for
     edited backend runtime/config files.
@@ -160,9 +178,10 @@ the exact counters instead of continuing to run containers.
 
 ## Still Not Done
 
-- Commit the incremental entropy update.
+- Run final diff/secret/artifact checks and create a local commit if requested.
 - No push.
 
 ## Next Step
 
-Inspect artifacts/secrets and create one local follow-up commit. Do not push.
+Run final repository gates and record the local snapshot. Do not merge `main`
+or push.

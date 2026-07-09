@@ -25,7 +25,7 @@ servers. Use `agent_model_map.gemini.yaml` (resolves `LLM_BASE_URL` /
 cd backend
 env -u PYTHONPATH .venv/bin/python scripts/run_reddit_simulation.py \
   --config <sim_dir>/simulation_config.json \
-  --model-map ../runs/smoke_multimodel/agent_model_map.gemini.yaml \
+  --model-map ../examples/multimodel-smoke-evidence/agent_model_map.gemini.yaml \
   --max-rounds 12 --no-wait
 ```
 
@@ -53,7 +53,7 @@ with **at least 2 agents** (agent_id 0 and 1).
 cd backend
 uv run python scripts/run_reddit_simulation.py \
   --config <sim_dir>/simulation_config.json \
-  --model-map ../runs/smoke_multimodel/agent_model_map.yaml \
+  --model-map ../examples/multimodel-smoke-evidence/agent_model_map.yaml \
   --max-rounds 1 --no-wait
 ```
 
@@ -70,8 +70,8 @@ uv run python scripts/run_reddit_simulation.py \
 ```bash
 python scripts/export_telemetry.py \
   --input <sim_dir> \
-  --out-csv runs/smoke_multimodel/telemetry.csv \
-  --out-summary runs/smoke_multimodel/telemetry_summary.jsonl
+  --out-csv ../outputs/multimodel-smoke/telemetry.csv \
+  --out-summary ../outputs/multimodel-smoke/telemetry_summary.jsonl
 ```
 
 ## Acceptance check

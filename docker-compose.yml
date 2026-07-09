@@ -6,6 +6,9 @@ services:
     env_file:
       - .env
     environment:
+      ALLOW_UNCONFIGURED_STARTUP: ${ALLOW_UNCONFIGURED_STARTUP:-true}
+      FLASK_DEBUG: ${FLASK_DEBUG:-false}
+      VITE_OPEN_BROWSER: "false"
       GRAPHITI_URI: ${GRAPHITI_URI:-bolt://neo4j:7687}
       GRAPHITI_USER: ${GRAPHITI_USER:-neo4j}
       GRAPHITI_PASSWORD: ${GRAPHITI_PASSWORD:-mirofishpassword}
@@ -17,7 +20,19 @@ services:
       - ./backend/uploads:/app/backend/uploads
       - ./backend/data:/app/backend/data
       - ./outputs:/app/outputs
-    restart: unless-stopped
+    init: true
+    mem_limit: 6g
+    stop_grace_period: 20s
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request; urllib.request.urlopen('http://127.0.0.1:5001/health', timeout=3).read()
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 6
 
   neo4j:
     image: neo4j:5.23-community
@@ -30,7 +45,8 @@ services:
     volumes:
       - neo4j_data:/data
       - neo4j_logs:/logs
-    restart: unless-stopped
+    mem_limit: 2g
+    stop_grace_period: 30s
 
 volumes:
   neo4j_data:

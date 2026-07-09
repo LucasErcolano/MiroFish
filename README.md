@@ -36,6 +36,7 @@ This fork integrates MiroFish with the course backtesting/research features:
 - wiki-backed report memory and experimental memory fallback
 - S2/S3 compact benchmark artifacts for football, Bolivia, and IPC
 - Linea 6 entropy analysis tools
+- Qwen/truncated-JSON resilience with tested delimiter repair
 - deterministic smoke/example commands for reviewers
 
 ### Verify The Checkout
@@ -43,13 +44,12 @@ This fork integrates MiroFish with the course backtesting/research features:
 ```bash
 cp .env.example .env
 npm run setup:all
-npm run smoke-test
-npm run run-example
-npm test
+npm run check
 ```
 
-`npm run smoke-test` and `npm run run-example` do not call paid APIs. They write
-local artifacts under `outputs/`, which is intentionally git-ignored.
+`npm run check` runs repository hygiene, the offline smoke/example, the full
+test suite, and the frontend build. None of these commands call paid APIs.
+Generated artifacts stay under the git-ignored `outputs/` directory.
 
 If `make` is available, equivalent targets are:
 
@@ -57,6 +57,7 @@ If `make` is available, equivalent targets are:
 make smoke-test
 make run-example
 make test
+make check
 ```
 
 ### Run The App Locally
@@ -76,12 +77,18 @@ Service URLs:
 
 ```bash
 cp .env.example .env
-docker compose up --build
+docker compose up --build --wait
+npm run docker-test
 ```
 
 Compose builds this checkout locally and exposes the same frontend/backend
 ports. Paid LLM keys are only required for real simulations, not for the offline
-smoke/example commands.
+smoke/example commands or the limited UI/health startup. Stop the stack with
+`npm run docker-down`.
+
+The first image build downloads the OASIS/ML dependency stack and can take
+several minutes. Later builds reuse BuildKit caches. The default service has a
+6 GB memory limit and does not auto-restart after it is stopped.
 
 The default Compose stack starts only the app so lower-memory machines can run
 the smoke path. Start Neo4j in the same network only when you need Graphiti from
@@ -110,6 +117,11 @@ docker compose --profile graphiti up --build
 The smoke path proves repository integrity and deterministic artifact creation.
 Full OASIS simulations still require provider API keys, OASIS/CAMEL-compatible
 runtime dependencies, and enough model quota for the selected matrix.
+
+The current Docker image is approximately 4.9 GB because the OASIS dependency
+graph installs PyTorch/CUDA wheels on Linux. A CPU-only image profile remains a
+packaging optimization; changing those wheels should be validated separately
+against OASIS before becoming the default.
 
 ## ⚡ Overview
 
@@ -186,7 +198,7 @@ Click the image to watch MiroFish's deep prediction of the lost ending based on 
 
 | Tool | Version | Description | Check Installation |
 |------|---------|-------------|-------------------|
-| **Node.js** | 18+ | Frontend runtime, includes npm | `node -v` |
+| **Node.js** | 20.19+ | Frontend runtime, includes npm | `node -v` |
 | **Python** | ≥3.11, ≤3.12 | Backend runtime | `python --version` |
 | **uv** | Latest | Python package manager | `uv --version` |
 
@@ -279,11 +291,14 @@ npm run frontend  # Start frontend only
 cp .env.example .env
 
 # 2. Build this checkout and start the default app stack
-docker compose up --build
+docker compose up --build --wait
+npm run docker-test
 ```
 
 Reads `.env` from the root directory by default and maps ports
 `3000 (frontend) / 5001 (backend)`.
+
+Stop and remove the default stack with `npm run docker-down`.
 
 Neo4j/Graphiti is intentionally optional in this fork's Compose file. Start it
 only when you need Graphiti from inside Docker:

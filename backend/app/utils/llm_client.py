@@ -90,6 +90,13 @@ def repair_truncated_json(text: str) -> Optional[Dict[str, Any]]:
         if result is not None:
             logger.info(f"JSON repair (phase 1) succeeded at position {point}/{len(text)}")
             return result
+
+    # Preserve a complete final scalar/string when no earlier safe point exists;
+    # synthesize only delimiters that were cut off at the end of the response.
+    result = _try_close_and_parse(text)
+    if result is not None:
+        logger.info("JSON repair (phase 1b) succeeded by closing final delimiters")
+        return result
     
     # === 阶段2：激进修复 ===
     # 处理截断发生在字符串值中间的情况（如 "description": "A）
@@ -154,7 +161,9 @@ def _try_close_and_parse(candidate: str) -> Optional[Dict[str, Any]]:
     
     # 如果字符串未闭合，不尝试此候选
     if in_str:
-        return None
+        if esc and candidate.endswith('\\'):
+            candidate = candidate[:-1]
+        candidate += '"'
     
     # 按栈逆序关闭（LIFO）
     closing = ''.join(reversed(stack))

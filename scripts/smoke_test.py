@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 from run_example import run_example
+from validate_outputs import validate_output_dir
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -57,10 +58,11 @@ def main() -> int:
     if not output_dir.is_absolute():
         output_dir = REPO_ROOT / output_dir
     run_example(REPO_ROOT / "examples/minimal_case", output_dir)
-    expected = ["report.md", "metrics.json", "run_config.yaml", "logs.txt"]
-    missing_outputs = [name for name in expected if not (output_dir / name).exists()]
-    if missing_outputs:
-        print(f"Smoke test failed. Missing outputs: {missing_outputs}")
+    output_errors = validate_output_dir(output_dir)
+    if output_errors:
+        print("Smoke test failed. Invalid outputs:")
+        for error in output_errors:
+            print(f"  - {error}")
         return 1
 
     print(f"Smoke test passed. Output written to {output_dir}")

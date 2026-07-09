@@ -2,54 +2,36 @@
 import unittest
 import math
 import os
-import json
-import shutil
-from typing import List
+import tempfile
 
-# Mock Config before importing Service
-class MockConfig:
-    DATA_DIR = "backend/data_test"
-    UPLOAD_FOLDER = "backend/uploads_test"
-    SIMULATION_DATA_DIR = "backend/data_test/simulations"
-    USE_EXPERIMENTAL_MEMORY = True
-    ZEP_API_KEY = "mock_key"
-    GRAPH_SEARCH_APP_RERANK_FUSION_K = 60
-    GRAPH_SEARCH_APP_SEMANTIC_WEIGHT = 1.0
-    
-    @staticmethod
-    def get_graph_search_embedder_config():
-        return {"base_url": None, "model": None}
-
-import sys
-from unittest.mock import MagicMock
-
-# Create a mock app.config module
-mock_config_mod = MagicMock()
-mock_config_mod.Config = MockConfig
-sys.modules['app.config'] = mock_config_mod
-
-# Also need to mock other things that get imported
-sys.modules['app.utils.logger'] = MagicMock()
-sys.modules['app.utils.locale'] = MagicMock()
-
-# Import the service to test
-sys.path.append(os.getcwd())
+from app.config import Config
 from app.services.experimental_memory import ExperimentalMemoryService
 
 class TestExperimentalMemory(unittest.TestCase):
     def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.old_data_dir = Config.DATA_DIR
+        self.old_upload_folder = Config.UPLOAD_FOLDER
+        self.old_embedder_base_url = Config.GRAPH_SEARCH_APP_EMBEDDER_BASE_URL
+        self.old_embedder_model = Config.GRAPH_SEARCH_APP_EMBEDDER_MODEL
+
+        Config.DATA_DIR = os.path.join(self.tmp.name, "data")
+        Config.UPLOAD_FOLDER = os.path.join(self.tmp.name, "uploads")
+        Config.GRAPH_SEARCH_APP_EMBEDDER_BASE_URL = None
+        Config.GRAPH_SEARCH_APP_EMBEDDER_MODEL = None
+
         self.simulation_id = "test_sim"
-        self.test_dir = "backend/data_test/simulations/test_sim"
-        if os.path.exists("backend/data_test"):
-            shutil.rmtree("backend/data_test")
+        self.test_dir = os.path.join(Config.DATA_DIR, "simulations", self.simulation_id)
         os.makedirs(self.test_dir, exist_ok=True)
-        
-        # Initialize service
+
         self.service = ExperimentalMemoryService(self.simulation_id)
 
     def tearDown(self):
-        if os.path.exists("backend/data_test"):
-            shutil.rmtree("backend/data_test")
+        Config.DATA_DIR = self.old_data_dir
+        Config.UPLOAD_FOLDER = self.old_upload_folder
+        Config.GRAPH_SEARCH_APP_EMBEDDER_BASE_URL = self.old_embedder_base_url
+        Config.GRAPH_SEARCH_APP_EMBEDDER_MODEL = self.old_embedder_model
+        self.tmp.cleanup()
 
     def test_cosine_similarity(self):
         """Test the pure Python math implementation of cosine similarity."""

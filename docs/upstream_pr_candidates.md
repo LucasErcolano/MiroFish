@@ -47,6 +47,7 @@ Main files:
 - `configs/model_map_example.yaml`
 - `configs/model_map_s2.yaml`
 - `configs/model_prices.yaml`
+- `examples/multimodel-smoke-evidence/`
 
 Usage: pass `--model-map <path>` to the Reddit runner or call
 `SimulationRunner.start_simulation(..., platform="reddit", model_map_path=...)`.
@@ -188,6 +189,10 @@ Main files:
 - `examples/minimal_case/`
 - `scripts/smoke_test.py`
 - `scripts/run_example.py`
+- `scripts/validate_outputs.py`
+- `scripts/check_repo_hygiene.py`
+- `pytest.ini`
+- `.github/workflows/stable-fork-ci.yml`
 
 Usage:
 
@@ -197,9 +202,37 @@ npm run setup:all
 npm run smoke-test
 npm run run-example
 npm test
+npm run check
 ```
 
-Dependencies: Node 18+, Python 3.11, uv, and Docker for Compose.
+Dependencies: Node 20.19+, Python 3.11, uv, and Docker for Compose.
 
 Upstream review: decide whether upstream wants the offline smoke harness or a
 smaller CI-only version.
+
+## 8. Qwen And Truncated-JSON Resilience
+
+Problem: Qwen-compatible endpoints may reject forced JSON mode, and any model
+can return a structurally valid object truncated just before its final quote or
+delimiter. Those cases previously fell through to a second paid model or failed
+parsing entirely.
+
+Change: avoid forced JSON mode for Qwen profile generation, preserve the
+existing JSON sanitation path, and conservatively close only a final truncated
+string plus unmatched object/array delimiters before escalating to Boost.
+
+Main files:
+
+- `backend/app/services/simulation_config_generator.py`
+- `backend/app/utils/llm_client.py`
+- `backend/tests/utils/test_llm_client.py`
+
+Usage: no new configuration is required. Qwen model names use the compatible
+profile-generation path automatically; truncated JSON repair runs before Boost
+fallback in `LLMClient.chat_json`.
+
+Dependencies: existing OpenAI-compatible client only. Boost LLM settings remain
+optional for responses that cannot be repaired safely.
+
+Upstream review: confirm the Qwen model-name detection policy and keep the
+repair conservative so it never invents missing object fields or scalar values.

@@ -54,4 +54,5 @@ Suggested searches:
 ```powershell
 rg -n "API_KEY|SECRET|TOKEN|Bearer " .env* backend docs scripts tests
 rg --files | rg "(^runs/|node_modules|\\.venv|\\.db$|\\.sqlite|request_trace\\.json|worldbuilding_trace\\.json)"
+npm run hygiene
 ```
