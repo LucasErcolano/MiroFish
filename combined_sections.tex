@@ -1,0 +1,126 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+\begin{document}
+
+\section{Fase de Baseline: Benchmark Inicial y Evaluación de Modelos Aislados}
+
+\subsection{Propósito y Transición a la Experimentación Empírica}
+
+Una vez establecidos los casos de estudio, la infraestructura de ingestión de datos y la arquitectura base de MiroFish (descritos en la sección anterior), resultó metodológicamente imperativo establecer un \textit{benchmark} riguroso utilizando modelos de lenguaje en aislamiento (paradigma \textit{Single-Agent} / \textit{Single-Model}). 
+
+Esta fase de \textit{baseline} tuvo un propósito dual: en primer lugar, cuantificar el rendimiento predictivo puro (\textit{Forecasting}) del sistema frente a eventos reales; y en segundo lugar, extraer métricas de referencia sobre el comportamiento intrínseco, los sesgos y las deficiencias de cada arquitectura LLM individual antes de introducir la complejidad combinatoria de un entorno Multi-Agente.
+
+\subsection{Benchmark Cuantitativo: Predicción del IPC (Argentina)}
+
+La serie inicial de simulaciones de backtesting (designadas internamente como \textit{Spike 2} y \textit{Spike 3}) se enfocó en predecir un indicador puramente matemático: el Índice de Precios al Consumidor (IPC) de Argentina. Esta prueba permitió evaluar la sensibilidad del sistema al volumen de debate (cantidad de rondas) y a la densidad del grafo social.
+
+\subsubsection{Escalamiento y \textit{Model Ladder}}
+Utilizando el modelo Llama-3.3-70B-Instruct como ancla predictiva, comprobamos una correlación directa entre la duración de la simulación y la precisión inferencial. Escalar la simulación a 80 rondas con una densidad relacional moderada (condición R80-D2) redujo el Error Absoluto Medio (MAE) a un óptimo de 1.84\%.
+
+Para garantizar que esta precisión no fuera una anomalía, ejecutamos una calibración de tipo \textit{Model Ladder} bajo la condición R40-D2. Llama-3.3-70B (MAE 2.31\%) demostró poseer el mejor equilibrio entre precisión y costo frente a alternativas como Gemma-3-27B (MAE 2.67\%) y Qwen3-8B (MAE 3.45\%).
+
+\subsubsection{Optimización Topológica y el Riesgo de Autonomía Total}
+En simulaciones posteriores, implementamos una optimización de deduplicación semántica previa a la inserción en el almacenamiento (Neo4j). Reducir el ruido topológico y los nodos semánticamente idénticos concentró la atención de los agentes, mejorando la precisión a un récord histórico de MAE 1.475\%.
+
+No obstante, al intentar dotar al sistema de recolección de contexto 100\% autónomo (mediante \textit{Deep Search} con cortes temporales estrictos), la precisión se degradó. Esto confirmó que, incluso en los modelos de frontera, la ausencia de anclas documentales estructuradas (\textit{seed documents}) dispersa la atención del agente, incapacitándolo para emitir proyecciones económicas consistentes.
+
+\subsection{Pruebas de Estrés Abiertas y la Manifestación de Sesgos Sistémicos}
+
+El entorno del IPC, al ser numérico, enmascaraba las debilidades dialécticas de los LLMs. Para estudiar los fenómenos emergentes de sociología computacional, trasladamos el \textit{baseline} a escenarios de debate abiertos y polarizados (Política en Bolivia y Copa América de Fútbol). Asignamos iterativamente a cada modelo el control total de la simulación para aislar sus debilidades:
+
+\begin{itemize}
+    \item \textbf{Cámaras de Eco y \textit{Herd Behavior} (Llama-3.3 en Bolivia):} Al someter a Llama-3.3 a simulaciones de debate extendido (escalando de R10 a R40) sobre el balotaje presidencial boliviano, observamos un ciclo destructivo. El modelo retroalimentó de forma recursiva sus propias asunciones, formando una burbuja epistemológica que lo alejó por completo del \textit{Ground Truth}. Esta cámara de eco disparó el MAE de 7.6 (en R10) a un alarmante 10.0 (en R40).
+    \item \textbf{Terquedad de Pre-entrenamiento (Gemma-3 en Fútbol):} En el escenario deportivo, Gemma-3 demostró una impermeabilidad absoluta frente a la información factual (estadísticas provistas sobre Colombia). El peso de su pre-entrenamiento (sobrerrepresentación del equipo argentino) anuló su capacidad de asimilar evidencia contraria.
+    \item \textbf{Permeabilidad Aislada (Qwen3-8B):} Qwen3 exhibió la flexibilidad lógica necesaria para absorber inyecciones de datos sorpresivos, pero al actuar en aislamiento, no lograba replicar un debate equilibrado, inclinando abruptamente el consenso de toda la población simulada.
+\end{itemize}
+
+\subsection{Análisis Intrínseco de Diversidad y Entropía (Línea 6)}
+
+Conscientes de las profundas patologías conductuales expuestas en los escenarios de estrés, estructuramos una línea de investigación especializada (Línea 6) para medir el funcionamiento intrínseco de los modelos, de manera independiente a su puntería predictiva. A través de métricas agnósticas (entropía categórica, \textit{Self-BLEU}, \textit{Vendi Score} y deriva euclidiana), evaluamos simulaciones masivas de 48 rondas en paralelo.
+
+Los resultados forenses confirmaron asimetrías severas en el comportamiento generativo de los modelos base:
+
+\begin{enumerate}
+    \item \textbf{Composición Conductual y Proactividad:} La distribución de acciones en la plataforma virtual expuso un sesgo conductual masivo. Llama-3.3 es algorítmicamente reactivo: por cada 10 publicaciones originales (\textit{posts}), generó 57 comentarios a terceros. Por el contrario, Gemma-3 mostró un perfil proactivo e independiente, emitiendo 18 publicaciones y 16 comentarios.
+    \item \textbf{Entropía Léxica y Repetitividad:} Al filtrar la métrica exclusivamente hacia publicaciones originales, descubrimos que Gemma-3 posee una entropía semántica significativamente mayor, produciendo textos altamente diversos (\textit{Self-BLEU} 0.264, \textit{distinct-2} 0.752). Llama-3.3 demostró una marcada pobreza en su diversidad generativa (\textit{Self-BLEU} 0.412), tendiendo a reciclar estructuras léxicas de manera sistémica.
+    \item \textbf{Deriva Temporal (\textit{Intra-Persona Drift}):} Empleando la metodología de \textit{Checkpoints Interview} (encuestas sistemáticas a los agentes simulados al inicio, mitad y cierre de la simulación), cuantificamos la consistencia de las posturas (ideologías). Llama-3.3 sufrió de inestabilidad crónica, exhibiendo una deriva estructural mayor (\textit{Endpoint-distance} de 0.266) que Qwen3 (0.225), probando que las "personas" simuladas por Llama tienden a olvidar o mutar sus posturas originarias si la simulación se prolonga.
+\end{enumerate}
+
+\subsection{Conclusión del Baseline}
+
+La aglomeración de estos datos empíricos estableció un límite metodológico definitivo. Ningún LLM de frontera en solitario —independientemente de sus hiperparámetros o su volumen de parámetros— posee la completitud conductual necesaria para emular un foro social realista. La repetitividad léxica, la formación espontánea de \textit{Herd Behavior} y la terquedad anclada en el pre-entrenamiento siempre terminan por degradar la simulación. 
+
+Este diagnóstico exhaustivo del \textit{baseline} fue el catalizador que nos forzó a descartar el enfoque de modelo único, motivando el diseño empírico de la arquitectura Multi-Agente heterogénea detallada en la sección subsecuente, bajo la premisa de que la fricción entre la proactividad de Gemma, la reactividad de Llama y la permeabilidad de Qwen actuaría como el único mecanismo de estabilización algorítmica viable.
+
+\section{Evolución hacia la Arquitectura Multi-Agente en Entornos Simulados}
+
+\subsection{Marco Teórico: La Necesidad de Sistemas Multi-Agente (MAS)}
+
+Como se concluyó en el análisis del \textit{baseline}, el paradigma de los Modelos Fundacionales demuestra limitaciones críticas cuando operan de manera aislada. La teoría de Sistemas Multi-Agente (MAS, por sus siglas en inglés) sugiere que la verdadera emulación de ecosistemas sociales complejos no puede lograrse instanciando múltiples réplicas de una única mente algorítmica. En la sociología humana, la divergencia de perspectivas, los sesgos cognitivos individuales y la permeabilidad ante la persuasión son los motores de la deliberación pública. 
+
+Aplicando MAS al Procesamiento de Lenguaje Natural, postulamos que un entorno de debate computacional solo es válido si los agentes exhiben arquitecturas latentes divergentes. Al cruzar modelos con distintos corpus de pre-entrenamiento y mecanismos de alineación (RLHF), se induce un choque dialéctico natural. Esta fricción algorítmica teóricamente debería emular la heurística del consenso humano, evitando las burbujas epistemológicas (\textit{Herd Behavior}) observadas durante el \textit{baseline} de Bolivia y facilitando el hallazgo de la verdad (\textit{Forecasting}).
+
+\subsection{Transición y Justificación del Enfoque en MiroFish}
+
+El problema central del \textit{baseline} fue que la homogeneidad de la red poblacional invariablemente generaba patologías (ej. Llama formando cámaras de eco, Gemma ignorando la evidencia empírica). Para nuestra fase Multi-Agente, la metodología consistió en colocar a estos tres titanes (Llama, Gemma y Qwen) en una misma "sala virtual", obligándolos a interactuar, persuadirse y debatir sobre el mismo estado global. De este modo, replicamos exactamente las pruebas de estrés del \textit{baseline} para comparar directamente su rendimiento como un ecosistema.
+
+\subsection{Resultados Experimentales y Análisis Forense Multi-Agente}
+
+Sometimos la arquitectura Multi-Agente a los mismos regímenes de estrés (escalamiento de rondas e inyección de datos) que habíamos ejecutado sobre los modelos individuales. Los resultados obtenidos transformaron radicalmente nuestra comprensión de las dinámicas en los LLMs.
+
+\subsubsection{Prueba 1: Escalamiento de Rondas en Entornos Cerrados (Bolivia)}
+
+En el \textit{baseline}, al escalar las rondas de debate bajo un solo modelo (Llama-3), la cámara de eco se infló, llevando el MAE a un alarmante 10.0 (en R40).
+
+Al replicar esta misma prueba con la red Multi-Agente (sin estímulos externos), nuestra hipótesis de auto-regulación cruzada se vio refutada de forma espectacular. La confrontación de pesos cognitivos distintos no generó una corrección hacia la verdad, sino un \textbf{Colapso Semántico (Model Collapse)}. 
+
+El análisis forense reveló que los agentes (Llama, Gemma y Qwen), forzados a dialogar sin nueva entropía, cayeron en un \textit{deadlock} dialéctico dictado por su alineación ética y asimetrías conductuales (la hiper-reactividad de Llama chocando contra la proactividad desconectada de Gemma, como se evidenció en la Línea 6). El foro se llenó exclusivamente de iteraciones de cortesía infinita como: \textit{"I completely agree with the importance of considering the candidates' policies..."}. Ningún modelo tomó postura política.
+
+Como resultado, el sistema falló en extraer un consenso válido. El MAE se disparó algorítmicamente a 66.667 debido a un abstencionismo del 100\% (clasificado como Indecisos/Otros). Esto probó que, en cautiverio, la diversidad de modelos degenera en pasividad absoluta.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}llcc@{}}
+        \toprule
+        \textbf{Arquitectura} & \textbf{Configuración (Escalamiento)} & \textbf{Predicción} & \textbf{MAE (Votos)} \\ \midrule
+        Baseline (Llama) & Burbuja Cerrada (T3) - R10 & Quiroga (Sesgo) & 7.687 \\
+        Baseline (Llama) & Burbuja Cerrada (T3) - R40 & Quiroga (Sesgo) & 10.000 \\
+        Multi-Agente & Red Heterogénea (T3) - R10 & Indecisos (Colapso) & 66.667* \\
+        Multi-Agente & Red Heterogénea (T3) - R40 & Indecisos (Colapso) & 66.667* \\ \bottomrule
+    \end{tabular}
+    \caption{Comparativa de MAE en ausencia de inyecciones externas. (*) Denota colapso semántico total.}
+    \label{tab:mae_collapse}
+\end{table}
+
+\subsubsection{Prueba 2: Inyección de Evidencia y Persuasión (Fútbol)}
+
+En el \textit{baseline}, Gemma-3, actuando en solitario frente al debate de la Copa América, se mostró impenetrable ante las estadísticas a favor de Colombia, manteniendo obstinadamente su voto por Argentina.
+
+Al transicionar al modelo Multi-Agente, inyectamos la misma estadística (Inyección Mid-Debate S3), siendo Llama-3 el vector de introducción. El resultado fue un éxito rotundo: sometido a la presión argumentativa de sus pares, Gemma-3 fracturó su rigidez de pre-entrenamiento. El rastreo de la base de datos documentó el viraje cognitivo, con Gemma respondiendo: \textit{"An excellent analysis! Colombia has a very real chance to shine..."}. Esto demostró que la influencia inter-modelo es factible y corrige los sesgos del \textit{baseline} si se cataliza mediante datos exógenos.
+
+\subsubsection{Prueba 3: Absorción del Shock de Entropía (Bolivia S3)}
+
+Conociendo que la red Multi-Agente en Bolivia colapsaba en neutralidad (Prueba 1), replicamos el experimento de inyección de datos del \textit{baseline}. Inyectamos una encuesta falsa tardía (\textit{Late Quiroga Lead Poll}) a la mitad del debate inactivo.
+
+El \textit{shock} de entropía desestabilizó el estado de cortesía. Qwen-3, exhibiendo la permeabilidad característica que documentamos en el \textit{baseline}, absorbió el estímulo inmediatamente, traduciendo los datos a retórica agresiva e impulsando la polarización del foro. Este evento rescató al sistema del \textit{Model Collapse}, probando que los LLMs heterogéneos requieren estrictamente de señales externas continuas (flujo de información) para mantener dinámicas deliberativas sanas.
+
+\subsection{Conclusiones Integrales del Proyecto}
+
+El contraste analítico entre el \textit{baseline} y la arquitectura Multi-Agente desarrollada para este TP nos permite cristalizar conclusiones definitivas sobre la naturaleza de la simulación social generativa:
+
+\begin{enumerate}
+    \item \textbf{Costo-Beneficio en Forecasting:} Si el objetivo exclusivo es la extracción de predicciones certeras y estáticas, los sistemas Multi-Agente son computacionalmente prohibitivos e ineficientes. El consumo transaccional excede los 230,000 \textit{tokens} por debate, y la propensión al Colapso Semántico hace que su precisión sea inferior a la de un modelo individual calibrado (T1).
+    \item \textbf{Fallo Estructural del Debate Aislado:} La diversidad de modelos no es un antídoto automático contra las burbujas. En ausencia de un flujo de información exógeno, los LLMs interactuando entre sí convergen hacia una neutralidad evasiva, producto de \textit{deadlocks} entre asimetrías conductuales severas y alineamientos éticos (RLHF).
+    \item \textbf{El Verdadero Valor como Laboratorio Sociotécnico:} MiroFish alcanza su pináculo tecnológico cuando la red Multi-Agente se somete a \textbf{Inyecciones Paramétricas S3}. Comprobamos magistralmente que la arquitectura heterogénea es el único mecanismo validado para simular persuasión real, absorción de desinformación y la fractura de rigideces ideológicas, convirtiéndose en una herramienta invaluable para estudiar propagación de narrativas a nivel poblacional.
+\end{enumerate}
+
+\end{document}
