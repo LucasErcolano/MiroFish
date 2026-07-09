@@ -75,6 +75,23 @@ Otro vector fundamental del \textit{benchmark} fue evaluar los cuellos de botell
 
 No obstante, al intentar dotar al sistema de recolección de contexto 100\% autónomo (mediante \textit{Deep Search} con cortes temporales estrictos para evitar fugas de información), la precisión se degradó. Esto confirmó que, incluso en los modelos de frontera, la ausencia de anclas documentales estructuradas dispersa la atención del agente, incapacitándolo para emitir proyecciones consistentes en un entorno multi-variable.
 
+\subsection{Sensibilidad Temporal y Robustez ante Ruido (Inyecciones Exógenas)}
+
+Además de las pruebas topológicas y de permeabilidad pura, el \textit{benchmark} evaluó la sensibilidad del sistema frente a variaciones en la ventana temporal de los datos semilla (\textit{Seed Data}) y su respuesta ante la inyección controlada de ruido.
+
+\subsubsection{Curva de Degradación Temporal (Ventanas de Seed Data)}
+Para medir el decaimiento de la certeza predictiva, evaluamos el rendimiento en distintos horizontes temporales ($\Delta 1$ a $\Delta 4$) utilizando un \textit{cutoff} estricto en los datos semilla. El análisis reveló un patrón de degradación no lineal:
+\begin{itemize}
+    \item \textbf{Corto Plazo ($\Delta 1$):} El sistema exhibió una precisión excepcional (error de 0.1 puntos porcentuales) al identificar los anclajes nominales inmediatos presentes en el corpus semilla.
+    \item \textbf{Medio-Corto Plazo ($\Delta 2$):} Se registró el mayor fallo analítico. Al carecer de estímulos sobre \textit{shocks} transitorios futuros, los modelos aislaron su razonamiento en una extrapolación lineal de las tendencias iniciales, subestimando severamente los rebotes macroeconómicos.
+    \item \textbf{Medio Plazo ($\Delta 3$):} Irónicamente, la precisión se recuperó al evaluar tendencias macro-direccionales de fondo, probando que el motor de inferencia es robusto para la tendencia dominante pero ciego ante fluctuaciones transitorias si la ventana de inyección no se actualiza (variación de período).
+\end{itemize}
+
+\subsubsection{Inyección de Ruido y Momento de Entrada}
+Adicionalmente, experimentamos alterando el momento de inyección de datos y saturando el entorno con ruido deliberado (ej. \texttt{input\_04\_noise\_dolar.txt}). Bajo condiciones de alta profundidad (R80-D2), la inyección de ruido financiero desencadenó un mecanismo inesperado: el modelo asimiló la especulación social (\textit{Herd Behavior}) de los datos ruidosos, lo que irónicamente lo llevó a predecir con extrema precisión un anclaje recesivo (logrando un récord histórico de MAE 0.9875\% en esa variante aislada). 
+
+Sin embargo, cruzando estos datos con el análisis cualitativo (Tabla \ref{tab:evaluacion_arquitecturas}), confirmamos que el \textit{momento} de la inyección es crítico. Datos (incluso factualmente correctos) inyectados a mitad de debate suelen ser ignorados por arquitecturas con fuertes sesgos de pre-entrenamiento (como Gemma), probando que la asimilación depende del balance entre el "ruido" externo y el tiempo de arraigo de las creencias en la simulación.
+
 \subsection{Análisis Intrínseco: Diversidad Léxica y Estabilidad Temporal}
 
 Conscientes de las profundas patologías conductuales expuestas en el análisis cruzado, estructuramos un marco de evaluación final enfocado exclusivamente en medir el funcionamiento intrínseco de los modelos, de manera independiente a su puntería predictiva. A través de métricas algorítmicas agnósticas (entropía categórica, \textit{Self-BLEU}, \textit{Vendi Score} y deriva euclidiana), procesamos simulaciones masivas en paralelo para establecer cuánta estructura y variedad lingüística es capaz de generar cada motor.
@@ -171,3 +188,4 @@ El contraste analítico entre el \textit{baseline} y la arquitectura Multi-Agent
 \end{enumerate}
 
 \end{document}
+
