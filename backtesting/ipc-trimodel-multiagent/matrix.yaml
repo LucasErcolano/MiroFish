@@ -1,0 +1,60 @@
+version: 1
+case_id: ipc-trimodel-multiagent
+topic: ipc
+case_dir: backtesting/case-c-s2-arg-ipc-line5-gemma
+question_file: question.md
+system_constraints_file: system_constraints.md
+eval_script: eval_objective.py
+eval_artifact: structured_answer_json
+platform: reddit
+model_map: backtesting/ipc-trimodel-multiagent/model_map_ipc_trimodel.yaml
+memory:
+  use_experimental_memory: true
+graph:
+  backend: graphiti
+  bypass_node_dedup: true
+  extraction_model: google/gemma-3-27b-it
+outputs:
+  raw_root: runs/ipc_trimodel_multiagent
+  committed_root: backtesting/ipc-trimodel-multiagent/evaluation
+temporal:
+  density: 2
+  rounds: 40
+  rows:
+    - id: ipc_trimodel_T0_R40_D2
+      package: T0
+      input_file: seed_T0.md
+    - id: ipc_trimodel_T1_R40_D2
+      package: T1
+      input_file: seed_T1.md
+    - id: ipc_trimodel_T2_R40_D2
+      package: T2
+      input_file: seed_T2.md
+    - id: ipc_trimodel_T3_R40_D2
+      package: T3
+      input_file: seed_T3.md
+line5:
+  package: T3
+  input_file: seed_T3.md
+  density: 2
+  rows:
+    - id: ipc_trimodel_T3_R10_D2
+      rounds: 10
+    - id: ipc_trimodel_T3_R20_D2
+      rounds: 20
+    - id: ipc_trimodel_T3_R40_D2
+      rounds: 40
+    - id: ipc_trimodel_T3_R80_D2
+      rounds: 80
+s3:
+  rounds: 20
+  density: 2
+  topic_config: backtesting/s3-cross-topic-injection/topics/ipc
+  conditions:
+    - baseline-control
+    - signal-early
+    - signal-mid
+    - signal-late
+    - counter-signal-mid
+    - noise-near-mid
+    - noise-off-mid

@@ -34,6 +34,8 @@ MANIFEST
 .mypy_cache/
 .ruff_cache/
 .token-savior-cache.json
+# Node dependencies
+node_modules/
 # Editors / OS
 .vscode/
 .idea/
@@ -50,6 +52,7 @@ backend/uploads/
 backend/data/cache/
 backend/backend/
 runs/
+outputs/
 # Smoke test artifacts
 seed_mvp.md
 # Local backup/temp files

@@ -26,6 +26,91 @@ For automation and AI-agent execution without the browser UI, see [AI_HEADLESS_R
 
 </div>
 
+## Stable Fork Quick Start
+
+This fork integrates MiroFish with the course backtesting/research features:
+
+- simulation observability dock and artifact browsing
+- multi-model routing with OpenRouter/DeepInfra model maps and LLM telemetry
+- scheduled signal/noise injection for temporal backtesting
+- wiki-backed report memory and experimental memory fallback
+- S2/S3 compact benchmark artifacts for football, Bolivia, and IPC
+- Linea 6 entropy analysis tools
+- deterministic smoke/example commands for reviewers
+
+### Verify The Checkout
+
+```bash
+cp .env.example .env
+npm run setup:all
+npm run smoke-test
+npm run run-example
+npm test
+```
+
+`npm run smoke-test` and `npm run run-example` do not call paid APIs. They write
+local artifacts under `outputs/`, which is intentionally git-ignored.
+
+If `make` is available, equivalent targets are:
+
+```bash
+make smoke-test
+make run-example
+make test
+```
+
+### Run The App Locally
+
+```bash
+cp .env.example .env
+npm run setup:all
+npm run dev
+```
+
+Service URLs:
+
+- Frontend: `http://localhost:3000`
+- Backend health: `http://localhost:5001/health`
+
+### Docker / Compose
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+Compose builds this checkout locally and exposes the same frontend/backend
+ports. Paid LLM keys are only required for real simulations, not for the offline
+smoke/example commands.
+
+The default Compose stack starts only the app so lower-memory machines can run
+the smoke path. Start Neo4j in the same network only when you need Graphiti from
+inside Docker:
+
+```bash
+docker compose --profile graphiti up --build
+```
+
+### Research Docs
+
+- Upstream PR candidates: `docs/upstream_pr_candidates.md`
+- Headless runner: `AI_HEADLESS_RUNNER.md`
+- S2 positional injection: `backtesting/case-a-s2-positional-noise/`
+- S2 positional v2 multi-provider results:
+  `backtesting/case-a-s2-positional-noise-v2/`
+- S3 cross-topic injection:
+  `backtesting/s3-cross-topic-injection/evaluation/results_analysis.md`
+- IPC tri-model multi-agent:
+  `backtesting/ipc-trimodel-multiagent/RESULTS_ANALYSIS.md`
+- Linea 6 entropy:
+  `docs/linea6_entropia.md`
+
+### Known Limits
+
+The smoke path proves repository integrity and deterministic artifact creation.
+Full OASIS simulations still require provider API keys, OASIS/CAMEL-compatible
+runtime dependencies, and enough model quota for the selected matrix.
+
 ## ⚡ Overview
 
 **MiroFish** is a next-generation AI prediction engine powered by multi-agent technology. By extracting seed information from the real world (such as breaking news, policy drafts, or financial signals), it automatically constructs a high-fidelity parallel digital world. Within this space, thousands of intelligent agents with independent personalities, long-term memory, and behavioral logic freely interact and undergo social evolution. You can inject variables dynamically from a "God's-eye view" to precisely deduce future trajectories — **rehearse the future in a digital sandbox, and win decisions after countless simulations**.
@@ -193,13 +278,19 @@ npm run frontend  # Start frontend only
 # 1. Configure environment variables (same as source deployment)
 cp .env.example .env
 
-# 2. Pull image and start
-docker compose up -d
+# 2. Build this checkout and start the default app stack
+docker compose up --build
 ```
 
-Reads `.env` from root directory by default, maps ports `3000 (frontend) / 5001 (backend)`
+Reads `.env` from the root directory by default and maps ports
+`3000 (frontend) / 5001 (backend)`.
 
-> Mirror address for faster pulling is provided as comments in `docker-compose.yml`, replace if needed.
+Neo4j/Graphiti is intentionally optional in this fork's Compose file. Start it
+only when you need Graphiti from inside Docker:
+
+```bash
+docker compose --profile graphiti up --build
+```
 
 ## 📬 Join the Conversation
 

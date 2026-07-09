@@ -1,0 +1,9 @@
+[
+  {
+    "row_id": "ipc_trimodel_s3_noise-off-mid_R20_D2",
+    "status": "completed",
+    "score": 0,
+    "parse_errors": 0,
+    "committed_dir": "backtesting\\ipc-trimodel-multiagent\\evaluation\\s3\\ipc_trimodel_s3_noise-off-mid_R20_D2"
+  }
+]

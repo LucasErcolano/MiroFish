@@ -9,7 +9,11 @@
     "dev": "concurrently --kill-others -n \"backend,frontend\" -c \"green,cyan\" \"npm run backend\" \"npm run frontend\"",
     "backend": "cd backend && uv run python run.py",
     "frontend": "cd frontend && npm run dev",
-    "build": "cd frontend && npm run build"
+    "build": "cd frontend && npm run build",
+    "smoke-test": "cd backend && uv run --frozen --python 3.11 python ../scripts/smoke_test.py",
+    "run-example": "cd backend && uv run --frozen --python 3.11 python ../scripts/run_example.py",
+    "test": "cd backend && uv run --frozen --python 3.11 pytest tests/test_s2_scheduled_injection.py tests/test_simulation_runner_model_map.py tests/test_graphiti_dedup_bypass.py tests/test_model_router.py tests/test_model_routing.py tests/test_experimental_memory.py ../tests/test_entropy_metrics.py ../tests/test_checkpoints_temporal.py ../tests/test_run_bundle.py ../tests/test_simulation_db.py ../tests/test_wiki_memory.py ../tests/test_wiki_memory_additional.py ../tests/test_wiki_compiler.py ../tests/test_wiki_report_integration.py ../tests/test_wiki_smoke.py -q",
+    "docker-up": "docker compose up --build"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

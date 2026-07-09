@@ -1,14 +1,37 @@
 services:
   mirofish:
-    image: ghcr.io/666ghj/mirofish:latest
-    # 加速镜像（如拉取缓慢可替换上方地址）
-    # image: ghcr.nju.edu.cn/666ghj/mirofish:latest
-    container_name: mirofish
+    build:
+      context: .
+      dockerfile: Dockerfile
     env_file:
       - .env
+    environment:
+      GRAPHITI_URI: ${GRAPHITI_URI:-bolt://neo4j:7687}
+      GRAPHITI_USER: ${GRAPHITI_USER:-neo4j}
+      GRAPHITI_PASSWORD: ${GRAPHITI_PASSWORD:-mirofishpassword}
+      GRAPHITI_DATABASE: ${GRAPHITI_DATABASE:-neo4j}
     ports:
       - "3000:3000"
       - "5001:5001"
-    restart: unless-stopped
     volumes:
       - ./backend/uploads:/app/backend/uploads
+      - ./backend/data:/app/backend/data
+      - ./outputs:/app/outputs
+    restart: unless-stopped
+
+  neo4j:
+    image: neo4j:5.23-community
+    profiles:
+      - graphiti
+    environment:
+      NEO4J_AUTH: neo4j/${GRAPHITI_PASSWORD:-mirofishpassword}
+      NEO4J_server_memory_heap_initial__size: 512m
+      NEO4J_server_memory_heap_max__size: 1G
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+    restart: unless-stopped
+
+volumes:
+  neo4j_data:
+  neo4j_logs:

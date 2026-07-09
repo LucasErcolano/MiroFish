@@ -21,7 +21,12 @@ dependencies = [
 
     # Graphiti / Neo4j
     "graphiti-core==0.28.2",
-    "neo4j>=5.26.0",
+    # camel-oasis==0.2.5 pins neo4j==5.23.0; keep that pin and override
+    # graphiti-core's looser driver expectation for this benchmark branch.
+    "neo4j==5.23.0",
+
+    # Experimental memory / report memory
+    "chromadb>=0.5.0",
     
     # OASIS 社交媒体模拟
     "camel-oasis==0.2.5",
@@ -53,6 +58,11 @@ build-backend = "hatchling.build"
 dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
+]
+
+[tool.uv]
+override-dependencies = [
+    "neo4j==5.23.0",
 ]
 
 [tool.hatch.build.targets.wheel]

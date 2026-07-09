@@ -1,0 +1,7 @@
+condition: noise-mid
+case_id: case-a-s2-positional-noise
+injection_plan: ../injection_plan.yaml
+rounds: 40
+platform: reddit
+model_policy: ../model_policy.md
+output_dir: ../outputs/noise-mid

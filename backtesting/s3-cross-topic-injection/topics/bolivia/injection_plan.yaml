@@ -1,0 +1,48 @@
+version: 3
+case_id: s3-bolivia-v3
+total_rounds: 20
+conditions:
+  baseline-control:
+    injections: []
+  signal-early:
+    injections:
+      - id: bolivia-signal-early
+        file: injections/signal_primary.md
+        round_pct: 0.10
+        target_platform: reddit
+        action: create_post
+  signal-mid:
+    injections:
+      - id: bolivia-signal-mid
+        file: injections/signal_primary.md
+        round_pct: 0.50
+        target_platform: reddit
+        action: create_post
+  signal-late:
+    injections:
+      - id: bolivia-signal-late
+        file: injections/signal_primary.md
+        round_pct: 0.90
+        target_platform: reddit
+        action: create_post
+  counter-signal-mid:
+    injections:
+      - id: bolivia-counter-mid
+        file: injections/counter_signal.md
+        round_pct: 0.50
+        target_platform: reddit
+        action: create_post
+  noise-near-mid:
+    injections:
+      - id: bolivia-noise-near-mid
+        file: injections/noise_near_topic.md
+        round_pct: 0.50
+        target_platform: reddit
+        action: create_post
+  noise-off-mid:
+    injections:
+      - id: bolivia-noise-off-mid
+        file: injections/noise_off_topic.md
+        round_pct: 0.50
+        target_platform: reddit
+        action: create_post

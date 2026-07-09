@@ -1,0 +1,52 @@
+experiment_metadata:
+  phase: "S2-L6"
+  issue_source: "#28"
+  case_id: "bolivia_2025_runoff_l6_qwen"
+  source_case: "case-b-s2-bolivia-2025-runoff"
+  line_focus: "Linea 6 - diversidad y entropia de modelos"
+  question_file: "question.md"
+  system_constraints_file: null
+  primary_metric: "entropy/diversity across-persona + output + temporal drift"
+  output_dir: "output_qwen_line6"
+  eval_script: "eval_objective.py"
+  eval_artifact: "report_markdown"
+
+model_policy:
+  label: "Qwen 3 8B (OpenRouter)"
+  provider_id: "qwen/qwen3-8b"
+  model_policy: "qwen3_8b_primary"
+  required_backend_base_url: "https://openrouter.ai/api/v1"
+
+fixed_simulation_config:
+  seed: 1
+  temperature: 0
+  output_mode: "narrative"
+  schema_id: null
+  platform: "parallel"
+  use_llm_for_profiles: true
+  parallel_profile_count: 5
+  enable_graph_memory_update: false
+
+line5_package:
+  id: "T3_clean"
+  label: "full pre-cutoff Bolivia runoff evidence package without football noise"
+  max_document_date: "2025-10-17"
+  input_file: "seed_T3_clean.md"
+  sources:
+    - "pre_first_round_context"
+    - "first_round_poll_context"
+    - "first_round_surprise"
+    - "mas_collapse_runoff"
+    - "runoff_policy_contrast"
+    - "late_poll_quiroga_lead"
+    - "us_relations_signal"
+
+run_matrix:
+  - id: "qwen_T3_R48"
+    package: "T3_clean"
+    input_file: "seed_T3_clean.md"
+    rounds: 48
+    density: 2
+    label: "Phase-2 standalone Qwen"
+
+do_not_upload: []

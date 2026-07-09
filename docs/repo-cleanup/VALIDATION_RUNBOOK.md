@@ -36,8 +36,9 @@ Use Python 3.11 through `uv`.
 
 ```powershell
 cd backend
-uv run --frozen --python 3.11 python -m py_compile app\config.py app\services\simulation_manager.py app\services\deep_search.py
-uv run --frozen --python 3.11 pytest tests -q
+uv run --frozen --python 3.11 python -m py_compile app\config.py app\services\experimental_memory.py app\services\model_router.py app\services\simulation_runner.py app\services\simulation_config_generator.py app\graph\graphiti_backend.py scripts\run_reddit_simulation.py
+cd ..
+npm test
 ```
 
 If dependency resolution fails because of the known `camel-oasis` /
@@ -59,10 +60,10 @@ npm run build
 Final target commands to make true:
 
 ```powershell
-make smoke-test
-make run-example
-make test
-docker compose up --build
+npm run smoke-test
+npm run run-example
+npm test
+docker compose config --quiet
 ```
 
 If `make` is not available on Windows, provide npm or PowerShell equivalents
@@ -70,7 +71,18 @@ and document them in README.
 
 ## Docker Checks
 
-Minimum expected behavior:
+Before and after any Docker command, record a memory snapshot:
+
+```powershell
+$os = Get-CimInstance Win32_OperatingSystem
+(Get-Counter '\Memory\Pool Nonpaged Bytes','\Memory\Pool Paged Bytes').CounterSamples
+```
+
+If pool usage climbs abnormally, stop Docker/WSL validation and document the
+counters. A previous Neo4j default-stack run caused excessive kernel-pool usage
+until reboot.
+
+Minimum expected behavior for the default, lower-memory stack:
 
 ```powershell
 docker compose up --build
@@ -81,6 +93,12 @@ Then verify either:
 - UI/API path: backend health endpoint returns OK and frontend is reachable.
 - Batch path: `docker compose run --rm <service> <smoke command>` generates
   documented outputs.
+
+Neo4j/Graphiti is optional and should only be started explicitly:
+
+```powershell
+docker compose --profile graphiti up --build
+```
 
 ## Final Git Checks
 

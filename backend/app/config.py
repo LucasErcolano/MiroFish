@@ -17,6 +17,20 @@ else:
     load_dotenv(override=True)
 
 
+def _env_int(name: str, default: int) -> int:
+    value = os.environ.get(name)
+    if value is None or str(value).strip() == "":
+        return default
+    return int(value)
+
+
+def _env_float(name: str, default: float) -> float:
+    value = os.environ.get(name)
+    if value is None or str(value).strip() == "":
+        return default
+    return float(value)
+
+
 class Config:
     """Flask配置类"""
     
@@ -61,24 +75,24 @@ class Config:
     GRAPH_BACKEND = os.environ.get('GRAPH_BACKEND', 'graphiti').lower()
     GRAPH_SEARCH_RERANKER = os.environ.get('GRAPH_SEARCH_RERANKER', 'rrf').strip() or None
     GRAPH_SEARCH_APP_RERANKER = (os.environ.get('GRAPH_SEARCH_APP_RERANKER', 'embedding_rrf').strip().lower() or 'embedding_rrf')
-    GRAPH_SEARCH_APP_RERANK_FUSION_K = max(1, int(os.environ.get('GRAPH_SEARCH_APP_RERANK_FUSION_K', '60')))
-    GRAPH_SEARCH_APP_SEMANTIC_WEIGHT = max(0.0, float(os.environ.get('GRAPH_SEARCH_APP_SEMANTIC_WEIGHT', '2.0')))
+    GRAPH_SEARCH_APP_RERANK_FUSION_K = max(1, _env_int('GRAPH_SEARCH_APP_RERANK_FUSION_K', 60))
+    GRAPH_SEARCH_APP_SEMANTIC_WEIGHT = max(0.0, _env_float('GRAPH_SEARCH_APP_SEMANTIC_WEIGHT', 2.0))
     GRAPH_SEARCH_APP_EMBEDDER_API_KEY = os.environ.get('GRAPH_SEARCH_APP_EMBEDDER_API_KEY') or None
     GRAPH_SEARCH_APP_EMBEDDER_BASE_URL = os.environ.get('GRAPH_SEARCH_APP_EMBEDDER_BASE_URL') or None
     GRAPH_SEARCH_APP_EMBEDDER_MODEL = os.environ.get('GRAPH_SEARCH_APP_EMBEDDER_MODEL') or None
-    GRAPH_SEARCH_APP_EMBED_BATCH_SIZE = max(1, int(os.environ.get('GRAPH_SEARCH_APP_EMBED_BATCH_SIZE', '32')))
+    GRAPH_SEARCH_APP_EMBED_BATCH_SIZE = max(1, _env_int('GRAPH_SEARCH_APP_EMBED_BATCH_SIZE', 32))
     GRAPH_SEARCH_APP_RERANKER_API_KEY = os.environ.get('GRAPH_SEARCH_APP_RERANKER_API_KEY') or None
     GRAPH_SEARCH_APP_RERANKER_BASE_URL = os.environ.get('GRAPH_SEARCH_APP_RERANKER_BASE_URL') or None
     GRAPH_SEARCH_APP_RERANKER_MODEL = os.environ.get('GRAPH_SEARCH_APP_RERANKER_MODEL') or None
     GRAPH_SEARCH_APP_RERANKER_PROVIDER = (os.environ.get('GRAPH_SEARCH_APP_RERANKER_PROVIDER', 'auto').strip().lower() or 'auto')
-    GRAPH_SEARCH_APP_RERANKER_TIMEOUT = max(1.0, float(os.environ.get('GRAPH_SEARCH_APP_RERANKER_TIMEOUT', '20')))
+    GRAPH_SEARCH_APP_RERANKER_TIMEOUT = max(1.0, _env_float('GRAPH_SEARCH_APP_RERANKER_TIMEOUT', 20.0))
     GRAPH_SEARCH_INCLUDE_NODES = os.environ.get('GRAPH_SEARCH_INCLUDE_NODES', 'true').lower() == 'true'
-    GRAPH_SEARCH_EDGE_LIMIT_MULTIPLIER = max(1, int(os.environ.get('GRAPH_SEARCH_EDGE_LIMIT_MULTIPLIER', '2')))
-    GRAPH_SEARCH_NODE_LIMIT_MULTIPLIER = max(1, int(os.environ.get('GRAPH_SEARCH_NODE_LIMIT_MULTIPLIER', '1')))
-    GRAPH_SEARCH_NODE_SUMMARY_LIMIT = max(1, int(os.environ.get('GRAPH_SEARCH_NODE_SUMMARY_LIMIT', '5')))
+    GRAPH_SEARCH_EDGE_LIMIT_MULTIPLIER = max(1, _env_int('GRAPH_SEARCH_EDGE_LIMIT_MULTIPLIER', 2))
+    GRAPH_SEARCH_NODE_LIMIT_MULTIPLIER = max(1, _env_int('GRAPH_SEARCH_NODE_LIMIT_MULTIPLIER', 1))
+    GRAPH_SEARCH_NODE_SUMMARY_LIMIT = max(1, _env_int('GRAPH_SEARCH_NODE_SUMMARY_LIMIT', 5))
     GRAPH_SEARCH_EXPAND_EDGES_FROM_NODES = os.environ.get('GRAPH_SEARCH_EXPAND_EDGES_FROM_NODES', 'true').lower() == 'true'
-    GRAPH_SEARCH_NODE_EDGE_EXPANSION_LIMIT = max(0, int(os.environ.get('GRAPH_SEARCH_NODE_EDGE_EXPANSION_LIMIT', '2')))
-    GRAPH_SEARCH_NODE_EDGE_PER_NODE_LIMIT = max(1, int(os.environ.get('GRAPH_SEARCH_NODE_EDGE_PER_NODE_LIMIT', '8')))
+    GRAPH_SEARCH_NODE_EDGE_EXPANSION_LIMIT = max(0, _env_int('GRAPH_SEARCH_NODE_EDGE_EXPANSION_LIMIT', 2))
+    GRAPH_SEARCH_NODE_EDGE_PER_NODE_LIMIT = max(1, _env_int('GRAPH_SEARCH_NODE_EDGE_PER_NODE_LIMIT', 8))
     GRAPHITI_URI = os.environ.get('GRAPHITI_URI')
     GRAPHITI_USER = os.environ.get('GRAPHITI_USER', 'neo4j')
     GRAPHITI_PASSWORD = os.environ.get('GRAPHITI_PASSWORD')
@@ -88,16 +102,16 @@ class Config:
     GRAPHITI_LLM_MODEL = os.environ.get('GRAPHITI_LLM_MODEL') or LLM_MODEL_NAME
     GRAPHITI_LLM_SMALL_MODEL = os.environ.get('GRAPHITI_LLM_SMALL_MODEL') or GRAPHITI_LLM_MODEL
     GRAPHITI_LLM_CLIENT_MODE = os.environ.get('GRAPHITI_LLM_CLIENT_MODE', 'openai').lower()
-    GRAPHITI_LLM_MAX_TOKENS = max(1024, int(os.environ.get('GRAPHITI_LLM_MAX_TOKENS', '16384')))
+    GRAPHITI_LLM_MAX_TOKENS = max(1024, _env_int('GRAPHITI_LLM_MAX_TOKENS', 16384))
     GRAPHITI_EMBEDDER_API_KEY = os.environ.get('GRAPHITI_EMBEDDER_API_KEY') or GRAPHITI_LLM_API_KEY
     GRAPHITI_EMBEDDER_BASE_URL = os.environ.get('GRAPHITI_EMBEDDER_BASE_URL') or GRAPHITI_LLM_BASE_URL
     GRAPHITI_EMBEDDER_MODEL = os.environ.get('GRAPHITI_EMBEDDER_MODEL', 'qwen3-embedding:8b')
-    GRAPHITI_EMBEDDER_DIM = max(128, int(os.environ.get('GRAPHITI_EMBEDDER_DIM', '1024')))
+    GRAPHITI_EMBEDDER_DIM = max(128, _env_int('GRAPHITI_EMBEDDER_DIM', 1024))
     GRAPHITI_RERANKER_API_KEY = os.environ.get('GRAPHITI_RERANKER_API_KEY') or GRAPHITI_LLM_API_KEY
     GRAPHITI_RERANKER_BASE_URL = os.environ.get('GRAPHITI_RERANKER_BASE_URL') or GRAPHITI_LLM_BASE_URL
     GRAPHITI_RERANKER_MODEL = os.environ.get('GRAPHITI_RERANKER_MODEL') or GRAPHITI_LLM_MODEL
     GRAPHITI_ENABLE_CROSS_ENCODER = os.environ.get('GRAPHITI_ENABLE_CROSS_ENCODER', 'false').lower() == 'true'
-    GRAPHITI_MAX_COROUTINES = max(1, int(os.environ.get('GRAPHITI_MAX_COROUTINES', '20')))
+    GRAPHITI_MAX_COROUTINES = max(1, _env_int('GRAPHITI_MAX_COROUTINES', 20))
     
     # 文件上传配置
     MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 50MB

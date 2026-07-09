@@ -29,6 +29,14 @@ class ModelRoutingError(ValueError):
 # OpenAI-compatible CAMEL backend) but unknown names are flagged in validation.
 PROVIDERS: Dict[str, Dict[str, str]] = {
     "openai": {"base_url_env": "LLM_BASE_URL", "api_key_env": "LLM_API_KEY"},
+    "openrouter": {
+        "base_url_env": "OPENROUTER_BASE_URL",
+        "api_key_env": "OPENROUTER_API_KEY",
+    },
+    "deepinfra": {
+        "base_url_env": "DEEPINFRA_BASE_URL",
+        "api_key_env": "DEEPINFRA_API_KEY",
+    },
     "vllm": {"base_url_env": "LOCAL_LLM_BASE_URL", "api_key_env": "LOCAL_LLM_API_KEY"},
     "lmstudio": {"base_url_env": "LOCAL_LLM_BASE_URL", "api_key_env": "LOCAL_LLM_API_KEY"},
     "groq": {"base_url_env": "GROQ_BASE_URL", "api_key_env": "GROQ_API_KEY"},
@@ -81,16 +89,16 @@ class ModelPolicy:
 def _validate_layer(name: str, layer: Dict[str, Any]) -> None:
     if not isinstance(layer, dict):
         raise ModelRoutingError(f"Model map layer '{name}' must be a mapping")
-    unknown = set(layer) - _POLICY_FIELDS
-    if unknown:
-        raise ModelRoutingError(
-            f"Model map layer '{name}' has unknown field(s): {sorted(unknown)}"
-        )
     # Secrets policy: keys come from the environment, never inline.
     if "api_key" in layer:
         raise ModelRoutingError(
             f"Model map layer '{name}' must not contain a literal 'api_key'; "
             "use 'api_key_env' to name an environment variable instead."
+        )
+    unknown = set(layer) - _POLICY_FIELDS
+    if unknown:
+        raise ModelRoutingError(
+            f"Model map layer '{name}' has unknown field(s): {sorted(unknown)}"
         )
     provider = layer.get("provider")
     if provider is not None and provider not in PROVIDERS:
@@ -177,13 +185,13 @@ class ModelRouter:
             source = "by_agent_id"
 
         provider = merged.get("provider", "openai")
+        provider_defaults = PROVIDERS.get(provider, {})
         # Resolve base_url: literal wins, else env var named by base_url_env.
         base_url = merged.get("base_url")
-        if not base_url and merged.get("base_url_env"):
-            base_url = os.environ.get(merged["base_url_env"], "") or None
-        api_key_env = merged.get("api_key_env") or PROVIDERS.get(provider, {}).get(
-            "api_key_env", "LLM_API_KEY"
-        )
+        base_url_env = merged.get("base_url_env") or provider_defaults.get("base_url_env")
+        if not base_url and base_url_env:
+            base_url = os.environ.get(base_url_env, "") or None
+        api_key_env = merged.get("api_key_env") or provider_defaults.get("api_key_env", "LLM_API_KEY")
         return ModelPolicy(
             agent_id=agent_id,
             role=role,

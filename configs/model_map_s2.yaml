@@ -1,0 +1,30 @@
+# S2 hosted multi-model routing map.
+#
+# Secrets are read from environment variables:
+# - OPENROUTER_API_KEY for qwen/qwen3-8b
+# - DEEPINFRA_API_KEY for Gemma and Llama
+
+version: 1
+
+default:
+  provider: openrouter
+  model: qwen/qwen3-8b
+  base_url_env: OPENROUTER_BASE_URL
+  api_key_env: OPENROUTER_API_KEY
+  temperature: 0.7
+  seed: null
+
+fallback:
+  enabled: false
+
+by_agent_id:
+  1:
+    provider: deepinfra
+    model: google/gemma-3-27b-it
+    base_url_env: DEEPINFRA_BASE_URL
+    api_key_env: DEEPINFRA_API_KEY
+  2:
+    provider: deepinfra
+    model: meta-llama/Llama-3.3-70B-Instruct-Turbo
+    base_url_env: DEEPINFRA_BASE_URL
+    api_key_env: DEEPINFRA_API_KEY
