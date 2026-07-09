@@ -1,0 +1,97 @@
+# Validation Runbook
+
+Run from:
+
+```powershell
+cd C:\Users\joaco\Documents\IA\Year-4\Semestre-1\NLP\MiroFish-stable-cleanup
+```
+
+## Preflight
+
+```powershell
+git status --short --branch
+git rev-parse --abbrev-ref HEAD
+git fetch origin --prune
+git branch --all --list "*feat/ui-observability-dock*" "*backtesting-feature-augmented*" "*backtesting-baseline*" "*feat/issue-28-linea6-entropia*"
+```
+
+Expected:
+
+- Branch is `codex/stable-fork-cleanup`.
+- Source branches exist.
+- Worktree is clean except intentional prep docs or active changes.
+
+## Branch Relationship Checks
+
+```powershell
+git merge-base --is-ancestor origin/backtesting-baseline origin/backtesting-feature-augmented
+git merge-base --is-ancestor origin/main origin/feat/ui-observability-dock
+```
+
+Expected exit code 0 for both based on prep-time state.
+
+## Backend Checks
+
+Use Python 3.11 through `uv`.
+
+```powershell
+cd backend
+uv run --frozen --python 3.11 python -m py_compile app\config.py app\services\simulation_manager.py app\services\deep_search.py
+uv run --frozen --python 3.11 pytest tests -q
+```
+
+If dependency resolution fails because of the known `camel-oasis` /
+`neo4j` metadata conflict, document the exact failure and use the repo's
+documented no-deps workaround only after deciding whether Docker or local
+validation is the source of truth.
+
+## Frontend Checks
+
+```powershell
+npm install
+cd frontend
+npm install
+npm run build
+```
+
+## Smoke / Example Checks
+
+Final target commands to make true:
+
+```powershell
+make smoke-test
+make run-example
+make test
+docker compose up --build
+```
+
+If `make` is not available on Windows, provide npm or PowerShell equivalents
+and document them in README.
+
+## Docker Checks
+
+Minimum expected behavior:
+
+```powershell
+docker compose up --build
+```
+
+Then verify either:
+
+- UI/API path: backend health endpoint returns OK and frontend is reachable.
+- Batch path: `docker compose run --rm <service> <smoke command>` generates
+  documented outputs.
+
+## Final Git Checks
+
+```powershell
+git diff --check
+git status --short --untracked-files=all
+git diff --stat
+```
+
+Before commit, inspect for accidental raw artifacts:
+
+```powershell
+rg --files | rg "(^runs/|node_modules|\\.venv|\\.db$|\\.sqlite|request_trace\\.json|worldbuilding_trace\\.json)"
+```
