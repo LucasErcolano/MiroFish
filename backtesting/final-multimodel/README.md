@@ -8,9 +8,8 @@ Scope:
 - S3 scheduled-injection Qwen extension for Bolivia and IPC.
 - Line 5 Bolivia depth check for Gemma and Qwen on R10-D2 and R80-D2.
 
-Durable state:
+Committed evidence:
 
-- `AGENT_STATE.md`: current run context and resume point.
 - `RUN_LEDGER.csv`: append-only run ledger.
 - `evaluation/`: generated summaries and final report.
 
@@ -27,6 +26,5 @@ Raw local evidence:
 - `runs/final_multimodel/raw_temporal/`
 - `runs/final_multimodel/raw_line5/`
 
-The `runs/` tree is intentionally not committed. Committed evidence is limited to summaries, reports, run notes, generated configs, and evaluator JSON.
-
-No pull request should be created from this work unless explicitly requested later.
+The `runs/` tree is intentionally not committed. Committed evidence is limited
+to summaries, reports, run notes, generated configs, and evaluator JSON.
