@@ -1,0 +1,16 @@
+# Subir SOLO el paper (fuentes LaTeX + PDF). Ignorar el repo de investigación
+# (backend, runs, venv, artefactos de build, etc.).
+
+# 1) Ignorar todo por defecto
+*
+
+# 2) Permitir las fuentes del paper y el PDF compilado
+!.gitignore
+!*.tex
+!*.pdf
+!*.bib
+!acl.sty
+!acl_natbib.bst
+
+# Nota: .bib/.sty/.bst se incluyen porque el .tex no compila sin ellos.
+# DISCREPANCIAS.md queda fuera (es interno, no se sube).
