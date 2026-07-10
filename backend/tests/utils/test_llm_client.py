@@ -202,6 +202,23 @@ class TestRepairTruncatedJson:
 
 class TestChatJson:
 
+    def test_qwen_omits_json_object_constraint(self):
+        client = _make_client(
+            [_make_response('{"ok": true}')],
+            model="qwen/qwen3-8b",
+        )
+
+        result = client.chat_json([{"role": "user", "content": "q"}])
+
+        assert result == {"ok": True}
+        assert "response_format" not in client._mock_create.call_args.kwargs
+
+    def test_rejects_json_scalar_as_structured_success(self):
+        client = _make_client([_make_response('"display_name"')])
+
+        with pytest.raises(ValueError, match="[Bb]oost"):
+            client.chat_json([{"role": "user", "content": "q"}])
+
     def test_success_first_attempt(self):
         payload = {"status": "ok"}
         client = _make_client([_make_response(json.dumps(payload))])

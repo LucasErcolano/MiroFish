@@ -1,4 +1,4 @@
-.PHONY: setup test smoke-test run-example validate-outputs hygiene check docker-build docker-up docker-test docker-down
+.PHONY: setup test smoke-test smoke-test-real run-example validate-outputs hygiene check docker-build docker-up docker-test docker-down
 
 setup:
 	npm run setup:all
@@ -8,6 +8,9 @@ test:
 
 smoke-test:
 	npm run smoke-test
+
+smoke-test-real:
+	npm run smoke-test:real
 
 run-example:
 	npm run run-example

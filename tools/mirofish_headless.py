@@ -433,6 +433,8 @@ class MiroFishHeadlessRunner:
         condition: Optional[str] = None,
         no_wait: bool = False,
         model_map_path: Optional[Path] = None,
+        close_environment: bool = True,
+        graph_chunk_size: Optional[int] = None,
     ) -> Dict[str, Any]:
         files = [Path(p) for p in files]
         for p in files:
@@ -457,9 +459,12 @@ class MiroFishHeadlessRunner:
             "condition": condition,
             "no_wait": no_wait,
             "model_map_path": str(model_map_path) if model_map_path else None,
+            "close_environment": close_environment,
+            "graph_chunk_size": graph_chunk_size,
             "started_at": started_at,
         }
         write_json(self.output_dir / "run_config.json", run_config)
+        simulation_id: Optional[str] = None
 
         try:
             ontology = self.client.post_multipart(
@@ -475,10 +480,13 @@ class MiroFishHeadlessRunner:
             if not project_id:
                 raise MiroFishRunnerError("ontology/generate did not return project_id")
 
+            graph_build_payload: Dict[str, Any] = {"project_id": project_id}
+            if graph_chunk_size:
+                graph_build_payload["chunk_size"] = graph_chunk_size
             graph_build = self.client.request_json(
                 "POST",
                 "/api/graph/build",
-                {"project_id": project_id},
+                graph_build_payload,
                 retry=True,
             )
             graph_task_id = graph_build.get("data", {}).get("task_id")
@@ -553,12 +561,17 @@ class MiroFishHeadlessRunner:
                     report_payload = self.client.request_json("GET", f"/api/report/{report_id}")
                     self._write_report_artifacts(report_payload)
 
+            environment_close = self._close_environment(simulation_id) if close_environment else {
+                "attempted": False,
+                "success": None,
+                "error": None,
+            }
             completed_rounds = self._extract_completed_rounds(final_run)
             manifest = {
                 "status": "completed" if final_run.get("runner_status") == "completed" else final_run.get("runner_status"),
                 "flow_provenance": "frontend_replay_backend_api",
                 "is_model_output": True,
-                "is_real_mirofish_system": bool(completed_rounds > 0 and final_run.get("runner_status") == "completed"),
+                "is_real_mirofish_system": self._is_real_run(final_run),
                 "real_mirofish_flow_invoked": True,
                 "project_id": project_id,
                 "graph_id": graph_id,
@@ -566,6 +579,7 @@ class MiroFishHeadlessRunner:
                 "graph_data_summary": graph_data_summary,
                 "simulation_id": simulation_id,
                 "report_id": report_id,
+                "environment_close": environment_close,
                 "injection": injection_metadata,
                 "scheduled_events_fired_count": count_jsonl_lines(
                     self.repo_root / "backend" / "uploads" / "simulations" / simulation_id / "scheduled_events_fired.jsonl"
@@ -581,6 +595,11 @@ class MiroFishHeadlessRunner:
             self._write_hashes()
             return manifest
         except Exception as exc:  # noqa: BLE001 - preserve artifacts for BLOCKED runs
+            environment_close = (
+                self._close_environment(simulation_id)
+                if close_environment and simulation_id
+                else {"attempted": False, "success": None, "error": None}
+            )
             blocked = {
                 "status": "BLOCKED",
                 "reason": str(exc),
@@ -592,6 +611,7 @@ class MiroFishHeadlessRunner:
                 "num_rounds_or_epochs": 0,
                 "num_agents_configured": 0,
                 "num_agents": 0,
+                "environment_close": environment_close,
                 "started_at": started_at,
                 "completed_at": utc_now(),
             }
@@ -617,6 +637,7 @@ class MiroFishHeadlessRunner:
         condition: Optional[str] = None,
         no_wait: bool = False,
         model_map_path: Optional[Path] = None,
+        close_environment: bool = True,
     ) -> Dict[str, Any]:
         started_at = utc_now()
         run_config = {
@@ -632,6 +653,7 @@ class MiroFishHeadlessRunner:
             "condition": condition,
             "no_wait": no_wait,
             "model_map_path": str(model_map_path) if model_map_path else None,
+            "close_environment": close_environment,
             "started_at": started_at,
         }
         write_json(self.output_dir / "run_config.json", run_config)
@@ -682,6 +704,11 @@ class MiroFishHeadlessRunner:
                     report_payload = self.client.request_json("GET", f"/api/report/{report_id}")
                     self._write_report_artifacts(report_payload)
 
+            environment_close = self._close_environment(simulation_id) if close_environment else {
+                "attempted": False,
+                "success": None,
+                "error": None,
+            }
             sim_dir = self.repo_root / "backend" / "uploads" / "simulations" / simulation_id
             scheduled_log = sim_dir / "scheduled_events_fired.jsonl"
             reddit_summary = summarize_reddit_db(self.repo_root, simulation_id)
@@ -691,12 +718,13 @@ class MiroFishHeadlessRunner:
                 "status": "completed" if final_run.get("runner_status") == "completed" else final_run.get("runner_status"),
                 "flow_provenance": "existing_prepared_simulation_backend_api",
                 "is_model_output": True,
-                "is_real_mirofish_system": bool(final_run.get("runner_status") == "completed"),
+                "is_real_mirofish_system": self._is_real_run(final_run),
                 "real_mirofish_flow_invoked": True,
                 "project_id": simulation_data.get("project_id"),
                 "graph_id": simulation_data.get("graph_id"),
                 "simulation_id": simulation_id,
                 "report_id": report_id,
+                "environment_close": environment_close,
                 "injection": injection_metadata,
                 "scheduled_events_fired_count": scheduled_events_fired_count,
                 "reddit_db_summary": reddit_summary,
@@ -710,6 +738,11 @@ class MiroFishHeadlessRunner:
             self._write_hashes()
             return manifest
         except Exception as exc:  # noqa: BLE001 - preserve artifacts for BLOCKED runs
+            environment_close = (
+                self._close_environment(simulation_id)
+                if close_environment
+                else {"attempted": False, "success": None, "error": None}
+            )
             blocked = {
                 "status": "BLOCKED",
                 "reason": str(exc),
@@ -719,6 +752,7 @@ class MiroFishHeadlessRunner:
                 "failure_stage": "existing_prepared_simulation_backend_api",
                 "num_rounds_or_epochs_requested": max_rounds,
                 "num_rounds_or_epochs": 0,
+                "environment_close": environment_close,
                 "started_at": started_at,
                 "completed_at": utc_now(),
             }
@@ -839,9 +873,7 @@ class MiroFishHeadlessRunner:
     def _wait_report(self, simulation_id: str, task_id: Optional[str], timeout: int) -> Dict[str, Any]:
         deadline = time.time() + timeout
         while time.time() < deadline:
-            payload = {"simulation_id": simulation_id}
-            if task_id:
-                payload["task_id"] = task_id
+            payload = {"task_id": task_id} if task_id else {"simulation_id": simulation_id}
             # Backend route is POST even though one frontend wrapper currently says GET.
             resp = self.client.request_json("POST", "/api/report/generate/status", payload)
             task = resp.get("data", {})
@@ -912,6 +944,25 @@ class MiroFishHeadlessRunner:
             evidence["copied_files"].append(str(dst.relative_to(artifact_dir)))
         write_json(artifact_dir / "experimental_memory_evidence.json", evidence)
 
+    def _close_environment(self, simulation_id: str) -> Dict[str, Any]:
+        try:
+            response = self.client.request_json(
+                "POST",
+                "/api/simulation/close-env",
+                {"simulation_id": simulation_id, "timeout": 30},
+            )
+            return {
+                "attempted": True,
+                "success": bool(response.get("success")),
+                "error": None,
+            }
+        except Exception as exc:  # noqa: BLE001 - cleanup is best effort
+            return {
+                "attempted": True,
+                "success": False,
+                "error": str(exc),
+            }
+
     def _write_report_artifacts(self, report_payload: Dict[str, Any]) -> None:
         data = report_payload.get("data", {}) if isinstance(report_payload, dict) else {}
         if not isinstance(data, dict):
@@ -941,6 +992,18 @@ class MiroFishHeadlessRunner:
             except (TypeError, ValueError):
                 pass
         return max(ints) if ints else 0
+
+    @classmethod
+    def _is_real_run(cls, run_status: Dict[str, Any]) -> bool:
+        try:
+            actions = int(run_status.get("total_actions_count") or 0)
+        except (TypeError, ValueError):
+            actions = 0
+        return bool(
+            run_status.get("runner_status") == "completed"
+            and cls._extract_completed_rounds(run_status) > 0
+            and actions > 0
+        )
 
     def _write_hashes(self) -> None:
         hashes: Dict[str, str] = {}
@@ -982,6 +1045,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--existing-simulation-id", default=None, help="Run an already prepared simulation, skipping ontology/graph/prepare.")
     parser.add_argument("--project-name", default="MiroFish Headless Benchmark")
     parser.add_argument("--max-rounds", type=int, default=None)
+    parser.add_argument("--graph-chunk-size", type=int, default=None, help="Override Graphiti text chunk size for this graph build.")
     parser.add_argument("--platform", default="parallel", choices=["twitter", "reddit", "parallel"])
     parser.add_argument("--output-dir", default=None)
     parser.add_argument("--poll-interval", type=float, default=2.0)
@@ -992,6 +1056,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--injection-plan", default=None, help="YAML injection plan for scheduled Reddit events.")
     parser.add_argument("--condition", default=None, help="Condition name from --injection-plan, e.g. signal-mid.")
     parser.add_argument("--no-wait-after-run", action="store_true", help="Pass --no-wait to the simulation process.")
+    parser.add_argument("--keep-env-open", action="store_true", help="Leave the interactive OASIS environment running after artifacts and report are captured.")
     parser.add_argument("--model-map", default=None, help="Per-agent model routing YAML passed to reddit simulations.")
     parser.add_argument("--accept-language", default="zh")
     parser.add_argument("--start-backend", action="store_true", help="Start npm run backend with Gemini env before replaying.")
@@ -1035,6 +1100,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                 condition=args.condition,
                 no_wait=args.no_wait_after_run,
                 model_map_path=Path(args.model_map) if args.model_map else None,
+                close_environment=not args.keep_env_open,
             )
         else:
             if not args.files or not args.requirement:
@@ -1053,6 +1119,8 @@ def main(argv: Optional[List[str]] = None) -> int:
                 condition=args.condition,
                 no_wait=args.no_wait_after_run,
                 model_map_path=Path(args.model_map) if args.model_map else None,
+                close_environment=not args.keep_env_open,
+                graph_chunk_size=args.graph_chunk_size,
             )
         print(json.dumps(sanitize_for_artifact(manifest), ensure_ascii=False, indent=2))
         print(f"Artifacts: {out_dir.resolve()}")

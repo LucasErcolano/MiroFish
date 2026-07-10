@@ -307,6 +307,20 @@ class LLMClient:
             ),
             Config.LLM_BOOST_MODEL_NAME
         )
+
+    @staticmethod
+    def _json_object_response_format(model: Optional[str]) -> Optional[Dict[str, str]]:
+        """Return a JSON constraint only for models that handle it reliably."""
+        if "qwen" in (model or "").lower():
+            return None
+        return {"type": "json_object"}
+
+    @staticmethod
+    def _parse_json_object(text: str) -> Dict[str, Any]:
+        parsed = json.loads(text)
+        if not isinstance(parsed, dict):
+            raise json.JSONDecodeError("Expected a JSON object", text, 0)
+        return parsed
     
     def chat_json(
         self,
@@ -333,7 +347,7 @@ class LLMClient:
                 messages=messages,
                 temperature=temperature,
                 max_tokens=max_tokens,
-                response_format={"type": "json_object"}
+                response_format=self._json_object_response_format(self.model)
             )
             
             # 清理 markdown 代码块标记
@@ -342,11 +356,11 @@ class LLMClient:
             # 正常完成 → 尝试解析
             if finish_reason == "stop":
                 try:
-                    return json.loads(cleaned)
+                    return self._parse_json_object(cleaned)
                 except json.JSONDecodeError:
                     logger.warning("Primary LLM returned invalid JSON despite finish_reason=stop, attempting repair")
                     repaired = repair_truncated_json(content)
-                    if repaired is not None:
+                    if isinstance(repaired, dict):
                         return repaired
                     # 回退到 Boost
             
@@ -354,7 +368,7 @@ class LLMClient:
             elif finish_reason == "length":
                 logger.warning(f"Primary LLM response truncated (finish_reason=length, {len(content)} chars)")
                 repaired = repair_truncated_json(content)
-                if repaired is not None:
+                if isinstance(repaired, dict):
                     logger.info("Truncated JSON repaired successfully from primary LLM")
                     return repaired
                 logger.warning("JSON repair failed, falling back to Boost LLM")
@@ -362,7 +376,7 @@ class LLMClient:
             else:
                 logger.warning(f"Unexpected finish_reason='{finish_reason}', attempting parse")
                 try:
-                    return json.loads(cleaned)
+                    return self._parse_json_object(cleaned)
                 except json.JSONDecodeError:
                     pass
         
@@ -384,7 +398,7 @@ class LLMClient:
                 messages=messages,
                 temperature=temperature,
                 max_tokens=max_tokens,
-                response_format={"type": "json_object"},
+                response_format=self._json_object_response_format(boost_model),
                 client=boost_client,
                 model=boost_model
             )
@@ -393,10 +407,10 @@ class LLMClient:
             
             if finish_reason == "stop":
                 try:
-                    return json.loads(cleaned)
+                    return self._parse_json_object(cleaned)
                 except json.JSONDecodeError:
                     repaired = repair_truncated_json(content)
-                    if repaired is not None:
+                    if isinstance(repaired, dict):
                         logger.info("Boost LLM JSON repaired successfully")
                         return repaired
                     raise ValueError(f"Boost LLM returned invalid JSON: {cleaned[:200]}...")
@@ -404,14 +418,14 @@ class LLMClient:
             elif finish_reason == "length":
                 logger.warning(f"Boost LLM also truncated ({len(content)} chars), attempting repair")
                 repaired = repair_truncated_json(content)
-                if repaired is not None:
+                if isinstance(repaired, dict):
                     logger.info("Truncated JSON from Boost LLM repaired successfully")
                     return repaired
                 raise ValueError(f"Boost LLM response truncated and repair failed: {cleaned[:200]}...")
             
             else:
                 try:
-                    return json.loads(cleaned)
+                    return self._parse_json_object(cleaned)
                 except json.JSONDecodeError:
                     raise ValueError(f"Boost LLM returned unparseable response: {cleaned[:200]}...")
         

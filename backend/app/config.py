@@ -6,15 +6,19 @@
 import os
 from dotenv import load_dotenv
 
+
+def _load_project_env(env_path: str) -> None:
+    """Load local defaults without overriding process-level configuration."""
+    if os.path.exists(env_path):
+        load_dotenv(env_path, override=False)
+    else:
+        load_dotenv(override=False)
+
 # 加载项目根目录的 .env 文件
 # 路径: MiroFish/.env (相对于 backend/app/config.py)
 project_root_env = os.path.join(os.path.dirname(__file__), '../../.env')
 
-if os.path.exists(project_root_env):
-    load_dotenv(project_root_env, override=True)
-else:
-    # 如果根目录没有 .env，尝试加载环境变量（用于生产环境）
-    load_dotenv(override=True)
+_load_project_env(project_root_env)
 
 
 def _env_int(name: str, default: int) -> int:
@@ -141,6 +145,7 @@ class Config:
     
     # Report Agent配置
     REPORT_AGENT_MAX_TOOL_CALLS = int(os.environ.get('REPORT_AGENT_MAX_TOOL_CALLS', '5'))
+    REPORT_AGENT_MAX_SUB_QUERIES = int(os.environ.get('REPORT_AGENT_MAX_SUB_QUERIES', '5'))
     REPORT_AGENT_MAX_REFLECTION_ROUNDS = int(os.environ.get('REPORT_AGENT_MAX_REFLECTION_ROUNDS', '2'))
     REPORT_AGENT_TEMPERATURE = float(os.environ.get('REPORT_AGENT_TEMPERATURE', '0.5'))
     

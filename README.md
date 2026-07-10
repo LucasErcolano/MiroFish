@@ -98,9 +98,31 @@ inside Docker:
 docker compose --profile graphiti up --build
 ```
 
+### Real OpenRouter Smoke
+
+The default smoke is offline. To verify the paid path end to end with a small,
+bounded run, set only `OPENROUTER_API_KEY` in `.env` or the shell and run:
+
+```bash
+npm run docker-up:openrouter-smoke
+npm run smoke-test:real
+npm run docker-down:openrouter-smoke
+```
+
+This opt-in test uses Qwen3-8B plus Qwen embeddings through OpenRouter, a
+1.2 KB seed, one Graphiti chunk, a small generated agent set, and nine simulated
+rounds. Only the final hour activates agents. It requires non-empty graph,
+OASIS actions, experimental-memory evidence, a ReportAgent report, sanitized
+artifacts, and graceful environment shutdown. Artifacts are written below
+`outputs/real-smoke/` and remain git-ignored. The command is intentionally not
+part of `npm run check` because it consumes provider credits. The smoke requests
+Spanish output because this fork ships complete native ReportAgent prompts for
+`es` and `zh`; English currently falls back to the original Chinese prompts.
+
 ### Research Docs
 
 - Upstream PR candidates: `docs/upstream_pr_candidates.md`
+- Verified real E2E smoke: `docs/real_e2e_smoke.md`
 - Headless runner: `AI_HEADLESS_RUNNER.md`
 - S2 positional injection: `backtesting/case-a-s2-positional-noise/`
 - S2 positional v2 multi-provider results:

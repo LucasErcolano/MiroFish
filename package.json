@@ -11,14 +11,17 @@
     "frontend": "cd frontend && npm run dev",
     "build": "cd frontend && npm run build",
     "smoke-test": "cd backend && uv run --frozen --python 3.11 python ../scripts/smoke_test.py",
+    "smoke-test:real": "uv run --project backend --frozen --python 3.11 python scripts/run_real_smoke.py",
     "run-example": "cd backend && uv run --frozen --python 3.11 python ../scripts/run_example.py",
     "test": "uv run --project backend --frozen --python 3.11 pytest -q",
     "hygiene": "uv run --project backend --frozen --python 3.11 python scripts/check_repo_hygiene.py",
     "validate-outputs": "uv run --project backend --frozen --python 3.11 python scripts/validate_outputs.py",
     "check": "npm run hygiene && npm run smoke-test && npm run run-example && npm test && npm run build",
     "docker-up": "docker compose up --build --wait",
+    "docker-up:openrouter-smoke": "docker compose -f docker-compose.yml -f docker-compose.openrouter-smoke.yml --profile graphiti up --build --wait",
     "docker-test": "docker compose exec -T mirofish npm run smoke-test",
-    "docker-down": "docker compose down --remove-orphans"
+    "docker-down": "docker compose down --remove-orphans",
+    "docker-down:openrouter-smoke": "docker compose -f docker-compose.yml -f docker-compose.openrouter-smoke.yml --profile graphiti down --remove-orphans"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

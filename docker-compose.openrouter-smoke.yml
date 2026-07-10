@@ -1,0 +1,30 @@
+services:
+  mirofish:
+    environment:
+      ALLOW_UNCONFIGURED_STARTUP: "false"
+      FLASK_DEBUG: "false"
+      LLM_API_KEY: ${OPENROUTER_API_KEY:?Set OPENROUTER_API_KEY in .env or the shell}
+      OPENAI_API_KEY: ${OPENROUTER_API_KEY:?Set OPENROUTER_API_KEY in .env or the shell}
+      LLM_BASE_URL: ${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
+      LLM_MODEL_NAME: ${QWEN_MODEL:-qwen/qwen3-8b}
+      SIMULATION_LLM_API_KEY: ${OPENROUTER_API_KEY:?Set OPENROUTER_API_KEY in .env or the shell}
+      SIMULATION_LLM_BASE_URL: ${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
+      SIMULATION_LLM_MODEL_NAME: ${QWEN_MODEL:-qwen/qwen3-8b}
+      GRAPH_BACKEND: graphiti
+      GRAPHITI_LLM_API_KEY: ${OPENROUTER_API_KEY:?Set OPENROUTER_API_KEY in .env or the shell}
+      GRAPHITI_LLM_BASE_URL: ${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
+      GRAPHITI_LLM_MODEL: ${QWEN_MODEL:-qwen/qwen3-8b}
+      GRAPHITI_LLM_CLIENT_MODE: generic
+      GRAPHITI_EMBEDDER_API_KEY: ${OPENROUTER_API_KEY:?Set OPENROUTER_API_KEY in .env or the shell}
+      GRAPHITI_EMBEDDER_BASE_URL: ${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
+      GRAPHITI_EMBEDDER_MODEL: qwen/qwen3-embedding-8b
+      GRAPHITI_EMBEDDER_DIM: "4096"
+      GRAPHITI_RERANKER_API_KEY: ${OPENROUTER_API_KEY:?Set OPENROUTER_API_KEY in .env or the shell}
+      GRAPHITI_RERANKER_BASE_URL: ${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
+      GRAPHITI_RERANKER_MODEL: ${QWEN_MODEL:-qwen/qwen3-8b}
+      GRAPHITI_MAX_COROUTINES: "2"
+      GRAPHITI_BYPASS_NODE_DEDUP: "true"
+      USE_EXPERIMENTAL_MEMORY: "true"
+      REPORT_AGENT_MAX_TOOL_CALLS: "1"
+      REPORT_AGENT_MAX_SUB_QUERIES: "1"
+      REPORT_AGENT_MAX_REFLECTION_ROUNDS: "1"

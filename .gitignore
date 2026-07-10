@@ -49,7 +49,7 @@ logs/
 backend/log/
 backend/logs/
 backend/uploads/
-backend/data/cache/
+backend/data/
 backend/backend/
 runs/
 outputs/

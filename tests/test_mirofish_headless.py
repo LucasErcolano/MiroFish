@@ -67,6 +67,8 @@ class FakeMiroFishHandler(BaseHTTPRequestHandler):
             self._send_json({"success": True, "data": {"task_id": "task_prepare", "status": "completed", "progress": 100}})
         elif self.path == "/api/simulation/start":
             self._send_json({"success": True, "data": {"runner_status": "running", "process_pid": 123}})
+        elif self.path == "/api/simulation/close-env":
+            self._send_json({"success": True, "data": {"message": "closed"}})
         elif self.path == "/api/report/generate":
             self._send_json({"success": True, "data": {"task_id": "task_report", "report_id": "report_1", "status": "generating"}})
         elif self.path == "/api/report/generate/status":
@@ -86,7 +88,7 @@ class FakeMiroFishHandler(BaseHTTPRequestHandler):
             self._send_json({"success": True, "data": {"node_count": 1, "edge_count": 0}})
         elif self.path == "/api/simulation/sim_1/run-status":
             self.__class__.run_status_calls += 1
-            self._send_json({"success": True, "data": {"runner_status": "completed", "current_round": 2, "total_rounds": 2, "twitter_current_round": 2, "reddit_current_round": 2}})
+            self._send_json({"success": True, "data": {"runner_status": "completed", "current_round": 2, "total_rounds": 2, "twitter_current_round": 2, "reddit_current_round": 2, "total_actions_count": 1}})
         elif self.path == "/api/simulation/sim_1/run-status/detail":
             self._send_json({"success": True, "data": {"recent_actions": []}})
         elif self.path == "/api/simulation/sim_1/agent-stats":
@@ -131,6 +133,7 @@ class HeadlessRunnerTests(unittest.TestCase):
                 simulation_requirement="predict test",
                 project_name="Parity Test",
                 max_rounds=2,
+                graph_chunk_size=2000,
                 generate_report=True,
             )
 
@@ -142,6 +145,13 @@ class HeadlessRunnerTests(unittest.TestCase):
             self.assertIn(("POST", "/api/simulation/prepare"), paths)
             self.assertIn(("POST", "/api/simulation/start"), paths)
             self.assertIn(("POST", "/api/report/generate"), paths)
+            self.assertIn(("POST", "/api/simulation/close-env"), paths)
+
+            graph_build_payload = next(r["json"] for r in FakeMiroFishHandler.requests_seen if r["path"] == "/api/graph/build")
+            self.assertEqual(graph_build_payload, {"project_id": "proj_1", "chunk_size": 2000})
+
+            report_status_payload = next(r["json"] for r in FakeMiroFishHandler.requests_seen if r["path"] == "/api/report/generate/status")
+            self.assertEqual(report_status_payload, {"task_id": "task_report"})
 
             start_payload = next(r["json"] for r in FakeMiroFishHandler.requests_seen if r["path"] == "/api/simulation/start")
             self.assertEqual(start_payload, {
@@ -194,6 +204,23 @@ class HeadlessRunnerTests(unittest.TestCase):
         self.assertTrue(result["ok"], result)
         self.assertIn("/api/simulation/start", result["frontend_endpoints"])
         self.assertIn("/api/simulation/start", result["runner_endpoints"])
+
+    def test_real_run_gate_requires_rounds_and_actions(self):
+        self.assertFalse(MiroFishHeadlessRunner._is_real_run({
+            "runner_status": "completed",
+            "current_round": 2,
+            "total_actions_count": 0,
+        }))
+        self.assertFalse(MiroFishHeadlessRunner._is_real_run({
+            "runner_status": "completed",
+            "current_round": 0,
+            "total_actions_count": 2,
+        }))
+        self.assertTrue(MiroFishHeadlessRunner._is_real_run({
+            "runner_status": "completed",
+            "current_round": 2,
+            "total_actions_count": 2,
+        }))
 
 
 if __name__ == "__main__":

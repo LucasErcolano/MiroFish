@@ -10,6 +10,22 @@ from scripts.run_example import run_example
 from scripts.validate_outputs import validate_output_dir
 
 
+def test_compose_pins_neo4j_with_dynamic_label_support():
+    repo_root = Path(__file__).resolve().parents[1]
+    compose = (repo_root / "docker-compose.yml").read_text(encoding="utf-8")
+
+    assert "image: neo4j:5.26-community" in compose
+
+
+def test_runtime_data_is_excluded_from_git_and_docker_context():
+    repo_root = Path(__file__).resolve().parents[1]
+    gitignore = (repo_root / ".gitignore").read_text(encoding="utf-8")
+    dockerignore = (repo_root / ".dockerignore").read_text(encoding="utf-8")
+
+    assert "backend/data/" in gitignore.splitlines()
+    assert "backend/data" in dockerignore.splitlines()
+
+
 def test_output_validator_accepts_minimal_example(tmp_path):
     repo_root = Path(__file__).resolve().parents[1]
     output_dir = tmp_path / "output"

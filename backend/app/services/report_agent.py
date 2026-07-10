@@ -985,6 +985,9 @@ class ReportAgent:
         self.graph_id = graph_id
         self.simulation_id = simulation_id
         self.simulation_requirement = simulation_requirement
+        self.MAX_TOOL_CALLS_PER_SECTION = max(1, Config.REPORT_AGENT_MAX_TOOL_CALLS)
+        self.MAX_REFLECTION_ROUNDS = max(1, Config.REPORT_AGENT_MAX_REFLECTION_ROUNDS)
+        self.max_sub_queries = max(1, Config.REPORT_AGENT_MAX_SUB_QUERIES)
         
         self.llm = llm_client or LLMClient()
         self.zep_tools = zep_tools or ZepToolsService(
@@ -1070,7 +1073,8 @@ class ReportAgent:
                     graph_id=self.graph_id,
                     query=query,
                     simulation_requirement=self.simulation_requirement,
-                    report_context=ctx
+                    report_context=ctx,
+                    max_sub_queries=self.max_sub_queries,
                 )
                 return self._localize_tool_result(result.to_text())
             
@@ -1411,10 +1415,10 @@ class ReportAgent:
         
         # ReACT循环
         tool_calls_count = 0
-        max_iterations = 5  # 最大迭代轮数
         min_tool_calls = 1  # 最少真实工具调用次数；避免为凑数量把模型推向无关示例
         conflict_retries = 0  # 工具调用与Final Answer同时出现的连续冲突次数
         used_tools = set()  # 记录已调用过的工具名
+        max_iterations = max(2, self.MAX_TOOL_CALLS_PER_SECTION)
         all_tools = {"insight_forge", "panorama_search", "quick_search", "interview_agents"}
 
         # 报告上下文，用于InsightForge的子问题生成

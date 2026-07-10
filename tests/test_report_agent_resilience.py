@@ -3,6 +3,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 BACKEND = ROOT / "backend"
@@ -46,6 +47,15 @@ class DummyZepTools:
     pass
 
 
+class RecordingZepTools:
+    def __init__(self):
+        self.insight_kwargs = None
+
+    def insight_forge(self, **kwargs):
+        self.insight_kwargs = kwargs
+        return type("Result", (), {"to_text": lambda self: "grounded"})()
+
+
 class ReportAgentResilienceTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -73,6 +83,24 @@ class ReportAgentResilienceTests(unittest.TestCase):
         agent = self.make_agent()
 
         self.assertEqual(agent._parse_tool_calls(None), [])
+
+    def test_report_limits_are_configurable_for_real_smoke_runs(self):
+        tools = RecordingZepTools()
+        with (
+            patch.object(Config, "REPORT_AGENT_MAX_TOOL_CALLS", 1),
+            patch.object(Config, "REPORT_AGENT_MAX_SUB_QUERIES", 1, create=True),
+        ):
+            agent = ReportAgent(
+                graph_id="graph-test",
+                simulation_id="sim-test",
+                simulation_requirement="req",
+                llm_client=DummyLLM(),
+                zep_tools=tools,
+            )
+            agent._execute_tool("insight_forge", {"query": "x"})
+
+        self.assertEqual(agent.MAX_TOOL_CALLS_PER_SECTION, 1)
+        self.assertEqual(tools.insight_kwargs["max_sub_queries"], 1)
 
     def test_parse_tool_calls_accepts_gemini_action_json_block(self):
         agent = self.make_agent()
