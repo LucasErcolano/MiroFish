@@ -17,6 +17,18 @@ def test_compose_pins_neo4j_with_dynamic_label_support():
     assert "image: neo4j:5.26-community" in compose
 
 
+def test_deepinfra_real_smoke_overlay_uses_only_environment_secrets():
+    repo_root = Path(__file__).resolve().parents[1]
+    compose = (repo_root / "docker-compose.deepinfra-smoke.yml").read_text(encoding="utf-8")
+    package = (repo_root / "package.json").read_text(encoding="utf-8")
+
+    assert "${DEEPINFRA_API_KEY:?" in compose
+    assert "https://api.deepinfra.com/v1/openai" in compose
+    assert "google/gemma-3-27b-it" in compose
+    assert "BAAI/bge-m3" in compose
+    assert '"docker-up:deepinfra-smoke"' in package
+
+
 def test_runtime_data_is_excluded_from_git_and_docker_context():
     repo_root = Path(__file__).resolve().parents[1]
     gitignore = (repo_root / ".gitignore").read_text(encoding="utf-8")

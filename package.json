@@ -19,9 +19,11 @@
     "check": "npm run hygiene && npm run smoke-test && npm run run-example && npm test && npm run build",
     "docker-up": "docker compose up --build --wait",
     "docker-up:openrouter-smoke": "docker compose -f docker-compose.yml -f docker-compose.openrouter-smoke.yml --profile graphiti up --build --wait",
+    "docker-up:deepinfra-smoke": "docker compose -f docker-compose.yml -f docker-compose.deepinfra-smoke.yml --profile graphiti up --build --wait",
     "docker-test": "docker compose exec -T mirofish npm run smoke-test",
     "docker-down": "docker compose down --remove-orphans",
-    "docker-down:openrouter-smoke": "docker compose -f docker-compose.yml -f docker-compose.openrouter-smoke.yml --profile graphiti down --remove-orphans"
+    "docker-down:openrouter-smoke": "docker compose -f docker-compose.yml -f docker-compose.openrouter-smoke.yml --profile graphiti down --remove-orphans",
+    "docker-down:deepinfra-smoke": "docker compose -f docker-compose.yml -f docker-compose.deepinfra-smoke.yml --profile graphiti down --remove-orphans"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

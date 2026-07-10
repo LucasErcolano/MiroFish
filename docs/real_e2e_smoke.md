@@ -21,6 +21,14 @@ npm run smoke-test:real
 npm run docker-down:openrouter-smoke
 ```
 
+For DeepInfra, set `DEEPINFRA_API_KEY` and use the equivalent overlay:
+
+```bash
+npm run docker-up:deepinfra-smoke
+npm run smoke-test:real
+npm run docker-down:deepinfra-smoke
+```
+
 The command fails unless the graph is non-empty, at least one round and action
 are observed, memory evidence exists, ReportAgent produces non-empty Markdown,
 the environment closes successfully, and the API key is absent from artifacts.
@@ -39,6 +47,18 @@ The Compose path was rebuilt from an empty Neo4j volume and verified on
 | ReportAgent | 3,386-byte Spanish report |
 | Cleanup | OASIS closed through `close-env` |
 | Secret scan | no provider key in generated artifacts |
+
+The same flow was then verified through DeepInfra with Gemma 3 27B and
+BGE-M3 embeddings:
+
+| Gate | Result |
+| --- | --- |
+| Graphiti | 1 chunk, 7 nodes, 6 edges |
+| OASIS | 4 agents, 9 rounds, 8 actions |
+| Experimental memory | evidence captured |
+| ReportAgent | 8,638-byte Spanish report |
+| Cleanup | OASIS closed through `close-env` |
+| Secret scan | neither provider key appeared in generated artifacts |
 
 The final cached-image E2E took about ten minutes. The first Docker build is
 substantially slower because the OASIS dependency graph includes large

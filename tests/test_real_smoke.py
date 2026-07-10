@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from scripts.run_real_smoke import validate_real_smoke
+from scripts.run_real_smoke import resolve_smoke_api_key, validate_real_smoke
 
 
 def _valid_manifest():
@@ -45,3 +45,9 @@ def test_validate_real_smoke_rejects_false_positive_and_secret_leak(tmp_path: Pa
     assert any("real-system gate" in error for error in errors)
     assert any("actions" in error for error in errors)
     assert any("API key" in error for error in errors)
+
+
+def test_resolve_smoke_api_key_supports_both_documented_providers():
+    assert resolve_smoke_api_key({"OPENROUTER_API_KEY": "openrouter"}) == "openrouter"
+    assert resolve_smoke_api_key({"DEEPINFRA_API_KEY": "deepinfra"}) == "deepinfra"
+    assert resolve_smoke_api_key({"MIROFISH_SMOKE_API_KEY": "explicit"}) == "explicit"

@@ -24,6 +24,15 @@ DEFAULT_REQUIREMENT = (
 )
 
 
+def resolve_smoke_api_key(environ: dict[str, str] | os._Environ[str]) -> str | None:
+    """Select the secret used only to scan generated smoke artifacts."""
+    return (
+        environ.get("MIROFISH_SMOKE_API_KEY")
+        or environ.get("OPENROUTER_API_KEY")
+        or environ.get("DEEPINFRA_API_KEY")
+    )
+
+
 def _int(value: Any) -> int:
     try:
         return int(value or 0)
@@ -98,7 +107,7 @@ def main() -> int:
     manifest = runner.run_full_flow(
         files=[DEFAULT_SEED],
         simulation_requirement=DEFAULT_REQUIREMENT,
-        project_name="MiroFish OpenRouter real smoke",
+        project_name="MiroFish real provider smoke",
         max_rounds=9,
         platform="parallel",
         generate_report=True,
@@ -107,7 +116,7 @@ def main() -> int:
         graph_chunk_size=2000,
     )
 
-    errors = validate_real_smoke(manifest, output_dir, os.environ.get("OPENROUTER_API_KEY"))
+    errors = validate_real_smoke(manifest, output_dir, resolve_smoke_api_key(os.environ))
     validation = {
         "status": "passed" if not errors else "failed",
         "errors": errors,

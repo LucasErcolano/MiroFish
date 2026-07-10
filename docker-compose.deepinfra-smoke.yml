@@ -1,0 +1,30 @@
+services:
+  mirofish:
+    environment:
+      ALLOW_UNCONFIGURED_STARTUP: "false"
+      FLASK_DEBUG: "false"
+      LLM_API_KEY: ${DEEPINFRA_API_KEY:?Set DEEPINFRA_API_KEY in .env or the shell}
+      OPENAI_API_KEY: ${DEEPINFRA_API_KEY:?Set DEEPINFRA_API_KEY in .env or the shell}
+      LLM_BASE_URL: ${DEEPINFRA_BASE_URL:-https://api.deepinfra.com/v1/openai}
+      LLM_MODEL_NAME: ${GEMMA_MODEL:-google/gemma-3-27b-it}
+      SIMULATION_LLM_API_KEY: ${DEEPINFRA_API_KEY:?Set DEEPINFRA_API_KEY in .env or the shell}
+      SIMULATION_LLM_BASE_URL: ${DEEPINFRA_BASE_URL:-https://api.deepinfra.com/v1/openai}
+      SIMULATION_LLM_MODEL_NAME: ${GEMMA_MODEL:-google/gemma-3-27b-it}
+      GRAPH_BACKEND: graphiti
+      GRAPHITI_LLM_API_KEY: ${DEEPINFRA_API_KEY:?Set DEEPINFRA_API_KEY in .env or the shell}
+      GRAPHITI_LLM_BASE_URL: ${DEEPINFRA_BASE_URL:-https://api.deepinfra.com/v1/openai}
+      GRAPHITI_LLM_MODEL: ${GEMMA_MODEL:-google/gemma-3-27b-it}
+      GRAPHITI_LLM_CLIENT_MODE: generic
+      GRAPHITI_EMBEDDER_API_KEY: ${DEEPINFRA_API_KEY:?Set DEEPINFRA_API_KEY in .env or the shell}
+      GRAPHITI_EMBEDDER_BASE_URL: ${DEEPINFRA_BASE_URL:-https://api.deepinfra.com/v1/openai}
+      GRAPHITI_EMBEDDER_MODEL: BAAI/bge-m3
+      GRAPHITI_EMBEDDER_DIM: "1024"
+      GRAPHITI_RERANKER_API_KEY: ${DEEPINFRA_API_KEY:?Set DEEPINFRA_API_KEY in .env or the shell}
+      GRAPHITI_RERANKER_BASE_URL: ${DEEPINFRA_BASE_URL:-https://api.deepinfra.com/v1/openai}
+      GRAPHITI_RERANKER_MODEL: ${GEMMA_MODEL:-google/gemma-3-27b-it}
+      GRAPHITI_MAX_COROUTINES: "2"
+      GRAPHITI_BYPASS_NODE_DEDUP: "true"
+      USE_EXPERIMENTAL_MEMORY: "true"
+      REPORT_AGENT_MAX_TOOL_CALLS: "1"
+      REPORT_AGENT_MAX_SUB_QUERIES: "1"
+      REPORT_AGENT_MAX_REFLECTION_ROUNDS: "1"

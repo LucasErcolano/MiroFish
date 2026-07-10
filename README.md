@@ -98,7 +98,7 @@ inside Docker:
 docker compose --profile graphiti up --build
 ```
 
-### Real OpenRouter Smoke
+### Real Provider Smoke
 
 The default smoke is offline. To verify the paid path end to end with a small,
 bounded run, set only `OPENROUTER_API_KEY` in `.env` or the shell and run:
@@ -118,6 +118,18 @@ artifacts, and graceful environment shutdown. Artifacts are written below
 part of `npm run check` because it consumes provider credits. The smoke requests
 Spanish output because this fork ships complete native ReportAgent prompts for
 `es` and `zh`; English currently falls back to the original Chinese prompts.
+
+The same bounded flow can use DeepInfra with Gemma 3 and BGE-M3. Set only
+`DEEPINFRA_API_KEY` and run:
+
+```bash
+npm run docker-up:deepinfra-smoke
+npm run smoke-test:real
+npm run docker-down:deepinfra-smoke
+```
+
+Both provider overlays map secrets only at runtime and never write them into
+the repository or generated evidence.
 
 ### Research Docs
 
