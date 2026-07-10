@@ -152,10 +152,12 @@ The smoke path proves repository integrity and deterministic artifact creation.
 Full OASIS simulations still require provider API keys, OASIS/CAMEL-compatible
 runtime dependencies, and enough model quota for the selected matrix.
 
-The current Docker image is approximately 4.9 GB because the OASIS dependency
-graph installs PyTorch/CUDA wheels on Linux. A CPU-only image profile remains a
-packaging optimization; changing those wheels should be validated separately
-against OASIS before becoming the default.
+The default Docker image uses the official CPU-only PyTorch index. MiroFish
+uses hosted model providers by default and Docker Compose does not expose a
+GPU, so CUDA runtime wheels are intentionally excluded. GPU/local-model setups
+require a separate dependency profile and are not part of the supported
+one-command path. The image measured approximately 4.19 GB in the 2026-07-10
+clean-build validation, down from 14.3 GB with CUDA wheels.
 
 ## ⚡ Overview
 

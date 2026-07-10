@@ -17,6 +17,17 @@ def test_compose_pins_neo4j_with_dynamic_label_support():
     assert "image: neo4j:5.26-community" in compose
 
 
+def test_backend_lock_uses_cpu_only_pytorch():
+    repo_root = Path(__file__).resolve().parents[1]
+    pyproject = (repo_root / "backend" / "pyproject.toml").read_text(encoding="utf-8")
+    lock = (repo_root / "backend" / "uv.lock").read_text(encoding="utf-8")
+
+    assert '"torch==2.9.1"' in pyproject
+    assert 'torch = { index = "pytorch-cpu" }' in pyproject
+    assert 'url = "https://download.pytorch.org/whl/cpu"' in pyproject
+    assert 'name = "nvidia-' not in lock
+
+
 def test_deepinfra_real_smoke_overlay_uses_only_environment_secrets():
     repo_root = Path(__file__).resolve().parents[1]
     compose = (repo_root / "docker-compose.deepinfra-smoke.yml").read_text(encoding="utf-8")
