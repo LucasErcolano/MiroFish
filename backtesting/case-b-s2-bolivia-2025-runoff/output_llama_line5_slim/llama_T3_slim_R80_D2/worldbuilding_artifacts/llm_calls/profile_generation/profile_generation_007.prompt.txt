@@ -1,0 +1,94 @@
+[system]
+你是社交媒体用户画像生成专家。生成详细、真实的人设用于舆论模拟,最大程度还原已有现实情况。必须返回有效的JSON格式，所有字符串值不能包含未转义的换行符。
+
+请使用中文回答。
+
+[user]
+为机构/群体实体生成详细的社交媒体账号设定,最大程度还原已有现实情况。
+
+实体名称: United States
+实体类型: Organization
+实体摘要: Jorge Quiroga seeks closer ties with the United States
+Bolivian presidential candidates may have improved relations with the United States
+实体属性: {"nature": "Country”, ", "entity_types": ["Entity", "Organization", "Location", "Country"], "attributes": "{\"mentioned_in_context_of\": \"foreign-policy reset toward closer ties\"}"}
+
+上下文信息:
+### 实体属性
+- nature: Country”, 
+- entity_types: ['Entity', 'Organization', 'Location', 'Country']
+- attributes: {"mentioned_in_context_of": "foreign-policy reset toward closer ties"}
+
+### 相关事实和关系
+- Jorge Quiroga seeks closer ties with the United States
+- Bolivian presidential candidates may have improved relations with the United States
+
+### 关联实体信息
+- **Jorge Quiroga** (Person): Jorge Quiroga opposes MAS
+Jorge Quiroga possibly supports the International Monetary Fund
+Jorge Quiroga seeks closer ties with the United States
+Quiroga leads Paz in a late runoff poll
+Quiroga has an 8.4-point poll gap over Paz
+- **Bolivian presidential candidates** (PresidentCandidate): US officials met with Bolivian presidential candidates
+Bolivian presidential candidates may have improved relations with the United States
+
+### Zep检索到的事实信息
+- Rodrigo Paz leaves room for other multilateral support including the IMF.
+- US officials met with Bolivian presidential candidates
+- Rodrigo Paz rejects making the IMF the central answer.
+- Quiroga has an 8.4-point poll gap over Paz
+- Jorge Quiroga opposes MAS
+- Jorge Quiroga possibly supports the International Monetary Fund
+- Rodrigo Paz was supported by Samuel Doria Medina
+- Samuel Doria Medina supports Rodrigo Paz
+- Rodrigo Paz opposes MAS
+- Quiroga leads Paz in a late runoff poll
+- Bolivia is governed by MAS
+- US officials emphasized the possibility of improved relations with Bolivia
+- MAS has post-foreign policy in Bolivia
+
+### Zep检索到的相关节点
+- 相关实体: MAS
+- Rodrigo Paz rejects making the IMF the central answer.
+Rodrigo Paz leaves room for other multilateral support including the IMF.
+Jorge Quiroga possibly supports the International Monetary Fund
+- 相关实体: IMF
+- Jorge Quiroga opposes MAS
+Jorge Quiroga possibly supports the International Monetary Fund
+Jorge Quiroga seeks closer ties with the United States
+Quiroga leads Paz in a late runoff poll
+Quiroga has an 8.4-point poll gap over Paz
+- 相关实体: US officials
+- Edman Lara, politician with anti-corruption and outsider profile.
+- Politician and Rodrigo Paz's running mate with an anti-corruption and outsider profile.
+- US officials met with Bolivian presidential candidates
+US officials emphasized the possibility of improved relations with Bolivia
+- Bolivia is governed by MAS
+Jorge Quiroga opposes MAS
+Rodrigo Paz opposes MAS
+MAS has post-foreign policy in Bolivia
+- 相关实体: Rodrigo Paz
+
+请生成JSON，包含以下字段:
+
+1. bio: 官方账号简介，200字，专业得体
+2. persona: 详细账号设定描述（2000字的纯文本），需包含:
+   - 机构基本信息（正式名称、机构性质、成立背景、主要职能）
+   - 账号定位（账号类型、目标受众、核心功能）
+   - 发言风格（语言特点、常用表达、禁忌话题）
+   - 发布内容特点（内容类型、发布频率、活跃时间段）
+   - 立场态度（对核心话题的官方立场、面对争议的处理方式）
+   - 特殊说明（代表的群体画像、运营习惯）
+   - 机构记忆（机构人设的重要部分，要介绍这个机构与事件的关联，以及这个机构在事件中的已有动作与反应）
+3. age: 固定填30（机构账号的虚拟年龄）
+4. gender: 固定填"other"（机构账号使用other表示非个人）
+5. mbti: MBTI类型，用于描述账号风格，如ISTJ代表严谨保守
+6. country: 国家（使用中文，如"中国"）
+7. profession: 机构职能描述
+8. interested_topics: 关注领域数组
+
+重要:
+- 所有字段值必须是字符串或数字，不允许null值
+- persona必须是一段连贯的文字描述，不要使用换行符
+- 请使用中文回答。 (gender字段必须用英文"other")
+- age必须是整数30，gender必须是字符串"other"
+- 机构账号发言要符合其身份定位

@@ -1,0 +1,761 @@
+{
+  "simulation_id": "sim_ff326656404f",
+  "runner_status": "completed",
+  "current_round": 40,
+  "total_rounds": 40,
+  "simulated_hours": 0,
+  "total_simulation_hours": 96,
+  "progress_percent": 100.0,
+  "twitter_current_round": 40,
+  "reddit_current_round": 40,
+  "twitter_simulated_hours": 0,
+  "reddit_simulated_hours": 0,
+  "twitter_running": false,
+  "reddit_running": false,
+  "twitter_completed": true,
+  "reddit_completed": true,
+  "twitter_actions_count": 134,
+  "reddit_actions_count": 8,
+  "total_actions_count": 142,
+  "started_at": "2026-06-19T13:11:01.327840",
+  "updated_at": "2026-06-19T13:28:20.287994",
+  "completed_at": "2026-06-19T13:28:20.288580",
+  "error": null,
+  "process_pid": 2334150,
+  "recent_actions": [
+    {
+      "round_num": 40,
+      "timestamp": "2026-06-19T13:28:20.004036",
+      "platform": "twitter",
+      "agent_id": 24,
+      "agent_name": "MasseyRatings",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 88,
+        "original_content": "Hello, this is argentina_959. Welcome to our official account of the Argentina national football team! We are proud to represent South American football and have participated in numerous international tournaments, including the World Cup and Copa America. Our team consists of talented players such as Lionel Messi and Julian Alvarez. We strive for excellence and unity, and we're excited to share our latest updates and match information with you. Follow us for more! #ArgentinaNationalFootballTeam #SouthAmericanFootball #WorldCup #CopaAmerica",
+        "original_author_name": "Colombia"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 39,
+      "timestamp": "2026-06-19T13:27:12.440825",
+      "platform": "twitter",
+      "agent_id": 27,
+      "agent_name": "Ecuador",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello everyone, this is ecuador_898, the official account of the Ecuador national football team. We are excited to share our latest news and updates with you. Stay tuned for more information about our upcoming matches and events!",
+        "post_id": 87
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 39,
+      "timestamp": "2026-06-19T13:27:12.440607",
+      "platform": "twitter",
+      "agent_id": 24,
+      "agent_name": "MasseyRatings",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "70",
+        "new_post_id": 86,
+        "original_content": "Hello, this is argentina_959. Welcome to our official account of the Argentina national football team! We are proud to represent South American football and have participated in numerous international tournaments, including the World Cup and Copa America. Our team consists of talented players such as Lionel Messi and Julian Alvarez. We strive for excellence and unity, and we're excited to share our latest updates and match information with you. Follow us for more! #ArgentinaNationalFootballTeam #SouthAmericanFootball #WorldCup #CopaAmerica",
+        "original_author_name": "Alexis Mac Allister",
+        "quote_content": "MasseyRatings的分析：阿根廷队在2024年美洲杯决赛"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 39,
+      "timestamp": "2026-06-19T13:27:12.439956",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "FanDuel",
+      "action_type": "LIKE_POST",
+      "action_args": {
+        "post_id": "4",
+        "like_id": 5,
+        "post_content": "FanDuel的市场价格表明阿根廷队有47.6%的胜率，而Opta的模型信号显示阿根廷队有50.4%的胜率",
+        "post_author_name": "FanDuel"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 38,
+      "timestamp": "2026-06-19T13:25:22.006884",
+      "platform": "twitter",
+      "agent_id": 2,
+      "agent_name": "Copa America",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "2024星界剧会投票天日昨，带迟成为最好的意天小鱼！",
+        "post_id": 85
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 38,
+      "timestamp": "2026-06-19T13:25:22.005727",
+      "platform": "twitter",
+      "agent_id": 16,
+      "agent_name": "Opta",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "17",
+        "new_post_id": 84,
+        "original_content": "",
+        "original_author_name": "Canada",
+        "quote_content": "Opta的模型信号显示阿根廷队有50.4%的胜率"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 38,
+      "timestamp": "2026-06-19T13:25:22.004446",
+      "platform": "twitter",
+      "agent_id": 24,
+      "agent_name": "MasseyRatings",
+      "action_type": "LIKE_POST",
+      "action_args": {
+        "post_id": "64",
+        "like_id": 4,
+        "post_content": "Hello, this is argentina_959. Welcome to our official account of the Argentina national football team! We are proud to represent South American football and have participated in numerous international tournaments, including the World Cup and Copa America. Our team consists of talented players such as Lionel Messi and Julian Alvarez. We strive for excellence and unity, and we're excited to share our latest updates and match information with you. Follow us for more! #ArgentinaNationalFootballTeam #SouthAmericanFootball #WorldCup #CopaAmerica",
+        "post_author_name": "Colombia"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 37,
+      "timestamp": "2026-06-19T13:23:51.042453",
+      "platform": "twitter",
+      "agent_id": 10,
+      "agent_name": "Canada",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 83,
+        "original_content": "Hello, I'm canada_535. My profile is 加油国公司资产。提供加油国最新日照、文化、丽题和團朱信息。求论和交流。",
+        "original_author_name": "Canada"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 37,
+      "timestamp": "2026-06-19T13:23:51.041250",
+      "platform": "twitter",
+      "agent_id": 25,
+      "agent_name": "Uruguay",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 36,
+      "timestamp": "2026-06-19T13:22:32.257037",
+      "platform": "twitter",
+      "agent_id": 24,
+      "agent_name": "MasseyRatings",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "36",
+        "new_post_id": 82,
+        "original_content": "Hello, this is argentina_959. Welcome to our official account of the Argentina national football team! We are proud to represent South American football and have participated in numerous international tournaments, including the World Cup and Copa America. Our team consists of talented players such as Lionel Messi and Julian Alvarez. We strive for excellence and unity, and we're excited to share our latest updates and match information with you. Follow us for more! #ArgentinaNationalFootballTeam #SouthAmericanFootball #WorldCup #CopaAmerica",
+        "original_author_name": "Argentina",
+        "quote_content": "MasseyRatings的分析：阿根廷队二小郮会受了比14次美洲杯王希赛之像，从2021年之前一次近期谁会胜出"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 36,
+      "timestamp": "2026-06-19T13:22:32.256757",
+      "platform": "twitter",
+      "agent_id": 15,
+      "agent_name": "Hard Rock Stadium",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "20",
+        "new_post_id": 81,
+        "original_content": "Hello, I'm canada_535. My profile is 加油国公司资产。提供加油国最新日照、文化、丽题和團朱信息。求论和交流。",
+        "original_author_name": "Canada",
+        "quote_content": "I agree with canada_535's view. Canada's national football team has a good record."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 35,
+      "timestamp": "2026-06-19T13:21:20.765563",
+      "platform": "twitter",
+      "agent_id": 25,
+      "agent_name": "Uruguay",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Preparations are underway for the upcoming international friendly match against Peru. The Uruguay squad is looking strong, with notable players like Luis Suarez and Edinson Cavani leading the charge. Looks like it will be a thrilling match! #UruguayFootball #InternationalFriendly",
+        "post_id": 80
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 35,
+      "timestamp": "2026-06-19T13:21:20.765402",
+      "platform": "twitter",
+      "agent_id": 24,
+      "agent_name": "MasseyRatings",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello, everyone! I am MasseyRatings_764, a sports prediction and analysis expert. I will be sharing my insights and predictions on various sports events. Stay tuned! #MasseyRatings #SportsPrediction #Analysis",
+        "post_id": 79
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 35,
+      "timestamp": "2026-06-19T13:21:20.765226",
+      "platform": "twitter",
+      "agent_id": 16,
+      "agent_name": "Opta",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 35,
+      "timestamp": "2026-06-19T13:21:20.763018",
+      "platform": "twitter",
+      "agent_id": 10,
+      "agent_name": "Canada",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "20",
+        "new_post_id": 78,
+        "original_content": "Hello, I'm canada_535. My profile is 加油国公司资产。提供加油国最新日照、文化、丽题和團朱信息。求论和交流。",
+        "original_author_name": "Canada",
+        "quote_content": "I support this view! ecuador national football team has a good record"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 34,
+      "timestamp": "2026-06-19T13:20:17.228700",
+      "platform": "twitter",
+      "agent_id": 15,
+      "agent_name": "Hard Rock Stadium",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello everyone! Welcome to our sports community! Let's discuss the latest news and updates in the world of sports. Who's ready for the next big game?",
+        "post_id": 77
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 34,
+      "timestamp": "2026-06-19T13:20:17.228070",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "FanDuel",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 13,
+        "target_user_name": "FanDuel"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 33,
+      "timestamp": "2026-06-19T13:19:10.624248",
+      "platform": "twitter",
+      "agent_id": 16,
+      "agent_name": "Opta",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello, I'm Opta_634! I'm a professional data analysis institution, focusing on sports data collection, analysis, and interpretation. My mission is to provide accurate and reliable data support to help my clients make better decisions.",
+        "post_id": 76
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 33,
+      "timestamp": "2026-06-19T13:19:10.624069",
+      "platform": "twitter",
+      "agent_id": 1,
+      "agent_name": "FanDuel",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-19T13:18:19.117992",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "Colombia",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "36",
+        "new_post_id": 75,
+        "original_content": "Hello, this is argentina_959. Welcome to our official account of the Argentina national football team! We are proud to represent South American football and have participated in numerous international tournaments, including the World Cup and Copa America. Our team consists of talented players such as Lionel Messi and Julian Alvarez. We strive for excellence and unity, and we're excited to share our latest updates and match information with you. Follow us for more! #ArgentinaNationalFootballTeam #SouthAmericanFootball #WorldCup #CopaAmerica",
+        "original_author_name": "Argentina",
+        "quote_content": "I'm colombia_188, a fan of the Colombian national football team, and I'm happy to see the Argentina national football team's updates! #ColombianFootball #FootballFan"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-19T13:18:19.117950",
+      "platform": "twitter",
+      "agent_id": 18,
+      "agent_name": "Emiliano Martinez",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "65",
+        "new_post_id": 74,
+        "original_content": "哥伦比亚队也表现出色，拥有28场不败的记录，最近一次输球是2022年世界杯预选赛对阵阿根廷",
+        "original_author_name": "Lautaro Martinez",
+        "quote_content": "Thanks for the support! We're working hard to bring home the championship!"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-19T13:18:19.117915",
+      "platform": "twitter",
+      "agent_id": 8,
+      "agent_name": "Cristian Romero",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-19T13:18:19.117864",
+      "platform": "twitter",
+      "agent_id": 3,
+      "agent_name": "Jhon Cordoba",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "39",
+        "new_post_id": 73,
+        "original_content": "Hello, I'm Enzo Fernandez, a professional footballer from Argentina. I'm excited to share my experiences and insights about the beautiful game with all of you. Stay tuned for updates about my team, training, and matches!",
+        "original_author_name": "Enzo Fernandez",
+        "quote_content": "Hello Enzo Fernandez, I'm Jhon Cordoba, a professional footballer from Colombia. I'm excited to share my experiences and insights about the beautiful game with all of you. Stay tuned for updates about my team, training, and matches!"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-19T13:18:19.117828",
+      "platform": "twitter",
+      "agent_id": 0,
+      "agent_name": "Lautaro Martinez",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello, I'm Lautaro Martinez, an Argentine professional footballer. I'm excited to share my football journey and life with you all. Follow me for updates on my games, training, and more!",
+        "post_id": 72
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-19T13:18:19.117795",
+      "platform": "twitter",
+      "agent_id": 20,
+      "agent_name": "Luis Diaz",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello, everyone! I'm Luis Diaz, a Colombian football player. I'm excited to be here and share my experiences with you all. Let's talk about football!",
+        "post_id": 71
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-19T13:18:19.117745",
+      "platform": "twitter",
+      "agent_id": 11,
+      "agent_name": "Alexis Mac Allister",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "36",
+        "new_post_id": 70,
+        "original_content": "Hello, this is argentina_959. Welcome to our official account of the Argentina national football team! We are proud to represent South American football and have participated in numerous international tournaments, including the World Cup and Copa America. Our team consists of talented players such as Lionel Messi and Julian Alvarez. We strive for excellence and unity, and we're excited to share our latest updates and match information with you. Follow us for more! #ArgentinaNationalFootballTeam #SouthAmericanFootball #WorldCup #CopaAmerica",
+        "original_author_name": "Argentina",
+        "quote_content": "Thanks for sharing! I think both FanDuel and Opta Models are useful in predicting football matches."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-19T13:18:19.117700",
+      "platform": "twitter",
+      "agent_id": 12,
+      "agent_name": "Daniel Munoz",
+      "action_type": "LIKE_POST",
+      "action_args": {
+        "post_id": "20",
+        "like_id": 3,
+        "post_content": "Hello, I'm canada_535. My profile is 加油国公司资产。提供加油国最新日照、文化、丽题和團朱信息。求论和交流。",
+        "post_author_name": "Canada"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-19T13:18:19.117668",
+      "platform": "twitter",
+      "agent_id": 7,
+      "agent_name": "Richard Rios",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 12,
+        "target_user_name": "Enzo Fernandez"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-19T13:18:19.117628",
+      "platform": "twitter",
+      "agent_id": 16,
+      "agent_name": "Opta",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 11,
+        "target_user_name": "Colombia"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-19T13:18:19.117497",
+      "platform": "twitter",
+      "agent_id": 22,
+      "agent_name": "James Rodriguez",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 10,
+        "target_user_name": "Argentina"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 24,
+      "timestamp": "2026-06-19T13:18:19.116522",
+      "platform": "twitter",
+      "agent_id": 13,
+      "agent_name": "Julian Alvarez",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-19T13:17:19.154338",
+      "platform": "twitter",
+      "agent_id": 23,
+      "agent_name": "Camilo Vargas",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "FanDuel的市场价格表明阿根廷队有47.6%的胜率，而Opta的模型信号显示阿根廷队有50.4%的胜率",
+        "post_id": 69
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-19T13:17:19.154228",
+      "platform": "twitter",
+      "agent_id": 9,
+      "agent_name": "Argentina",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "36",
+        "new_post_id": 68,
+        "original_content": "Hello, this is argentina_959. Welcome to our official account of the Argentina national football team! We are proud to represent South American football and have participated in numerous international tournaments, including the World Cup and Copa America. Our team consists of talented players such as Lionel Messi and Julian Alvarez. We strive for excellence and unity, and we're excited to share our latest updates and match information with you. Follow us for more! #ArgentinaNationalFootballTeam #SouthAmericanFootball #WorldCup #CopaAmerica",
+        "original_author_name": "Argentina",
+        "quote_content": "Hello, I’m messi_123. Welcome to our official account of the Argentina national football team! We are proud to represent South American football and have participated in numerous international tournaments, including the World Cup and Copa America. Our team consists of talented players such as Lionel Messi and Julian Alvarez. We strive for excellence and unity, and we’re excited to share our latest updates and match information with you. Follow us for more! #ArgentinaNationalFootballTeam #SouthAmericanFootball #WorldCup #CopaAmerica"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-19T13:17:19.154144",
+      "platform": "twitter",
+      "agent_id": 7,
+      "agent_name": "Richard Rios",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello, everyone! I'm Richard Rios, a professional football player from Colombia. I'm excited to share my knowledge and experiences with you all. Let's talk about football!",
+        "post_id": 67
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-19T13:17:19.154057",
+      "platform": "twitter",
+      "agent_id": 21,
+      "agent_name": "Rodrigo De Paul",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "25",
+        "new_post_id": 66,
+        "original_content": "哥伦比亚队也表现出色，拥有28场不败的记录，最近一次输球是2022年世界杯预选赛对阵阿根廷",
+        "original_author_name": "Enzo Fernandez",
+        "quote_content": "I'm excited to see the Argentina national football team in action! Good luck to all the players and staff."
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-19T13:17:19.153972",
+      "platform": "twitter",
+      "agent_id": 0,
+      "agent_name": "Lautaro Martinez",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "21",
+        "new_post_id": 65,
+        "original_content": "哥伦比亚队也表现出色，拥有28场不败的记录，最近一次输球是2022年世界杯预选赛对阵阿根廷",
+        "original_author_name": "Angel Di Maria",
+        "quote_content": "Wishing the Argentina national football team all the best in the upcoming tournament!"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-19T13:17:19.153884",
+      "platform": "twitter",
+      "agent_id": 16,
+      "agent_name": "Opta",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-19T13:17:19.153773",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "Colombia",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "36",
+        "new_post_id": 64,
+        "original_content": "Hello, this is argentina_959. Welcome to our official account of the Argentina national football team! We are proud to represent South American football and have participated in numerous international tournaments, including the World Cup and Copa America. Our team consists of talented players such as Lionel Messi and Julian Alvarez. We strive for excellence and unity, and we're excited to share our latest updates and match information with you. Follow us for more! #ArgentinaNationalFootballTeam #SouthAmericanFootball #WorldCup #CopaAmerica",
+        "original_author_name": "Argentina",
+        "quote_content": "Hello, I'm colombia_188, a fan of the Colombian national football team! I'm excited to see the Argentina national football team's updates and match information. I'm looking forward to sharing my own experiences and insights with you all. #colombia_188 #Football #Colombia"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-19T13:17:19.153670",
+      "platform": "twitter",
+      "agent_id": 17,
+      "agent_name": "Enzo Fernandez",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "21",
+        "new_post_id": 63,
+        "original_content": "哥伦比亚队也表现出色，拥有28场不败的记录，最近一次输球是2022年世界杯预选赛对阵阿根廷",
+        "original_author_name": "Angel Di Maria",
+        "quote_content": "Wishing the Argentina national football team all the best for their upcoming matches!"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-19T13:17:19.153594",
+      "platform": "twitter",
+      "agent_id": 12,
+      "agent_name": "Daniel Munoz",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Thanks for sharing! I think both FanDuel and Opta Models are useful in predicting football matches.",
+        "post_id": 62
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-19T13:17:19.153512",
+      "platform": "twitter",
+      "agent_id": 28,
+      "agent_name": "Angel Di Maria",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 9,
+        "target_user_name": "Rodrigo De Paul"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-19T13:17:19.153408",
+      "platform": "twitter",
+      "agent_id": 4,
+      "agent_name": "Davinson Sanchez",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-19T13:17:19.153297",
+      "platform": "twitter",
+      "agent_id": 11,
+      "agent_name": "Alexis Mac Allister",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 61,
+        "original_content": "Hello, this is argentina_959. Welcome to our official account of the Argentina national football team! We are proud to represent South American football and have participated in numerous international tournaments, including the World Cup and Copa America. Our team consists of talented players such as Lionel Messi and Julian Alvarez. We strive for excellence and unity, and we're excited to share our latest updates and match information with you. Follow us for more! #ArgentinaNationalFootballTeam #SouthAmericanFootball #WorldCup #CopaAmerica",
+        "original_author_name": "Argentina"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-19T13:17:19.153110",
+      "platform": "twitter",
+      "agent_id": 14,
+      "agent_name": "Jefferson Lerma",
+      "action_type": "FOLLOW",
+      "action_args": {
+        "follow_id": 8,
+        "target_user_name": "Argentina"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-19T13:17:19.151333",
+      "platform": "twitter",
+      "agent_id": 13,
+      "agent_name": "Julian Alvarez",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 60,
+        "original_content": "Hello, I'm canada_535. My profile is 加油国公司资产。提供加油国最新日照、文化、丽题和團朱信息。求论和交流。",
+        "original_author_name": "Canada"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-19T13:17:19.151204",
+      "platform": "twitter",
+      "agent_id": 26,
+      "agent_name": "Jhon Arias",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 59,
+        "original_content": "Hello, I'm Opta_634! I'm a professional data analysis institution, focusing on sports data collection, analysis, and interpretation. My mission is to provide accurate and reliable data support to help my clients make better decisions.",
+        "original_author_name": "Opta"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-19T13:17:19.151063",
+      "platform": "twitter",
+      "agent_id": 18,
+      "agent_name": "Emiliano Martinez",
+      "action_type": "REPOST",
+      "action_args": {
+        "new_post_id": 58,
+        "original_content": "哥伦比亚队也表现出色，拥有28场不败的记录，最近一次输球是2022年世界杯预选赛对阵阿根廷",
+        "original_author_name": "Enzo Fernandez"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 23,
+      "timestamp": "2026-06-19T13:17:19.150697",
+      "platform": "twitter",
+      "agent_id": 8,
+      "agent_name": "Cristian Romero",
+      "action_type": "DO_NOTHING",
+      "action_args": {},
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-19T13:16:25.849048",
+      "platform": "twitter",
+      "agent_id": 22,
+      "agent_name": "James Rodriguez",
+      "action_type": "QUOTE_POST",
+      "action_args": {
+        "quoted_id": "36",
+        "new_post_id": 57,
+        "original_content": "Hello, this is argentina_959. Welcome to our official account of the Argentina national football team! We are proud to represent South American football and have participated in numerous international tournaments, including the World Cup and Copa America. Our team consists of talented players such as Lionel Messi and Julian Alvarez. We strive for excellence and unity, and we're excited to share our latest updates and match information with you. Follow us for more! #ArgentinaNationalFootballTeam #SouthAmericanFootball #WorldCup #CopaAmerica",
+        "original_author_name": "Argentina",
+        "quote_content": "Hello, I'm James Rodriguez, a Colombian footballer. I'm excited to see the Argentina national football team's updates and match information. I'm looking forward to sharing my own experiences and insights with you all. #JamesRodriguez #Football #Colombia"
+      },
+      "result": null,
+      "success": true
+    },
+    {
+      "round_num": 22,
+      "timestamp": "2026-06-19T13:16:25.848990",
+      "platform": "twitter",
+      "agent_id": 6,
+      "agent_name": "Colombia",
+      "action_type": "CREATE_POST",
+      "action_args": {
+        "content": "Hello! I'm colombia_188, a fan of the Colombian national football team! I'm excited to share my passion for football with all of you! Let's talk about the latest matches and news! #ColombianFootball #FootballFan",
+        "post_id": 56
+      },
+      "result": null,
+      "success": true
+    }
+  ],
+  "rounds_count": 0
+}

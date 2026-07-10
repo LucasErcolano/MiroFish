@@ -1,0 +1,25 @@
+{
+  "simulation_id": "sim_cfdca0502049",
+  "project_id": "proj_7e81b35a67b0",
+  "graph_id": "mirofish_bb802559676c4df2",
+  "enable_twitter": true,
+  "enable_reddit": true,
+  "status": "running",
+  "entities_count": 29,
+  "profiles_count": 29,
+  "entity_types": [
+    "Player",
+    "Team",
+    "Stadium",
+    "Tournament",
+    "Organization"
+  ],
+  "config_generated": true,
+  "config_reasoning": "时间配置: 根据模拟需求，目标用户群体为关注Copa America 2024的球迷，活跃度较高的时段为晚间19-22点，工作时段中等，早间和深夜活跃度较低。 | 事件配置: 通过分析热点话题和舆论发展方向，可以看出球迷和专家们都对Copa America 2024决赛的结果非常感兴趣。通过发布不同的帖子内容，可以引发讨论和辩论，促进舆论的发展和深化。 | Agent配置: 成功生成 29 个 | 初始帖子分配: 5 个帖子已分配发布者",
+  "current_round": 0,
+  "twitter_status": "not_started",
+  "reddit_status": "not_started",
+  "created_at": "2026-06-19T13:55:43.053247",
+  "updated_at": "2026-06-19T14:00:03.437946",
+  "error": null
+}

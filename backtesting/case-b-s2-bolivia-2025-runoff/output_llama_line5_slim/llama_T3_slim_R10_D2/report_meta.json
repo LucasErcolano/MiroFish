@@ -1,0 +1,33 @@
+{
+  "report_id": "report_484b52d4cafb",
+  "simulation_id": "sim_fad05583d069",
+  "graph_id": "mirofish_1730e06fc2404202",
+  "simulation_requirement": "# Question\n\nCon la informacion disponible en el paquete de evidencia provisto, predecir quien ganara el balotaje presidencial de Bolivia del 19 de octubre de 2025.\n\nResponder exclusivamente en espanol.\n\nLa respuesta debe:\n\n- identificar desde la evidencia cuales son los dos candidatos competitivos del balotaje;\n- elegir una prediccion principal unica, sin responder empate;\n- estimar el porcentaje de voto de los dos candidatos competitivos y de otros/blanco/nulo;\n- estimar el margen entre el ganador predicho y el segundo candidato en puntos;\n- justificar la prediccion usando solo evidencia del contexto entregado;\n- explicar como pesan la crisis economica, el colapso del MAS, la sorpresa de primera vuelta, el contraste de plataformas y la encuesta tardia;\n- mencionar factores de incertidumbre;\n- no usar informacion posterior a la fecha maxima del paquete.\n\nFormato esperado:\n\nCandidatos competitivos identificados:\n- Candidato 1: __\n- Candidato 2: __\n\nPrediccion principal: __ gana\n\nEstimacion de votos:\n- [nombre completo del candidato 1]: __%\n- [nombre completo del candidato 2]: __%\n- Otros / blanco / nulo: __%\n\nMargen estimado ganador-segundo: __ puntos\n\nJustificacion:\n- evidencia 1\n- evidencia 2\n- evidencia 3\n\nIncertidumbre:\n- factor 1\n- factor 2",
+  "status": "completed",
+  "outline": {
+    "title": "预测报告：2025年玻利维亚总统选举",
+    "summary": "根据模拟世界的预测结果，Jorge Quiroga 将赢得 2025 年玻利维亚总统选举的决选",
+    "sections": [
+      {
+        "title": "预测结果",
+        "content": "根据上述分析和预测，Jorge Quiroga 将赢得 2025 年玻利维亚总统选举的决选，支持率为 52%，领先 Rodrigo Paz 9 个百分点。其他候选人或空白/无效票的比例预计为 5%。经济危机、MAS 的崩溃、第一轮投票的惊喜、平台的对比以及晚期民调的影响都是影响选举结果的重要因素。同时，选民的参与度、弃权率和空白或无效票的数量也是不确定因素，可能会影响选举结果。"
+      },
+      {
+        "title": "预测依据",
+        "content": "Candidatos competitivos identificados:\n- Candidato 1: Jorge Quiroga\n- Candidato 2: Rodrigo Paz\n\nPrediccion principal: Jorge Quiroga gana\n\nEstimacion de votos:\n- Jorge Quiroga: 52%\n- Rodrigo Paz: 43%\n- Otros / blanco / nulo: 5%\n\nMargen estimado ganador-segundo: 9 puntos\n\nJustificacion:\n- \"Quiroga leads Paz in a late runoff poll\"\n- \"Jorge Quiroga seeks closer ties with the United States\"\n- \"Rodrigo Paz opposes MAS\"\n- \"Jorge Quiroga opposes MAS\"\n\nIncertidumbre:\n- Participacion de los electores\n- Cobertura de los medios de comunicacion\n- Eventos inesperados durante la campana electoral"
+      },
+      {
+        "title": "不确定性因素",
+        "content": "通过对采访结果的分析，我们可以看到不确定性因素对选举结果的影响是一个复杂的系统。选民的参与度、媒体的报道角度和意外事件都可能对选举结果产生影响。因此，需要考虑这些因素对选举结果的潜在影响，并提供更准确的预测。\n\n> \"Quiroga leads Paz in a late runoff poll\"\n> \"Rodrigo Paz rejects making the IMF the central answer.\"\n> \"MAS has post-foreign policy in Bolivia\"\n> \"Jorge Quiroga seeks closer ties with the United States\"\n> \"Quiroga has an 8.4-point poll gap over Paz\"\n\n这些信息表明，Jorge Quiroga 和 Rodrigo Paz 是两个主要的竞争者，Quiroga 在民调中领先。同时，MAS 的崩溃和 IMF 的支持也可能对选举结果产生影响。\n\n通过对这些信息的分析，我们可以看到不确定性因素对选举结果的影响是一个复杂的系统。选民的参与度、媒体的报道角度和意外事件都可能对选举结果产生影响。因此，需要考虑这些因素对选举结果的潜在影响，并提供更准确的预测。\n\n同时，采访结果也表明，各位受访者对当前选举结果的趋势和影响因素有着不同的看法，但都同意经济政策、社会福利和候选人的个人魅力是选民决策的重要因素。同时，他们也强调了保持警惕和密切关注选举进程的重要性，认为一个成功的竞选纲领应该能够体现候选人的政治理念、解决具体的社会问题，并且能够得到广泛的支持。\n\n因此，需要考虑这些因素对选举结果的潜在影响，并提供更准确的预测。通过综合这些信息，我们可以对不确定性因素有一个更全面的了解，并提供更准确的预测。"
+      }
+    ]
+  },
+  "markdown_content": "# 预测报告：2025年玻利维亚总统选举\n\n> 根据模拟世界的预测结果，Jorge Quiroga 将赢得 2025 年玻利维亚总统选举的决选\n\n---\n\n## 预测结果\n\n根据上述分析和预测，Jorge Quiroga 将赢得 2025 年玻利维亚总统选举的决选，支持率为 52%，领先 Rodrigo Paz 9 个百分点。其他候选人或空白/无效票的比例预计为 5%。经济危机、MAS 的崩溃、第一轮投票的惊喜、平台的对比以及晚期民调的影响都是影响选举结果的重要因素。同时，选民的参与度、弃权率和空白或无效票的数量也是不确定因素，可能会影响选举结果。\n\n## 预测依据\n\nCandidatos competitivos identificados:\n- Candidato 1: Jorge Quiroga\n- Candidato 2: Rodrigo Paz\n\nPrediccion principal: Jorge Quiroga gana\n\nEstimacion de votos:\n- Jorge Quiroga: 52%\n- Rodrigo Paz: 43%\n- Otros / blanco / nulo: 5%\n\nMargen estimado ganador-segundo: 9 puntos\n\nJustificacion:\n- \"Quiroga leads Paz in a late runoff poll\"\n- \"Jorge Quiroga seeks closer ties with the United States\"\n- \"Rodrigo Paz opposes MAS\"\n- \"Jorge Quiroga opposes MAS\"\n\nIncertidumbre:\n- Participacion de los electores\n- Cobertura de los medios de comunicacion\n- Eventos inesperados durante la campana electoral\n\n## 不确定性因素\n\n通过对采访结果的分析，我们可以看到不确定性因素对选举结果的影响是一个复杂的系统。选民的参与度、媒体的报道角度和意外事件都可能对选举结果产生影响。因此，需要考虑这些因素对选举结果的潜在影响，并提供更准确的预测。\n\n> \"Quiroga leads Paz in a late runoff poll\"\n> \"Rodrigo Paz rejects making the IMF the central answer.\"\n> \"MAS has post-foreign policy in Bolivia\"\n> \"Jorge Quiroga seeks closer ties with the United States\"\n> \"Quiroga has an 8.4-point poll gap over Paz\"\n\n这些信息表明，Jorge Quiroga 和 Rodrigo Paz 是两个主要的竞争者，Quiroga 在民调中领先。同时，MAS 的崩溃和 IMF 的支持也可能对选举结果产生影响。\n\n通过对这些信息的分析，我们可以看到不确定性因素对选举结果的影响是一个复杂的系统。选民的参与度、媒体的报道角度和意外事件都可能对选举结果产生影响。因此，需要考虑这些因素对选举结果的潜在影响，并提供更准确的预测。\n\n同时，采访结果也表明，各位受访者对当前选举结果的趋势和影响因素有着不同的看法，但都同意经济政策、社会福利和候选人的个人魅力是选民决策的重要因素。同时，他们也强调了保持警惕和密切关注选举进程的重要性，认为一个成功的竞选纲领应该能够体现候选人的政治理念、解决具体的社会问题，并且能够得到广泛的支持。\n\n因此，需要考虑这些因素对选举结果的潜在影响，并提供更准确的预测。通过综合这些信息，我们可以对不确定性因素有一个更全面的了解，并提供更准确的预测。\n\n",
+  "output_mode": "narrative",
+  "schema_id": null,
+  "structured_answer": null,
+  "metadata": {},
+  "created_at": "2026-06-18T17:35:07.502341",
+  "completed_at": "2026-06-18T17:44:50.690622",
+  "error": null
+}

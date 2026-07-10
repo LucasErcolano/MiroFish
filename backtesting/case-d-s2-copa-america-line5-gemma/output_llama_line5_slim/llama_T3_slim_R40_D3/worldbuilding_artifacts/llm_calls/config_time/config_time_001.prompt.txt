@@ -1,0 +1,196 @@
+[system]
+你是社交媒体模拟专家。返回纯JSON格式，时间配置需符合模拟场景中目标用户群体的作息习惯。
+
+请使用中文回答。
+
+[user]
+基于以下模拟需求，生成时间模拟配置。
+
+## 模拟需求
+# Prompt
+
+Con la informacion disponible hasta el 13 de julio de 2024, predecir quien ganara la final de la Copa America 2024 entre Argentina y Colombia.
+
+Responder exclusivamente en espanol.
+
+La respuesta debe:
+
+- elegir un unico ganador esperado;
+- justificar la prediccion usando solo evidencia del contexto entregado;
+- mencionar los principales factores de incertidumbre;
+- no usar informacion posterior al 13 de julio de 2024.
+
+Formato esperado:
+
+Ganador predicho: Argentina o Colombia
+
+Justificacion:
+- evidencia 1
+- evidencia 2
+- evidencia 3
+
+Incertidumbre:
+- factor 1
+- factor 2
+
+Tambien devolver una salida estructurada JSON con:
+
+- `predicted_winner`: Argentina o Colombia.
+- `confidence`: numero entre 0 y 1.
+- `winner_probability_point`: probabilidad puntual del ganador elegido.
+- `winner_probability_range`: rango estrecho para el ganador elegido, con `winner_min` y `winner_max`.
+- `predicted_goal_margin`: diferencia esperada de goles para el ganador, con valor puntual y rango.
+- `probability_calibration`: explicacion breve de como se eligieron la confianza y los rangos.
+- `probability_drivers`: factores que suben o bajan la probabilidad de cada equipo, con `source_id`.
+- `justification`: claims con `source_id`.
+- `uncertainty`: factores con `source_id`.
+- `evidence`: claims principales con `source_id`.
+
+Reglas de calibracion:
+
+- No usar un rango generico fijo para todas las corridas.
+- El rango de probabilidad del ganador debe ser estrecho: `winner_max - winner_min <= 0.05`.
+- `winner_probability_point` debe caer dentro de ese rango.
+- Si no hay odds/modelos probabilisticos directos, expresar la incertidumbre bajando la confianza y explicandola, no usando un rango enorme.
+- Si aparecen odds, modelos o mercados, anclar el punto medio a esa evidencia.
+- La confianza debe cambiar cuando cambia la evidencia temporal.
+- Evitar valores redondos repetidos salvo que esten justificados por las fuentes.
+- La diferencia de goles debe ser una prediccion pre-partido, no el resultado real.
+
+## 实体信息 (29个)
+
+### Player (18个)
+- Lautaro Martinez: Lautaro Martinez plays for Argentina
+- Jhon Cordoba: Jhon Cordoba plays for Colombia
+- Davinson Sanchez: Davinson Sanchez plays for Colombia
+- Richard Rios: Richard Rios plays for Colombia
+- Cristian Romero: Cristian Romero plays for Argentina
+- Alexis Mac Allister: Alexis Mac Allister plays for Argentina
+- Daniel Munoz: Daniel Munoz plays for Colombia
+- Julian Alvarez: Julian Alvarez plays for Argentina
+- Jefferson Lerma: Jefferson Lerma plays for Colombia
+- Enzo Fernandez: Enzo Fernandez plays for Argentina
+- Emiliano Martinez: Emiliano Martinez plays for Argentina
+- Lionel Messi: Lionel Messi plays for Argentina
+- Luis Diaz: Luis Diaz plays for Colombia
+- Rodrigo De Paul: Rodrigo De Paul plays for Argentina
+- James Rodriguez: James Rodriguez plays for Colombia
+- Camilo Vargas: Camilo Vargas plays for Colombia
+- Jhon Arias: Jhon Arias plays for Colombia
+- Angel Di Maria: Angel Di Maria plays for Argentina
+
+### Organization (3个)
+- FanDuel: FanDuel summarized model signals from Opta before the final.
+FanDuel summarized model signals from MasseyRatings before the final.
+FanDuel's market price implied Argentina around 47.6 percent to win.
+- Opta: FanDuel summarized model signals from Opta before the final.
+Opta estimated Argentina winning in 90 minutes 50.4 percent of the time.
+Opta estimated Colombia winning in 90 minutes 25.4 percent of the time.
+- MasseyRatings: FanDuel summarized model signals from MasseyRatings before the final.
+MasseyRatings listed Argentina at 41 percent.
+MasseyRatings listed Colombia at 31 percent.
+
+### Tournament (2个)
+- Copa America: Copa America 2024 final evidence package cutoff: 2024-07-13
+Argentina participates in CONMEBOL Copa America
+Colombia participates in CONMEBOL Copa America
+CONMEBOL Copa America is hosted at Hard Rock Stadium
+- World Cup: Argentina participates in World Cup
+Colombia participates in the World Cup
+
+### Team (5个)
+- Colombia: Colombia participates in CONMEBOL Copa America
+Argentina played against Colombia in Copa America history
+Argentina was unbeaten against Colombia in Copa America knockout-stage meetings
+Jefferson Lerma plays for Colombia
+James Rodriguez plays for Colombia
+Daniel Munoz plays for Colombia
+Colombia beat...
+- Argentina: Argentina participates in CONMEBOL Copa America
+Argentina participates in World Cup
+Argentina played against Colombia in Copa America history
+Argentina was unbeaten against Colombia in Copa America knockout-stage meetings
+Argentina played against Canada
+Lionel Messi plays for Argentina
+Julian Alvare...
+- Canada: Argentina played against Canada
+- Uruguay: Colombia beat Uruguay
+- Ecuador: Argentina played against Ecuador
+
+### Stadium (1个)
+- Hard Rock Stadium: CONMEBOL Copa America is hosted at Hard Rock Stadium
+
+## 原始文档内容
+
+
+=== seed_T3_line5_slim.md ===
+# Copa America 2024 final evidence package - Line 5 slim
+
+Cutoff: 2024-07-13.
+
+Use only the information below. Do not use the July 14 final score or any post-final reporting.
+
+## COPA_T3_SLIM_01 - Match and historical context
+
+Argentina and Colombia were scheduled to play the 2024 CONMEBOL Copa America final on July 14, 2024 at Hard Rock Stadium in Miami Gardens, Florida. Argentina entered as defending Copa America champion and reigning World Cup champion, with 15 Copa America titles. Colombia had one Copa America title, won in 2001.
+
+Before the final, Argentina and Colombia had met 15 times in Copa America history: 7 Argentina wins, 3 Colombia wins and 5 draws. Argentina was unbeaten against Colombia in five Copa America knockout-stage meetings, including matches decided by penalty shootouts.
+
+## COPA_T3_SLIM_02 - Recent form
+
+Argentina reached the final by beating Canada 2-0 on July 9. Lionel Messi scored his first goal of the tournament and Julian Alvarez also scored. Reports noted that Messi played the full match after recent concern around an adductor issue and looked fitter than in the quarter-final against Ecuador.
+
+Colombia reached the final by beating Uruguay 1-0 on July 10. Jefferson Lerma scored from a James Rodriguez corner. Colombia played more than half the match with 10 men after Daniel Munoz was sent off, but protected the lead under pressure.
+
+## COPA_T3_SLIM_03 - Market and model signals
+
+Pre-final betting markets listed Argentina as the 90-minute favorite at +105, Colombia at +360, and the draw at +190. Trophy-lift markets had Argentina at -200 and Colombia at +170. Another post-semifinal market had Argentina at -170 to win the tournament and Colombia at +130.
+
+FanDuel summarized model signals before the final: Opta estimated Argentina winning in 90 minutes 50.4 percent of the time, a draw at 23.6 percent, and Colombia winning in 90 minutes 25.4 percent. MasseyRatings listed Argentina at 41 percent and Colombia at 31 percent. FanDuel's market price implied Argentina around 47.6 percent to win.
+
+## COPA_T3_SLIM_04 - Team strengths and uncertainty
+
+Argentina's core included Lionel Messi, Angel Di Maria, Emiliano Martinez, Cristian Romero, Rodrigo De Paul, Alexis Mac Allister, Enzo Fernandez, Julian Alvarez and Lautaro Martinez. Colombia's core included James Rodriguez, Luis Diaz, Jhon Cordoba, Camilo Vargas, Davinson Sanchez, Jefferson Lerma, Richard Rios and Jhon Arias.
+
+Colombia entered on a 28-match unbeaten streak, with its last defeat coming against Argentina in a 2022 World Cup qualifier. James Rodriguez had six assists in the tournament before the final. Argentina had conceded only one goal in the 2024 Copa America and was trying to win a third straight major tournament after Copa America 2021 and World Cup 2022.
+
+## 任务
+请生成时间配置JSON。
+
+### 基本原则（仅供参考，需根据具体事件和参与群体灵活调整）：
+- 请根据模拟场景推断目标用户群体所在时区和作息习惯，以下为东八区(UTC+8)的参考示例
+- 凌晨0-5点几乎无人活动（活跃度系数0.05）
+- 早上6-8点逐渐活跃（活跃度系数0.4）
+- 工作时间9-18点中等活跃（活跃度系数0.7）
+- 晚间19-22点是高峰期（活跃度系数1.5）
+- 23点后活跃度下降（活跃度系数0.5）
+- 一般规律：凌晨低活跃、早间渐增、工作时段中等、晚间高峰
+- **重要**：以下示例值仅供参考，你需要根据事件性质、参与群体特点来调整具体时段
+  - 例如：学生群体高峰可能是21-23点；媒体全天活跃；官方机构只在工作时间
+  - 例如：突发热点可能导致深夜也有讨论，off_peak_hours 可适当缩短
+
+### 返回JSON格式（不要markdown）
+
+示例：
+{
+    "total_simulation_hours": 72,
+    "minutes_per_round": 60,
+    "agents_per_hour_min": 5,
+    "agents_per_hour_max": 50,
+    "peak_hours": [19, 20, 21, 22],
+    "off_peak_hours": [0, 1, 2, 3, 4, 5],
+    "morning_hours": [6, 7, 8],
+    "work_hours": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+    "reasoning": "针对该事件的时间配置说明"
+}
+
+字段说明：
+- total_simulation_hours (int): 模拟总时长，24-168小时，突发事件短、持续话题长
+- minutes_per_round (int): 每轮时长，30-120分钟，建议60分钟
+- agents_per_hour_min (int): 每小时最少激活Agent数（取值范围: 1-26）
+- agents_per_hour_max (int): 每小时最多激活Agent数（取值范围: 1-26）
+- peak_hours (int数组): 高峰时段，根据事件参与群体调整
+- off_peak_hours (int数组): 低谷时段，通常深夜凌晨
+- morning_hours (int数组): 早间时段
+- work_hours (int数组): 工作时段
+- reasoning (string): 简要说明为什么这样配置
