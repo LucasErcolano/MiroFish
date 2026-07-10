@@ -47,6 +47,15 @@ def test_runtime_data_is_excluded_from_git_and_docker_context():
 
     assert "backend/data/" in gitignore.splitlines()
     assert "backend/data" in dockerignore.splitlines()
+    assert ".gitignore" not in dockerignore.splitlines()
+
+
+def test_docker_test_runs_the_complete_runtime_check():
+    repo_root = Path(__file__).resolve().parents[1]
+    package = (repo_root / "package.json").read_text(encoding="utf-8")
+
+    assert '"check:runtime"' in package
+    assert 'npm run check:runtime' in package
 
 
 def test_output_validator_accepts_minimal_example(tmp_path):

@@ -86,6 +86,11 @@ ports. Paid LLM keys are only required for real simulations, not for the offline
 smoke/example commands or the limited UI/health startup. Stop the stack with
 `npm run docker-down`.
 
+`npm run docker-test` runs the offline smoke, example, backend test suite, and
+frontend production build inside the container. Repository hygiene runs from
+the host checkout through `npm run hygiene`, because Git metadata and local
+secrets are intentionally excluded from the image.
+
 The first image build downloads the OASIS/ML dependency stack and can take
 several minutes. Later builds reuse BuildKit caches. The default service has a
 6 GB memory limit and does not auto-restart after it is stopped.
