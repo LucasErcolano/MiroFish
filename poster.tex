@@ -6,14 +6,14 @@
 \usepackage{graphicx}
 \usepackage{wrapfig}
 
-% Restaurar el estilo original exacto que solicitó el usuario
+% Tema Desert con paleta Default (tonos azules/celestes, muy estéticos)
 \tikzposterlatexaffectionproofoff
 \usetheme{Desert}
-\usecolorstyle[colorPalette=Brown-Blue-Orange]{Denmark}
+\usecolorstyle{Default}
 
 \title{\parbox{\linewidth}{\centering \textbf{MiroFish: Simulación Social Generativa y Evaluación} \\ \textbf{de Sistemas Multi-Agente en Escenarios Complejos}}}
-\author{Integrantes: [Nombre 1], [Nombre 2], [Nombre 3], [Nombre 4], Lucas Ercolano}
-\institute{Universidad de San Andrés (UdeSA)}
+\author{\Large Integrantes: [Nombre 1], [Nombre 2], [Nombre 3], [Nombre 4], Lucas Ercolano}
+\institute{\Large Universidad de San Andrés (UdeSA)}
 
 \begin{document}
 \maketitle
@@ -21,98 +21,117 @@
 \begin{columns}
 
     % ========================================================
-    % COLUMNA IZQUIERDA
+    % COLUMNA 1 (IZQUIERDA)
     % ========================================================
-    \column{0.5}
+    \column{0.33}
 
-    \block{1. Introducción y Marco Teórico}{
-        \textbf{MiroFish} es un entorno avanzado de simulación social generativa diseñado para investigar cómo operan los Grandes Modelos de Lenguaje (LLMs) cuando interactúan como agentes autónomos.
+    \block{1. Introducción y Objetivos}{
+        \textbf{MiroFish} es un entorno avanzado de simulación social generativa. Su propósito es investigar cómo operan los Grandes Modelos de Lenguaje (LLMs) cuando interactúan como agentes autónomos en redes masivas.
         
-        \vspace{0.4cm}
-        El auge de los Modelos Fundacionales abrió un debate: ¿Tienen la capacidad de emular dinámicas poblacionales para la extracción de conocimiento? Nuestros objetivos fueron:
-        \begin{itemize}
-            \item Medir el rendimiento predictivo (\textit{Forecasting}) en entornos cerrados y abiertos.
-            \item Diagnosticar patologías conductuales (cámaras de eco, terquedad, pasividad) en aislamientos paramétricos.
-            \item Probar si una arquitectura \textbf{Multi-Agente} (cruzando asimetrías de Llama, Gemma y Qwen) logra simular la heurística del consenso humano de manera estable.
-        \end{itemize}
-    }
-
-    \block{2. Metodología de Simulación}{
-        Para orquestar las pruebas (sobre entornos de Macroeconomía, Elecciones y Deportes), el sistema empleó:
-        \begin{itemize}
-            \item \textbf{Plataformas Simuladas:} Interfaces estandarizadas (OASIS Twitter y Reddit) sin salida a internet.
-            \item \textbf{Grafo de Conocimiento (Neo4j):} Un motor semántico para inyectar datos del mundo real de forma controlada. Implementamos \textit{deduplicación topológica}, mejorando la absorción de contexto y logrando picos históricos de MAE (1.475\%) en Llama.
-            \item \textbf{Rastreo Telemetrico:} Evaluación de tokens, entropía de derivas y validación estricta de JSONs.
-        \end{itemize}
-    }
-
-    \block{3. Fase de Baseline: Modelos en Aislamiento}{
-        Sometimos a Llama, Gemma y Qwen a operar la simulación de forma aislada, alterando sistemáticamente ventanas temporales y parámetros topológicos.
-
-        \vspace{0.4cm}
-        \textbf{A) Aciertos en Entornos Cuantitativos (IPC):} \\
-        En el entorno económico estricto, escalar la profundidad del debate mejoró dramáticamente la puntería. Llama-3.3-70B alcanzó su óptimo operativo en la variante de 80 rondas y densidad 2 (\textbf{MAE de 1.84\%}).
-        
-        \vspace{0.4cm}
-        \textbf{B) Curva de Degradación Temporal ($\Delta 2$):} \\
-        Comprobamos que las ventanas semilla (\textit{Seed Data}) estáticas fallan a medio-corto plazo. Al carecer de inyecciones iterativas, el sistema realiza extrapolaciones lineales ciegas y subestima los *shocks* transitorios de la vida real.
-
-        \vspace{0.4cm}
-        \textbf{C) Cámaras de Eco y Sesgos (Escenarios Abiertos):} \\
-        Al mudar los modelos a entornos polarizados, el aislamiento demostró ser fatal:
-        \begin{itemize}
-            \item \textbf{Herd Behavior:} En el balotaje presidencial (Bolivia), Llama retroalimentó recursivamente sus sesgos políticos iniciales; el error se infló de 7.6 (R10) a un catastrófico 10.0 (R40).
-            \item \textbf{Terquedad Algorítmica:} Frente a estadísticas contrarias inyectadas, Gemma demostró ser impermeable, ignorando datos fácticos para priorizar el peso de su pre-entrenamiento en temas deportivos.
-        \end{itemize}
-    }
-
-    % ========================================================
-    % COLUMNA DERECHA
-    % ========================================================
-    \column{0.5}
-
-    \block{4. Diagnóstico Intrínseco (Línea de Entropía)}{
-        La autopsia algorítmica expuso por qué ocurren los sesgos, demostrando severas asimetrías de base:
         \vspace{0.3cm}
+        \textbf{Metas de la Investigación:}
+        \begin{itemize}
+            \item \textbf{Forecasting:} Medir el rendimiento predictivo en entornos numéricos (Macroeconomía) y abiertos (Política, Deportes).
+            \item \textbf{Diagnóstico:} Aislar variables para detectar patologías conductuales crónicas (cámaras de eco, pasividad).
+            \item \textbf{Multi-Agente (MAS):} Probar si cruzar modelos heterogéneos (Llama, Gemma, Qwen) emula la heurística humana y corrige los sesgos individuales.
+        \end{itemize}
+    }
+
+    \block{2. Metodología e Infraestructura}{
+        El sistema orquesta la simulación combinando tecnologías de frontera:
+        \begin{itemize}
+            \item \textbf{Plataformas Simuladas:} Emulación de foros tipo Twitter y Reddit, restringidos a agentes sin salida a internet (OASIS).
+            \item \textbf{Grafo de Conocimiento (Neo4j):} Un motor semántico inyecta datos del mundo real controladamente. La \textit{deduplicación topológica} del grafo previno fugas de atención en los agentes.
+            \item \textbf{Telemetría Estricta:} Monitoreo continuo de consumo de \textit{tokens}, validación JSON, y métricas de diversidad léxica.
+        \end{itemize}
+    }
+    
+    \block{3. Degradación Temporal ($\Delta$)}{
+        \textbf{La trampa de las ventanas semilla estáticas:} \\
+        Al alterar el período del \textit{Seed Data}, descubrimos que los modelos aislados sufren un fallo catastrófico a medio-corto plazo ($\Delta 2$). Al no recibir inyecciones dinámicas que evidencien *shocks* transitorios, el sistema extrapola linealmente las tendencias de base, perdiendo total anclaje con el \textit{Ground Truth}.
+    }
+
+    % ========================================================
+    % COLUMNA 2 (CENTRO)
+    % ========================================================
+    \column{0.33}
+
+    \block{4. Baseline: Modelos en Aislamiento}{
+        Sometimos a Llama-3.3-70B a predecir el IPC (Argentina) variando la profundidad topológica:
+        \vspace{0.4cm}
+        \begin{center}
+        \begin{tabular}{@{}lcccc@{}}
+            \toprule
+            \textbf{Variante} & \textbf{Rondas} & \textbf{Densidad} & \textbf{MAE} & \textbf{Costo} \\ \midrule
+            R10-D2 & 10 & 2 & 3.12\% & \$0.08 \\
+            R40-D1 & 40 & 1 & 2.45\% & \$0.32 \\
+            R40-D2 & 40 & 2 & 2.31\% & \$0.34 \\
+            \textbf{R80-D2} & \textbf{80} & \textbf{2} & \textbf{1.84\%} & \textbf{\$0.68} \\ \bottomrule
+        \end{tabular}
+        \end{center}
+        \vspace{0.2cm}
+        El escalamiento numérico demostró una mejora lineal: a mayor debate, mayor precisión. Sin embargo, en \textbf{escenarios abiertos}, este mismo aislamiento falló:
+        \begin{itemize}
+            \item \textbf{Cámaras de Eco:} En Bolivia, Llama se auto-retroalimentó (de MAE 7.6 a 10.0 en R40).
+            \item \textbf{Terquedad:} En Fútbol, Gemma ignoró evidencias recientes priorizando su entrenamiento.
+        \end{itemize}
+    }
+
+    \block{5. Diagnóstico Forense (Entropía)}{
+        La Línea 6 analizó algorítmicamente a los modelos para explicar sus fallas estructurales:
+        \vspace{0.4cm}
         \begin{center}
         \begin{tabular}{@{}lccc@{}}
             \toprule
-            \textbf{Modelo} & \textbf{Self-BLEU ($\downarrow$)} & \textbf{Distinct-2 ($\uparrow$)} & \textbf{Deriva Temporal} \\ \midrule
-            Llama-3.3 & 0.412 & 0.614 & 0.266 \\
-            Gemma-3 & \textbf{0.264} & \textbf{0.752} & N/A \\
-            Qwen-3 & N/A & N/A & \textbf{0.225} \\ \bottomrule
+            \textbf{Modelo} & \textbf{Self-BLEU} & \textbf{Distinct-2} & \textbf{Drift} \\ \midrule
+            Llama & 0.412 ($\uparrow$) & 0.614 ($\downarrow$) & 0.266 ($\uparrow$) \\
+            Gemma & \textbf{0.264 ($\downarrow$)} & \textbf{0.752 ($\uparrow$)} & N/A \\
+            Qwen & N/A & N/A & \textbf{0.225 ($\downarrow$)} \\ \bottomrule
         \end{tabular}
         \end{center}
-        \vspace{0.3cm}
-        \textbf{Gemma} es léxicamente diverso y proactivo (alto \textit{distinct-2}). \textbf{Llama} es altamente repetitivo (alto \textit{Self-BLEU}) y volátil ideológicamente (\textit{Drift} alto). \textbf{Qwen} exhibe la mayor permeabilidad y estabilidad.
+        \vspace{0.2cm}
+        \textbf{Conclusión Intrínseca:} Gemma produce texto diverso y proactivo. Llama es crónicamente repetitivo y volátil. Qwen es el más estable ideológicamente.
     }
 
-    \block{5. El Sistema Multi-Agente y sus Descubrimientos}{
-        Al forzar a estos tres modelos a debatir bajo un entorno \textbf{heterogéneo}, nuestra hipótesis de auto-regulación se enfrentó a un fenómeno inesperado:
+    % ========================================================
+    % COLUMNA 3 (DERECHA)
+    % ========================================================
+    \column{0.34}
 
-        \vspace{0.3cm}
-        \textbf{El Colapso Semántico (Model Collapse):} \\
-        Guiados por sus alineamientos de seguridad (RLHF), la fricción de estos 3 titanes en cautiverio generó un \textit{deadlock} de cortesía infinita. Ninguno tomó postura, disparando el error por abstencionismo total (100\%).
-
+    \block{6. La Red Multi-Agente (MAS)}{
+        Cruzar las arquitecturas en un mismo foro provocó un fenómeno no previsto: \textbf{Colapso Semántico}.
         \vspace{0.4cm}
-        \textbf{La Cura: Inyecciones Exógenas Paramétricas:} \\
-        Descubrimos que un MAS solo funciona bajo \textit{shocks continuos} de entropía:
+        \begin{center}
+        \begin{tabular}{@{}llc@{}}
+            \toprule
+            \textbf{Entorno} & \textbf{Condición} & \textbf{MAE (Bolivia)} \\ \midrule
+            Baseline & R10 Aislado & 7.687 \\
+            Baseline & R40 Aislado & 10.000 (Sesgo) \\ \midrule
+            MAS & R10 Heterogéneo & \textbf{66.667 (Colapso)} \\
+            MAS & R40 Heterogéneo & \textbf{66.667 (Colapso)} \\ \bottomrule
+        \end{tabular}
+        \end{center}
+        \vspace{0.2cm}
+        Por la restricción de RLHF, los modelos heterogéneos en cautiverio caen en cortesía infinita, absteniéndose de opinar y bloqueando la simulación.
+    }
+
+    \block{7. Resolución: Inyecciones de Ruido}{
+        El clímax probó que MAS requiere flujos continuos de \textbf{Entropía Exógena}:
         \begin{itemize}
-            \item \textbf{Inyección de Momento:} Inyectar evidencia a mitad de debate forzó a Gemma (presionada por sus pares) a abandonar su terquedad de pre-entrenamiento.
-            \item \textbf{Shock de Entropía (Ruido):} La inyección tardía de una encuesta falsa rompió el Colapso Semántico; Qwen absorbió la desinformación impulsando nuevamente el foro.
-            \item \textbf{Amortiguación Temporal:} El flujo dinámico superó la degradación $\Delta 2$ observada en los modelos aislados, protegiendo al sistema de las extrapolaciones ciegas.
+            \item \textbf{Variación de Momento:} Inyectar evidencia a mitad de debate forzó a Gemma a ceder ante la presión de los pares (corrigiendo su terquedad).
+            \item \textbf{Shock de Desinformación:} Inyectar una encuesta falsa (ruido) rompió el Colapso; Qwen la absorbió, reactivando la polarización del foro.
         \end{itemize}
     }
 
-    \block{6. Conclusiones Definitivas}{
+    \block{8. Conclusiones Generales}{
         \begin{enumerate}
-            \item \textbf{Inviabilidad en Forecasting Cerrado:} Para predecir matemáticas estáticas, MAS es ineficiente (consume >230,000 \textit{tokens} por debate) y propenso al Colapso Semántico frente a un modelo individual anclado y calibrado.
-            \item \textbf{El Verdadero Laboratorio Sociotécnico:} MiroFish alcanza la brillantez absoluta al cruzar agentes heterogéneos bajo el bombardeo de inyecciones dinámicas asíncronas. En esta modalidad, es el marco de referencia definitivo para auditar la manipulación, el contagio de ruido ideológico y la persuasión poblacional impulsada por Inteligencia Artificial.
+            \item \textbf{Costos Ocultos:} El sistema Multi-Agente es ineficiente y peligroso para \textit{forecasting} aislado puro (propensión al *deadlock*).
+            \item \textbf{El Laboratorio Sociotécnico:} MiroFish alcanza su pináculo sometiendo redes MAS a bombardeos exógenos. Así, se consagra como el marco ideal para auditar contagios ideológicos, manipulación algorítmica y persuasión.
         \end{enumerate}
         \vspace{1cm}
         \begin{center}
-            % Placeholder logo UdeSA en el centro abajo
-            \includegraphics[height=5.5cm]{logo_udesa.png}
+            % Logo centrado de UdeSA
+            \includegraphics[height=5cm]{logo_udesa.png}
         \end{center}
     }
 
