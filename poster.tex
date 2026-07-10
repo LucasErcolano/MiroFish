@@ -1,0 +1,106 @@
+\documentclass[25pt, a0paper, portrait]{tikzposter}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{graphicx}
+
+% Configuración del tema del poster
+\tikzposterlatexaffectionproofoff
+\usetheme{Desert}
+\usecolorstyle[colorPalette=Brown-Blue-Orange]{Denmark}
+
+\title{\parbox{\linewidth}{\centering MiroFish: Simulación Social Generativa y Evaluación \\ de Sistemas Multi-Agente en Escenarios Complejos}}
+\author{Grupo de Investigación - Procesamiento de Lenguaje Natural}
+\institute{Universidad}
+
+\begin{document}
+\maketitle
+
+\begin{columns}
+
+    % --------------------------------------------------------
+    % COLUMNA IZQUIERDA
+    % --------------------------------------------------------
+    \column{0.5}
+
+    \block{1. Introducción: ¿Qué es MiroFish?}{
+        MiroFish es un entorno avanzado de \textbf{simulación social generativa} diseñado para estudiar el comportamiento de Grandes Modelos de Lenguaje (LLMs) como agentes interactivos.
+        \vspace{0.5cm}
+        
+        \textbf{Objetivos del proyecto:}
+        \begin{itemize}
+            \item Medir la capacidad predictiva (\textit{Forecasting}) de los LLMs en dominios complejos (Macroeconomía/IPC, Elecciones en Bolivia, Deportes/Fútbol).
+            \item Diagnosticar patologías conductuales (cámaras de eco, sesgos, pasividad) en modelos aislados.
+            \item Evaluar si una red \textbf{Multi-Agente heterogénea} (cruzando Llama, Gemma y Qwen) logra simular la heurística del consenso humano y superar las limitaciones de una única arquitectura.
+        \end{itemize}
+    }
+
+    \block{2. Fase de Baseline: Modelos en Aislamiento}{
+        Se evaluó el rendimiento de los modelos operando en solitario (\textit{Single-Model}) variando parámetros topológicos (rondas de debate, densidad relacional) y temporales (ventanas de datos semilla).
+
+        \vspace{0.5cm}
+        \textbf{Hallazgos Cuantitativos y Degradación:}
+        \begin{itemize}
+            \item En entornos cerrados (IPC), el aumento de rondas de debate mejoró la precisión (MAE óptimo de 1.84\% con Llama-3.3 en R80-D2).
+            \item \textbf{Fallo Lineal Temporal ($\Delta 2$):} Con ventanas de datos estáticas, el modelo subestimó severamente los \textit{shocks} macroeconómicos transitorios, limitándose a una extrapolación lineal ciega.
+        \end{itemize}
+
+        \vspace{0.5cm}
+        \textbf{Patologías en Escenarios Abiertos:}
+        \begin{itemize}
+            \item \textbf{Cámaras de Eco (Herd Behavior):} Al exigir debates extendidos (R40) en el balotaje de Bolivia, Llama se auto-retroalimentó alejándose del \textit{Ground Truth} (error escaló de 7.6 a 10.0).
+            \item \textbf{Terquedad Algorítmica:} Frente a estadísticas contrarias, Gemma ignoró la evidencia factual en el escenario deportivo debido al peso absoluto de su pre-entrenamiento.
+        \end{itemize}
+    }
+
+    \block{3. Análisis Intrínseco (Diversidad y Entropía)}{
+        La autopsia algorítmica de los modelos aislados reveló marcadas asimetrías que explican los fallos del \textit{baseline}:
+        \vspace{0.5cm}
+        \begin{center}
+        \begin{tabular}{@{}lccc@{}}
+            \toprule
+            \textbf{Modelo} & \textbf{Self-BLEU} ($\downarrow$) & \textbf{Distinct-2} ($\uparrow$) & \textbf{Deriva Temporal} \\ \midrule
+            Llama-3.3 & 0.412 & 0.614 & 0.266 \\
+            Gemma-3 & \textbf{0.264} & \textbf{0.752} & N/A \\
+            Qwen-3 & N/A & N/A & \textbf{0.225} \\ \bottomrule
+        \end{tabular}
+        \end{center}
+        \vspace{0.2cm}
+        Gemma domina en diversidad léxica y proactividad, mientras que Llama demostró ser repetitivo y poseer mayor inestabilidad temporal en sus posturas (\textit{Drift}).
+    }
+
+    % --------------------------------------------------------
+    % COLUMNA DERECHA
+    % --------------------------------------------------------
+    \column{0.5}
+
+    \block{4. La Solución Multi-Agente (MAS)}{
+        Para mitigar las cámaras de eco y los sesgos del \textit{baseline}, instanciamos un ecosistema social \textbf{heterogéneo}, forzando a Llama, Gemma y Qwen a debatir y persuadirse mutuamente sobre un mismo estado global.
+
+        \vspace{0.5cm}
+        \textbf{El Descubrimiento del Colapso Semántico:} \\
+        Contrario a la hipótesis inicial, la mera diversidad arquitectónica no resolvió el problema. Al correr el balotaje en Multi-Agente sin estímulos externos, las asimetrías conductuales indujeron un \textit{deadlock} dialéctico (cortesía infinita sin toma de posturas), disparando el error por \textbf{abstencionismo del 100\%}.
+    }
+
+    \block{5. Inyecciones Paramétricas y Resolución}{
+        Se descubrió que los sistemas Multi-Agente requieren inyecciones dinámicas de datos para sostener un debate sano:
+        
+        \begin{itemize}
+            \item \textbf{Fractura de la Terquedad (Variación de Momento):} Al inyectar la misma evidencia deportiva a mitad de debate, la presión argumentativa de los pares forzó a Gemma a retractar su sesgo de pre-entrenamiento.
+            \item \textbf{Shocks de Entropía (Inyección de Ruido):} Inyectar una encuesta tardía desestabilizó la pasividad del sistema. Qwen absorbió la entropía e impulsó la polarización del foro, rescatando la simulación del Colapso Semántico.
+            \item \textbf{Amortiguación Temporal:} El flujo dinámico de datos evitó la extrapolación lineal ciega (el fallo $\Delta 2$ del \textit{baseline}), estabilizando las proyecciones a medio plazo.
+        \end{itemize}
+    }
+
+    \block{6. Conclusiones Integrales}{
+        \begin{enumerate}
+            \item \textbf{Forecasting vs. Costo:} Para extraer predicciones puramente estáticas y numéricas, la arquitectura Multi-Agente es computacionalmente ineficiente y propensa a colapsar frente a un modelo individual calibrado.
+            \item \textbf{Fallo del Debate Aislado:} La diversidad de modelos en cautiverio converge en neutralidad pasiva, impulsada por sus alineamientos de seguridad (RLHF).
+            \item \textbf{El Laboratorio Sociotécnico Ideal:} El verdadero valor de MiroFish reside en someter redes heterogéneas a \textbf{flujos exógenos de información}. Bajo estas condiciones, MAS es el único mecanismo validado para simular exitosamente la persuasión, el contagio de desinformación y el viraje ideológico de narrativas a nivel poblacional.
+        \end{enumerate}
+    }
+
+\end{columns}
+
+\end{document}
