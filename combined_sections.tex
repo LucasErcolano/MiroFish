@@ -1,6 +1,6 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
-\usepackage[spanish]{babel}
+\usepackage[provide=*,spanish]{babel}
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{booktabs}
@@ -19,29 +19,130 @@ Una vez establecidos los casos de estudio, la infraestructura de ingestión de d
 
 Esta fase tuvo un propósito dual: en primer lugar, cuantificar el rendimiento predictivo puro (\textit{Forecasting}) del sistema frente a los distintos escenarios (económicos, electorales y deportivos); y en segundo lugar, extraer métricas de referencia sobre el comportamiento intrínseco, los sesgos y las deficiencias de cada arquitectura LLM individual antes de introducir la complejidad combinatoria de un entorno Multi-Agente.
 
-\subsection{Evaluación del Escalamiento Topológico (Rondas y Densidad)}
+\subsection{Actualización Temporal de la Evidencia}
 
-El primer parámetro de investigación consistió en medir la saturación y sensibilidad de la simulación alterando la profundidad del debate (volumen de rondas) y la densidad de conexión del grafo relacional. Estas pruebas se ejecutaron transversalmente a través de los casos de estudio, revelando que el escalamiento topológico produce efectos diametralmente opuestos dependiendo de la naturaleza determinista del entorno.
+Para las tres series se utilizaron paquetes acumulativos T0--T3 con Gemma-3-27B-IT, manteniendo fijas 40 rondas y densidad 2. La pregunta, el protocolo de ejecución y el \textit{ground truth} se mantuvieron fuera del \textit{input}; entre condiciones sólo cambió la evidencia disponible hasta cada fecha de corte. Las métricas se conservaron en la forma propia de cada dominio, por lo que no se las resume en un único puntaje.
 
-En entornos algorítmicamente cerrados y puramente cuantitativos (como el Índice de Precios al Consumidor), comprobamos una correlación directa entre el volumen de debate y la precisión inferencial. Escalar la simulación a 80 rondas con una densidad moderada (condición R80-D2) redujo el Error Absoluto Medio (MAE) a un óptimo de 1.84\%.
+\subsubsection{Bolivia: evidencia electoral, plataformas y encuesta tardía}
 
-Sin embargo, al aplicar esta misma matriz de escalamiento a escenarios abiertos y polarizados (como el balotaje presidencial en Bolivia), observamos un ciclo destructivo. El modelo retroalimentó de forma recursiva sus propias asunciones, formando una burbuja epistemológica que lo alejó por completo del \textit{Ground Truth}.
+La evaluación combinó el ganador pronosticado con los porcentajes de voto, el MAE de dichos porcentajes y el error de margen. En este caso, el margen es la diferencia en puntos porcentuales entre Paz y Quiroga, y el error de margen mide la distancia entre esa diferencia pronosticada y la observada. En T0, el sistema todavía debía inferir quiénes llegarían al balotaje a partir de un escenario fragmentado: identificó a Luis Arce, presidente saliente asociado al oficialismo MAS que ya había retirado su candidatura, y a Samuel Doria Medina, candidato opositor visible en las encuestas de primera vuelta. Por lo tanto, el modelo combinó una figura que no estaba en la boleta con un candidato que luego sería eliminado; ninguno integró la dupla real Paz--Quiroga. En T1 se agregó el resultado de la primera vuelta, que ubicó a Paz primero, a Quiroga segundo y dejó al MAS fuera del balotaje. T2 añadió el contraste entre las plataformas de Paz y Quiroga, y T3 incorporó una encuesta tardía favorable a Quiroga junto con evidencia de relaciones internacionales.
 
 \begin{table}[H]
     \centering
-    \begin{tabular}{@{}lccccc@{}}
+    \small
+    \begin{tabular}{@{}lp{4.8cm}p{4.3cm}cc@{}}
         \toprule
-        \textbf{Entorno Evaluado} & \textbf{Variante Topológica} & \textbf{Rondas (R)} & \textbf{Densidad (D)} & \textbf{MAE Resultante} \\ \midrule
-        Cuantitativo (IPC) & R10-D2 & 10 & 2 & 3.12\% \\
-        Cuantitativo (IPC) & R40-D1 & 40 & 1 & 2.45\% \\
-        Cuantitativo (IPC) & R40-D2 & 40 & 2 & 2.31\% \\
-        \textbf{Cuantitativo (IPC)} & \textbf{R80-D2} & \textbf{80} & \textbf{2} & \textbf{1.84\% (Óptimo)} \\ \midrule
-        Abierto (Electoral) & R10-D2 & 10 & 2 & 7.60 (Sesgo Inicial) \\
-        \textbf{Abierto (Electoral)} & \textbf{R40-D2} & \textbf{40} & \textbf{2} & \textbf{10.0 (Herd Behavior)} \\ \bottomrule
+        \textbf{Corte} & \textbf{Evidencia añadida} & \textbf{Candidatos y ganador} & \textbf{MAE voto} & \textbf{Error de margen} \\ \midrule
+        T0 & Contexto y encuestas previas a la primera vuelta & Arce (no estaba en la boleta) y Doria Medina; no identifica el balotaje real & -- & -- \\
+        T1 & Resultado de primera vuelta: Paz primero, Quiroga segundo y MAS fuera & Paz y Quiroga; gana Paz & 2.000 & 0.06 \\
+        T2 & Plataformas: Paz moderado y Quiroga pro-mercado/FMI & Paz y Quiroga; gana Quiroga & 7.020 & 18.06 \\
+        T3 & Encuesta tardía favorable a Quiroga y contexto internacional & Paz y Quiroga; gana Quiroga & 7.687 & 18.06 \\ \bottomrule
     \end{tabular}
-    \caption{Matriz de escalamiento topológico utilizando Llama-3.3-70B como ancla. El aumento de rondas mejora la precisión en entornos puramente matemáticos, pero desencadena \textit{Herd Behavior} (Cámaras de Eco) en entornos sociales.}
-    \label{tab:matriz_topologica}
+    \caption{Efecto de la evidencia temporal en el caso electoral.}
+    \label{tab:seed_bolivia}
 \end{table}
+
+La tabla muestra que T0 no falló sólo al elegir un ganador: construyó un balotaje imposible entre Arce, que no participaba de la elección, y Doria Medina, quien sí era candidato pero quedó eliminado en la primera vuelta. Por no existir un pronóstico válido sobre la dupla Paz--Quiroga, T0 no tiene MAE de voto ni error de margen evaluables. T1 fue la condición más cercana al resultado porque el hecho electoral reciente corrigió ese campo de candidatos y produjo a Paz como ganador. Las condiciones T2 y T3 volvieron a Quiroga; en particular, la encuesta tardía de T3 tuvo mayor peso que la evidencia anterior. Por eso, acercar el corte temporal no mejoró necesariamente la predicción: el efecto dependió de qué pieza de evidencia nueva ingresó y de cómo fue ponderada.
+
+\subsubsection{IPC: información mensual, expectativas y señales de política económica}
+
+Aquí se compararon las proyecciones de inflación mensual de febrero, abril, julio y diciembre, junto con el acumulado anual de 2025. Cuando la salida fue un rango se usó su punto medio para calcular el error absoluto y el MAE. T0 contiene las series social, institucional y macroeconómica de 2024; T1 suma el REM del BCRA y la evaluación ex post del FMI; T2 incorpora el IPC oficial de diciembre de 2024 (2.7\% mensual y 117.8\% anual); y T3 agrega el cambio del \textit{crawling peg} al 1\%, el superávit fiscal, el informe monetario del BCRA y la actualización del Banco Mundial.
+
+\begin{table}[H]
+    \centering
+    \small
+    \begin{tabular}{@{}lp{7.1cm}cc@{}}
+        \toprule
+        \textbf{Corte} & \textbf{Evidencia añadida} & \textbf{MAE mensual} & \textbf{MAE con acumulado} \\ \midrule
+        T0 & Base social, institucional y macroeconómica de 2024 & 1.500 & 4.000 \\
+        T1 & REM del BCRA, evaluación ex post del FMI y expectativas & 1.238 & 2.290 \\
+        T2 & IPC oficial de diciembre de 2024 y marco político de 2025 & 1.175 & 2.240 \\
+        T3 & \textit{Crawling peg}, superávit fiscal e informes BCRA/Banco Mundial & 0.838 & 1.470 \\ \bottomrule
+    \end{tabular}
+    \caption{MAE de las proyecciones de IPC por corte temporal.}
+    \label{tab:seed_ipc}
+\end{table}
+
+La reducción es sostenida: el MAE mensual bajó de 1.500 en T0 a 0.838 en T3, y el MAE que incorpora el acumulado anual cayó de 4.000 a 1.470. Los datos oficiales anclaron la trayectoria de corto plazo, mientras que las expectativas, el régimen cambiario y las señales fiscal y monetaria ayudaron a ajustar el sendero posterior. En este caso, la evidencia más reciente fue complementaria y mejoró de forma consistente la evaluación.
+
+\subsubsection{Copa América: forma reciente, mercado y contrapesos}
+
+Se evaluaron por separado el campeón, la confianza declarada, la probabilidad puntual de victoria, el intervalo de probabilidad y el margen de gol esperado. Aquí, un margen de 1 significa una victoria proyectada por un gol de diferencia. T0 contiene antecedentes, planteles y contexto de la final; T1 suma las semifinales y la forma reciente; T2 incorpora cuotas de mercado, modelos y previas que favorecían a Argentina; y T3 añade contrapesos sobre Colombia y consideraciones tácticas.
+
+\begin{table}[H]
+    \centering
+    \small
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{@{}lp{5.0cm}ccccc@{}}
+        \toprule
+        \textbf{Corte} & \textbf{Evidencia añadida} & \textbf{Campeón} & \textbf{Conf.} & \textbf{Prob.} & \textbf{Intervalo} & \textbf{Margen} \\ \midrule
+        T0 & Antecedentes, planteles y contexto de la final & Argentina & 0.75 & 0.625 & [0.575, 0.675] & 1 [0.5, 1.5] \\
+        T1 & Semifinales y forma reciente & Argentina & 0.75 & 0.650 & [0.600, 0.700] & 1 [0.5, 1.5] \\
+        T2 & Cuotas, modelos y previas favorables a Argentina & Argentina & 0.78 & 0.490 & [0.460, 0.510] & 1 [0, 2] \\
+        T3 & Contrapesos de Colombia y evidencia táctica & Argentina & 0.72 & 0.490 & [0.460, 0.510] & 1 [1, 2] \\ \bottomrule
+    \end{tabular}%
+    }
+    \caption{Salida deportiva por corte temporal; la final fue Argentina 1--0 Colombia.}
+    \label{tab:seed_copa}
+\end{table}
+
+El campeón y el margen esperado de un gol se mantuvieron estables en los cuatro cortes, en línea con el 1--0 observado. La confianza declarada y la probabilidad puntual no son equivalentes: la primera alcanzó 0.78 en T2, mientras que la probabilidad puntual descendió a 0.490 al incorporar mercado y modelos. Los intervalos de T0 y T1 tuvieron amplitud 0.10, mientras que desde T2 se redujeron a 0.05; por eso el aporte de la evidencia tardía fue principalmente calibrar la incertidumbre, no cambiar al ganador.
+
+En síntesis, los paquetes temporales no dibujan una curva universal de mejora. En IPC, las nuevas observaciones redujeron el error de manera acumulativa; en Bolivia, una encuesta tardía desplazó un resultado que T1 había resuelto correctamente; y en Copa América, la conclusión central se mantuvo, aunque se ajustó la incertidumbre reportada. El \textit{seed data} debe evaluarse por la naturaleza y el momento de la evidencia añadida, no sólo por su cercanía al desenlace.
+
+\subsection{Profundidad de la Simulación y Densidad}
+
+Variamos el número de rondas y la densidad de interacción manteniendo fijo el resto del protocolo de cada caso. Esta matriz se ejecutó con Llama-3.3-70B; se reporta separada de las pruebas temporales, que utilizaron Gemma-3-27B-IT. Por ello, el contraste entre ambas secciones sirve para estudiar variables experimentales distintas y no constituye una comparación directa entre arquitecturas.
+
+\subsubsection{Bolivia}
+\begin{table}[H]
+    \centering
+    \small
+    \begin{tabular}{@{}lcc@{}}
+        \toprule
+        \textbf{Condición} & \textbf{Ganador} & \textbf{MAE de voto} \\ \midrule
+        R10-D2 & Quiroga & 7.687 \\
+        R40-D1 & Quiroga & 10.000 \\
+        R40-D2 & Quiroga & 7.820 \\
+        R40-D3 & Quiroga & 7.820 \\
+        R80-D2 & Quiroga & 7.687 \\ \bottomrule
+    \end{tabular}
+    \caption{Rondas y densidad en el caso electoral.}
+    \label{tab:rondas_bolivia}
+\end{table}
+
+En Bolivia, aumentar las rondas no corrigió el pronóstico hacia Quiroga. La condición R40-D1 incluso aumentó el MAE a 10.000, mientras que R10-D2 y R80-D2 dieron el mismo MAE de 7.687. Este resultado es consistente con una estabilización de la hipótesis inicial dentro de la simulación, no con una mejora automática por mayor deliberación.
+
+\subsubsection{IPC}
+\begin{table}[H]
+    \centering
+    \small
+    \begin{tabular}{@{}lccc@{}}
+        \toprule
+        \textbf{Condición} & \textbf{MAE} & \textbf{Costo} & \textbf{Latencia} \\ \midrule
+        R10-D2 & 3.12\% & USD\,0.08 & 120\,s \\
+        R40-D1 & 2.45\% & USD\,0.32 & 410\,s \\
+        R40-D2 & 2.31\% & USD\,0.34 & 450\,s \\
+        R40-D3 & 2.89\% & USD\,0.36 & 480\,s \\
+        R80-D2 & 1.84\% & USD\,0.68 & 890\,s \\ \bottomrule
+    \end{tabular}
+    \caption{Rondas y densidad en las proyecciones de IPC.}
+    \label{tab:rondas_ipc}
+\end{table}
+
+En IPC, en cambio, el aumento de rondas mejoró la proyección en esta serie: el MAE pasó de 3.12\% en R10-D2 a 1.84\% en R80-D2. Con 40 rondas, la densidad media fue mejor que D1 y D3; el costo y la latencia, sin embargo, crecieron de forma apreciable. Las tres réplicas de R80-D2 obtuvieron MAE 1.84\%, 1.91\% y 1.80\% (media 1.85\%, desvío estándar 0.05), por lo que la mejora no proviene de una única ejecución aislada.
+
+\subsubsection{Copa América}
+
+En Copa América, las cinco condiciones mantuvieron exactamente la misma salida: Argentina como ganadora, probabilidad puntual 0.475 y margen esperado de un gol. Por esa invariancia no se presenta una tabla adicional. La evidencia disponible dominó el efecto de variar rondas y densidad: agregar deliberación no produjo una ganancia observable en la salida evaluada.
+
+En conjunto, los resultados descartan una configuración topológica universal. Más rondas pueden ser útiles cuando la variable se beneficia de agregar y contrastar señales numéricas, pero no corrigen por sí solas un sesgo de interpretación ni aportan información nueva.
+
+\subsection{Robustez ante Ruido y Momento de Entrada}
+
+Esta prueba es independiente de las ventanas temporales T0--T3: evalúa qué ocurre cuando se agrega información deliberadamente no predictiva y se varía el momento de entrada durante la simulación. Bajo condiciones de alta profundidad (R80-D2), la inyección de ruido financiero hizo que el modelo asimilara especulación social (\textit{Herd Behavior}) y, en esa variante aislada, alcanzara un MAE de 0.9875\% al predecir un anclaje recesivo.
+
+El resultado no convierte al ruido en evidencia útil. Al cruzarlo con el análisis cualitativo de la Tabla \ref{tab:evaluacion_arquitecturas}, se observa que el momento de inyección es crítico: datos introducidos a mitad de debate pueden ser ignorados por arquitecturas con sesgos de pre-entrenamiento, mientras que otros estímulos pueden cambiar la discusión por su saliencia. La prueba mide esa vulnerabilidad de asimilación, no la calidad de los paquetes T0--T3.
 
 \subsection{Análisis Cruzado de Arquitecturas y Manifestación de Sesgos}
 
@@ -74,23 +175,6 @@ Como se aprecia en la Tabla \ref{tab:evaluacion_arquitecturas}, en el escenario 
 Otro vector fundamental del \textit{benchmark} fue evaluar los cuellos de botella en la asimilación de información. En simulaciones controladas, implementamos una optimización de deduplicación semántica previa a la inserción en el almacenamiento (Neo4j). Reducir el ruido topológico y fusionar los nodos semánticamente idénticos concentró la atención de los agentes, mejorando la precisión base de Llama-3.3 a un récord histórico de MAE 1.475\%.
 
 No obstante, al intentar dotar al sistema de recolección de contexto 100\% autónomo (mediante \textit{Deep Search} con cortes temporales estrictos para evitar fugas de información), la precisión se degradó. Esto confirmó que, incluso en los modelos de frontera, la ausencia de anclas documentales estructuradas dispersa la atención del agente, incapacitándolo para emitir proyecciones consistentes en un entorno multi-variable.
-
-\subsection{Sensibilidad Temporal y Robustez ante Ruido (Inyecciones Exógenas)}
-
-Además de las pruebas topológicas y de permeabilidad pura, el \textit{benchmark} evaluó la sensibilidad del sistema frente a variaciones en la ventana temporal de los datos semilla (\textit{Seed Data}) y su respuesta ante la inyección controlada de ruido.
-
-\subsubsection{Curva de Degradación Temporal (Ventanas de Seed Data)}
-Para medir el decaimiento de la certeza predictiva, evaluamos el rendimiento en distintos horizontes temporales ($\Delta 1$ a $\Delta 4$) utilizando un \textit{cutoff} estricto en los datos semilla. El análisis reveló un patrón de degradación no lineal:
-\begin{itemize}
-    \item \textbf{Corto Plazo ($\Delta 1$):} El sistema exhibió una precisión excepcional (error de 0.1 puntos porcentuales) al identificar los anclajes nominales inmediatos presentes en el corpus semilla.
-    \item \textbf{Medio-Corto Plazo ($\Delta 2$):} Se registró el mayor fallo analítico. Al carecer de estímulos sobre \textit{shocks} transitorios futuros, los modelos aislaron su razonamiento en una extrapolación lineal de las tendencias iniciales, subestimando severamente los rebotes macroeconómicos.
-    \item \textbf{Medio Plazo ($\Delta 3$):} Irónicamente, la precisión se recuperó al evaluar tendencias macro-direccionales de fondo, probando que el motor de inferencia es robusto para la tendencia dominante pero ciego ante fluctuaciones transitorias si la ventana de inyección no se actualiza (variación de período).
-\end{itemize}
-
-\subsubsection{Inyección de Ruido y Momento de Entrada}
-Adicionalmente, experimentamos alterando el momento de inyección de datos y saturando el entorno con ruido deliberado. Bajo condiciones de alta profundidad (R80-D2), la inyección de ruido financiero desencadenó un mecanismo inesperado: el modelo asimiló la especulación social (\textit{Herd Behavior}) de los datos ruidosos, lo que irónicamente lo llevó a predecir con extrema precisión un anclaje recesivo (logrando un récord histórico de MAE 0.9875\% en esa variante aislada). 
-
-Sin embargo, cruzando estos datos con el análisis cualitativo (Tabla \ref{tab:evaluacion_arquitecturas}), confirmamos que el \textit{momento} de la inyección es crítico. Datos (incluso factualmente correctos) inyectados a mitad de debate suelen ser ignorados por arquitecturas con fuertes sesgos de pre-entrenamiento (como Gemma), probando que la asimilación depende del balance entre el 'ruido' externo y el tiempo de arraigo de las creencias en la simulación.
 
 \subsection{Análisis Intrínseco: Diversidad Léxica y Estabilidad Temporal}
 
@@ -177,11 +261,11 @@ Conociendo que la red Multi-Agente en el balotaje colapsaba en neutralidad (Prue
 
 El \textit{shock} de entropía desestabilizó el estado de cortesía. Qwen-3, exhibiendo la permeabilidad característica que documentamos en el \textit{baseline}, absorbió el estímulo inmediatamente, traduciendo los datos a retórica agresiva e impulsando la polarización del foro. Este evento rescató al sistema del \textit{Model Collapse}, probando que los LLMs heterogéneos requieren estrictamente de señales externas continuas (flujo de información) para mantener dinámicas deliberativas sanas.
 
-\subsubsection{Prueba 4: Superación de la Degradación Temporal (Variación de Período Semilla)}
+\subsubsection{Prueba 4: Actualización Temporal de la Evidencia}
 
-En el \textit{baseline}, comprobamos que la alteración estática del período de los datos semilla (\textit{Seed Data}) generaba una curva de degradación temporal inevitable (el fallo en horizontes de medio-corto plazo, o $\Delta 2$, por extrapolación lineal). 
+En el \textit{baseline}, las ventanas temporales T0--T3 no produjeron un patrón único: en IPC, la incorporación acumulativa de información redujo el error; en Bolivia, la evidencia tardía revirtió el acierto de T1; y en Copa América mantuvo al mismo ganador mientras ajustaba la incertidumbre. Por lo tanto, la recencia no funciona como una garantía de mejora independiente del tipo de evidencia.
 
-Para dar continuidad a esta línea investigativa en la red Multi-Agente, abandonamos el enfoque de \textit{cutoff} estático. En lugar de inicializar la simulación con ventanas semilla rígidamente separadas, alimentamos a los agentes con flujos de datos iterativos que simulaban el paso del tiempo real. Los resultados demostraron que el ecosistema heterogéneo —al estar sometido a fricción dialéctica constante— procesa las actualizaciones temporales (cambios de período) sin caer en la extrapolación lineal ciega que afectaba al modelo individual. La diversidad arquitectónica actuó como un amortiguador predictivo, estabilizando la inferencia a corto y medio plazo siempre y cuando el flujo de inyección no se interrumpiera.
+Para dar continuidad a esta línea en la red Multi-Agente, reemplazamos el \textit{cutoff} estático por flujos de datos iterativos que simulan el paso del tiempo. El objetivo es observar cómo una red heterogénea incorpora actualizaciones y contrapesos sin atribuir de antemano cualquier cambio a la mera cercanía temporal. La diversidad arquitectónica puede amortiguar una extrapolación rígida, pero requiere que el flujo de evidencia se sostenga y que su procedencia sea controlada.
 
 
 \subsection{Conclusiones Integrales del Proyecto}
@@ -195,4 +279,3 @@ El contraste analítico entre el \textit{baseline} y la arquitectura Multi-Agent
 \end{enumerate}
 
 \end{document}
-

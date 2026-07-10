@@ -1,6 +1,6 @@
 \documentclass[25pt, a0paper, portrait]{tikzposter}
 \usepackage[utf8]{inputenc}
-\usepackage[spanish]{babel}
+\usepackage[provide=*,spanish]{babel}
 \usepackage{booktabs}
 \usepackage{amsmath}
 \usepackage{graphicx}
@@ -44,7 +44,7 @@
         \begin{itemize}
             \item \textbf{Entornos Herméticos (OASIS):} Los agentes interactuaron en foros clonados (simulando Twitter y Reddit) sin salida a internet ni fuga de datos futuros.
             \item \textbf{Inyección por Grafo de Conocimiento (Neo4j):} La memoria y el contexto se suministraron a través de un motor semántico. Implementamos un algoritmo de \textit{deduplicación topológica} que fusionó nodos idénticos, evitando la dispersión de la atención y logrando récords históricos de precisión (MAE 1.475\%).
-            \item \textbf{Métricas y Telemetría Estricta:} Cada acción generada fue auditada en tiempo real. Se documentó el consumo de tokens, los costos ($ USD), la adherencia a formatos JSON y la deriva temporal mediante \textit{Checkpoints Interview}.
+            \item \textbf{Métricas y Telemetría Estricta:} Cada acción generada fue auditada en tiempo real. Se documentó el consumo de tokens, los costos (USD), la adherencia a formatos JSON y la deriva temporal mediante \textit{Checkpoints Interview}.
         \end{itemize}
     }
 
@@ -52,24 +52,36 @@
         En la fase inicial, Llama-3.3, Gemma-3 y Qwen-3 operaron las simulaciones de manera aislada (paradigma \textit{Single-Agent}). 
 
         \vspace{0.4cm}
-        \textbf{Escalamiento Topológico (IPC Argentina):} \\
-        Comprobamos que en entornos matemáticos cerrados, el volumen de debate correlaciona directamente con la precisión inferencial. Escalar la simulación a 80 rondas y densidad media redujo drásticamente el error absoluto:
-        
-        \vspace{0.3cm}
+        \textbf{Actualización temporal de evidencia (T0--T3):} \\
+        Con Gemma-3-27B-IT y configuración fija (R40-D2), en cada corte se añadió evidencia acumulativa y se mantuvieron fuera del \textit{input} la pregunta y el resultado real.
+
+        \vspace{0.2cm}
         \begin{center}
-        \begin{tabular}{@{}lcccc@{}}
+        \begin{tabular}{@{}ll@{}}
             \toprule
-            \textbf{Variante Topológica} & \textbf{Rondas (R)} & \textbf{Densidad (D)} & \textbf{MAE Resultante} \\ \midrule
-            Aislamiento (Control) & 10 & 2 & 3.12\%  \\
-            Aislamiento (Densa) & 40 & 1 & 2.45\%  \\
-            Aislamiento (Media) & 40 & 2 & 2.31\%  \\
-            \textbf{Aislamiento (Óptima)} & \textbf{80} & \textbf{2} & \textbf{1.84\%}  \\ \bottomrule
+            \textbf{Caso} & \textbf{Hallazgo temporal} \\ \midrule
+            Bolivia & T0: Arce fuera de boleta / Doria Medina; T1: Paz; T2/T3: Quiroga \\
+            IPC & MAE mensual: 1.500 $\rightarrow$ 0.838 \\
+            Copa América & Argentina estable; intervalo más acotado desde T2 \\ \bottomrule
         \end{tabular}
         \end{center}
-        \vspace{0.3cm}
+        La evidencia más reciente no mejoró siempre el resultado: ayudó de modo acumulativo en IPC, pero en Bolivia la encuesta tardía desplazó el acierto de T1. En Copa América calibró la incertidumbre sin cambiar el campeón ni el margen esperado.
 
-        \textbf{La Trampa de las Ventanas Semilla ($\Delta$ 2):} \\
-        Al alterar el período de los \textit{Seed Data}, descubrimos que los modelos fallan catastróficamente en horizontes de medio-corto plazo. Al no recibir inyecciones dinámicas que adviertan sobre fluctuaciones transitorias, el sistema extrapola linealmente las tendencias iniciales, subestimando la realidad.
+        \vspace{0.3cm}
+        \textbf{Rondas y densidad:} \\
+        Esta matriz se ejecutó con Llama-3.3-70B. El efecto dependió del dominio; Copa América se mantuvo invariante y por eso se resume en texto, sin tabla propia.
+
+        \vspace{0.2cm}
+        \begin{center}
+        \begin{tabular}{@{}lll@{}}
+            \toprule
+            \textbf{Caso} & \textbf{Variación} & \textbf{Resultado observado} \\ \midrule
+            Bolivia & R10-D2 $\rightarrow$ R80-D2 & Quiroga; MAE 7.687 en ambas \\
+            Bolivia & R40-D1 & Quiroga; MAE 10.000 \\
+            IPC & R10-D2 $\rightarrow$ R80-D2 & MAE 3.12\% $\rightarrow$ 1.84\% \\ \bottomrule
+        \end{tabular}
+        \end{center}
+        Copa América mantuvo Argentina, $p=0.475$ y un margen esperado de un gol en todas las condiciones.
     }
 
     \block{4. Análisis Intrínseco de Diversidad (Entropía)}{
@@ -131,15 +143,18 @@
 
     \block{7. Conclusiones Definitivas}{
         \begin{enumerate}
-            \item \textbf{Viabilidad en Forecasting Cerrado:} Si el único objetivo es extraer una predicción matemática estática (ej. IPC), los sistemas Multi-Agente son computacionalmente prohibitivos (consumen más de 230,000 *tokens* por sesión) y su precisión se ve diezmada por la amenaza constante del Colapso Semántico. Es preferible emplear un modelo aislado altamente calibrado.
+            \item \textbf{Viabilidad en Forecasting Cerrado:} Si el único objetivo es extraer una predicción matemática estática (ej. IPC), los sistemas Multi-Agente son computacionalmente prohibitivos (consumen más de 230,000 tokens por sesión) y su precisión se ve diezmada por la amenaza constante del Colapso Semántico. Es preferible emplear un modelo aislado altamente calibrado.
             \item \textbf{La Cúspide como Laboratorio Sociotécnico:} MiroFish alcanza su pináculo científico cuando somete a redes MAS heterogéneas a bombardeos continuos de información exógena. Solo bajo estas condiciones, el sistema logra emular persuasión humana real, la propagación algorítmica de narrativas y el impacto del ruido ideológico a escala poblacional.
         \end{enumerate}
     }
 
     \block{}{
         \begin{center}
-            % Reemplazar logo_udesa.png con el logo oficial
-            \includegraphics[height=5.5cm]{logo_udesa.png}
+            \IfFileExists{logo_udesa.png}{%
+                \includegraphics[height=5.5cm]{logo_udesa.png}%
+            }{%
+                \textbf{Universidad de San Andrés}%
+            }
         \end{center}
     }
 

@@ -1,6 +1,6 @@
 ﻿\documentclass{article}
 \usepackage[utf8]{inputenc}
-\usepackage[spanish]{babel}
+\usepackage[provide=*,spanish]{babel}
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{booktabs}
@@ -64,11 +64,11 @@ Conociendo que la red Multi-Agente en el balotaje colapsaba en neutralidad (Prue
 
 El \textit{shock} de entropía desestabilizó el estado de cortesía. Qwen-3, exhibiendo la permeabilidad característica que documentamos en el \textit{baseline}, absorbió el estímulo inmediatamente, traduciendo los datos a retórica agresiva e impulsando la polarización del foro. Este evento rescató al sistema del \textit{Model Collapse}, probando que los LLMs heterogéneos requieren estrictamente de señales externas continuas (flujo de información) para mantener dinámicas deliberativas sanas.
 
-\subsubsection{Prueba 4: Superación de la Degradación Temporal (Variación de Período Semilla)}
+\subsubsection{Prueba 4: Actualización Temporal de la Evidencia}
 
-En el \textit{baseline}, comprobamos que la alteración estática del período de los datos semilla (\textit{Seed Data}) generaba una curva de degradación temporal inevitable (el fallo en horizontes de medio-corto plazo, o $\Delta 2$, por extrapolación lineal). 
+En el \textit{baseline}, las ventanas temporales T0--T3 no produjeron un patrón único: en IPC, la incorporación acumulativa de información redujo el error; en Bolivia, la evidencia tardía revirtió el acierto de T1; y en Copa América mantuvo al mismo ganador mientras ajustaba la incertidumbre. Por lo tanto, la recencia no funciona como una garantía de mejora independiente del tipo de evidencia.
 
-Para dar continuidad a esta línea investigativa en la red Multi-Agente, abandonamos el enfoque de \textit{cutoff} estático. En lugar de inicializar la simulación con ventanas semilla rígidamente separadas, alimentamos a los agentes con flujos de datos iterativos que simulaban el paso del tiempo real. Los resultados demostraron que el ecosistema heterogéneo —al estar sometido a fricción dialéctica constante— procesa las actualizaciones temporales (cambios de período) sin caer en la extrapolación lineal ciega que afectaba al modelo individual. La diversidad arquitectónica actuó como un amortiguador predictivo, estabilizando la inferencia a corto y medio plazo siempre y cuando el flujo de inyección no se interrumpiera.
+Para dar continuidad a esta línea en la red Multi-Agente, reemplazamos el \textit{cutoff} estático por flujos de datos iterativos que simulan el paso del tiempo. El objetivo es observar cómo una red heterogénea incorpora actualizaciones y contrapesos sin atribuir de antemano cualquier cambio a la mera cercanía temporal. La diversidad arquitectónica puede amortiguar una extrapolación rígida, pero requiere que el flujo de evidencia se sostenga y que su procedencia sea controlada.
 
 
 \subsection{Conclusiones Integrales del Proyecto}
@@ -82,5 +82,3 @@ El contraste analítico entre el \textit{baseline} y la arquitectura Multi-Agent
 \end{enumerate}
 
 \end{document}
-
-
