@@ -19,6 +19,7 @@ from app.services.report_agent import (  # noqa: E402
     ReportStatus,
 )
 from app.config import Config  # noqa: E402
+from app.services.report_agent_quality_guards import is_tool_result_failure  # noqa: E402
 from app.utils.locale import get_language_instruction, get_locale, set_locale  # noqa: E402
 
 
@@ -56,6 +57,18 @@ class RecordingZepTools:
         return type("Result", (), {"to_text": lambda self: "grounded"})()
 
 
+class FailingInterviewThenGroundedTools:
+    def __init__(self):
+        self.insight_called = False
+
+    def interview_agents(self, **kwargs):
+        raise RuntimeError("interview transport failed")
+
+    def insight_forge(self, **kwargs):
+        self.insight_called = True
+        return type("Result", (), {"to_text": lambda self: "grounded evidence"})()
+
+
 class ReportAgentResilienceTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -83,6 +96,13 @@ class ReportAgentResilienceTests(unittest.TestCase):
         agent = self.make_agent()
 
         self.assertEqual(agent._parse_tool_calls(None), [])
+
+    def test_interview_result_without_records_is_not_grounding_evidence(self):
+        self.assertTrue(
+            is_tool_result_failure(
+                "## Informe de entrevista\n（无采访记录）\n采访过程发生错误：timeout"
+            )
+        )
 
     def test_report_limits_are_configurable_for_real_smoke_runs(self):
         tools = RecordingZepTools()
@@ -191,6 +211,64 @@ class ReportAgentResilienceTests(unittest.TestCase):
         self.assertEqual(report.status, ReportStatus.COMPLETED)
         self.assertIn("Grounded section", report.markdown_content)
         self.assertIn("Inflation outlook", tools.insight_kwargs["query"])
+
+    def test_failed_tool_does_not_consume_grounding_budget(self):
+        class RecoveryAgent(ReportAgent):
+            def __init__(self, tools):
+                with patch.object(Config, "REPORT_AGENT_MAX_TOOL_CALLS", 1):
+                    super().__init__(
+                        graph_id="graph-test",
+                        simulation_id="sim-test",
+                        simulation_requirement="req",
+                        llm_client=SequenceLLM(
+                            [
+                                '<tool_call>{"name":"interview_agents","parameters":{"query":"agents"}}</tool_call>',
+                                '<tool_call>{"name":"insight_forge","parameters":{"query":"evidence"}}</tool_call>',
+                                "Final Answer: Grounded recovery section.",
+                            ]
+                        ),
+                        zep_tools=tools,
+                    )
+
+            def plan_outline(self, progress_callback=None):
+                return ReportOutline(title="T", summary="S", sections=[ReportSection("A")])
+
+        tools = FailingInterviewThenGroundedTools()
+        report = RecoveryAgent(tools).generate_report(report_id="report-tool-recovery")
+
+        self.assertEqual(report.status, ReportStatus.COMPLETED)
+        self.assertTrue(tools.insight_called)
+        self.assertIn("Grounded recovery section", report.markdown_content)
+
+    def test_failed_tool_cannot_validate_an_unsupported_section(self):
+        class FailedToolAgent(ReportAgent):
+            def __init__(self):
+                with patch.object(Config, "REPORT_AGENT_MAX_TOOL_CALLS", 1):
+                    super().__init__(
+                        graph_id="graph-test",
+                        simulation_id="sim-test",
+                        simulation_requirement="req",
+                        llm_client=SequenceLLM(
+                            [
+                                '<tool_call>{"name":"interview_agents","parameters":{"query":"agents"}}</tool_call>',
+                                "Final Answer: Invented interview quotation.",
+                                "Final Answer: Still invented.",
+                            ]
+                        ),
+                        zep_tools=FailingInterviewThenGroundedTools(),
+                    )
+
+            def plan_outline(self, progress_callback=None):
+                return ReportOutline(title="T", summary="S", sections=[ReportSection("A")])
+
+        agent = FailedToolAgent()
+        agent.zep_tools.insight_forge = lambda **kwargs: (_ for _ in ()).throw(
+            RuntimeError("grounding unavailable")
+        )
+        report = agent.generate_report(report_id="report-failed-tool")
+
+        self.assertEqual(report.status, ReportStatus.FAILED)
+        self.assertIn("no real tool calls", report.error)
 
     def test_report_section_validation_rejects_model_self_reported_tool_failure(self):
         agent = self.make_agent()

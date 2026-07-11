@@ -22,7 +22,7 @@ from ..utils.embedding_client import EmbeddingClient
 from ..utils.reranker_client import RerankerClient
 from ..utils.logger import get_logger
 from ..utils.llm_client import LLMClient
-from ..utils.locale import t
+from ..utils.locale import get_locale, t
 
 logger = get_logger('mirofish.zep_tools')
 

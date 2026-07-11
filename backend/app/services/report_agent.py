@@ -816,6 +816,7 @@ from .report_agent_quality_guards import (
     validate_section_content as _qg_validate_section_content,
     clean_final_answer as _qg_clean_final_answer,
     is_interview_agents_unavailable as _qg_is_interview_agents_unavailable,
+    is_tool_result_failure as _qg_is_tool_result_failure,
 )
 
 SECTION_USER_PROMPT_TEMPLATE = """\
@@ -1494,16 +1495,7 @@ class ReportAgent:
                         iteration=iteration + 1,
                     )
 
-                failed_markers = (
-                    "工具执行失败",
-                    "未知工具",
-                    "tool execution failed",
-                    "unknown tool",
-                )
-                fallback_is_grounded = bool(fallback_result and fallback_result.strip()) and not any(
-                    marker in fallback_result.lower() for marker in failed_markers
-                )
-                if fallback_is_grounded:
+                if not _qg_is_tool_result_failure(fallback_result):
                     tool_calls_count += 1
                     used_tools.add(fallback_name)
                     messages.append({"role": "assistant", "content": response})
@@ -1639,6 +1631,18 @@ class ReportAgent:
                         result=result,
                         iteration=iteration + 1
                     )
+
+                if _qg_is_tool_result_failure(result):
+                    messages.append({"role": "assistant", "content": response})
+                    messages.append({
+                        "role": "user",
+                        "content": (
+                            "The requested tool failed and returned no grounding evidence. "
+                            "Call a different available tool before writing the Final Answer. "
+                            f"Tool error: {result}"
+                        ),
+                    })
+                    continue
 
                 tool_calls_count += 1
                 used_tools.add(call['name'])
