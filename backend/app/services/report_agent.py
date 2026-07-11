@@ -1417,6 +1417,7 @@ class ReportAgent:
         tool_calls_count = 0
         min_tool_calls = 1  # 最少真实工具调用次数；避免为凑数量把模型推向无关示例
         conflict_retries = 0  # 工具调用与Final Answer同时出现的连续冲突次数
+        grounding_fallback_attempted = False
         used_tools = set()  # 记录已调用过的工具名
         max_iterations = max(2, self.MAX_TOOL_CALLS_PER_SECTION)
         all_tools = {"insight_forge", "panorama_search", "quick_search", "interview_agents"}
@@ -1456,6 +1457,68 @@ class ReportAgent:
             tool_calls = self._parse_tool_calls(response)
             has_tool_calls = bool(tool_calls)
             has_final_answer = "Final Answer:" in response
+
+            # Some providers ignore the text-based tool-call protocol and emit
+            # prose or a Final Answer immediately. Ground the section with one
+            # real retrieval instead of exhausting retries with the same prompt.
+            if (
+                not has_tool_calls
+                and tool_calls_count < min_tool_calls
+                and not grounding_fallback_attempted
+            ):
+                grounding_fallback_attempted = True
+                fallback_name = "insight_forge"
+                fallback_params = {
+                    "query": f"{section.title}: {self.simulation_requirement}",
+                    "report_context": report_context,
+                }
+                if self.report_logger:
+                    self.report_logger.log_tool_call(
+                        section_title=section.title,
+                        section_index=section_index,
+                        tool_name=fallback_name,
+                        parameters=fallback_params,
+                        iteration=iteration + 1,
+                    )
+                fallback_result = self._execute_tool(
+                    fallback_name,
+                    fallback_params,
+                    report_context=report_context,
+                )
+                if self.report_logger:
+                    self.report_logger.log_tool_result(
+                        section_title=section.title,
+                        section_index=section_index,
+                        tool_name=fallback_name,
+                        result=fallback_result,
+                        iteration=iteration + 1,
+                    )
+
+                failed_markers = (
+                    "工具执行失败",
+                    "未知工具",
+                    "tool execution failed",
+                    "unknown tool",
+                )
+                fallback_is_grounded = bool(fallback_result and fallback_result.strip()) and not any(
+                    marker in fallback_result.lower() for marker in failed_markers
+                )
+                if fallback_is_grounded:
+                    tool_calls_count += 1
+                    used_tools.add(fallback_name)
+                    messages.append({"role": "assistant", "content": response})
+                    messages.append({
+                        "role": "user",
+                        "content": REACT_OBSERVATION_TEMPLATE.format(
+                            tool_name=fallback_name,
+                            result=fallback_result,
+                            tool_calls_count=tool_calls_count,
+                            max_tool_calls=self.MAX_TOOL_CALLS_PER_SECTION,
+                            used_tools_str=", ".join(used_tools),
+                            unused_hint="",
+                        ),
+                    })
+                    continue
 
             # ── 冲突处理：LLM 同时输出了工具调用和 Final Answer ──
             if has_tool_calls and has_final_answer:

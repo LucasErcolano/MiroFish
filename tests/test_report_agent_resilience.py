@@ -160,6 +160,38 @@ class ReportAgentResilienceTests(unittest.TestCase):
         self.assertEqual(report.status, ReportStatus.FAILED)
         self.assertIn("no real tool calls", report.error)
 
+    def test_generate_report_recovers_direct_final_answer_with_real_grounding_call(self):
+        class DirectAnswerAgent(ReportAgent):
+            def __init__(self, tools):
+                super().__init__(
+                    graph_id="graph-test",
+                    simulation_id="sim-test",
+                    simulation_requirement="Analyze inflation expectations",
+                    llm_client=SequenceLLM(
+                        [
+                            "Final Answer: ungrounded draft",
+                            "Final Answer: Grounded section based on the retrieved evidence.",
+                        ]
+                    ),
+                    zep_tools=tools,
+                )
+
+            def plan_outline(self, progress_callback=None):
+                return ReportOutline(
+                    title="T",
+                    summary="S",
+                    sections=[ReportSection("Inflation outlook")],
+                )
+
+        tools = RecordingZepTools()
+        report = DirectAnswerAgent(tools).generate_report(
+            report_id="report-grounding-recovery"
+        )
+
+        self.assertEqual(report.status, ReportStatus.COMPLETED)
+        self.assertIn("Grounded section", report.markdown_content)
+        self.assertIn("Inflation outlook", tools.insight_kwargs["query"])
+
     def test_report_section_validation_rejects_model_self_reported_tool_failure(self):
         agent = self.make_agent()
 
