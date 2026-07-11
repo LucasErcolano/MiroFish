@@ -68,9 +68,10 @@ MiroFish \citep{mirofish2025} es un motor de predicción que estima el desenlace
 
 Sobre esta base introducimos una capa de experimentación y auditoría que permite comparar configuraciones sin perder trazabilidad:
 
-\paragraph{Ruteo y observabilidad.} Por defecto, todos los agentes de una simulación corren sobre un mismo LLM. Implementamos un enrutador (\texttt{model\_router.py}) que asigna modelos distintos mediante un mapa declarativo en YAML, junto con telemetría por llamada (\texttt{llm\_telemetry.py}) para registrar modelo, tokens, latencia, costo y errores. El \textit{Observability Dock} reúne esos datos con los artefactos de cada ejecución, las trazas de \textit{Deep Search} y la memoria Wiki, de modo que una conclusión pueda rastrearse hasta su configuración y evidencia.
+\paragraph{Ruteo y observabilidad.} Por defecto, todos los agentes de una simulación corren sobre un mismo LLM. Implementamos un enrutador que asigna modelos distintos mediante un mapa declarativo en YAML, junto con telemetría para registrar modelo, tokens, latencia, costo y errores. El \textit{Observability Dock} reúne esos datos con los artefactos de cada ejecución, las trazas de \textit{Deep Search} y la memoria Wiki, de modo que una conclusión pueda rastrearse hasta su configuración y evidencia.
 
-\paragraph{Grafo, deduplicación y memoria Wiki.} El grafo se persiste en Neo4j y conserva entidades, episodios y relaciones. Para evitar redundancia residual, la etapa posterior a la ingesta compara nodos aislados contra los ya conectados mediante \textit{embeddings}: si la similitud coseno supera 0.85, el nodo aislado se descarta como redundante. No se trata de una fusión global de entidades. En paralelo, una memoria Wiki opcional compila fuentes, afirmaciones, cronología y contradicciones para el agente de reporte; funciona como artefacto auditable y no como reemplazo del grafo operativo.
+\paragraph{Grafo y Deduplicación Semántica.} El grafo base se persiste en Neo4j y conserva entidades, episodios y relaciones. Para mitigar la sobrecarga atencional de los modelos, la etapa posterior a la ingesta emplea \textit{embeddings} para comparar nodos aislados: si la similitud coseno supera un umbral de 0.85, el nodo redundante se descarta.
+\paragraph{Memoria a Largo Plazo.} Inspirados en el paradigma del \textit{LLM OS} propuesto por Andrej Karpathy, donde el modelo actúa como CPU y la ventana de contexto como RAM, implementamos una \textbf{Memoria Wiki} que funciona como el sistema de archivos del agente. Esta memoria compila fuentes, afirmaciones, cronología y contradicciones de forma externa y estructurada. Actúa como un artefacto auditable a largo plazo que alimenta el contexto del agente generador de reportes solo cuando es necesario, evitando saturar la memoria de trabajo durante el debate en tiempo real.
 
 Todas las simulaciones se ejecutan en entornos herméticos: los agentes no acceden a Internet y el corpus semilla respeta un corte temporal estricto anterior al evento, evitando fugas de información (\textit{data leakage}). El resultado real se mantiene aislado del input y solo se emplea en la evaluación.
 
@@ -85,7 +86,7 @@ Al no existir un \textit{benchmark} previo para el sistema, construimos uno prop
 
 \paragraph{Deportivo: final de la Copa América (2024).} La final del 14 de julio de 2024 entre Argentina y Colombia, disputada en Miami. Con un corte documental el día previo (13 de julio), el sistema debe predecir el ganador a partir de previas deportivas, estado de forma e historial. Es un caso simple y auto-verificable, de horizonte muy corto ($\sim$1 día), que opera como prueba de sanidad del protocolo temporal. El desenlace real fue la victoria de Argentina por 1--0 en tiempo suplementario.
 
-\begin{table}[t]
+\begin{table}[h]
 \centering
 \small
 \resizebox{\columnwidth}{!}{%
@@ -195,17 +196,9 @@ Las cinco condiciones mantuvieron exactamente la misma salida: Argentina, probab
 
 Fijada una configuración de control ($R=40$, $D=2$), comparamos los tres modelos en el caso cuantitativo. La precisión ordena los modelos por tamaño: \texttt{Llama-3.3-70B} obtiene el menor error (MAE 2.31\%), seguido de \texttt{Gemma-3-27B} (2.67\%) y \texttt{Qwen3-8B} (3.45\%). En su mejor configuración ($R=80$, $D=2$), Llama es además estable entre réplicas (MAE medio 1.85\%, $\sigma = 0.05$). Sin embargo, en escenarios sociales abiertos cada arquitectura exhibe una patología distinta: Llama tiende a la confirmación recursiva (burbuja epistemológica); Gemma muestra una impermeabilidad factual —mantuvo su voto pese a las estadísticas en contra en el caso deportivo, por el peso de su pre-entrenamiento—; y Qwen cae en una pasividad neutral, aunque es el más permeable a inyecciones de datos. Estas asimetrías motivan directamente el diseño multi-modelo (§\ref{subsec:multimodelo}).
 
-\subsubsection{Deduplicación de nodos: costo y precisión}
 
-El grafo real del caso Copa contiene 26 entidades y 107 relaciones; incluso allí aparecen variantes nominales como \textit{Copa America 2024}/\textit{Copa América 2024} y dos nodos \textit{Opta}. La optimización implementada actúa solo sobre nodos aislados: los compara con entidades conectadas y descarta el candidato si la similitud coseno supera 0.85. En una corrida del caso IPC, la variante con ingesta manual y deduplicación redujo el MAE de 2.31\% a 1.475\%. Es una señal favorable de una única corrida, no evidencia de una mejora predictiva general ni una medición exacta de reducción del grafo.
 
-\subsubsection{Permeabilidad e ingesta autónoma (Deep Search)}
 
-Evaluamos una ingesta totalmente autónoma (\textit{Deep Search}) con corte temporal estricto. En la corrida IPC, el MAE pasó de 2.31\% con ingesta manual a 2.475\% con búsqueda pura: solo se recuperaron dos entidades poco relevantes y la proyección perdió anclas documentales. El resultado no invalida la búsqueda como herramienta de apoyo, pero favorece un diseño híbrido: corpus curado como base, búsqueda trazable para cubrir vacíos y revisión mediante Observability/Wiki.
-
-\subsubsection{Wiki y observabilidad de la ejecución}
-
-La memoria Wiki y el \textit{Observability Dock} no se evalúan como predictores separados: su aporte es de ingeniería experimental. La Wiki compila determinísticamente afirmaciones, fuentes, cronología y contradicciones dentro de un presupuesto de contexto; el panel expone la configuración, los artefactos, el ruteo, tokens, costo, latencia y errores. Así se separa el \textit{input} del \textit{ground truth} y se puede auditar qué evidencia y qué modelo sostuvieron cada reporte, incluidos los resultados negativos de Deep Search.
 
 \subsubsection{Benchmark frente a señales de mercado}
 
@@ -231,14 +224,11 @@ Total & 27/28 & 9 & $\overline{\Delta\text{Brier}}=+0.014$ \\
 
 La comparación aporta contexto, no un veredicto único. En Bolivia, tanto MiroFish como la encuesta tardía favorecieron a Quiroga aunque ganó Paz; en IPC, las señales de mercado dominaron al inicio, pero MiroFish redujo el error en varias proyecciones T3; y en Copa, el sistema mantuvo al campeón correcto pero asignó menos probabilidad que el mercado. En conjunto, el modelo no supera de forma sistemática a referencias simples y su valor debe medirse contra ellas, no solo contra acierto/fallo final.
 
-\subsubsection{Ruido financiero en alta profundidad}
+\subsubsection{Sensibilidad a Inyecciones Programadas y Ruido}
 
-Esta prueba, independiente de T0--T3, introdujo información no predictiva y varió su momento de entrada. Bajo alta profundidad ($R=80$, $D=2$), el modelo asimiló especulación financiera (\textit{herd behavior}) y, en esa variante aislada, alcanzó un MAE de 0.9875\% al anclar un escenario recesivo. La coincidencia no convierte al ruido en evidencia útil: muestra vulnerabilidad a estímulos salientes y al momento de inyección.
+Extendimos la inyección programada a Copa América, Bolivia e IPC para evaluar la vulnerabilidad de los modelos ante estímulos externos, separando contenido, momento y cercanía temática. Cruzamos Gemma y Llama con control; señal favorable temprana, media y tardía; contraseñal media; ruido cercano; y ruido ajeno. Las 42 corridas fueron válidas: los seis controles dispararon cero eventos y las 36 condiciones inyectadas, exactamente uno (Tabla~\ref{tab:s3_cross_topic}).
 
-\subsubsection{Inyecciones programadas en los tres dominios (S3)}
-
-Extendimos la inyección programada a Copa América, Bolivia e IPC para separar contenido, momento y cercanía temática. Cruzamos Gemma y Llama con control; señal favorable temprana, media y tardía; contraseñal media; ruido cercano; y ruido ajeno. Las 42 corridas fueron válidas: los seis controles dispararon cero eventos y las 36 condiciones inyectadas, exactamente uno (Tabla~\ref{tab:s3_cross_topic}).
-
+Un hallazgo crítico sobre esta vulnerabilidad ocurrió en el dominio económico bajo alta profundidad (R = 80, D = 2). Al introducir ruido financiero—información no predictiva— el modelo asimiló rápidamente la especulación (\textit{herd behavior}). Aunque en esa variante aislada alcanzó un MAE excepcional de 0.9875\% al anclar un escenario recesivo, esta coincidencia no convierte al ruido en evidencia útil: demuestra empíricamente la susceptibilidad del sistema al momento de inyección y a la saliencia del estímulo.
 \begin{table}[H]
 \centering
 \scriptsize
@@ -285,6 +275,18 @@ Llama-3.3-70B & 0.33 & 0.73 & 0.09 \\
 \subsubsection{Síntesis del baseline}
 
 La fase de aislamiento mostró que ninguna variable mejora todos los dominios por igual. La recencia de la evidencia ayudó al IPC, corrigió transitoriamente Bolivia y solo recalibró la incertidumbre deportiva; más rondas mejoraron el caso cuantitativo, pero no corrigieron el sesgo electoral; y las inyecciones S3 revelaron sensibilidad específica al caso, al modelo y a la cercanía temática. El ruido no constituyó una fuente confiable de señal. Estas asimetrías motivaron evaluar si una población heterogénea podía compensar las limitaciones de cada modelo.
+
+\subsection{Estudios de Ablación de Ingesta y Grafo}
+
+\subsubsection{Deduplicación de nodos: costo y precisión}
+
+El grafo real del caso Copa contiene 26 entidades y 107 relaciones; incluso allí aparecen variantes nominales como \textit{Copa America 2024}/\textit{Copa América 2024} y dos nodos \textit{Opta}. La optimización implementada actúa solo sobre nodos aislados: los compara con entidades conectadas y descarta el candidato si la similitud coseno supera 0.85. En una corrida del caso IPC, la variante con ingesta manual y deduplicación redujo el MAE de 2.31\% a 1.475\%. Es una señal favorable de una única corrida, no evidencia de una mejora predictiva general ni una medición exacta de reducción del grafo.
+
+
+\subsubsection{Permeabilidad e ingesta autónoma (Deep Search)}
+
+Evaluamos una ingesta totalmente autónoma (\textit{Deep Search}) con corte temporal estricto. En la corrida IPC, el MAE pasó de 2.31\% con ingesta manual a 2.475\% con búsqueda pura: solo se recuperaron dos entidades poco relevantes y la proyección perdió anclas documentales. El resultado no invalida la búsqueda como herramienta de apoyo, pero favorece un diseño híbrido: corpus curado como base, búsqueda trazable para cubrir vacíos y revisión mediante Observability/Wiki.
+
 
 \subsection{Multi-modelo: red heterogénea}
 \label{subsec:multimodelo}
