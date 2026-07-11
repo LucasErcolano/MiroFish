@@ -38,11 +38,11 @@
 % Title
 % ====================
 
-\title{MiroFish: Simulaci├│n Social Generativa y el Descubrimiento del Colapso Sem├íntico}
+\title{MiroFish: Simulación Social Generativa y el Descubrimiento del Colapso Semántico}
 
-\author{Andr├⌐s Bravo \inst{1} \and Joaqu├¡n Cadeiras \inst{1} \and Bruno De Cruz \inst{1} \and Lucas Ercolano \inst{1} \and Eliana Ostrovsky \inst{1}}
+\author{Andrés Bravo \inst{1} \and Joaquín Cadeiras \inst{1} \and Bruno De Cruz \inst{1} \and Lucas Ercolano \inst{1} \and Eliana Ostrovsky \inst{1}}
 
-\institute[shortinst]{\inst{1} Universidad de San Andr├⌐s --- Procesamiento del Lenguaje Natural}
+\institute[shortinst]{\inst{1} Universidad de San Andrés --- Procesamiento del Lenguaje Natural}
 
 % ====================
 % Footer (optional)
@@ -50,7 +50,7 @@
 
 \footercontent{
   \href{https://github.com/LucasErcolano/MiroFish}{github.com/LucasErcolano/MiroFish} \hfill
-  Universidad de San Andr├⌐s --- NLP 2026 \hfill
+  Universidad de San Andrés --- NLP 2026 \hfill
   \href{mailto:lercolano@udesa.edu.ar}{lercolano@udesa.edu.ar}}
 % (can be left out to remove footer)
 
@@ -76,42 +76,42 @@
 % --------------------------------------------------------
 \begin{column}{\colwidth}
 
-  \begin{block}{┬┐El fin del \textit{Forecasting} Tradicional?}
+  \begin{block}{¿El fin del \textit{Forecasting} Tradicional?}
 
-    \textbf{MiroFish} es un entorno masivo de simulaci├│n social. En lugar de extraer estad├¡sticas r├¡gidas, instanciamos un foro virtual (clon de Twitter/Reddit) poblado por Grandes Modelos de Lenguaje (LLMs) que leen noticias reales inyectadas v├¡a \textbf{Neo4j} y debaten el futuro.
+    \textbf{MiroFish} es un entorno masivo de simulación social. En lugar de extraer estadísticas rígidas, instanciamos un foro virtual (clon de Twitter/Reddit) poblado por Grandes Modelos de Lenguaje (LLMs) que leen noticias reales inyectadas vía \textbf{Neo4j} y debaten el futuro.
     
     \vspace{0.5cm}
-    La interrogante: \textit{┬┐Tienen los LLMs la heur├¡stica necesaria para simular una poblaci├│n humana y predecir resultados complejos (econom├¡a, elecciones, deportes)?}
+    La interrogante: \textit{¿Tienen los LLMs la heurística necesaria para simular una población humana y predecir resultados complejos (economía, elecciones, deportes)?}
 
   \end{block}
 
-  \begin{alertblock}{El r├⌐cord en aislamiento (Single-Agent)}
+  \begin{alertblock}{El récord en aislamiento (Single-Agent)}
 
-    Poblamos todo el foro con un ├║nico modelo (\textbf{Llama-3.3-70B}) y lo forzamos a predecir el ├ìndice de Precios al Consumidor (IPC) de Argentina tras 80 rondas de debate cruzado.
+    Poblamos todo el foro con un único modelo (\textbf{Llama-3.3-70B}) y lo forzamos a predecir el Índice de Precios al Consumidor (IPC) de Argentina tras 80 rondas de debate cruzado.
 
     \begin{center}
       \Huge \textbf{1.84\% MAE} \\[0.2cm]
-      \Large \textbf{R├⌐cord de Precisi├│n Absoluta}
+      \Large \textbf{Récord de Precisión Absoluta}
     \end{center}
     
     \vspace{0.3cm}
-    Sin embargo, evaluar modelos en aislamiento sufre \textbf{patolog├¡as severas en entornos polares}:
+    Sin embargo, evaluar modelos en aislamiento sufre \textbf{patologías severas en entornos polares}:
     \begin{itemize}
-      \item \textbf{C├ímaras de Eco:} Llama-3.3 recicla sus estructuras l├⌐xicas (Self-BLEU de 0.73) y retroalimenta sus posturas pol├¡ticas ciegamente.
-      \item \textbf{Terquedad:} Gemma-3-27B ignora la evidencia estad├¡stica real y protege su sesgo de pre-entrenamiento.
+      \item \textbf{Cámaras de Eco:} Llama-3.3 recicla sus estructuras léxicas (Self-BLEU de 0.73) y retroalimenta sus posturas políticas ciegamente.
+      \item \textbf{Terquedad:} Gemma-3-27B ignora la evidencia estadística real y protege su sesgo de pre-entrenamiento.
     \end{itemize}
 
   \end{alertblock}
 
-  \begin{block}{La Red Heterog├⌐nea}
+  \begin{block}{La Red Heterogénea}
 
-    Para curar las c├ímaras de eco, creamos una \textbf{Red Multi-Agente (MAS)} forzando a modelos divergentes (Llama, Gemma y Qwen) a convivir y debatir en la misma sala. La hip├│tesis dictaba que la diversidad cognitiva generar├¡a auto-regulaci├│n.
+    Para curar las cámaras de eco, creamos una \textbf{Red Multi-Agente (MAS)} forzando a modelos divergentes (Llama, Gemma y Qwen) a convivir y debatir en la misma sala. La hipótesis dictaba que la diversidad cognitiva generaría auto-regulación.
 
     \begin{figure}
       \centering
       % Usamos el arte conceptual generado previamente
       % \includegraphics[width=0.9\linewidth]{mirofish_network.jpg}
-      \caption{Visualizaci├│n isom├⌐trica de la red MiroFish procesando nodos de entrop├¡a.}
+      \caption{Visualización isométrica de la red MiroFish procesando nodos de entropía.}
     \end{figure}
 
   \end{block}
@@ -125,52 +125,52 @@
 % --------------------------------------------------------
 \begin{column}{\colwidth}
 
-  \begin{alertblock}{El Descubrimiento: Colapso Sem├íntico}
+  \begin{alertblock}{El Descubrimiento: Colapso Semántico}
 
-    Lejos de regularse hacia la verdad, someter a los LLMs heterog├⌐neos a debatir sin l├¡mites gener├│ una falla sist├⌐mica brutal en el balotaje presidencial de Bolivia.
+    Lejos de regularse hacia la verdad, someter a los LLMs heterogéneos a debatir sin límites generó una falla sistémica brutal en el balotaje presidencial de Bolivia.
     
     \vspace{0.5cm}
     \begin{center}
-      \Huge \textbf{100\% ABSTENCI├ôN} \\[0.2cm]
-      \Large \textbf{Deadlock Dial├⌐ctico}
+      \Huge \textbf{100\% ABSTENCIÓN} \\[0.2cm]
+      \Large \textbf{Deadlock Dialéctico}
     \end{center}
     \vspace{0.3cm}
     
-    Guiados por sus m├│dulos de alineaci├│n ├⌐tica (RLHF), los modelos cayeron en \textbf{bucles de cortes├¡a infinita} (\textit{``I completely agree with the importance of...''}). Ninguno se atrevi├│ a tomar una postura pol├¡tica, paralizando el sistema predictivo por completo.
+    Guiados por sus módulos de alineación ética (RLHF), los modelos cayeron en \textbf{bucles de cortesía infinita} (\textit{``I completely agree with the importance of...''}). Ninguno se atrevió a tomar una postura política, paralizando el sistema predictivo por completo.
     
-    \heading{M├íxima observada:}
-    \textit{La diversidad de modelos, operando en cautiverio sin nueva informaci├│n, degenera indefectiblemente en pasividad absoluta.}
+    \heading{Máxima observada:}
+    \textit{La diversidad de modelos, operando en cautiverio sin nueva información, degenera indefectiblemente en pasividad absoluta.}
 
   \end{alertblock}
 
-  \begin{block}{La Cura: Shocks de Entrop├¡a}
+  \begin{block}{La Cura: Shocks de Entropía}
 
-    Descubrimos que la ├║nica manera de revivir la simulaci├│n y romper la cortes├¡a infinita es mediante \textbf{Inyecciones Din├ímicas Ex├│genas}.
+    Descubrimos que la única manera de revivir la simulación y romper la cortesía infinita es mediante \textbf{Inyecciones Dinámicas Exógenas}.
     
     \begin{enumerate}
-      \item \textbf{Shock de Desinformaci├│n:} Inyectamos una \textit{encuesta falsa tard├¡a} en medio del foro inactivo. Qwen absorbi├│ el ruido, lo convirti├│ en ret├│rica agresiva, y relanz├│ la polarizaci├│n del debate, rescatando a la red del colapso.
-      \item \textbf{Presi├│n de Pares:} Al inyectar estad├¡sticas contrarias, la red logr├│ presionar a Gemma para que abandonara su historica terquedad, un hito imposible en simulaciones aisladas.
+      \item \textbf{Shock de Desinformación:} Inyectamos una \textit{encuesta falsa tardía} en medio del foro inactivo. Qwen absorbió el ruido, lo convirtió en retórica agresiva, y relanzó la polarización del debate, rescatando a la red del colapso.
+      \item \textbf{Presión de Pares:} Al inyectar estadísticas contrarias, la red logró presionar a Gemma para que abandonara su histórica terquedad, un hito imposible en simulaciones aisladas.
     \end{enumerate}
 
   \end{block}
 
-  \begin{block}{Conclusi├│n: El Laboratorio Sociot├⌐cnico}
+  \begin{block}{Conclusión: El Laboratorio Sociotécnico}
 
     \begin{table}
       \centering
       \begin{tabular}{l c c c}
         \toprule
-        \textbf{Arquitectura} & \textbf{Costo (Tokens)} & \textbf{Punter├¡a} & \textbf{Maleabilidad} \\
+        \textbf{Arquitectura} & \textbf{Costo (Tokens)} & \textbf{Puntería} & \textbf{Maleabilidad} \\
         \midrule
         Modelo Aislado (Llama) & Bajo & \textbf{Muy Alta} & Baja (Eco) \\
         Red MAS (Sin Shocks) & Extremo ($>$230k) & Nula (Deadlock) & Nula \\
-        \textbf{Red MAS + Entrop├¡a} & Alto & Media & \textbf{M├íxima} \\
+        \textbf{Red MAS + Entropía} & Alto & Media & \textbf{Máxima} \\
         \bottomrule
       \end{tabular}
     \end{table}
     
     \vspace{0.5cm}
-    Para extraer n├║meros est├íticos (\textit{Forecasting}), MiroFish Multi-Agente es ineficiente. Pero como \textbf{Simulador Poblacional}, es inigualable. Es el marco de referencia definitivo para auditar c├│mo la Inteligencia Artificial persuade, esparce desinformaci├│n y modifica narrativas a escala social.
+    Para extraer números estáticos (\textit{Forecasting}), MiroFish Multi-Agente es ineficiente. Pero como \textbf{Simulador Poblacional}, es inigualable. Es el marco de referencia definitivo para auditar cómo la Inteligencia Artificial persuade, esparce desinformación y modifica narrativas a escala social.
 
   \end{block}
 
