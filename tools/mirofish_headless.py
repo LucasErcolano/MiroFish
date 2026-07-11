@@ -356,7 +356,7 @@ class MiroFishHeadlessRunner:
             graph_build = self.client.request_json(
                 "POST",
                 "/api/graph/build",
-                {"project_id": project_id},
+                {"project_id": project_id, "chunk_size": 2000, "chunk_overlap": 200},
                 retry=True,
             )
             graph_task_id = graph_build.get("data", {}).get("task_id")
@@ -412,7 +412,15 @@ class MiroFishHeadlessRunner:
                 report_status = self._wait_report(simulation_id, report_task_id, poll_timeout_seconds)
                 report_id = report_id or report_status.get("report_id")
                 if report_id:
-                    self.client.request_json("GET", f"/api/report/{report_id}")
+                    report_data = self.client.request_json("GET", f"/api/report/{report_id}")
+                    # Save report markdown content
+                    report_md = report_data.get("data", {}).get("markdown_content", "")
+                    if report_md:
+                        (self.output_dir / "mirofish_report_raw.md").write_text(
+                            report_md, encoding="utf-8"
+                        )
+                    # Save full report data as verdict
+                    write_json(self.output_dir / "verdict_raw.json", report_data.get("data", {}))
 
             completed_rounds = self._extract_completed_rounds(final_run)
             manifest = {

@@ -7,6 +7,8 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
+import re
 import threading
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -211,6 +213,155 @@ class _AsyncBridge:
         return future.result()
 
 
+def _strip_json_markdown(text: str) -> str:
+    """Return the most likely JSON payload from an LLM response."""
+    text = (text or "").strip()
+    if text.startswith("```"):
+        lines = text.splitlines()
+        if lines and lines[0].lstrip().startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].strip().startswith("```"):
+            lines = lines[:-1]
+        text = "\n".join(lines).strip()
+
+    starts = [idx for idx in (text.find("{"), text.find("[")) if idx >= 0]
+    if starts:
+        text = text[min(starts) :]
+    return text
+
+
+def _close_partial_json(text: str) -> str:
+    """Best-effort close of a JSON object/array truncated inside a string."""
+    stack: List[str] = []
+    in_string = False
+    escaped = False
+
+    for ch in text:
+        if in_string:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            continue
+
+        if ch == '"':
+            in_string = True
+        elif ch == "{":
+            stack.append("}")
+        elif ch == "[":
+            stack.append("]")
+        elif ch in "}]" and stack and stack[-1] == ch:
+            stack.pop()
+
+    if escaped:
+        # A trailing backslash cannot terminate a JSON string.
+        text += "\\"
+    if in_string:
+        text += '"'
+    text += "".join(reversed(stack))
+    return text
+
+
+def _repair_json_text(text: str) -> str:
+    """Repair common OpenAI-compatible JSON-mode failures.
+
+    Some providers/models accept response_format=json_object/json_schema but still
+    occasionally return broken JSON during Graphiti extraction (bad backslash
+    escapes, markdown fences, or max-token truncation inside a string). Keep the
+    repair conservative: never invent keys, only normalize obvious syntax issues
+    and close already-open containers.
+    """
+    text = _strip_json_markdown(text)
+    text = text.replace("\ufeff", "").strip()
+
+    # JSON permits only a small set of escapes. Convert invalid backslashes to
+    # literal backslashes before attempting to close truncated structures.
+    text = re.sub(r"\\u(?![0-9a-fA-F]{4})", r"\\\\u", text)
+    text = re.sub(r"\\(?![\"\\/bfnrtu])", r"\\\\", text)
+
+    return _close_partial_json(text)
+
+
+def _build_repairing_openai_generic_client(base_cls):
+    """Build a Graphiti generic client that repairs malformed JSON responses."""
+
+    class RepairingOpenAIGenericClient(base_cls):  # type: ignore[misc, valid-type]
+        async def _generate_response(
+            self,
+            messages,
+            response_model=None,
+            max_tokens=None,
+            model_size=None,
+        ):
+            try:
+                return await super()._generate_response(
+                    messages,
+                    response_model=response_model,
+                    max_tokens=max_tokens,
+                    model_size=model_size,
+                )
+            except json.JSONDecodeError as first_error:
+                # Re-issue the exact same request so we can access the raw
+                # content; upstream discards it when json.loads fails.
+                openai_messages = []
+                for m in messages:
+                    content = self._clean_input(m.content)
+                    if m.role in {"user", "system"}:
+                        openai_messages.append({"role": m.role, "content": content})
+
+                response_format = {"type": "json_object"}
+                if response_model is not None:
+                    schema_name = getattr(response_model, "__name__", "structured_response")
+                    response_format = {
+                        "type": "json_schema",
+                        "json_schema": {
+                            "name": schema_name,
+                            "schema": response_model.model_json_schema(),
+                        },
+                    }
+
+                response = await self.client.chat.completions.create(
+                    model=self.model or "gpt-4.1-mini",
+                    messages=openai_messages,
+                    temperature=self.temperature,
+                    max_tokens=self.max_tokens,
+                    response_format=response_format,
+                )
+                raw = response.choices[0].message.content or ""
+                finish_reason = getattr(response.choices[0], "finish_reason", None)
+                usage = getattr(response, "usage", None)
+                completion_tokens = getattr(usage, "completion_tokens", None) if usage else None
+                try:
+                    return json.loads(raw)
+                except json.JSONDecodeError:
+                    repaired = _repair_json_text(raw)
+                    try:
+                        logger.warning(
+                            "Repaired invalid Graphiti JSON response from %s: %s; raw_len=%s repaired_len=%s finish_reason=%s completion_tokens=%s max_tokens=%s",
+                            self.model,
+                            first_error,
+                            len(raw),
+                            len(repaired),
+                            finish_reason,
+                            completion_tokens,
+                            self.max_tokens,
+                        )
+                        return json.loads(repaired)
+                    except json.JSONDecodeError as repair_error:
+                        logger.error(
+                            "Graphiti JSON repair failed for %s: original=%s repair=%s raw_prefix=%r",
+                            self.model,
+                            first_error,
+                            repair_error,
+                            raw[:500],
+                        )
+                        raise first_error
+
+    return RepairingOpenAIGenericClient
+
+
 class GraphitiBackend(GraphBackend):
     """Graph backend backed by Graphiti OSS + Neo4j."""
 
@@ -237,6 +388,7 @@ class GraphitiBackend(GraphBackend):
             from graphiti_core.llm_client import OpenAIClient
             from graphiti_core.llm_client.config import LLMConfig
             from graphiti_core.llm_client.openai_generic_client import OpenAIGenericClient
+            from openai import AsyncOpenAI
         except ImportError as exc:
             raise ImportError(
                 "Graphiti 依赖未安装，请先在 backend 环境中安装 graphiti-core 与 neo4j"
@@ -262,15 +414,45 @@ class GraphitiBackend(GraphBackend):
             embedding_dim=Config.GRAPHITI_EMBEDDER_DIM,
         )
 
+        graphiti_timeout = float(os.environ.get("GRAPHITI_LLM_TIMEOUT", "3600"))
+        graphiti_embed_timeout = float(os.environ.get("GRAPHITI_EMBEDDER_TIMEOUT", "300"))
+        graphiti_reranker_timeout = float(os.environ.get("GRAPHITI_RERANKER_TIMEOUT", "3600"))
+
+        graphiti_llm_retries = int(os.environ.get("GRAPHITI_LLM_MAX_RETRIES", "3"))
+        graphiti_embed_retries = int(os.environ.get("GRAPHITI_EMBEDDER_MAX_RETRIES", "5"))
+        graphiti_reranker_retries = int(os.environ.get("GRAPHITI_RERANKER_MAX_RETRIES", "3"))
+
+        llm_async_client = AsyncOpenAI(
+            api_key=Config.GRAPHITI_LLM_API_KEY,
+            base_url=Config.GRAPHITI_LLM_BASE_URL,
+            timeout=graphiti_timeout,
+            max_retries=graphiti_llm_retries,
+        )
+        embedder_async_client = AsyncOpenAI(
+            api_key=Config.GRAPHITI_EMBEDDER_API_KEY,
+            base_url=Config.GRAPHITI_EMBEDDER_BASE_URL,
+            timeout=graphiti_embed_timeout,
+            max_retries=graphiti_embed_retries,
+        )
+        reranker_async_client = AsyncOpenAI(
+            api_key=Config.GRAPHITI_RERANKER_API_KEY,
+            base_url=Config.GRAPHITI_RERANKER_BASE_URL,
+            timeout=graphiti_reranker_timeout,
+            max_retries=graphiti_reranker_retries,
+        )
+
         llm_client_mode = (Config.GRAPHITI_LLM_CLIENT_MODE or "openai").lower()
         if llm_client_mode == "generic":
-            llm_client = OpenAIGenericClient(
+            RepairingOpenAIGenericClient = _build_repairing_openai_generic_client(OpenAIGenericClient)
+            llm_client = RepairingOpenAIGenericClient(
                 config=llm_config,
+                client=llm_async_client,
                 max_tokens=Config.GRAPHITI_LLM_MAX_TOKENS,
             )
         else:
             llm_client = OpenAIClient(
                 config=llm_config,
+                client=llm_async_client,
                 max_tokens=Config.GRAPHITI_LLM_MAX_TOKENS,
             )
 
@@ -279,8 +461,8 @@ class GraphitiBackend(GraphBackend):
             user=Config.GRAPHITI_USER,
             password=Config.GRAPHITI_PASSWORD,
             llm_client=llm_client,
-            embedder=OpenAIEmbedder(config=embedder_config),
-            cross_encoder=OpenAIRerankerClient(config=reranker_config),
+            embedder=OpenAIEmbedder(config=embedder_config, client=embedder_async_client),
+            cross_encoder=OpenAIRerankerClient(config=reranker_config, client=reranker_async_client),
             max_coroutines=Config.GRAPHITI_MAX_COROUTINES,
         )
         self._driver = self._graphiti.driver.with_database(Config.GRAPHITI_DATABASE)
@@ -706,14 +888,43 @@ class GraphitiBackend(GraphBackend):
             created_at=saved_episode.created_at,
         )
 
-    def add_batch(self, graph_id: str, episodes: List[Any]) -> List[Any]:
-        results = []
+    async def _add_batch_parallel_async(self, graph_id: str, episodes: List[Any]) -> List[Any]:
+        """Add multiple episodes in parallel using asyncio.gather.
+
+        Processes up to GRAPHITI_CHUNK_PARALLELISM episodes concurrently,
+        letting Ollama batch them on GPU for higher throughput.
+        """
+        chunk_parallelism = int(os.environ.get("GRAPHITI_CHUNK_PARALLELISM", "2"))
+
+        async def _safe_add(episode_data: str) -> Any:
+            """Wrapper that logs per-chunk errors and fails the graph build immediately."""
+            try:
+                return await self._add_text_async(graph_id=graph_id, data=episode_data)
+            except Exception:
+                logger.exception("Parallel add_episode failed for chunk")
+                raise
+
+        # Prepare data strings
+        data_list = []
         for episode in episodes:
             data = getattr(episode, "data", None)
             if data is None and isinstance(episode, dict):
                 data = episode.get("data", "")
-            results.append(self.add_text(graph_id=graph_id, data=str(data or "")))
+            data_list.append(str(data or ""))
+
+        # Process in sub-batches of chunk_parallelism
+        results = []
+        for i in range(0, len(data_list), chunk_parallelism):
+            sub_batch = data_list[i:i + chunk_parallelism]
+            coros = [_safe_add(d) for d in sub_batch]
+            sub_results = await asyncio.gather(*coros)
+            results.extend(sub_results)
+
         return results
+
+    def add_batch(self, graph_id: str, episodes: List[Any]) -> List[Any]:
+        # Use parallel processing via the async event loop
+        return self._run(self._add_batch_parallel_async(graph_id=graph_id, episodes=episodes))
 
     def add_text(self, graph_id: str, data: str) -> Any:
         self._validate_graph_id(graph_id)
