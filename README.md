@@ -103,6 +103,12 @@ inside Docker:
 docker compose --profile graphiti up --build
 ```
 
+The example environment keeps the two Neo4j network contexts separate:
+`GRAPHITI_URI=bolt://localhost:7687` is used when the backend runs directly on
+the host, while Compose maps `DOCKER_GRAPHITI_URI=bolt://neo4j:7687` into the
+MiroFish container. Do not replace the Docker URI with `localhost`: inside the
+container, `localhost` refers to MiroFish itself rather than the Neo4j service.
+
 ### Real Provider Smoke
 
 The default smoke is offline. To verify the paid path end to end with a small,

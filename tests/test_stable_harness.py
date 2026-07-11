@@ -17,6 +17,16 @@ def test_compose_pins_neo4j_with_dynamic_label_support():
     assert "image: neo4j:5.26-community" in compose
 
 
+def test_compose_keeps_host_and_container_graphiti_uris_separate():
+    repo_root = Path(__file__).resolve().parents[1]
+    compose = (repo_root / "docker-compose.yml").read_text(encoding="utf-8")
+    env_example = (repo_root / ".env.example").read_text(encoding="utf-8")
+
+    assert "GRAPHITI_URI: ${DOCKER_GRAPHITI_URI:-bolt://neo4j:7687}" in compose
+    assert "GRAPHITI_URI=bolt://localhost:7687" in env_example
+    assert "DOCKER_GRAPHITI_URI=bolt://neo4j:7687" in env_example
+
+
 def test_backend_lock_uses_cpu_only_pytorch():
     repo_root = Path(__file__).resolve().parents[1]
     pyproject = (repo_root / "backend" / "pyproject.toml").read_text(encoding="utf-8")
