@@ -41,6 +41,7 @@ MANIFEST
 *.swp
 *.swo
 # Runtime / generated
+node_modules/
 *.log
 log/
 logs/

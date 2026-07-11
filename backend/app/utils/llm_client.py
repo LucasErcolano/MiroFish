@@ -173,19 +173,28 @@ class LLMClient:
         self,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
-        model: Optional[str] = None
+        model: Optional[str] = None,
+        timeout: Optional[float] = None,
+        max_retries: Optional[int] = None
     ):
         self.api_key = api_key or Config.LLM_API_KEY
         self.base_url = base_url or Config.LLM_BASE_URL
         self.model = model or Config.LLM_MODEL_NAME
+        self.timeout = timeout
+        self.max_retries = max_retries
         
         if not self.api_key:
             raise ValueError("LLM_API_KEY 未配置")
         
-        self.client = OpenAI(
-            api_key=self.api_key,
-            base_url=self.base_url
-        )
+        client_kwargs: Dict[str, Any] = {
+            "api_key": self.api_key,
+            "base_url": self.base_url,
+        }
+        if self.timeout is not None:
+            client_kwargs["timeout"] = self.timeout
+        if self.max_retries is not None:
+            client_kwargs["max_retries"] = self.max_retries
+        self.client = OpenAI(**client_kwargs)
         
         # 检查是否有 Boost LLM 配置可用于回退
         self._has_boost = bool(Config.LLM_BOOST_API_KEY)
@@ -291,13 +300,15 @@ class LLMClient:
     
     def _create_boost_client(self) -> Tuple[OpenAI, str]:
         """创建 Boost LLM 客户端（按需创建，不缓存）"""
-        return (
-            OpenAI(
-                api_key=Config.LLM_BOOST_API_KEY,
-                base_url=Config.LLM_BOOST_BASE_URL
-            ),
-            Config.LLM_BOOST_MODEL_NAME
-        )
+        client_kwargs: Dict[str, Any] = {
+            "api_key": Config.LLM_BOOST_API_KEY,
+            "base_url": Config.LLM_BOOST_BASE_URL,
+        }
+        if self.timeout is not None:
+            client_kwargs["timeout"] = self.timeout
+        if self.max_retries is not None:
+            client_kwargs["max_retries"] = self.max_retries
+        return (OpenAI(**client_kwargs), Config.LLM_BOOST_MODEL_NAME)
     
     def chat_json(
         self,

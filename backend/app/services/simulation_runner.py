@@ -418,6 +418,22 @@ class SimulationRunner:
                 script_path,
                 "--config", config_path,  # 使用完整配置文件路径
             ]
+
+            model_map_path = config.get("model_map_path")
+            if not model_map_path and Config.ENABLE_SIMULATION_MODEL_ROUTING:
+                model_map_path = Config.SIMULATION_MODEL_MAP_PATH
+            if model_map_path and script_name in {"run_reddit_simulation.py", "run_parallel_simulation.py"}:
+                if not os.path.isabs(model_map_path):
+                    model_map_path = os.path.abspath(os.path.join(sim_dir, model_map_path))
+                if os.path.exists(model_map_path):
+                    cmd.extend(["--model-map", model_map_path])
+                    logger.info("Model routing enabled for %s: %s", simulation_id, model_map_path)
+                else:
+                    logger.warning(
+                        "Model routing requested for %s but model map was not found: %s",
+                        simulation_id,
+                        model_map_path,
+                    )
             
             # 如果指定了最大轮数，添加到命令行参数
             if max_rounds is not None and max_rounds > 0:
@@ -1779,4 +1795,3 @@ class SimulationRunner:
             results = results[:limit]
         
         return results
-

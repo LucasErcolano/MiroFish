@@ -68,6 +68,30 @@ def _percentile(values: list[float], percentile: float) -> float:
     return round(float(ordered[index]), 2)
 
 
+def _telemetry_flags(record: dict) -> set[str]:
+    flags = record.get("leak_flags") or []
+    if isinstance(flags, str):
+        flags = [flags]
+    if not isinstance(flags, list):
+        return set()
+    return {str(flag) for flag in flags}
+
+
+def _is_rate_limit_error(error: object) -> bool:
+    text = str(error or "").lower()
+    return "429" in text or "rate limit" in text or "ratelimit" in text
+
+
+def _cost_estimation_status(calls: int, unknown: int, usage_unavailable: int) -> str:
+    if calls <= 0:
+        return "none"
+    if unknown >= calls:
+        return "unknown"
+    if unknown or usage_unavailable:
+        return "partial"
+    return "estimated"
+
+
 def _aggregate_telemetry(records: list[dict]) -> dict:
     by_model: dict[str, dict] = {}
     totals = {
@@ -78,6 +102,9 @@ def _aggregate_telemetry(records: list[dict]) -> dict:
         "tokens_out": 0,
         "cost_usd_est": 0.0,
         "latency_ms": 0.0,
+        "cost_unknown_model_calls": 0,
+        "usage_unavailable_calls": 0,
+        "rate_limited_calls": 0,
     }
 
     for record in records:
@@ -94,6 +121,10 @@ def _aggregate_telemetry(records: list[dict]) -> dict:
                 "tokens_out": 0,
                 "cost_usd_est": 0.0,
                 "latencies_ms": [],
+                "cost_unknown_model_calls": 0,
+                "usage_unavailable_calls": 0,
+                "rate_limited_calls": 0,
+                "leak_flags": set(),
             },
         )
         tokens_in = int(record.get("tokens_in") or 0)
@@ -102,6 +133,10 @@ def _aggregate_telemetry(records: list[dict]) -> dict:
         latency = float(record.get("latency_ms") or 0.0)
         has_error = bool(record.get("error"))
         parse_error = record.get("output_valid_json") is False
+        flags = _telemetry_flags(record)
+        unknown_model = "cost_unknown_model" in flags
+        usage_unavailable = bool(record.get("usage_unavailable")) or (has_error and tokens_in + tokens_out == 0)
+        rate_limited = _is_rate_limit_error(record.get("error"))
 
         bucket["calls"] += 1
         bucket["errors"] += 1 if has_error else 0
@@ -109,6 +144,10 @@ def _aggregate_telemetry(records: list[dict]) -> dict:
         bucket["tokens_in"] += tokens_in
         bucket["tokens_out"] += tokens_out
         bucket["cost_usd_est"] += cost
+        bucket["cost_unknown_model_calls"] += 1 if unknown_model else 0
+        bucket["usage_unavailable_calls"] += 1 if usage_unavailable else 0
+        bucket["rate_limited_calls"] += 1 if rate_limited else 0
+        bucket["leak_flags"].update(flags)
         if latency:
             bucket["latencies_ms"].append(latency)
 
@@ -118,11 +157,15 @@ def _aggregate_telemetry(records: list[dict]) -> dict:
         totals["tokens_in"] += tokens_in
         totals["tokens_out"] += tokens_out
         totals["cost_usd_est"] += cost
+        totals["cost_unknown_model_calls"] += 1 if unknown_model else 0
+        totals["usage_unavailable_calls"] += 1 if usage_unavailable else 0
+        totals["rate_limited_calls"] += 1 if rate_limited else 0
         totals["latency_ms"] += latency
 
     per_model = []
     for bucket in by_model.values():
         latencies = bucket.pop("latencies_ms")
+        flags = bucket.pop("leak_flags")
         calls = bucket["calls"]
         bucket["cost_usd_est"] = round(bucket["cost_usd_est"], 8)
         bucket["latency_p50_ms"] = _percentile(latencies, 50)
@@ -130,6 +173,12 @@ def _aggregate_telemetry(records: list[dict]) -> dict:
         bucket["mean_latency_ms"] = round(sum(latencies) / len(latencies), 2) if latencies else 0.0
         bucket["error_rate"] = round(bucket["errors"] / calls, 4) if calls else 0.0
         bucket["parse_error_rate"] = round(bucket["parse_errors"] / calls, 4) if calls else 0.0
+        bucket["cost_estimation_status"] = _cost_estimation_status(
+            calls,
+            bucket["cost_unknown_model_calls"],
+            bucket["usage_unavailable_calls"],
+        )
+        bucket["leak_flags"] = sorted(flags)
         per_model.append(bucket)
 
     totals["cost_usd_est"] = round(totals["cost_usd_est"], 8)
@@ -137,6 +186,11 @@ def _aggregate_telemetry(records: list[dict]) -> dict:
     totals["latency_p50_ms"] = _percentile([float(r.get("latency_ms") or 0.0) for r in records if r.get("latency_ms")], 50)
     totals["latency_p95_ms"] = _percentile([float(r.get("latency_ms") or 0.0) for r in records if r.get("latency_ms")], 95)
     totals["mean_latency_ms"] = round(totals["latency_ms"] / totals["calls"], 2) if totals["calls"] else 0.0
+    totals["cost_estimation_status"] = _cost_estimation_status(
+        totals["calls"],
+        totals["cost_unknown_model_calls"],
+        totals["usage_unavailable_calls"],
+    )
 
     return {
         "totals": totals,
@@ -494,7 +548,9 @@ def _check_simulation_prepared(simulation_id: str) -> tuple:
             logger.info(f"模拟 {simulation_id} 检测结果: 已准备完成 (status={status}, config_generated={config_generated})")
             return True, {
                 "status": status,
+                "candidate_entities_count": state_data.get("candidate_entities_count", 0),
                 "entities_count": state_data.get("entities_count", 0),
+                "deduped_entities_count": state_data.get("deduped_entities_count", state_data.get("entities_count", 0)),
                 "profiles_count": profiles_count,
                 "entity_types": state_data.get("entity_types", []),
                 "config_generated": config_generated,
@@ -626,8 +682,8 @@ def prepare_simulation():
         use_llm_for_profiles = data.get('use_llm_for_profiles', True)
         parallel_profile_count = data.get('parallel_profile_count', 5)
         
-        # ========== 同步获取实体数量（在后台任务启动前） ==========
-        # 这样前端在调用prepare后立即就能获取到预期Agent总数
+        # ========== 同步获取 candidatos del grafo（pre-Dedup） ==========
+        # Este número no es el total final de agentes; Dedup puede reducirlo.
         try:
             logger.info(f"同步获取实体数量: graph_id={state.graph_id}")
             reader = ZepEntityReader()
@@ -637,8 +693,8 @@ def prepare_simulation():
                 defined_entity_types=entity_types_list,
                 enrich_with_edges=False  # 不获取边信息，加快速度
             )
-            # 保存实体数量到状态（供前端立即获取）
-            state.entities_count = filtered_preview.filtered_count
+            # Guardar como candidatos para evitar mostrarlo como total final.
+            state.candidate_entities_count = filtered_preview.filtered_count
             state.entity_types = list(filtered_preview.entity_types)
             logger.info(f"预期实体数量: {filtered_preview.filtered_count}, 类型: {filtered_preview.entity_types}")
         except Exception as e:
@@ -651,7 +707,8 @@ def prepare_simulation():
             task_type="simulation_prepare",
             metadata={
                 "simulation_id": simulation_id,
-                "project_id": state.project_id
+                "project_id": state.project_id,
+                "candidate_entities_count": state.candidate_entities_count,
             }
         )
         
@@ -680,10 +737,13 @@ def prepare_simulation():
                 def progress_callback(stage, progress, message, **kwargs):
                     # 计算总进度
                     stage_weights = {
-                        "reading": (0, 20),           # 0-20%
-                        "generating_profiles": (20, 70),  # 20-70%
-                        "generating_config": (70, 90),    # 70-90%
-                        "copying_scripts": (90, 100)       # 90-100%
+                        "research": (0, 12),
+                        "reading": (12, 24),
+                        "deduplication": (24, 34),
+                        "generating_profiles": (34, 68),
+                        "compiling_wiki": (68, 76),
+                        "generating_config": (76, 92),
+                        "copying_scripts": (92, 100)
                     }
                     
                     start, end = stage_weights.get(stage, (0, 100))
@@ -691,8 +751,11 @@ def prepare_simulation():
                     
                     # 构建详细进度信息
                     stage_names = {
+                        "research": "Deep Research",
                         "reading": t('progress.readingGraphEntities'),
+                        "deduplication": "Deduplication",
                         "generating_profiles": t('progress.generatingProfiles'),
+                        "compiling_wiki": "Wiki",
                         "generating_config": t('progress.generatingSimConfig'),
                         "copying_scripts": t('progress.preparingScripts')
                     }
@@ -706,7 +769,9 @@ def prepare_simulation():
                         "stage_progress": progress,
                         "current": kwargs.get("current", 0),
                         "total": kwargs.get("total", 0),
-                        "item_name": kwargs.get("item_name", "")
+                        "item_name": kwargs.get("item_name", ""),
+                        "candidate_entities_count": kwargs.get("candidate_entities_count"),
+                        "deduped_entities_count": kwargs.get("deduped_entities_count"),
                     }
                     
                     # 构建详细进度信息
@@ -719,7 +784,9 @@ def prepare_simulation():
                         "stage_progress": progress,
                         "current_item": detail["current"],
                         "total_items": detail["total"],
-                        "item_description": message
+                        "item_description": message,
+                        "candidate_entities_count": detail.get("candidate_entities_count"),
+                        "deduped_entities_count": detail.get("deduped_entities_count"),
                     }
                     
                     # 构建简洁消息
@@ -777,7 +844,9 @@ def prepare_simulation():
                 "status": "preparing",
                 "message": t('api.prepareStarted'),
                 "already_prepared": False,
-                "expected_entities_count": state.entities_count,  # 预期的Agent总数
+                "expected_entities_count": state.candidate_entities_count,  # compat: pre-Dedup candidates
+                "candidate_entities_count": state.candidate_entities_count,
+                "deduped_entities_count": state.deduped_entities_count or None,
                 "entity_types": state.entity_types  # 实体类型列表
             }
         })
@@ -1258,6 +1327,8 @@ def get_simulation_profiles_realtime(simulation_id: str):
         # 检查是否正在生成（通过 state.json 判断）
         is_generating = False
         total_expected = None
+        candidate_entities_count = None
+        deduped_entities_count = None
         
         state_file = os.path.join(sim_dir, "state.json")
         if os.path.exists(state_file):
@@ -1266,19 +1337,23 @@ def get_simulation_profiles_realtime(simulation_id: str):
                     state_data = json.load(f)
                     status = state_data.get("status", "")
                     is_generating = status == "preparing"
-                    total_expected = state_data.get("entities_count")
+                    candidate_entities_count = state_data.get("candidate_entities_count")
+                    deduped_entities_count = state_data.get("deduped_entities_count") or state_data.get("entities_count")
+                    total_expected = deduped_entities_count or state_data.get("entities_count")
             except Exception:
                 pass
         
         return jsonify({
             "success": True,
-            "data": {
-                "simulation_id": simulation_id,
-                "platform": platform,
-                "count": len(profiles),
-                "total_expected": total_expected,
-                "is_generating": is_generating,
-                "file_exists": file_exists,
+	            "data": {
+	                "simulation_id": simulation_id,
+	                "platform": platform,
+	                "count": len(profiles),
+	                "total_expected": total_expected,
+	                "candidate_entities_count": candidate_entities_count,
+	                "deduped_entities_count": deduped_entities_count,
+	                "is_generating": is_generating,
+	                "file_exists": file_exists,
                 "file_modified_at": file_modified_at,
                 "profiles": profiles
             }
@@ -2785,6 +2860,17 @@ def get_simulation_wiki(simulation_id: str):
         if not wiki_dir.is_dir():
             return jsonify({"success": True, "simulation_id": simulation_id, "pages": []})
 
+        def read_markdown_title(path: Path, fallback: str) -> str:
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        stripped = line.strip()
+                        if stripped.startswith('# '):
+                            return stripped.lstrip('#').strip() or fallback
+            except Exception:
+                pass
+            return fallback
+
         root_names = ["index", "agents", "timeline", "sources", "contradictions"]
         for name in root_names:
             path = wiki_dir / f"{name}.md"
@@ -2812,10 +2898,11 @@ def get_simulation_wiki(simulation_id: str):
             if not folder_path.is_dir():
                 continue
             for path in sorted(folder_path.glob("*.md")):
+                fallback_title = path.stem.replace("_", " ")
                 pages.append({
                     "path": path.relative_to(wiki_dir).as_posix(),
                     "kind": kind,
-                    "title": path.stem.replace("_", " "),
+                    "title": read_markdown_title(path, fallback_title),
                     "size": path.stat().st_size,
                     "modified_at": path.stat().st_mtime,
                 })

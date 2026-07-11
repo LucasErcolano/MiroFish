@@ -13,6 +13,7 @@ from ..config import Config
 from ..services.report_agent import ReportAgent, ReportManager, ReportStatus
 from ..services.simulation_manager import SimulationManager
 from ..services.wiki_memory import build_wiki_context_for_report
+from ..services.fusion_verdict import generate_fusion_verdict_for_report
 from ..models.project import ProjectManager
 from ..models.task import TaskManager, TaskStatus
 from ..utils.logger import get_logger
@@ -175,12 +176,33 @@ def generate_report():
                 ReportManager.save_report(report)
                 
                 if report.status == ReportStatus.COMPLETED:
+                    fusion_verdict_path = None
+                    task_manager.update_task(
+                        task_id,
+                        progress=98,
+                        message="Report complete; generating Fusion verdict"
+                    )
+                    try:
+                        fusion_verdict_path = generate_fusion_verdict_for_report(
+                            simulation_id=simulation_id,
+                            report_id=report.report_id,
+                            report_markdown=report.markdown_content or "",
+                            wiki_context=wiki_context,
+                            simulation_requirement=simulation_requirement,
+                        )
+                    except Exception as fusion_exc:
+                        logger.warning(
+                            "Fusion verdict hook failed for %s (non-fatal): %s",
+                            report.report_id,
+                            fusion_exc,
+                        )
                     task_manager.complete_task(
                         task_id,
                         result={
                             "report_id": report.report_id,
                             "simulation_id": simulation_id,
-                            "status": "completed"
+                            "status": "completed",
+                            "fusion_verdict_path": fusion_verdict_path,
                         }
                     )
                 else:

@@ -62,7 +62,6 @@
         />
       </div>
     </main>
-    <ObservabilityDock :simulation-id="currentSimulationId" />
   </div>
 </template>
 
@@ -71,7 +70,6 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import GraphPanel from '../components/GraphPanel.vue'
 import Step2EnvSetup from '../components/Step2EnvSetup.vue'
-import ObservabilityDock from '../components/ObservabilityDock.vue'
 import { getProject, getGraphData } from '../api/graph'
 import { getSimulation, stopSimulation, getEnvStatus, closeSimulationEnv } from '../api/simulation'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'

@@ -60,7 +60,9 @@ class SimulationState:
     status: SimulationStatus = SimulationStatus.CREATED
     
     # 准备阶段数据
+    candidate_entities_count: int = 0
     entities_count: int = 0
+    deduped_entities_count: int = 0
     profiles_count: int = 0
     entity_types: List[str] = field(default_factory=list)
     
@@ -89,7 +91,9 @@ class SimulationState:
             "enable_twitter": self.enable_twitter,
             "enable_reddit": self.enable_reddit,
             "status": self.status.value,
+            "candidate_entities_count": self.candidate_entities_count,
             "entities_count": self.entities_count,
+            "deduped_entities_count": self.deduped_entities_count,
             "profiles_count": self.profiles_count,
             "entity_types": self.entity_types,
             "config_generated": self.config_generated,
@@ -109,7 +113,9 @@ class SimulationState:
             "project_id": self.project_id,
             "graph_id": self.graph_id,
             "status": self.status.value,
+            "candidate_entities_count": self.candidate_entities_count,
             "entities_count": self.entities_count,
+            "deduped_entities_count": self.deduped_entities_count,
             "profiles_count": self.profiles_count,
             "entity_types": self.entity_types,
             "config_generated": self.config_generated,
@@ -230,7 +236,9 @@ class SimulationManager:
             enable_twitter=data.get("enable_twitter", True),
             enable_reddit=data.get("enable_reddit", True),
             status=SimulationStatus(data.get("status", "created")),
+            candidate_entities_count=data.get("candidate_entities_count", 0),
             entities_count=data.get("entities_count", 0),
+            deduped_entities_count=data.get("deduped_entities_count", data.get("entities_count", 0)),
             profiles_count=data.get("profiles_count", 0),
             entity_types=data.get("entity_types", []),
             config_generated=data.get("config_generated", False),
@@ -381,9 +389,17 @@ class SimulationManager:
             dedup_after = dedup_before
             dedup_status = "skipped"
             dedup_warnings: List[str] = []
+            state.candidate_entities_count = dedup_before
             if Config.SIMILARITY_THRESHOLD > 0:
                 if progress_callback:
-                    progress_callback("deduplication", 0, t('progress.deduplicatingAgents'))
+                    progress_callback(
+                        "deduplication",
+                        0,
+                        t('progress.deduplicatingAgents'),
+                        current=dedup_before,
+                        total=dedup_before,
+                        candidate_entities_count=dedup_before,
+                    )
                 
                 try:
                     generator = OasisProfileGenerator()
@@ -401,7 +417,25 @@ class SimulationManager:
                     logger.error(f"Semantic deduplication failed: {dedup_exc}")
                 
                 if progress_callback:
-                    progress_callback("deduplication", 100, f"Deduplication complete. {filtered.filtered_count} unique agents identified.")
+                    progress_callback(
+                        "deduplication",
+                        100,
+                        f"Deduplication complete. {filtered.filtered_count} unique agents identified.",
+                        current=dedup_after,
+                        total=dedup_after,
+                        candidate_entities_count=dedup_before,
+                        deduped_entities_count=dedup_after,
+                    )
+            elif progress_callback:
+                progress_callback(
+                    "deduplication",
+                    100,
+                    "Deduplication skipped; using graph candidates as agents.",
+                    current=dedup_after,
+                    total=dedup_after,
+                    candidate_entities_count=dedup_before,
+                    deduped_entities_count=dedup_after,
+                )
 
             try:
                 self._write_deduplication_summary(
@@ -416,7 +450,9 @@ class SimulationManager:
                 logger.error(f"Failed to write deduplication summary: {summary_exc}")
 
             state.entities_count = filtered.filtered_count
+            state.deduped_entities_count = filtered.filtered_count
             state.entity_types = list(filtered.entity_types)
+            self._save_simulation_state(state)
             
             if progress_callback:
                 progress_callback(
@@ -505,6 +541,14 @@ class SimulationManager:
                 )
 
             try:
+                if progress_callback:
+                    progress_callback(
+                        "compiling_wiki",
+                        0,
+                        "Compiling evidence wiki",
+                        current=0,
+                        total=len(profiles),
+                    )
                 documents = [
                     {
                         "name": "simulation_input",
@@ -557,8 +601,24 @@ class SimulationManager:
                     retrieved_memories=retrieved_memories,
                 )
                 logger.info(f"Wiki artifacts compiled for simulation {simulation_id}")
+                if progress_callback:
+                    progress_callback(
+                        "compiling_wiki",
+                        100,
+                        "Evidence wiki compiled",
+                        current=len(profiles),
+                        total=len(profiles),
+                    )
             except Exception as wiki_exc:
                 logger.error(f"Failed to compile wiki artifacts: {wiki_exc}")
+                if progress_callback:
+                    progress_callback(
+                        "compiling_wiki",
+                        100,
+                        "Wiki compilation failed; continuing preparation",
+                        current=len(profiles),
+                        total=len(profiles),
+                    )
             
             if progress_callback:
                 progress_callback(
@@ -608,8 +668,18 @@ class SimulationManager:
             
             # 保存配置文件
             config_path = os.path.join(sim_dir, "simulation_config.json")
+            sim_config = json.loads(sim_params.to_json())
+            if Config.ENABLE_SIMULATION_MODEL_ROUTING:
+                model_map_path = Config.SIMULATION_MODEL_MAP_PATH
+                if model_map_path and os.path.exists(model_map_path):
+                    sim_config["model_map_path"] = model_map_path
+                else:
+                    logger.warning(
+                        "Simulation model routing enabled but model map was not found: %s",
+                        model_map_path,
+                    )
             with open(config_path, 'w', encoding='utf-8') as f:
-                f.write(sim_params.to_json())
+                json.dump(sim_config, f, ensure_ascii=False, indent=2)
             
             state.config_generated = True
             state.config_reasoning = sim_params.generation_reasoning

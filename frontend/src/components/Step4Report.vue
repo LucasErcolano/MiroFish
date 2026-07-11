@@ -14,25 +14,6 @@
             <h1 class="main-title">{{ reportOutline.title }}</h1>
             <p class="sub-title">{{ reportOutline.summary }}</p>
             <div class="header-divider"></div>
-            <div v-if="wikiStats" class="wiki-stats-card">
-              <div class="wiki-stat">
-                <span>Total pages</span>
-                <strong>{{ wikiStats.total }}</strong>
-              </div>
-              <div class="wiki-stat">
-                <span>Entities</span>
-                <strong>{{ wikiStats.entities }}</strong>
-              </div>
-              <div class="wiki-stat">
-                <span>Claims</span>
-                <strong>{{ wikiStats.claims }}</strong>
-              </div>
-              <div class="wiki-stat">
-                <span>Updated</span>
-                <strong>{{ wikiStats.updated }}</strong>
-              </div>
-            </div>
-            <FusionVerdictPanel v-if="latestFusionVerdict" :verdict="latestFusionVerdict" />
           </div>
 
           <!-- Sections List -->
@@ -91,7 +72,8 @@
             <div class="waiting-ring"></div>
             <div class="waiting-ring"></div>
           </div>
-          <span class="waiting-text">Waiting for Report Agent...</span>
+          <span class="waiting-text">{{ reportEmptyTitle }}</span>
+          <p class="waiting-detail">{{ reportEmptyDetail }}</p>
         </div>
       </div>
 
@@ -105,7 +87,7 @@
         </div>
 
         <!-- Workflow Overview (flat, status-based palette) -->
-        <div class="workflow-overview" v-if="agentLogs.length > 0 || reportOutline">
+        <div class="workflow-overview" v-if="agentLogs.length > 0 || reportOutline || hasObservabilityEvidence || simulationId">
           <div class="workflow-metrics">
             <div class="metric">
               <span class="metric-label">Sections</span>
@@ -123,6 +105,111 @@
               <span class="metric-pill" :class="`pill--${statusClass}`">{{ statusText }}</span>
             </div>
           </div>
+
+          <section class="report-build-trace" v-if="!isComplete">
+            <div class="build-trace-header">
+              <div>
+                <span class="command-kicker">Report Build</span>
+                <h3>Generation trace</h3>
+                <p>{{ reportEmptyDetail }}</p>
+              </div>
+              <span class="build-trace-status mono" :class="`build-trace-status--${statusClass}`">
+                {{ statusText }}
+              </span>
+            </div>
+
+            <EvidenceStageRail :stages="reportBuildStages" compact>
+              <template #lookup>
+                <div v-if="activeReportTools.length" class="report-tool-chips">
+                  <span v-for="tool in activeReportTools" :key="tool.key">
+                    {{ tool.name }}
+                    <strong>{{ tool.count }}</strong>
+                  </span>
+                </div>
+              </template>
+
+              <template #sections>
+                <div v-if="reportOutline?.sections?.length" class="report-section-preview">
+                  <span v-for="section in reportOutline.sections.slice(0, 4)" :key="section.title">
+                    {{ section.title }}
+                  </span>
+                </div>
+              </template>
+            </EvidenceStageRail>
+          </section>
+
+          <section class="evidence-command-center" v-if="simulationId">
+            <div class="command-header">
+              <div>
+                <span class="command-kicker">Evidence Command Center</span>
+                <h3>Evidence & telemetry</h3>
+                <p>Wiki context, model runtime and Fusion conclusion when the report is complete.</p>
+              </div>
+              <div class="command-header-actions">
+                <button v-if="telemetryAvailable" class="telemetry-open-btn" type="button" @click="openTelemetry">
+                  {{ t('observability.openTelemetry') }}
+                </button>
+                <RuntimeCostBadge
+                  :label="telemetrySummary.costLabel"
+                  :status="telemetrySummary.costStatus"
+                  :caption="evidenceAlertCaption"
+                  compact
+                />
+              </div>
+            </div>
+
+            <EvidenceMetricStrip :metrics="evidenceCommandMetrics" dense />
+
+            <EvidenceStageRail :stages="evidenceCommandStages">
+              <template #deep>
+                <details class="deep-report-trace">
+                  <summary>
+                    <span>{{ deepResearchSource }}</span>
+                    <strong v-if="deepResearchMeta">{{ deepResearchMeta }}</strong>
+                  </summary>
+                  <ul v-if="deepResearchFindings.length">
+                    <li v-for="finding in deepResearchFindings" :key="finding">{{ finding }}</li>
+                  </ul>
+                  <div v-else class="deep-report-empty">{{ t('observability.deepResearchTrace.empty') }}</div>
+                </details>
+              </template>
+
+              <template #wiki>
+                <WikiEvidencePreview
+                  v-if="wikiStats"
+                  :pages="normalizedWikiPages"
+                  :stats="wikiStats"
+                  @open="openWiki"
+                />
+              </template>
+
+              <template #runtime>
+                <div v-if="reportModelRows.length" class="command-model-list">
+                  <div v-for="row in reportModelRows.slice(0, 3)" :key="row.model" class="command-model-row">
+                    <span>{{ row.model }}</span>
+                    <strong>{{ row.calls }} calls</strong>
+                  </div>
+                </div>
+                <div v-if="routingSummary.models.length" class="routing-chip-list">
+                  <span v-for="model in routingSummary.models.slice(0, 4)" :key="model">{{ model }}</span>
+                </div>
+                <button v-if="telemetrySummary.hasData" class="telemetry-open-btn" type="button" @click="openTelemetry">
+                  {{ t('observability.openTelemetry') }}
+                </button>
+              </template>
+
+              <template #fusion>
+                <FusionVerdictPanel v-if="latestFusionVerdict" :verdict="latestFusionVerdict" compact />
+                <div v-else class="fusion-empty-state">
+                  Fusion runs after the report completes and then summarizes outcome, confidence, risks and checks.
+                </div>
+              </template>
+            </EvidenceStageRail>
+
+            <div v-if="telemetrySummary.notices.length" class="evidence-notices">
+              <span v-for="notice in telemetrySummary.notices" :key="notice">{{ notice }}</span>
+            </div>
+          </section>
 
           <div class="workflow-steps" v-if="workflowSteps.length > 0">
             <div
@@ -387,7 +474,8 @@
           <!-- Empty State -->
           <div v-if="agentLogs.length === 0 && !isComplete" class="workflow-empty">
             <div class="empty-pulse"></div>
-            <span>Waiting for agent activity...</span>
+            <span>{{ reportEmptyTitle }}</span>
+            <small>{{ reportEmptyDetail }}</small>
           </div>
         </div>
       </div>
@@ -399,18 +487,24 @@
         <span class="log-title">CONSOLE OUTPUT</span>
         <span class="log-id">{{ reportId || 'NO_REPORT' }}</span>
       </div>
-      <details v-if="deepSearchLogs.length > 0" class="deep-search-trace">
-        <summary>Deep Search trace · {{ deepSearchLogs.length }}</summary>
-        <div class="deep-search-line" v-for="(log, idx) in deepSearchLogs" :key="`deep-${idx}`">
-          {{ log }}
-        </div>
-      </details>
       <div class="log-content" ref="logContent">
         <div class="log-line" v-for="(log, idx) in consoleLogs" :key="idx">
           <span class="log-msg" :class="getLogLevelClass(log)">{{ log }}</span>
         </div>
       </div>
     </div>
+
+    <WikiSlideOver
+      v-if="showWikiSlideOver && props.simulationId"
+      :simulation-id="props.simulationId"
+      @close="showWikiSlideOver = false"
+    />
+
+    <TelemetrySlideOver
+      v-if="showTelemetrySlideOver && props.simulationId"
+      :simulation-id="props.simulationId"
+      @close="showTelemetrySlideOver = false"
+    />
   </div>
 </template>
 
@@ -419,9 +513,23 @@ import { ref, computed, watch, onMounted, onUnmounted, nextTick, h, reactive } f
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { marked } from 'marked'
-import { getAgentLog, getConsoleLog } from '../api/report'
+import { checkReportBySimulation, getAgentLog, getConsoleLog, getReportStatus } from '../api/report'
 import FusionVerdictPanel from './report/FusionVerdictPanel.vue'
+import EvidenceMetricStrip from './observability/EvidenceMetricStrip.vue'
+import EvidenceStageRail from './observability/EvidenceStageRail.vue'
+import RuntimeCostBadge from './observability/RuntimeCostBadge.vue'
+import WikiEvidencePreview from './observability/WikiEvidencePreview.vue'
+import WikiSlideOver from './observability/WikiSlideOver.vue'
+import TelemetrySlideOver from './observability/TelemetrySlideOver.vue'
 import { useSimulationArtifacts } from '../composables/useSimulationArtifacts'
+import {
+  extractResearchBody,
+  firstReadableLines,
+  formatNumber,
+  normalizeWikiPages,
+  summarizeRouting,
+  summarizeTelemetry
+} from '../composables/useObservabilitySummary'
 
 marked.setOptions({ gfm: true, breaks: false })
 
@@ -430,6 +538,7 @@ const { t } = useI18n()
 
 const props = defineProps({
   reportId: String,
+  taskId: String,
   simulationId: String,
   systemLogs: Array
 })
@@ -441,6 +550,16 @@ const goToInteraction = () => {
   if (props.reportId) {
     router.push({ name: 'Interaction', params: { reportId: props.reportId } })
   }
+}
+
+const openWiki = () => {
+  if (!props.simulationId) return
+  showWikiSlideOver.value = true
+}
+
+const openTelemetry = () => {
+  if (!props.simulationId || !telemetrySummary.value.hasData) return
+  showTelemetrySlideOver.value = true
 }
 
 // State
@@ -461,8 +580,17 @@ const rightPanel = ref(null)
 const logContent = ref(null)
 const showRawResult = reactive({})
 const latestFusionVerdict = ref(null)
+const reportTaskStatus = ref(null)
+const reportTaskMessage = ref('')
+const reportTaskError = ref('')
+const showWikiSlideOver = ref(false)
+const showTelemetrySlideOver = ref(false)
 const {
   wiki,
+  manifest,
+  telemetry,
+  audit,
+  deepSearch,
   verdicts,
   load: loadArtifacts,
   loadFusionVerdict
@@ -1744,15 +1872,48 @@ const QuickSearchDisplay = {
 
 // Computed
 const statusClass = computed(() => {
-  if (isComplete.value) return 'completed'
+  if (isComplete.value || reportTaskStatus.value === 'completed') return 'completed'
+  if (reportTaskStatus.value === 'failed') return 'error'
   if (agentLogs.value.length > 0) return 'processing'
   return 'pending'
 })
 
 const statusText = computed(() => {
-  if (isComplete.value) return 'Completed'
+  if (isComplete.value || reportTaskStatus.value === 'completed') return 'Completed'
+  if (reportTaskStatus.value === 'failed') return 'Failed'
   if (agentLogs.value.length > 0) return 'Generating...'
+  if (props.taskId) return 'Starting'
   return 'Waiting'
+})
+
+const reportLifecycleState = computed(() => {
+  if (isComplete.value || reportTaskStatus.value === 'completed') return 'complete'
+  if (reportTaskStatus.value === 'failed') return 'failed'
+  if (agentLogs.value.length > 0 || reportOutline.value) return 'generating'
+  if (props.reportId) return 'waiting_first_log'
+  if (props.taskId || props.simulationId) return 'starting'
+  return 'idle'
+})
+
+const reportEmptyTitle = computed(() => {
+  const labels = {
+    starting: 'Starting report agent',
+    generating: 'Generating report',
+    waiting_first_log: 'Waiting for first report log',
+    failed: 'Report failed',
+    complete: 'Report complete',
+    idle: 'Report not started'
+  }
+  return labels[reportLifecycleState.value] || 'Preparing report'
+})
+
+const reportEmptyDetail = computed(() => {
+  if (reportTaskError.value) return reportTaskError.value
+  if (reportTaskMessage.value) return reportTaskMessage.value
+  if (reportLifecycleState.value === 'waiting_first_log') return 'The report task has an ID; logs will appear as soon as the agent writes its first event.'
+  if (reportLifecycleState.value === 'starting') return props.simulationId ? 'Checking existing reports or starting a new Report Agent for this simulation.' : 'Waiting for simulation context.'
+  if (reportLifecycleState.value === 'generating') return 'The Report Agent is planning sections and writing the report.'
+  return 'Evidence is available while report generation initializes.'
 })
 
 const totalSections = computed(() => {
@@ -1864,6 +2025,122 @@ const workflowSteps = computed(() => {
   return steps
 })
 
+const reportToolCalls = computed(() => {
+  return agentLogs.value.filter(log => log.action === 'tool_call')
+})
+
+const reportToolResults = computed(() => {
+  return agentLogs.value.filter(log => log.action === 'tool_result')
+})
+
+const activeReportTools = computed(() => {
+  const counts = new Map()
+  reportToolCalls.value.forEach(log => {
+    const key = log.details?.tool_name || log.details?.name || 'tool'
+    counts.set(key, (counts.get(key) || 0) + 1)
+  })
+  return Array.from(counts.entries())
+    .map(([key, count]) => ({
+      key,
+      count,
+      name: getToolDisplayName(key)
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5)
+})
+
+const reportBuildStages = computed(() => {
+  const taskStarted = Boolean(props.taskId || props.reportId || reportTaskStatus.value || agentLogs.value.length)
+  const toolCalls = reportToolCalls.value.length
+  const toolResults = reportToolResults.value.length
+  const hasEvidenceLookup = toolCalls > 0
+  const sectionsStarted = Boolean(currentSectionIndex.value || completedSections.value)
+  const sectionsDone = totalSections.value > 0 && completedSections.value >= totalSections.value
+  const failed = reportTaskStatus.value === 'failed'
+
+  return [
+    {
+      key: 'startup',
+      label: 'Startup',
+      value: failed ? 'Failed' : (taskStarted ? 'Ready' : 'Waiting'),
+      status: failed ? 'warning' : (taskStarted ? 'done' : 'todo'),
+      detail: 'Report agent and task channel',
+      summary: taskStarted
+        ? `Task ${props.taskId || props.reportId || 'active'} is connected to the report workspace.`
+        : 'The report workspace is waiting for a simulation or report task.',
+      defaultOpen: !taskStarted || failed
+    },
+    {
+      key: 'planning',
+      label: 'Planning',
+      value: isPlanningDone.value ? 'Outline' : (isPlanningStarted.value ? 'Running' : 'Pending'),
+      status: isPlanningDone.value ? 'done' : (isPlanningStarted.value ? 'active' : 'todo'),
+      detail: 'Outline and section plan',
+      summary: reportOutline.value?.sections?.length
+        ? `${reportOutline.value.sections.length} report sections are planned before writing begins.`
+        : 'The agent is deciding the narrative structure and evidence order.',
+      meta: reportOutline.value?.sections?.length ? [
+        { label: 'Sections', value: reportOutline.value.sections.length },
+        { label: 'Complete', value: completedSections.value }
+      ] : [],
+      defaultOpen: isPlanningStarted.value && !isPlanningDone.value
+    },
+    {
+      key: 'lookup',
+      label: 'Evidence lookup',
+      value: hasEvidenceLookup ? `${toolCalls} calls` : 'Waiting',
+      status: sectionsStarted || toolResults ? 'done' : (hasEvidenceLookup ? 'active' : 'todo'),
+      detail: 'Report tools gather and cross-check evidence',
+      summary: hasEvidenceLookup
+        ? `${toolCalls} report tool calls have run with ${toolResults} returned results.`
+        : 'Graph search, quick lookup and agent interviews appear here when the report needs source material.',
+      meta: hasEvidenceLookup ? [
+        { label: 'Calls', value: toolCalls },
+        { label: 'Results', value: toolResults },
+        { label: 'Tools', value: activeReportTools.value.length }
+      ] : [],
+      defaultOpen: hasEvidenceLookup || (!isPlanningDone.value && taskStarted)
+    },
+    {
+      key: 'sections',
+      label: 'Writing',
+      value: totalSections.value ? `${completedSections.value}/${totalSections.value}` : 'Waiting',
+      status: sectionsDone ? 'done' : (sectionsStarted ? 'active' : 'todo'),
+      detail: 'Section-by-section report generation',
+      summary: totalSections.value
+        ? 'The report body is generated incrementally so each completed section can be inspected as it lands.'
+        : 'The writing queue starts after the outline is ready.',
+      defaultOpen: sectionsStarted && !sectionsDone
+    },
+    {
+      key: 'evidence',
+      label: 'Evidence',
+      value: hasObservabilityEvidence.value ? 'Linked' : 'Waiting',
+      status: hasObservabilityEvidence.value ? 'done' : (props.simulationId ? 'active' : 'todo'),
+      detail: 'Wiki, telemetry and Fusion context',
+      summary: hasObservabilityEvidence.value
+        ? 'The right panel can show Wiki evidence and runtime telemetry while the report text is still building.'
+        : 'Wiki and telemetry artifacts will appear here when they are available.',
+      meta: [
+        { label: 'Wiki', value: wikiStats.value ? wikiStats.value.total : '-' },
+        { label: 'LLM Calls', value: telemetrySummary.value.calls || '-' },
+        { label: 'Fusion', value: latestFusionVerdict.value ? 'Ready' : 'Waiting' }
+      ],
+      defaultOpen: !hasObservabilityEvidence.value && Boolean(props.simulationId)
+    },
+    {
+      key: 'final',
+      label: 'Finalization',
+      value: isComplete.value ? 'Complete' : (isFinalizing.value ? 'Running' : 'Pending'),
+      status: isComplete.value ? 'done' : (isFinalizing.value ? 'active' : 'todo'),
+      detail: 'Save report and unlock interaction',
+      summary: isComplete.value
+        ? 'The report is saved and ready for the interaction workspace.'
+        : 'Finalization starts after all planned sections finish writing.'
+    }
+  ]
+})
+
 const wikiStats = computed(() => {
   const pages = wiki.value?.pages || []
   if (!pages.length) return null
@@ -1877,15 +2154,142 @@ const wikiStats = computed(() => {
   }
 })
 
-const deepSearchLogs = computed(() => {
-  return consoleLogs.value.filter(log => {
-    const text = String(log || '').toLowerCase()
-    return text.includes('deep_search')
-      || text.includes('deep search')
-      || text.includes('tavily')
-      || text.includes('max_date')
-  })
+const deepResearchSource = computed(() => {
+  const content = deepSearch.value?.content || ''
+  if (!content) return t('observability.deepResearchTrace.pending')
+  if (/TAVILY GROUNDED/i.test(content)) return t('observability.deepResearchTrace.tavily')
+  if (/LLM INTERNAL KNOWLEDGE/i.test(content)) return t('observability.deepResearchTrace.llmFallback')
+  if (/Deep Search failed/i.test(content)) return t('observability.deepResearchTrace.failed')
+  return t('observability.deepResearchTrace.saved')
 })
+
+const deepResearchFindings = computed(() => {
+  const body = extractResearchBody(deepSearch.value?.content || '')
+  return firstReadableLines(body, 3)
+})
+
+const deepResearchMeta = computed(() => {
+  if (!deepSearch.value?.available) return ''
+  const parts = []
+  if (deepSearch.value.size) parts.push(formatBytes(deepSearch.value.size))
+  if (deepSearch.value.modified_at) {
+    parts.push(new Date(deepSearch.value.modified_at * 1000).toLocaleTimeString())
+  }
+  return parts.join(' / ')
+})
+
+const telemetrySummary = computed(() => summarizeTelemetry(telemetry.value))
+const telemetryAvailable = computed(() => telemetrySummary.value.hasData || Boolean(manifest.value?.telemetry))
+const routingSummary = computed(() => summarizeRouting(audit.value))
+const normalizedWikiPages = computed(() => normalizeWikiPages(wiki.value?.pages || []))
+const reportModelRows = computed(() => telemetry.value?.per_model || [])
+const evidenceAlertCaption = computed(() => {
+  const count = telemetrySummary.value.notices.length
+  if (!count) return ''
+  return `${count} notice${count === 1 ? '' : 's'}`
+})
+const evidenceCommandMetrics = computed(() => [
+  {
+    key: 'wiki',
+    label: 'Wiki',
+    value: wikiStats.value ? wikiStats.value.total : 0,
+    hint: wikiStats.value ? `${wikiStats.value.entities} entities / ${wikiStats.value.claims} claims` : 'waiting',
+    tone: wikiStats.value ? 'ready' : 'neutral'
+  },
+  {
+    key: 'calls',
+    label: 'LLM Calls',
+    value: telemetrySummary.value.calls,
+    hint: telemetrySummary.value.errors ? `${telemetrySummary.value.errors} errors` : 'runtime',
+    tone: telemetrySummary.value.rateLimitedCalls ? 'warning' : (telemetrySummary.value.hasData ? 'ready' : 'neutral')
+  },
+  {
+    key: 'tokens',
+    label: 'Tokens',
+    value: formatNumber(telemetrySummary.value.tokens),
+    hint: telemetrySummary.value.p95 ? `${telemetrySummary.value.p95}ms p95` : 'usage',
+    tone: telemetrySummary.value.usageUnavailableCalls ? 'warning' : 'neutral'
+  },
+  {
+    key: 'fusion',
+    label: 'Fusion',
+    value: latestFusionVerdict.value ? 'Ready' : 'Waiting',
+    hint: verdicts.value?.length ? `${verdicts.value.length} verdicts` : 'conclusion',
+    tone: latestFusionVerdict.value ? 'ready' : 'neutral'
+  }
+])
+const evidenceCommandStages = computed(() => {
+  const telemetryStatus = telemetrySummary.value.costStatus
+  const telemetryWarning = ['unknown', 'partial'].includes(telemetryStatus) || telemetrySummary.value.rateLimitedCalls
+
+  return [
+    {
+      key: 'deep',
+      label: t('observability.deepResearchTrace.title'),
+      value: deepSearch.value?.available ? t('common.ready') : t('common.pending'),
+      status: deepSearch.value?.available ? 'done' : 'todo',
+      detail: deepResearchSource.value,
+      summary: deepResearchFindings.value.length
+        ? deepResearchFindings.value.join(' ')
+        : t('observability.deepResearchTrace.empty'),
+      defaultOpen: false
+    },
+    {
+      key: 'wiki',
+      label: 'Wiki',
+      value: wikiStats.value ? `${wikiStats.value.total} pages` : 'Waiting',
+      status: wikiStats.value ? 'done' : 'todo',
+      detail: 'Reusable context compiled for report and evidence review',
+      summary: 'The Wiki is the readable evidence layer generated from preparation artifacts.',
+      defaultOpen: Boolean(wikiStats.value)
+    },
+    {
+      key: 'runtime',
+      label: 'Runtime',
+      value: telemetrySummary.value.hasData ? `${telemetrySummary.value.calls} calls` : 'Waiting',
+      status: telemetryWarning ? 'warning' : (telemetrySummary.value.hasData ? 'done' : 'todo'),
+      detail: 'LLM usage, latency, tokens and rate limits',
+      summary: telemetrySummary.value.hasData
+        ? 'Runtime telemetry shows model-call behavior, cost estimation and routing for this run.'
+        : 'No model-call telemetry has been recorded yet.',
+      meta: telemetrySummary.value.hasData ? [
+        { label: 'Errors', value: telemetrySummary.value.errors },
+        { label: 'Tokens', value: formatNumber(telemetrySummary.value.tokens) },
+        { label: 'p95', value: `${telemetrySummary.value.p95}ms` },
+        { label: 'Models', value: routingSummary.value.modelCount || '-' }
+      ] : [],
+      notices: telemetrySummary.value.notices,
+      defaultOpen: telemetryWarning
+    },
+    {
+      key: 'fusion',
+      label: 'Fusion',
+      value: latestFusionVerdict.value ? 'Conclusion' : 'Waiting',
+      status: latestFusionVerdict.value ? 'done' : 'todo',
+      detail: 'Final synthesis across report evidence',
+      summary: latestFusionVerdict.value
+        ? 'Fusion consolidates the final outcome, confidence, risks and recommended checks.'
+        : 'Fusion is generated only after the report finishes successfully.',
+      defaultOpen: true
+    }
+  ]
+})
+const hasObservabilityEvidence = computed(() => {
+  return Boolean(
+    wikiStats.value
+    || telemetrySummary.value.hasData
+    || routingSummary.value.total
+    || verdicts.value?.length
+  )
+})
+
+const formatBytes = (value) => {
+  const bytes = Number(value || 0)
+  if (!bytes) return ''
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
 
 // Methods
 const addLog = (msg) => {
@@ -1981,6 +2385,74 @@ const getLogLevelClass = (log) => {
 // Polling
 let agentLogTimer = null
 let consoleLogTimer = null
+let reportStatusTimer = null
+
+const fetchReportTaskStatus = async () => {
+  if (!props.taskId) return
+
+  try {
+    const res = await getReportStatus({
+      task_id: props.taskId,
+      simulation_id: props.simulationId || undefined
+    })
+    if (res.success && res.data) {
+      reportTaskStatus.value = res.data.status || null
+      reportTaskMessage.value = res.data.message || ''
+      reportTaskError.value = res.data.error || ''
+
+      if (res.data.status === 'failed') {
+        emit('update-status', 'error')
+        stopReportStatusPolling()
+      } else if (res.data.status === 'completed') {
+        emit('update-status', 'completed')
+        stopReportStatusPolling()
+      }
+    }
+  } catch (err) {
+    if (props.simulationId) {
+      try {
+        const checkRes = await checkReportBySimulation(props.simulationId)
+        const persistedStatus = checkRes?.data?.report_status
+
+        if (persistedStatus) {
+          reportTaskStatus.value = persistedStatus
+          reportTaskMessage.value = persistedStatus === 'completed'
+            ? 'Report completed and is available from saved artifacts.'
+            : 'Report task is no longer active; using the saved report status.'
+          reportTaskError.value = persistedStatus === 'failed'
+            ? 'Report failed. Regenerate the report to retry with the latest fixes.'
+            : ''
+
+          if (persistedStatus === 'failed') {
+            emit('update-status', 'error')
+            stopReportStatusPolling()
+          } else if (persistedStatus === 'completed') {
+            emit('update-status', 'completed')
+            stopReportStatusPolling()
+          }
+          return
+        }
+      } catch (checkErr) {
+        console.warn('Failed to recover report status from simulation check:', checkErr)
+      }
+    }
+
+    reportTaskError.value = err.message
+  }
+}
+
+const startReportStatusPolling = () => {
+  if (reportStatusTimer || !props.taskId) return
+  fetchReportTaskStatus()
+  reportStatusTimer = setInterval(fetchReportTaskStatus, 2000)
+}
+
+const stopReportStatusPolling = () => {
+  if (reportStatusTimer) {
+    clearInterval(reportStatusTimer)
+    reportStatusTimer = null
+  }
+}
 
 const fetchAgentLog = async () => {
   if (!props.reportId) return
@@ -2134,6 +2606,7 @@ const stopPolling = () => {
     clearInterval(consoleLogTimer)
     consoleLogTimer = null
   }
+  stopReportStatusPolling()
 }
 
 const loadObservabilityArtifacts = async () => {
@@ -2144,7 +2617,8 @@ const loadObservabilityArtifacts = async () => {
   if (!latest?.path) return
 
   try {
-    latestFusionVerdict.value = await loadFusionVerdict(latest.path)
+    const response = await loadFusionVerdict(latest.path)
+    latestFusionVerdict.value = response?.data || response
   } catch (err) {
     console.warn('Failed to fetch fusion verdict:', err)
   }
@@ -2153,6 +2627,7 @@ const loadObservabilityArtifacts = async () => {
 // Lifecycle
 onMounted(() => {
   loadObservabilityArtifacts()
+  startReportStatusPolling()
   if (props.reportId) {
     addLog(`Report Agent initialized: ${props.reportId}`)
     startPolling()
@@ -2177,14 +2652,27 @@ watch(() => props.reportId, (newId) => {
     collapsedSections.value = new Set()
     isComplete.value = false
     startTime.value = null
+    reportTaskStatus.value = null
+    reportTaskMessage.value = ''
+    reportTaskError.value = ''
     
     startPolling()
+    startReportStatusPolling()
   }
 }, { immediate: true })
 
 watch(() => props.simulationId, () => {
   latestFusionVerdict.value = null
   loadObservabilityArtifacts()
+  startReportStatusPolling()
+})
+
+watch(() => props.taskId, () => {
+  reportTaskStatus.value = null
+  reportTaskMessage.value = ''
+  reportTaskError.value = ''
+  stopReportStatusPolling()
+  startReportStatusPolling()
 })
 </script>
 
@@ -2720,7 +3208,20 @@ watch(() => props.simulationId, () => {
 }
 
 .waiting-text {
+  color: #334155;
   font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.waiting-detail {
+  max-width: 360px;
+  margin: -12px 0 0;
+  color: #64748B;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: center;
 }
 
 /* Right Panel */
@@ -2838,6 +3339,306 @@ watch(() => props.simulationId, () => {
   background: transparent;
   border-style: dashed;
   color: #6B7280;
+}
+
+.metric-pill.pill--error {
+  background: #FEF2F2;
+  border-color: #FECACA;
+  color: #991B1B;
+}
+
+.report-build-trace {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0 0 14px;
+  padding: 14px;
+  border: 1px solid #D8DEE8;
+  border-radius: 10px;
+  background: #FFFFFF;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+}
+
+.build-trace-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.build-trace-header h3 {
+  margin: 4px 0 0;
+  color: #0F172A;
+  font-size: 17px;
+  line-height: 1.12;
+}
+
+.build-trace-header p {
+  margin: 5px 0 0;
+  color: #64748B;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.build-trace-status {
+  flex-shrink: 0;
+  padding: 5px 8px;
+  border: 1px solid #E2E8F0;
+  border-radius: 999px;
+  background: #F8FAFC;
+  color: #64748B;
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.build-trace-status--processing {
+  background: #EEF2FF;
+  border-color: #C7D2FE;
+  color: #3730A3;
+}
+
+.build-trace-status--completed {
+  background: #ECFDF5;
+  border-color: #A7F3D0;
+  color: #065F46;
+}
+
+.build-trace-status--error {
+  background: #FEF2F2;
+  border-color: #FECACA;
+  color: #991B1B;
+}
+
+.report-tool-chips,
+.report-section-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.report-tool-chips span,
+.report-section-preview span {
+  min-width: 0;
+  max-width: 100%;
+  padding: 5px 8px;
+  border: 1px solid #E2E8F0;
+  border-radius: 999px;
+  background: #F8FAFC;
+  color: #334155;
+  font-size: 10px;
+  font-weight: 750;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.report-tool-chips strong {
+  margin-left: 5px;
+  color: #0F172A;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.evidence-command-center {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 14px;
+  border: 1px solid #D8DEE8;
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(248, 250, 252, 0.94) 0%, rgba(255, 255, 255, 0.98) 42%),
+    #FFFFFF;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+}
+
+.command-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.command-kicker {
+  display: block;
+  color: #64748B;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.command-header h3 {
+  margin: 4px 0 0;
+  color: #0F172A;
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.command-header p {
+  margin: 5px 0 0;
+  color: #64748B;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.command-header-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.command-model-list,
+.routing-chip-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.command-model-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 7px 8px;
+  border: 1px solid #E2E8F0;
+  border-radius: 7px;
+  background: #FFFFFF;
+}
+
+.command-model-row span {
+  min-width: 0;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.command-model-row strong {
+  color: #0F172A;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+
+.routing-chip-list {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.routing-chip-list span {
+  max-width: 100%;
+  padding: 5px 8px;
+  border: 1px solid #E2E8F0;
+  border-radius: 999px;
+  background: #F8FAFC;
+  color: #334155;
+  font-size: 10px;
+  font-weight: 750;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deep-report-trace {
+  padding: 9px;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  background: #FFFFFF;
+}
+
+.deep-report-trace summary {
+  cursor: pointer;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.deep-report-trace summary strong {
+  margin-left: 8px;
+  color: #64748B;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.deep-report-trace ul {
+  display: grid;
+  gap: 6px;
+  margin: 9px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.deep-report-trace li {
+  padding: 8px;
+  border-left: 2px solid #0F172A;
+  border-radius: 0 7px 7px 0;
+  background: #F8FAFC;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.deep-report-empty {
+  margin-top: 8px;
+  color: #64748B;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.telemetry-open-btn {
+  width: fit-content;
+  margin-top: 4px;
+  padding: 7px 10px;
+  border: 1px solid #0F172A;
+  border-radius: 7px;
+  background: #0F172A;
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.telemetry-open-btn:hover {
+  transform: translateY(-1px);
+  background: #1E293B;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14);
+}
+
+.fusion-empty-state {
+  padding: 10px;
+  border: 1px dashed #CBD5E1;
+  border-radius: 8px;
+  background: #F8FAFC;
+  color: #64748B;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.evidence-notices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.evidence-notices span {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #FFF7ED;
+  border: 1px solid #FED7AA;
+  color: #9A3412;
+  font-size: 10px;
+  font-weight: 600;
 }
 
 .workflow-steps {
@@ -3499,6 +4300,15 @@ watch(() => props.simulationId, () => {
   padding: 60px 20px;
   color: #9CA3AF;
   font-size: 13px;
+  text-align: center;
+}
+
+.workflow-empty small {
+  max-width: 360px;
+  margin-top: 7px;
+  color: #64748B;
+  font-size: 11px;
+  line-height: 1.45;
 }
 
 .empty-pulse {
@@ -5233,6 +6043,65 @@ watch(() => props.simulationId, () => {
 .log-msg.error { color: #EF5350; }
 .log-msg.warning { color: #FFA726; }
 .log-msg.success { color: #66BB6A; }
+
+@media (max-width: 760px) {
+  .report-panel {
+    overflow-y: auto;
+  }
+
+  .main-split-layout {
+    flex: none;
+    min-height: auto;
+    overflow: visible;
+    flex-direction: column;
+  }
+
+  .left-panel.report-style {
+    width: 100%;
+    min-width: 0;
+    min-height: 280px;
+    max-height: none;
+    border-right: 0;
+    border-bottom: 1px solid #E2E8F0;
+    padding: 24px 18px 30px;
+    overflow: visible;
+  }
+
+  .right-panel {
+    width: 100%;
+    min-width: 0;
+    overflow: visible;
+  }
+
+  .workflow-overview {
+    padding: 14px 14px 0;
+  }
+
+  .workflow-metrics {
+    align-items: flex-start;
+  }
+
+  .metric-right {
+    margin-left: 0;
+  }
+
+  .command-header {
+    flex-direction: column;
+  }
+
+  .command-header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .console-logs {
+    padding: 12px;
+  }
+
+  .log-content {
+    height: 70px;
+  }
+}
 </style>
 
 <style>

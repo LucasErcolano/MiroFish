@@ -45,6 +45,12 @@ const routes = [
     props: true
   },
   {
+    path: '/simulation/:simulationId/report',
+    name: 'SimulationReport',
+    component: ReportView,
+    props: true
+  },
+  {
     path: '/report/:reportId',
     name: 'Report',
     component: ReportView,
