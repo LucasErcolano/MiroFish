@@ -1,0 +1,115 @@
+\documentclass[25pt, a0paper, landscape]{tikzposter}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{tikz}
+
+% Tema llamativo, paleta limpia y alto contraste
+\tikzposterlatexaffectionproofoff
+\usetheme{Board}
+\usecolorstyle{Default}
+\colorlet{backgroundcolor}{white}
+
+\title{\parbox{\linewidth}{\centering \textbf{MiroFish: El Descubrimiento del Colapso Semántico} \\ \LARGE ¿Puede una Inteligencia Artificial Múltiple predecir una sociedad?}}
+\author{\Large Equipo de Investigación: [Nombre 1], [Nombre 2], [Nombre 3], [Nombre 4], Lucas Ercolano}
+\institute{\Large Universidad de San Andrés (UdeSA)}
+
+\begin{document}
+\maketitle
+
+\begin{columns}
+
+    % ========================================================
+    % COLUMNA 1 (IZQUIERDA) - LA PREGUNTA Y EL FALLO AISLADO
+    % ========================================================
+    \column{0.33}
+
+    \block{¿El Fin del Forecasting Tradicional?}{
+        MiroFish no es un simple modelo: es una \textbf{simulación social masiva}. \\
+        Creamos un foro virtual donde agentes controlados por LLMs leen noticias reales (vía Neo4j) y debaten entre sí para extraer el futuro.
+        
+        \vspace{0.5cm}
+        \coloredbox[bgcolor=blue!10, fgcolor=blue!80!black]{
+            \begin{center}
+                \Huge \textbf{1.84\%} \\[0.2cm]
+                \Large \textbf{ERROR ABSOLUTO (MAE)}
+            \end{center}
+            \vspace{0.2cm}
+            \textit{El récord de Llama-3.3 en solitario para predecir el Índice de Precios de Argentina tras 80 rondas de debate.}
+        }
+    }
+
+    \block{El Problema de Vivir en Soledad}{
+        Aunque un modelo solo (\textit{Single-Agent}) es barato y matemáticamente preciso, en entornos polares sufre patologías psiquiátricas:
+        \vspace{0.4cm}
+        \begin{itemize}
+            \item \textbf{Cámaras de Eco:} Llama recicla sus ideas hasta fanatizarse.
+            \item \textbf{Terquedad:} Gemma ignora la realidad si choca contra su pre-entrenamiento.
+        \end{itemize}
+        \vspace{0.4cm}
+        \textit{Solución obvia: Juntar a varios modelos distintos para que se regulen entre sí, ¿verdad? \textbf{Falso.}}
+    }
+
+    % ========================================================
+    % COLUMNA 2 (CENTRO) - EL ARTE VISUAL Y EL COLAPSO
+    % ========================================================
+    \column{0.34}
+
+    \block{}{
+        \begin{center}
+            % Imagen central gigante
+            \includegraphics[width=0.95\linewidth]{mirofish_network.jpg}
+        \end{center}
+    }
+
+    \block[titleleft]{El Colapso Semántico}{
+        \coloredbox[bgcolor=red!10, fgcolor=red!80!black]{
+            \begin{center}
+                \Huge \textbf{100\% ABSTENCIÓN} \\[0.2cm]
+                \Large \textbf{FALLA DE LA RED HETEROGÉNEA}
+            \end{center}
+        }
+        \vspace{0.4cm}
+        Forzamos a Llama, Gemma y Qwen a debatir el balotaje presidencial de Bolivia. Guiados por sus filtros éticos de cortesía (RLHF), entraron en un \textbf{Deadlock Dialéctico}. \\
+        
+        Nadie opinó. Todos se felicitaron. El sistema se paralizó. \\
+        \textbf{Conclusión:} La diversidad por sí sola en cautiverio degenera en pasividad absoluta.
+    }
+
+    % ========================================================
+    % COLUMNA 3 (DERECHA) - LA CURA Y EL IMPACTO
+    % ========================================================
+    \column{0.33}
+
+    \block{La Cura: Shocks de Entropía}{
+        La única forma de romper el bucle de cortesía y revivir a la Inteligencia Artificial fue inyectarle \textbf{Ruido Exógeno}.
+        
+        \vspace{0.5cm}
+        \begin{itemize}
+            \item \textbf{Rompiendo la Terquedad:} Inyectar evidencia deportiva a mitad de debate forzó a los agentes a presionar a Gemma hasta hacerla cambiar de opinión.
+            \item \textbf{Absorción de Desinformación:} Inyectar una encuesta falsa en un debate inactivo no destruyó el foro: Qwen absorbió la \textit{Fake News} y relanzó la polarización de todos.
+        \end{itemize}
+    }
+
+    \block{El Verdadero Valor de MiroFish}{
+        \coloredbox[bgcolor=green!10, fgcolor=green!40!black]{
+            \Large \textbf{El Laboratorio Sociotécnico}
+        }
+        \vspace{0.3cm}
+        
+        Para extraer un simple pronóstico matemático, usar un ecosistema de agentes es extremadamente caro y arriesgado. 
+        
+        Pero como simulador poblacional, \textbf{MiroFish es inigualable}. Es el entorno perfecto para auditar la propagación de desinformación, medir la persuasión algorítmica y entender cómo se esparcen las narrativas en la sociedad del futuro.
+        
+        \vspace{0.5cm}
+        \begin{center}
+            % Placeholder logo UdeSA
+            \includegraphics[height=3.5cm]{logo_udesa.png}
+        \end{center}
+    }
+
+\end{columns}
+
+\end{document}
