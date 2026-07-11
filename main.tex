@@ -16,7 +16,7 @@
 
 % Español. es-noshorthands evita que babel active atajos (" < > ~ .) que
 % chocarían con Tabla~\ref, math, etc.
-\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[provide=*,spanish]{babel}
 \renewcommand{\abstractname}{Resumen}
 \addto\captionsspanish{\renewcommand{\tablename}{Tabla}}
 
@@ -38,7 +38,7 @@
 \maketitle
 
 \begin{abstract}
-Los sistemas de simulación social generativa, como MiroFish, pronostican eventos haciendo deliberar a poblaciones de agentes basados en modelos de lenguaje, pero típicamente ejecutan a todos los agentes sobre un mismo modelo. Proponemos poblar la simulación con modelos heterogéneos (Llama-3.3-70B, Gemma-3-27B y Qwen3-8B) bajo la hipótesis de que ello reduciría el sesgo y el costo. Como no existía un punto de comparación, construimos un \textit{benchmark} de tres casos —económico, político y deportivo— con control de fugas de información, y evaluamos los modelos aislados frente a la red heterogénea bajo los mismos regímenes de estrés. Encontramos que, para el pronóstico puro, un modelo aislado y calibrado es más preciso y más barato, mientras que la red heterogénea, sin estímulos externos, colapsa en una ausencia total de predicción; el ahorro de costo real provino de una deduplicación semántica del grafo de conocimiento. La heterogeneidad no auto-regula el sesgo, pero sí lo vuelve permeable a inyecciones exógenas, aunque persuasión no equivale a acierto. Concluimos que el valor de la red multi-modelo no está en el \textit{forecasting} sino como laboratorio para estudiar dinámicas socio-técnicas de persuasión y desinformación.
+Los sistemas de simulación social generativa, como MiroFish, pronostican eventos haciendo deliberar a poblaciones de agentes basados en modelos de lenguaje, pero típicamente ejecutan a todos los agentes sobre un mismo modelo. Proponemos poblar la simulación con modelos heterogéneos (Llama-3.3-70B, Gemma-3-27B y Qwen3-8B) bajo la hipótesis de reducir sesgo y costo. Construimos un \textit{benchmark} temporalmente controlado de tres casos —económico, político y deportivo—, lo contrastamos con señales de mercado del mismo corte y sometimos modelos aislados y la red heterogénea a regímenes de estrés. Un modelo aislado y calibrado resultó más preciso y barato; la red heterogénea sin estímulos externos colapsó en ausencia de predicción. La deduplicación del grafo mejoró una corrida, pero no permite generalizar una ganancia predictiva. La heterogeneidad no auto-regula el sesgo y las inyecciones pueden persuadir sin aumentar el acierto. Su valor principal aparece como laboratorio auditable para estudiar dinámicas socio-técnicas, no como reemplazo sistemático de referencias de mercado.
 \end{abstract}
 
 \section{Introducción}
@@ -50,7 +50,7 @@ Ahora bien, estos entornos suelen ejecutar a todos los agentes sobre un mismo LL
 
 Contrastar esta hipótesis exigía un punto de comparación inexistente: MiroFish no contaba con un \textit{benchmark} que permitiera medir si una modificación mejora o degrada el sistema. Por eso construimos uno propio, con tres casos de distinta temática (económico, político y deportivo) bajo un protocolo estricto de control de fugas de información, y evaluamos primero los modelos en aislamiento (\textit{baseline}) y luego la red multi-modelo, replicando en ambos los mismos regímenes de estrés.
 
-Este trabajo aporta: (i) un mecanismo de ruteo heterogéneo de modelos por agente, con telemetría de costo por llamada; (ii) una deduplicación semántica del grafo de conocimiento que reduce el cómputo sin perder información; (iii) un \textit{benchmark} reproducible de tres casos con \textit{ground truth} aislado; y (iv) un análisis empírico, a lo largo de varias líneas experimentales, de cómo distintas variables afectan la simulación y de en qué difiere el comportamiento de una población homogénea frente a una heterogénea.
+Este trabajo aporta: (i) un mecanismo de ruteo heterogéneo con telemetría y artefactos auditables; (ii) una deduplicación semántica acotada del grafo y una memoria Wiki para el reporte; (iii) un \textit{benchmark} reproducible de tres casos, con \textit{ground truth} aislado y comparación contra señales de mercado temporalmente válidas; y (iv) un análisis empírico de cómo la evidencia, la topología, el modelo y las inyecciones afectan una población homogénea o heterogénea.
 
 \section{Trabajo Relacionado}
 \label{sec:related}
@@ -66,11 +66,11 @@ Este trabajo aporta: (i) un mecanismo de ruteo heterogéneo de modelos por agent
 
 MiroFish \citep{mirofish2025} es un motor de predicción que estima el desenlace de un evento simulando la conversación de una población de agentes en un foro social. A partir de un corpus semilla (noticias, informes, encuestas) el sistema construye un grafo de conocimiento, instancia agentes con perfiles y memoria propios, y los hace interactuar durante un número configurable de rondas; el consenso emergente se destila luego en una predicción. La capa de interacción social reutiliza el entorno OASIS \citep{yang2024oasis}, que clona plataformas tipo Twitter y Reddit e incorpora sistemas de recomendación y un repertorio de acciones (publicar, comentar, seguir, repostear, entre otras).
 
-Sobre esta base introducimos las dos modificaciones que constituyen el aporte técnico de este trabajo:
+Sobre esta base introducimos una capa de experimentación y auditoría que permite comparar configuraciones sin perder trazabilidad:
 
-\paragraph{Ruteo heterogéneo de modelos.} Por defecto, todos los agentes de una simulación corren sobre un mismo LLM. Implementamos un enrutador (\texttt{model\_router.py}) que asigna modelos distintos a distintos agentes mediante un mapa declarativo en YAML, junto con una capa de telemetría por llamada (\texttt{llm\_telemetry.py}) que registra tokens, latencia y costo de cada acción. Esto permite poblar un mismo foro con arquitecturas de pre-entrenamiento y alineación divergentes, y atribuir el costo de cómputo a cada modelo.
+\paragraph{Ruteo y observabilidad.} Por defecto, todos los agentes de una simulación corren sobre un mismo LLM. Implementamos un enrutador (\texttt{model\_router.py}) que asigna modelos distintos mediante un mapa declarativo en YAML, junto con telemetría por llamada (\texttt{llm\_telemetry.py}) para registrar modelo, tokens, latencia, costo y errores. El \textit{Observability Dock} reúne esos datos con los artefactos de cada ejecución, las trazas de \textit{Deep Search} y la memoria Wiki, de modo que una conclusión pueda rastrearse hasta su configuración y evidencia.
 
-\paragraph{Deduplicación semántica del grafo.} Durante la ingesta observamos la generación de nodos redundantes o casi idénticos que aumentan el costo y el tiempo de cómputo sin aportar información nueva. Añadimos un paso que fusiona los nodos semánticamente equivalentes antes de insertarlos en el grafo (Neo4j, con \textit{embeddings} \texttt{bge-m3}), reduciendo su tamaño. Su impacto se cuantifica en la Sección~\ref{sec:evaluacion}.
+\paragraph{Grafo, deduplicación y memoria Wiki.} El grafo se persiste en Neo4j y conserva entidades, episodios y relaciones. Para evitar redundancia residual, la etapa posterior a la ingesta compara nodos aislados contra los ya conectados mediante \textit{embeddings}: si la similitud coseno supera 0.85, el nodo aislado se descarta como redundante. No se trata de una fusión global de entidades. En paralelo, una memoria Wiki opcional compila fuentes, afirmaciones, cronología y contradicciones para el agente de reporte; funciona como artefacto auditable y no como reemplazo del grafo operativo.
 
 Todas las simulaciones se ejecutan en entornos herméticos: los agentes no acceden a Internet y el corpus semilla respeta un corte temporal estricto anterior al evento, evitando fugas de información (\textit{data leakage}). El resultado real se mantiene aislado del input y solo se emplea en la evaluación.
 
@@ -88,6 +88,7 @@ Al no existir un \textit{benchmark} previo para el sistema, construimos uno prop
 \begin{table}[t]
 \centering
 \small
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}llll@{}}
 \toprule
 \textbf{Tema} & \textbf{Caso} & \textbf{Predicción} & \textbf{Métrica} \\
@@ -97,6 +98,7 @@ Polít. & Bolivia 2025 & Ganador / voto & MAE (voto) \\
 Dep. & Copa Am. 2024 & Ganador & Acierto \\
 \bottomrule
 \end{tabular}
+}
 \caption{Los tres casos del \textit{benchmark}: inflación mensual (INDEC), balotaje presidencial (Paz vs.\ Quiroga) y la final Argentina--Colombia. En todos, el evento es posterior al corte documental y el \textit{ground truth} se mantiene aislado del input.}
 \label{tab:casos}
 \end{table}
@@ -119,31 +121,75 @@ Distinguimos dos familias. Para el \textbf{poder predictivo} (\textit{forecastin
 \subsection{Baseline: modelos aislados (Single-Agent)}
 \label{subsec:baseline}
 
-Como línea de base ejecutamos cada modelo en aislamiento —toda la población sobre un mismo LLM— y sometimos el sistema a una batería de regímenes de estrés. Salvo indicación contraria, usamos \texttt{Llama-3.3-70B} como modelo ancla por ser el de mayor precisión en el caso cuantitativo.
+Como línea de base ejecutamos cada modelo en aislamiento —toda la población sobre un mismo LLM— y sometimos el sistema a una batería de regímenes de estrés. La fase tuvo dos objetivos: medir el poder predictivo en los tres dominios y caracterizar los sesgos de cada arquitectura antes de introducir una red heterogénea. Las pruebas temporales se ejecutaron con \texttt{Gemma-3-27B-IT}; salvo indicación contraria, en las pruebas de rondas y densidad usamos \texttt{Llama-3.3-70B} como modelo ancla.
+
+\subsubsection{Actualización temporal de la evidencia (T0--T3)}
+
+Construimos, para los tres casos, paquetes acumulativos T0--T3 manteniendo fijas 40 rondas y densidad 2. La pregunta, el protocolo y el \textit{ground truth} quedaron fuera del \textit{input}; entre condiciones solo cambió la evidencia disponible hasta cada fecha de corte. Como cada dominio requiere una evaluación distinta, conservamos sus métricas naturales en lugar de reducirlas a un puntaje común.
+
+\paragraph{Bolivia: evidencia electoral, plataformas y encuesta tardía.}
+Evaluamos el ganador, los porcentajes de voto, su MAE y el error de margen. El margen es la diferencia en puntos porcentuales entre Paz y Quiroga; su error mide la distancia entre el margen pronosticado y el observado. En T0 el sistema aún debía inferir quiénes llegarían al balotaje: identificó a Luis Arce, presidente saliente asociado al MAS que ya había retirado su candidatura, y a Samuel Doria Medina, candidato opositor que luego quedó eliminado. T1 agregó el resultado de primera vuelta; T2, el contraste entre las plataformas de Paz y Quiroga; y T3, una encuesta tardía favorable a Quiroga junto con evidencia internacional.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{T} & \textbf{Dupla} & \textbf{Ganador} & \textbf{MAE} \\
+\midrule
+T0 & Arce--Doria & No comparable & -- \\
+T1 & Paz--Quiroga & Paz & 2.000 \\
+T2 & Paz--Quiroga & Quiroga & 7.020 \\
+T3 & Paz--Quiroga & Quiroga & 7.687 \\
+\bottomrule
+\end{tabular}
+\caption{Bolivia por corte. T0 no identifica el balotaje real; la evidencia completa se detalla en la Tabla~\ref{tab:app_seed_bolivia}.}
+\label{tab:seed_bolivia}
+\end{table}
+
+T0 no falló solo al elegir un ganador: construyó un balotaje imposible y, por ello, no tiene MAE de voto ni error de margen evaluables. El resultado de primera vuelta corrigió el campo de candidatos y T1 produjo a Paz como ganador. T2 y T3 volvieron a Quiroga; la encuesta tardía tuvo más peso que la evidencia anterior. Acercar el corte al desenlace, por tanto, no mejoró necesariamente el pronóstico.
+
+\paragraph{IPC: información mensual, expectativas y política económica.}
+Comparamos las proyecciones mensuales de febrero, abril, julio y diciembre, además del acumulado anual de 2025. Cuando el informe devolvió un rango, usamos su punto medio para calcular el error absoluto y el MAE. T0 contiene el contexto social, institucional y macroeconómico de 2024; T1 suma el REM del BCRA y la evaluación \textit{ex post} del FMI; T2 incorpora el IPC oficial de diciembre de 2024; y T3 agrega el cambio del \textit{crawling peg} al 1\%, el superávit fiscal y nuevas señales monetarias.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{T} & \textbf{MAE mensual} & \textbf{MAE con acumulado} \\
+\midrule
+T0 & 1.538 & 4.03 \\
+T1 & 1.250 & 2.30 \\
+T2 & 1.200 & 2.26 \\
+T3 & \textbf{0.900} & \textbf{1.52} \\
+\bottomrule
+\end{tabular}
+\caption{IPC por corte; composición documental en la Tabla~\ref{tab:app_seed_ipc}.}
+\label{tab:seed_ipc}
+\end{table}
+
+En esta serie la reducción fue sostenida: el MAE mensual bajó de 1.538 en T0 a 0.900 en T3, y el MAE que incorpora el acumulado anual cayó de 4.03 a 1.52. Los datos oficiales anclaron el corto plazo, mientras que las expectativas y las señales cambiarias, fiscales y monetarias ayudaron a ajustar el sendero posterior.
+
+\paragraph{Copa América: forma reciente, mercado y contrapesos.}
+Evaluamos por separado el campeón, la confianza declarada, la probabilidad puntual, su intervalo y el margen esperado de gol. Un margen de 1 representa una victoria por un gol. T0 contiene antecedentes, planteles y contexto; T1 suma semifinales y forma reciente; T2 incorpora cuotas, modelos y previas favorables a Argentina; y T3 agrega contrapesos sobre Colombia y evidencia táctica.
+
+El campeón y el margen esperado de un gol permanecieron idénticos en T0--T3: Argentina por un gol, en línea con el 1--0 observado. Por esa invariancia no repetimos una tabla en el cuerpo. La confianza declarada osciló entre 0.72 y 0.78, mientras que la probabilidad puntual pasó de 0.625--0.650 a 0.490; la evidencia tardía recalibró la incertidumbre sin cambiar la conclusión. La salida completa se conserva en la Tabla~\ref{tab:app_seed_copa}.
+
+En conjunto, los paquetes temporales no dibujan una curva universal de mejora. En IPC, las nuevas observaciones redujeron el error de manera acumulativa; en Bolivia, una encuesta tardía desplazó el acierto de T1; y en Copa América, la predicción se mantuvo mientras se ajustaba la incertidumbre. El \textit{seed data} debe evaluarse por la naturaleza y el momento de la evidencia, no solo por su cercanía al desenlace.
 
 \subsubsection{Escalamiento topológico (rondas y densidad)}
 
-Variamos la profundidad del debate (número de rondas $R$) y la densidad de conexión del grafo de agentes ($D$). El efecto resultó opuesto según la naturaleza del caso (Tabla~\ref{tab:topologia}). En un entorno cuantitativo y cerrado (IPC), más deliberación mejora la inferencia: escalar a $R=80$, $D=2$ redujo el MAE a un óptimo de 1.84\%. En cambio, en un entorno abierto y polarizado (balotaje de Bolivia), el mismo escalamiento retroalimenta las asunciones del modelo y forma una cámara de eco (\textit{herd behavior}): el error crece de 7.60 a 10.0 puntos de voto al pasar de 10 a 40 rondas.
+Variamos la profundidad del debate ($R$) y la densidad de interacción ($D$), manteniendo fijo el resto del protocolo. El efecto dependió del dominio y no apareció una configuración universal.
 
-\begin{table}[t]
-\centering
-\small
-\begin{tabular}{@{}llc@{}}
-\toprule
-\textbf{Entorno} & \textbf{$R$/$D$} & \textbf{MAE} \\
-\midrule
-IPC (cerrado) & 10/2 & 3.12\% \\
-IPC (cerrado) & 40/1 & 2.45\% \\
-IPC (cerrado) & 40/2 & 2.31\% \\
-\textbf{IPC (cerrado)} & \textbf{80/2} & \textbf{1.84\%} \\
-\midrule
-Bolivia (abierto) & 10/2 & 7.60 \\
-\textbf{Bolivia (abierto)} & \textbf{40/2} & \textbf{10.0} \\
-\bottomrule
-\end{tabular}
-\caption{Escalamiento topológico con \texttt{Llama-3.3-70B}. Más rondas mejoran el caso cuantitativo cerrado (IPC, MAE en \%) pero desencadenan \textit{herd behavior} en el abierto (Bolivia, MAE en puntos de voto).}
-\label{tab:topologia}
-\end{table}
+\paragraph{Bolivia.}
+Aumentar las rondas no corrigió el pronóstico hacia Quiroga. R40-D1 incluso elevó el MAE a 10.000, mientras que R10-D2 y R80-D2 produjeron el mismo MAE de 7.687.
+
+\paragraph{IPC.}
+En esta serie, en cambio, más rondas mejoraron la proyección: el MAE pasó de 3.12\% en R10-D2 a 1.84\% en R80-D2. Con 40 rondas, D2 superó a D1 y D3, aunque el costo y la latencia crecieron. Las tres réplicas de R80-D2 obtuvieron 1.84\%, 1.91\% y 1.80\% (media 1.85\%, $\sigma=0.05$).
+
+\paragraph{Copa América.}
+Las cinco condiciones mantuvieron exactamente la misma salida: Argentina, probabilidad puntual 0.475 y margen esperado de un gol. La evidencia disponible dominó el efecto topológico: más deliberación no produjo una ganancia observable. Las matrices completas de Bolivia e IPC se trasladan al Apéndice~\ref{app:extended_tables}.
 
 \subsubsection{Sesgos por arquitectura}
 
@@ -151,22 +197,67 @@ Fijada una configuración de control ($R=40$, $D=2$), comparamos los tres modelo
 
 \subsubsection{Deduplicación de nodos: costo y precisión}
 
-Durante la construcción del grafo detectamos una proliferación de nodos redundantes o casi idénticos, que aumentan el costo y el tiempo de cómputo. Añadimos un paso que verifica la similitud semántica antes de instanciar un nodo y descarta los nodos sin conectividad. En el caso IPC, esta optimización mejoró la precisión respecto de la ingesta manual sin deduplicación (MAE de 2.31\% a 1.475\%, la mejor marca del proyecto) además de reducir el número de nodos y, con ello, el costo. Al tratarse de una única prueba no podemos afirmar que la deduplicación mejore el pronóstico en general; pero en este caso redujo simultáneamente el cómputo y el error.
-% Nota: MAE 2.31%->1.475% CONFIRMADO en s3_final_report.md (origin/backtesting-baseline).
-% El "-10% de nodos" del equipo NO aparece literal en el artefacto; por eso acá va
-% cualitativo ("reducir el número de nodos"). Si se consigue el conteo exacto, agregarlo.
+El grafo real del caso Copa contiene 26 entidades y 107 relaciones; incluso allí aparecen variantes nominales como \textit{Copa America 2024}/\textit{Copa América 2024} y dos nodos \textit{Opta}. La optimización implementada actúa solo sobre nodos aislados: los compara con entidades conectadas y descarta el candidato si la similitud coseno supera 0.85. En una corrida del caso IPC, la variante con ingesta manual y deduplicación redujo el MAE de 2.31\% a 1.475\%. Es una señal favorable de una única corrida, no evidencia de una mejora predictiva general ni una medición exacta de reducción del grafo.
 
 \subsubsection{Permeabilidad e ingesta autónoma (Deep Search)}
 
-Evaluamos dotar al sistema de recolección de contexto totalmente autónoma (\textit{Deep Search}) con cortes temporales estrictos. Lejos de mejorar, la precisión se degradó: en ausencia de anclas documentales estructuradas, la atención de los agentes se dispersa y las proyecciones pierden consistencia. La ingesta curada del corpus semilla resultó preferible a la recolección autónoma.
+Evaluamos una ingesta totalmente autónoma (\textit{Deep Search}) con corte temporal estricto. En la corrida IPC, el MAE pasó de 2.31\% con ingesta manual a 2.475\% con búsqueda pura: solo se recuperaron dos entidades poco relevantes y la proyección perdió anclas documentales. El resultado no invalida la búsqueda como herramienta de apoyo, pero favorece un diseño híbrido: corpus curado como base, búsqueda trazable para cubrir vacíos y revisión mediante Observability/Wiki.
 
-\subsubsection{Sensibilidad a la ventana temporal (\texorpdfstring{$\Delta$1--$\Delta$4}{Delta 1-4})}
+\subsubsection{Wiki y observabilidad de la ejecución}
 
-Desplazando la ventana temporal de los datos semilla medimos la degradación del pronóstico en el caso IPC, con un patrón no lineal. A corto plazo ($\Delta 1$) el sistema es muy preciso (error de unos 0.1 puntos porcentuales), anclado en valores nominales presentes en el corpus. El mayor fallo ocurre a medio-corto plazo ($\Delta 2$): sin señales sobre \textit{shocks} transitorios futuros, el modelo extrapola linealmente la tendencia inicial y subestima los rebotes macroeconómicos. A medio plazo ($\Delta 3$) la precisión se recupera para la tendencia de fondo. El motor es, entonces, robusto para la dirección dominante pero ciego a las fluctuaciones transitorias si la ventana no se actualiza.
+La memoria Wiki y el \textit{Observability Dock} no se evalúan como predictores separados: su aporte es de ingeniería experimental. La Wiki compila determinísticamente afirmaciones, fuentes, cronología y contradicciones dentro de un presupuesto de contexto; el panel expone la configuración, los artefactos, el ruteo, tokens, costo, latencia y errores. Así se separa el \textit{input} del \textit{ground truth} y se puede auditar qué evidencia y qué modelo sostuvieron cada reporte, incluidos los resultados negativos de Deep Search.
 
-\subsubsection{Robustez ante ruido (inyecciones exógenas)}
+\subsubsection{Benchmark frente a señales de mercado}
 
-Inyectamos ruido deliberado en el entorno (p.\ ej.\ especulación cambiaria) y variamos su momento de entrada. Bajo alta profundidad ($R=80$, $D=2$), el modelo asimiló la especulación social contenida en el ruido y, paradójicamente, ancló un escenario recesivo con gran precisión (MAE de 0.9875\% en esa variante). El momento resultó crítico: datos correctos inyectados a mitad del debate suelen ser ignorados por arquitecturas con fuerte sesgo de pre-entrenamiento (Gemma), lo que confirma que la asimilación depende del balance entre el ruido externo y el arraigo de las creencias ya formadas.
+Para evitar que la evaluación se limite a comparar MiroFish contra el desenlace, alineamos cada salida T0--T3 con una señal externa disponible en el mismo corte: encuestas en Bolivia, REM y proxies de mercado para IPC, y probabilidades implícitas de apuestas para Copa. No ejecutamos nuevas simulaciones; el análisis reevalúa los artefactos ya guardados. De 28 filas, 27 fueron comparables y MiroFish obtuvo menor error normalizado en 9 (Tabla~\ref{tab:market_baseline}); el delta Brier medio fue $+0.014$, donde un valor positivo favorece al proxy.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lccp{3.0cm}@{}}
+\toprule
+\textbf{Caso} & \textbf{Comp.} & \textbf{Gana MF} & \textbf{Lectura} \\
+\midrule
+Bolivia & 3/4 & 1 & Ambos siguen la señal tardía errónea \\
+IPC & 20/20 & 7 & Proxy mejor temprano; MF mejora en T3 \\
+Copa & 4/4 & 1 & MF acierta, pero queda subcalibrado \\
+\midrule
+Total & 27/28 & 9 & $\overline{\Delta\text{Brier}}=+0.014$ \\
+\bottomrule
+\end{tabular}
+\caption{MiroFish frente a señales externas del mismo corte. ``Gana MF'' cuenta filas con menor error normalizado; las proxies difieren en calidad y no constituyen un mercado homogéneo.}
+\label{tab:market_baseline}
+\end{table}
+
+La comparación aporta contexto, no un veredicto único. En Bolivia, tanto MiroFish como la encuesta tardía favorecieron a Quiroga aunque ganó Paz; en IPC, las señales de mercado dominaron al inicio, pero MiroFish redujo el error en varias proyecciones T3; y en Copa, el sistema mantuvo al campeón correcto pero asignó menos probabilidad que el mercado. En conjunto, el modelo no supera de forma sistemática a referencias simples y su valor debe medirse contra ellas, no solo contra acierto/fallo final.
+
+\subsubsection{Ruido financiero en alta profundidad}
+
+Esta prueba, independiente de T0--T3, introdujo información no predictiva y varió su momento de entrada. Bajo alta profundidad ($R=80$, $D=2$), el modelo asimiló especulación financiera (\textit{herd behavior}) y, en esa variante aislada, alcanzó un MAE de 0.9875\% al anclar un escenario recesivo. La coincidencia no convierte al ruido en evidencia útil: muestra vulnerabilidad a estímulos salientes y al momento de inyección.
+
+\subsubsection{Inyecciones programadas en los tres dominios (S3)}
+
+Extendimos la inyección programada a Copa América, Bolivia e IPC para separar contenido, momento y cercanía temática. Cruzamos Gemma y Llama con control; señal favorable temprana, media y tardía; contraseñal media; ruido cercano; y ruido ajeno. Las 42 corridas fueron válidas: los seis controles dispararon cero eventos y las 36 condiciones inyectadas, exactamente uno (Tabla~\ref{tab:s3_cross_topic}).
+
+\begin{table}[H]
+\centering
+\scriptsize
+\begin{tabular}{@{}lp{2.0cm}p{3.5cm}@{}}
+\toprule
+\textbf{Caso} & \textbf{Control} & \textbf{Mayor sensibilidad} \\
+\midrule
+Copa & Argentina & Contraseñal: Llama vira débilmente a Colombia \\
+Bolivia & Indef./Paz & Contraseñal: ambos a Quiroga; ruido afecta a Llama \\
+IPC & Desinflación & Contraseñal: Gemma indef.; Llama proyecta rebote \\
+\bottomrule
+\end{tabular}
+\caption{Resumen de 42 corridas S3. La matriz completa está en la Tabla~\ref{tab:app_s3_cross_topic}.}
+\label{tab:s3_cross_topic}
+\end{table}
+
+La contraseñal produjo el cambio más consistente: Llama viró a Colombia, ambos modelos a Quiroga y, en IPC, Gemma quedó indefinido mientras Llama proyectó un rebote. Gemma permaneció rígido en fútbol. El momento de la señal favorable cambió las menciones, no su categoría final.
+
+El ruido dependió del dominio: no alteró Copa ni IPC, pero Bolivia fue vulnerable. Con Llama, el ruido político cercano desplazó Paz hacia Quiroga y el ajeno eliminó una dirección clara. La robustez, por tanto, no se generaliza entre casos ni modelos.
 
 \subsubsection{Diversidad léxica y estabilidad (evaluación intrínseca)}
 
@@ -190,6 +281,10 @@ Llama-3.3-70B & 0.33 & 0.73 & 0.09 \\
 \caption{Evaluación intrínseca de la salida (Caso Bolivia; \textit{variance-checked}, 3 corridas/modelo, \textit{equal-N}). Gemma produce texto más diverso y sus personas derivan más en el tiempo; Llama es más repetitivo y estático. Qwen3 no pudo evaluarse. Deriva: distancia \textit{embedding} intra-persona inicio-fin ($\uparrow$ = más deriva).}
 \label{tab:intrinseca}
 \end{table}
+
+\subsubsection{Síntesis del baseline}
+
+La fase de aislamiento mostró que ninguna variable mejora todos los dominios por igual. La recencia de la evidencia ayudó al IPC, corrigió transitoriamente Bolivia y solo recalibró la incertidumbre deportiva; más rondas mejoraron el caso cuantitativo, pero no corrigieron el sesgo electoral; y las inyecciones S3 revelaron sensibilidad específica al caso, al modelo y a la cercanía temática. El ruido no constituyó una fuente confiable de señal. Estas asimetrías motivaron evaluar si una población heterogénea podía compensar las limitaciones de cada modelo.
 
 \subsection{Multi-modelo: red heterogénea}
 \label{subsec:multimodelo}
@@ -219,39 +314,25 @@ Multi-modelo, R40 & Sin predicción & 66.667$^{*}$ \\
 \label{tab:collapse}
 \end{table}
 
-\subsubsection{Respuesta a la inyección de evidencia (variación de momento)}
+\paragraph{Profundidad y costo en IPC trimodelo.} La telemetría muestra que escalar la red tampoco produjo una mejora monotónica: R10 obtuvo 3/5 con 50\,231 tokens, mientras R80 cayó a 1/5 con 5\,546\,655 tokens y acumuló 11 errores y 39 fallas de parseo. Más deliberación multiplicó el costo en más de dos órdenes de magnitud sin aumentar la calidad evaluada.
 
-En el caso deportivo, la evaluación en aislamiento mostró un anclaje fuerte en el favorito (Argentina), resistente a la evidencia contraria. Para medir la respuesta a la evidencia exógena, ejecutamos una matriz de inyecciones a mitad del debate variando la fuerza y la dirección de la información. El ganador pronosticado siguió de cerca al documento inyectado: sin inyección quedaba indefinido (confianza 0.30); una señal fuerte a favor de Argentina lo consolidaba en ese resultado (0.90); una contra-señal a favor de Colombia hacía virar la predicción a Colombia (0.50), con uso explícito del documento; y el ruido temático fue mayormente ignorado. La evidencia inyectada dirige, por tanto, el pronóstico de forma efectiva, incluso en contra del favorito. Ahora bien, como Argentina resultó campeón, la contra-señal empujó al sistema hacia la predicción incorrecta: la maleabilidad no es veracidad.
-% >>> A DEFINIR CON EL EQUIPO (verificación 2026-07-10):
-% 1. La cita ``An excellent analysis...'' del borrador original NO existe en ningún
-%    artefacto del repo -> eliminada.
-% 2. El artefacto de esta matriz (case-a-s2-positional-noise-v2, branch
-%    codex/final-multimodel-baseline, final_v2_report.md) es POR-MODELO (robustez
-%    single-model sobre Qwen/Gemma/Llama), NO una sala heterogénea. El relato de
-%    "persuasión inter-modelo / Gemma virando por presión de Llama" NO tiene respaldo.
-%    Reescrito como "respuesta a la inyección". Si existe una corrida multi-modelo real
-%    de Copa, pasar el artefacto; si no, quizá esta prueba deba salir de §4.2 (multimodelo)
-%    o reetiquetarse como robustez de inyección (aplica a single y multi).
+\subsubsection{Continuación de la inyección de ruido: shock tardío}
 
-\subsubsection{Shock de ruido tardío (entropía exógena)}
-
-Sabiendo que la red colapsaba en neutralidad, inyectamos una encuesta falsa tardía a mitad del debate inactivo. El shock de entropía desestabilizó el estado de cortesía: Qwen, con la permeabilidad que ya mostraba en el baseline, absorbió el estímulo de inmediato, lo tradujo en retórica agresiva e impulsó la polarización del foro, rescatando al sistema del colapso. Los LLM heterogéneos requieren señales externas continuas para sostener una deliberación sana.
-
-\subsubsection{Superación de la degradación temporal}
-
-En el baseline, alterar de forma estática el período de los datos semilla producía la curva de degradación temporal (fallo en $\Delta 2$ por extrapolación lineal). En la red multi-modelo abandonamos el corte estático y alimentamos a los agentes con flujos iterativos que simulan el paso del tiempo. El ecosistema heterogéneo —sometido a fricción dialéctica constante— procesó las actualizaciones sin caer en la extrapolación lineal ciega del modelo aislado: la diversidad arquitectónica actuó como amortiguador predictivo, estabilizando la inferencia a corto y medio plazo mientras el flujo de inyección no se interrumpiera.
+Como continuación de la prueba de ruido del baseline, y sabiendo que la red heterogénea colapsaba en neutralidad, inyectamos una encuesta falsa tardía (\textit{Late Quiroga Lead Poll}) a mitad del debate inactivo. El shock desestabilizó el estado de cortesía: Qwen, con la permeabilidad observada en aislamiento, absorbió el estímulo de inmediato, lo tradujo en retórica agresiva e impulsó la polarización del foro. En esta corrida, la señal externa reactivó la deliberación, pero ese cambio de dinámica no demuestra que el resultado se haya vuelto más verdadero o robusto.
 
 \section{Conclusiones}
 \label{sec:conclusiones}
 El contraste entre el \textit{baseline} aislado y la red heterogénea nos permite volver sobre las dos hipótesis que motivaron este trabajo —que la heterogeneidad de modelos reduciría el sesgo y el costo— y matizarlas a la luz de la evidencia.
 
-\paragraph{Para \textit{forecasting} puro, la heterogeneidad no compensa.} Un modelo aislado y bien calibrado no solo es más preciso (MAE de 1.84\% en IPC), sino también más barato: la red multi-modelo consume más de 230.000 \textit{tokens} por debate y, sin estímulos externos, colapsa en abstención total, sin emitir un pronóstico utilizable (§\ref{subsec:multimodelo}). Nuestra hipótesis de reducción de costos vía heterogeneidad no se sostiene para la tarea predictiva. La reducción de costo efectiva provino, en cambio, de una optimización ortogonal —la deduplicación semántica del grafo—, que en el único caso probado bajó el cómputo y mejoró la precisión a la vez.
+\paragraph{Para \textit{forecasting} puro, la heterogeneidad no compensa.} Un modelo aislado y bien calibrado alcanzó MAE 1.84\% en IPC y fue más barato. En la red trimodelo, pasar de R10 a R80 elevó el consumo de 50\,231 a 5\,546\,655 tokens mientras el puntaje cayó de 3/5 a 1/5; en Bolivia, la red sin estímulos no emitió un pronóstico utilizable (§\ref{subsec:multimodelo}). La deduplicación fue una optimización ortogonal: en una corrida redujo el MAE a 1.475\%, pero no medimos de forma independiente su ahorro ni podemos generalizar el efecto.
 
-\paragraph{La diversidad de modelos no se auto-regula, pero es permeable a la intervención.} La hipótesis de que la fricción entre arquitecturas corregiría el sesgo de forma espontánea se refutó: en circuito cerrado, la red no converge a la verdad sino a un \textit{deadlock} de cortesía. Lo que sí opera es su sensibilidad a la evidencia exógena: una inyección dirigida basta para desbloquear la deliberación estancada —el \textit{shock} de una encuesta tardía rescató a la red del colapso (§\ref{subsec:multimodelo})— y para reorientar un pronóstico anclado, incluso en contra del favorito (§\ref{subsec:multimodelo}). Ahora bien, permeabilidad no es acierto: en el caso deportivo esa misma reorientación empujó la predicción hacia Colombia, que resultó perdedora. La heterogeneidad, entonces, aporta maleabilidad, no veracidad.
+\paragraph{La diversidad de modelos no se auto-regula, pero es permeable a la intervención.} En circuito cerrado, la red no converge a la verdad sino a un \textit{deadlock} de cortesía. Una encuesta falsa tardía reactivó la deliberación, pero no demostró mayor veracidad. La matriz S3 confirma la distinción: una contraseñal cambió direcciones en los tres dominios, mientras que el ruido tuvo efectos específicos al modelo y al caso. Permeabilidad no equivale a robustez ni acierto.
+
+\paragraph{MiroFish debe competir contra referencias externas.} En 27 comparaciones temporales, MiroFish superó al proxy en 9 y el delta Brier medio favoreció levemente a las señales de mercado. El resultado depende de la calidad del proxy, pero evita celebrar un acierto que una referencia simple ya anticipaba y vuelve explícita la calibración pendiente.
 
 \paragraph{La precisión predictiva no requiere diversidad generativa.} Un hallazgo transversal es que el mejor pronosticador (Llama) es, a la vez, el modelo intrínsecamente menos diverso y más estable en el tiempo, mientras que el más diverso (Gemma) es también el más volátil, con personas que derivan más a lo largo de la simulación (§\ref{subsec:baseline}). Puntería y riqueza generativa son ejes independientes, y optimizar uno no implica el otro.
 
-\paragraph{El valor de la red heterogénea es como laboratorio socio-técnico.} MiroFish multi-modelo rinde no como pronosticador sino como entorno para estudiar dinámicas sociales bajo inyecciones paramétricas: es el único de nuestros montajes donde una señal exógena desencadena dinámicas colectivas —polarización del foro, absorción de (des)información y ruptura de un consenso estancado (§\ref{subsec:multimodelo})—. Ese, y no el \textit{forecasting}, es a nuestro juicio el uso donde la heterogeneidad de modelos aporta valor genuino.
+\paragraph{El valor de la red heterogénea es como laboratorio socio-técnico.} El ruteo multi-modelo, la telemetría, la Wiki y el panel de observabilidad permiten estudiar polarización, absorción de (des)información y ruptura de consensos con trazabilidad de evidencia, modelo y costo. Ese montaje es más convincente como instrumento experimental que como pronosticador autónomo.
 
 % La sección de Limitaciones es OBLIGATORIA en ACL y NO cuenta para el límite
 % de 8 páginas.
@@ -261,14 +342,132 @@ Este trabajo tiene un alcance exploratorio y sus conclusiones deben leerse con v
 
 \paragraph{Cobertura muestral.} El \textit{benchmark} usa un único evento por temática (económico, político y deportivo). Esto permite abarcar dominios diversos, pero impide afirmaciones estadísticamente concluyentes sobre las fortalezas o debilidades del sistema en cada uno; distinguir un efecto de dominio del ruido de un caso particular requeriría varios eventos por temática.
 
-\paragraph{Control de varianza parcial.} Solo algunas mediciones se repitieron con réplicas y control de varianza (la precisión del IPC y el análisis intrínseco de diversidad y deriva). Otros resultados —el escalamiento topológico, la inyección de ruido y el colapso multi-modelo— provienen de corridas únicas, por lo que sus valores puntuales deben tomarse como indicativos y no como estimaciones robustas.
+\paragraph{Control de varianza parcial.} Solo algunas mediciones se repitieron con réplicas y control de varianza (la precisión del IPC y el análisis intrínseco de diversidad y deriva). S3 cubre 42 celdas, pero cada combinación de caso, modelo y condición tiene una sola corrida. El ruido financiero en alta profundidad y el colapso multi-modelo también provienen de corridas únicas, por lo que sus valores puntuales deben tomarse como indicativos y no como estimaciones robustas.
 
-\paragraph{Cobertura de modelos.} La comparación intrínseca se realizó entre Gemma-3 y Llama-3.3; Qwen3 no pudo incluirse por falta de acceso al modelo durante esa fase. Además, evaluamos una única terna de modelos en un rango de tamaño acotado (8B--70B) y una sola configuración de mezcla. No podemos garantizar que las conclusiones sean agnósticas al tamaño ni a la elección concreta de modelos; explorar otras combinaciones y escalas mayores es trabajo pendiente.
+\paragraph{Cobertura de modelos.} La comparación intrínseca y la matriz S3 se realizaron entre Gemma-3 y Llama-3.3; Qwen3 no pudo incluirse en esas fases. Además, evaluamos una única terna de modelos en un rango de tamaño acotado (8B--70B) y una sola configuración de mezcla. No podemos garantizar que las conclusiones sean agnósticas al tamaño ni a la elección concreta de modelos; explorar otras combinaciones y escalas mayores es trabajo pendiente.
 
-\paragraph{Métricas de evaluación.} El MAE de participación electoral se calcula a partir de la extracción, mediante expresiones regulares, de porcentajes en el informe generado; una predicción mal formada puede no ser detectada. En particular, el valor asociado al colapso semántico multi-modelo no es un error de pronóstico comparable, sino el resultado mecánico de una predicción nula, y así lo señalamos. El MAE se expresa además en unidades distintas según el caso (puntos porcentuales de inflación frente a puntos de voto), por lo que los valores no son comparables entre casos.
+\paragraph{Métricas de evaluación.} El MAE de participación electoral se calcula a partir de la extracción, mediante expresiones regulares, de porcentajes en el informe generado; una predicción mal formada puede no ser detectada. La matriz S3 usa conteos determinísticos de términos en publicaciones y comentarios, que incluyen el documento inyectado y no equivalen a un juicio semántico del ReportAgent. En particular, el valor asociado al colapso semántico multi-modelo no es un error de pronóstico comparable, sino el resultado mecánico de una predicción nula, y así lo señalamos. El MAE se expresa además en unidades distintas según el caso, por lo que los valores no son comparables entre dominios.
+
+\paragraph{Baseline de mercado.} Las referencias externas no tienen calidad uniforme: Bolivia combina señales de primera vuelta y encuestas de balotaje; IPC usa REM y promedios implícitos para algunos meses; y Copa incluye una proxy pre-torneo en T0. El delta Brier agregado usa la normalización definida por el benchmark y debe leerse junto con el desglose por caso, no como una prueba estadística de superioridad.
 
 \paragraph{Reproducibilidad.} Las simulaciones dependen de modelos servidos por terceros y el costo se aproxima por el conteo de tokens de la telemetría, no por un perfilado exhaustivo ni por su traducción a un costo monetario. La deduplicación de nodos, por su parte, se validó en un único caso, sin cuantificar de forma independiente la reducción exacta del tamaño del grafo.
 
 \bibliography{custom}
+
+\clearpage
+\onecolumn
+\appendix
+\section{Tablas extendidas}
+\label{app:extended_tables}
+
+Las tablas del cuerpo priorizan la comparación directa. Aquí conservamos la composición documental y las matrices completas empleadas para interpretar cada corrida.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lp{4.5cm}p{4.9cm}p{1.5cm}p{1.6cm}@{}}
+\toprule
+\textbf{T} & \textbf{Evidencia añadida} & \textbf{Candidatos y ganador} & \textbf{MAE voto} & \textbf{Error margen} \\
+\midrule
+T0 & Contexto y encuestas previas a la primera vuelta & Arce (fuera de la boleta) y Doria Medina; no identifica el balotaje real & -- & -- \\
+T1 & Primera vuelta: Paz primero, Quiroga segundo y MAS fuera & Paz y Quiroga; gana Paz & 2.000 & 0.06 \\
+T2 & Plataformas: Paz moderado y Quiroga pro-mercado/FMI & Paz y Quiroga; gana Quiroga & 7.020 & 18.06 \\
+T3 & Encuesta tardía favorable a Quiroga y contexto internacional & Paz y Quiroga; gana Quiroga & 7.687 & 18.06 \\
+\bottomrule
+\end{tabular}
+\caption{Bolivia T0--T3. T0 no admite métricas comparables porque no identifica la dupla real Paz--Quiroga.}
+\label{tab:app_seed_bolivia}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lp{9.4cm}cc@{}}
+\toprule
+\textbf{T} & \textbf{Evidencia añadida} & \textbf{MAE mensual} & \textbf{MAE con acumulado} \\
+\midrule
+T0 & Base social, institucional y macroeconómica de 2024 & 1.538 & 4.03 \\
+T1 & REM del BCRA, evaluación \textit{ex post} del FMI y expectativas & 1.250 & 2.30 \\
+T2 & IPC oficial de diciembre de 2024 y marco político de 2025 & 1.200 & 2.26 \\
+T3 & \textit{Crawling peg}, superávit fiscal e informes BCRA/Banco Mundial & 0.900 & 1.52 \\
+\bottomrule
+\end{tabular}
+\caption{IPC T0--T3: composición de cada paquete y errores.}
+\label{tab:app_seed_ipc}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lp{5.0cm}ccccc@{}}
+\toprule
+\textbf{T} & \textbf{Evidencia añadida} & \textbf{Campeón} & \textbf{Conf.} & \textbf{Prob.} & \textbf{Intervalo} & \textbf{Margen} \\
+\midrule
+T0 & Antecedentes, planteles y contexto de la final & Argentina & 0.75 & 0.625 & [0.575, 0.675] & 1 [0.5, 1.5] \\
+T1 & Semifinales y forma reciente & Argentina & 0.75 & 0.650 & [0.600, 0.700] & 1 [0.5, 1.5] \\
+T2 & Cuotas, modelos y previas favorables a Argentina & Argentina & 0.78 & 0.490 & [0.460, 0.510] & 1 [0, 2] \\
+T3 & Contrapesos de Colombia y evidencia táctica & Argentina & 0.72 & 0.490 & [0.460, 0.510] & 1 [1, 2] \\
+\bottomrule
+\end{tabular}%
+}
+\caption{Copa América T0--T3; la final observada fue Argentina 1--0 Colombia.}
+\label{tab:app_seed_copa}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{minipage}[t]{0.46\textwidth}
+\centering
+\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Condición} & \textbf{Ganador} & \textbf{MAE voto} \\
+\midrule
+R10-D2 & Quiroga & 7.687 \\
+R40-D1 & Quiroga & 10.000 \\
+R40-D2 & Quiroga & 7.820 \\
+R40-D3 & Quiroga & 7.820 \\
+R80-D2 & Quiroga & 7.687 \\
+\bottomrule
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.50\textwidth}
+\centering
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Cond.} & \textbf{MAE} & \textbf{Costo} & \textbf{Lat.} \\
+\midrule
+R10-D2 & 3.12\% & USD\,0.0214 & 247\,s \\
+R40-D1 & 2.45\% & USD\,0.0856 & 338\,s \\
+R40-D2 & 2.31\% & USD\,0.0856 & 675\,s \\
+R40-D3 & 2.89\% & USD\,0.0856 & 309\,s \\
+R80-D2 & 1.84\% & USD\,0.1712 & 3277\,s \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\caption{Matrices completas de rondas y densidad: Bolivia (izquierda) e IPC (derecha).}
+\label{tab:app_rounds}
+\end{table}
+
+\begin{table}[H]
+\centering
+\scriptsize
+\begin{tabular}{@{}p{2.2cm}p{1.9cm}p{2.4cm}p{2.4cm}p{2.4cm}p{2.3cm}@{}}
+\toprule
+\textbf{Caso / modelo} & \textbf{Control} & \textbf{Señal favorable} & \textbf{Contraseñal media} & \textbf{Ruido cercano} & \textbf{Ruido ajeno} \\
+\midrule
+Copa / Gemma & Argentina & Argentina & Argentina (se estrecha) & Argentina & Argentina \\
+Copa / Llama & Argentina & Argentina & Colombia (cambio débil) & Argentina & Argentina \\
+Bolivia / Gemma & Indefinido & Paz & Quiroga & Indefinido & Indefinido \\
+Bolivia / Llama & Paz & Paz & Quiroga & Quiroga & Indefinido \\
+IPC / Gemma & Desinflación & Desinflación & Indefinido & Desinflación & Desinflación \\
+IPC / Llama & Desinflación & Desinflación & Rebote inflacionario & Desinflación & Desinflación \\
+\bottomrule
+\end{tabular}
+\caption{Dirección heurística de las 42 corridas S3 (3 casos $\times$ 2 modelos $\times$ 7 condiciones). ``Señal favorable'' resume los tres momentos, que conservaron la misma dirección categórica. La métrica cuenta menciones en la conversación, incluido el documento inyectado; audita presión y contaminación, pero no reemplaza una evaluación semántica del informe final.}
+\label{tab:app_s3_cross_topic}
+\end{table}
 
 \end{document}
