@@ -102,16 +102,17 @@
 
   \end{alertblock}
 
-  \begin{block}{La Red Heterogénea}
+  \begin{block}{Deduplicación Semántica en Neo4j}
 
-    Para curar las cámaras de eco, creamos una \textbf{Red Multi-Agente (MAS)} forzando a modelos divergentes (Llama, Gemma y Qwen) a convivir y debatir en la misma sala. La hipótesis dictaba que la diversidad cognitiva generaría auto-regulación.
+    Antes de debatir, los agentes ingieren noticias mediante un Grafo de Conocimiento. Implementamos un algoritmo de \textbf{deduplicación semántica} que fusiona nodos redundantes usando \textit{embeddings}.
 
     \begin{figure}
       \centering
-     
-      \includegraphics[width=0.9\linewidth]{mirofish_network.png}
-      \caption{Visualización isométrica de la red MiroFish procesando nodos de entropía.}
+      \includegraphics[width=0.95\linewidth]{grafo_deduplicacion.png}
     \end{figure}
+    
+    \vspace{0.3cm}
+    \textbf{Impacto:} Esta optimización ortogonal no solo redujo drásticamente el costo computacional, sino que disminuyó la dispersión de atención de los LLMs, llevando el error predictivo (MAE) de \textbf{2.31\% a 1.475\%}, la mejor marca de todo el proyecto.
 
   \end{block}
 
