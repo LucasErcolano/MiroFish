@@ -84,6 +84,47 @@
 
   \end{block}
 
+  \begin{block}{Benchmark Sociotécnico y Escalamiento}
+
+    Diseñamos el primer benchmark multi-dominio para evaluar a los agentes bajo regímenes de estrés radicalmente distintos (aislando el \textit{ground truth}):
+
+    \begin{table}
+      \centering
+      \small
+      \begin{tabular}{l l l l}
+        \toprule
+        \textbf{Dominio} & \textbf{Caso Real} & \textbf{Perfil} & \textbf{Métrica} \\
+        \midrule
+        Económico & IPC Argentina & Cuantitativo & MAE (\%) \\
+        Político & Balotaje Bolivia & Abierto / Polarizado & MAE (Voto) \\
+        Deportivo & Copa América & Sanidad Corto Plazo & Acierto Binario \\
+        \bottomrule
+      \end{tabular}
+    \end{table}
+    
+    \vspace{0.3cm}
+    \heading{Paradoja del Escalamiento (Más cómputo $\neq$ Mejor)}
+    Evaluar en múltiples ejes demostró que dar más rondas de debate a los modelos mejora el cálculo matemático pero destruye la política:
+    
+    \vspace{0.1cm}
+    \begin{table}
+      \centering
+      \small
+      \begin{tabular}{l c c}
+        \toprule
+        \textbf{Entorno (Llama-3.3)} & \textbf{Rondas} & \textbf{MAE} \\
+        \midrule
+        IPC (Cuantitativo) & 10 & 3.12\% \\
+        \textbf{IPC (Cuantitativo)} & \textbf{80} & \textbf{1.84\%} \textit{(Mejora)} \\
+        \midrule
+        Bolivia (Polarizado) & 10 & 7.60 \\
+        \textbf{Bolivia (Polarizado)} & \textbf{40} & \textbf{10.0} \textit{(Empeora - Eco)} \\
+        \bottomrule
+      \end{tabular}
+    \end{table}
+
+  \end{block}
+
   \begin{alertblock}{El récord en aislamiento (Single-Agent)}
 
     Poblamos todo el foro con un único modelo (\textbf{Llama-3.3-70B}) y lo forzamos a predecir el Índice de Precios al Consumidor (IPC) de Argentina tras 80 rondas de debate cruzado.
