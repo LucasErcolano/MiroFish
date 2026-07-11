@@ -94,11 +94,7 @@
     \end{center}
     
     \vspace{0.3cm}
-    Sin embargo, evaluar modelos en aislamiento sufre \textbf{patologías severas en entornos polares}:
-    \begin{itemize}
-      \item \textbf{Cámaras de Eco:} Llama-3.3 recicla sus estructuras léxicas (Self-BLEU de 0.73) y retroalimenta sus posturas políticas ciegamente.
-      \item \textbf{Terquedad:} Gemma-3-27B ignora la evidencia estadística real y protege su sesgo de pre-entrenamiento.
-    \end{itemize}
+    Sin embargo, escalar el tamaño y rondas en modelos en aislamiento (\textit{Single-Agent}) no resuelve su ceguera ante nueva evidencia, motivando la necesidad de \textbf{Redes Multi-Agente}.
 
   \end{alertblock}
 
@@ -124,6 +120,18 @@
 % COLUMNA DERECHA
 % --------------------------------------------------------
 \begin{column}{\colwidth}
+
+  \begin{block}{Patologías Intrínsecas: Eco vs Deriva}
+    Analizamos el comportamiento generativo de los modelos aislados (Independiente de su error predictivo). Constatamos empíricamente que la puntería y la riqueza lingüística son ortogonales.
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=0.9\linewidth]{patologias.jpg}
+    \end{figure}
+    
+    \vspace{0.3cm}
+    \textbf{Llama} (reactivo) recicla sus propias ideas formando una cámara de eco inamovible (Self-BLEU 0.73). \textbf{Gemma} (proactivo) es léxicamente rico y sus personas evolucionan (Deriva temporal 0.41), pero desarrolla "terquedad" ante la evidencia contraria.
+  \end{block}
 
   \begin{alertblock}{El Descubrimiento: Colapso Semántico}
 
