@@ -16,7 +16,8 @@ def _load_project_env(env_path: str) -> None:
 
 # 加载项目根目录的 .env 文件
 # 路径: MiroFish/.env (相对于 backend/app/config.py)
-project_root_env = os.path.join(os.path.dirname(__file__), '../../.env')
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+project_root_env = os.path.join(PROJECT_ROOT, '.env')
 
 _load_project_env(project_root_env)
 
@@ -132,6 +133,11 @@ class Config:
     # OASIS模拟配置
     OASIS_DEFAULT_MAX_ROUNDS = int(os.environ.get('OASIS_DEFAULT_MAX_ROUNDS', '10'))
     OASIS_SIMULATION_DATA_DIR = os.path.join(os.path.dirname(__file__), '../uploads/simulations')
+    ENABLE_SIMULATION_MODEL_ROUTING = os.environ.get('ENABLE_SIMULATION_MODEL_ROUTING', 'False').lower() == 'true'
+    SIMULATION_MODEL_MAP_PATH = os.path.abspath(
+        os.environ.get('SIMULATION_MODEL_MAP_PATH')
+        or os.path.join(PROJECT_ROOT, 'configs', 'model_map_openrouter.yaml')
+    )
     
     # OASIS平台可用动作配置
     OASIS_TWITTER_ACTIONS = [
@@ -148,6 +154,10 @@ class Config:
     REPORT_AGENT_MAX_SUB_QUERIES = int(os.environ.get('REPORT_AGENT_MAX_SUB_QUERIES', '5'))
     REPORT_AGENT_MAX_REFLECTION_ROUNDS = int(os.environ.get('REPORT_AGENT_MAX_REFLECTION_ROUNDS', '2'))
     REPORT_AGENT_TEMPERATURE = float(os.environ.get('REPORT_AGENT_TEMPERATURE', '0.5'))
+    ENABLE_FUSION_VERDICT = os.environ.get('ENABLE_FUSION_VERDICT', 'True').lower() == 'true'
+    FUSION_VERDICT_MODEL = os.environ.get('FUSION_VERDICT_MODEL', 'openai/gpt-4o-mini')
+    FUSION_VERDICT_MAX_REPORT_CHARS = int(os.environ.get('FUSION_VERDICT_MAX_REPORT_CHARS', '12000'))
+    FUSION_VERDICT_TIMEOUT_SECONDS = float(os.environ.get('FUSION_VERDICT_TIMEOUT_SECONDS', '20'))
     
     # Experimental Memory (Spike S1)
     USE_EXPERIMENTAL_MEMORY = os.environ.get('USE_EXPERIMENTAL_MEMORY', 'False').lower() == 'true'

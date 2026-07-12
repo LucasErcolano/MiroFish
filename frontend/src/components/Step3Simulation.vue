@@ -103,6 +103,86 @@
       </div>
     </div>
 
+    <section class="runtime-observability">
+      <div class="runtime-header">
+        <div>
+          <span class="runtime-title">{{ t('observability.runtime.title') }}</span>
+          <span class="runtime-subtitle">{{ runtimeSubtitle }}</span>
+        </div>
+        <div class="runtime-actions">
+          <button
+            v-if="wikiAvailable"
+            type="button"
+            class="runtime-wiki-btn"
+            @click="openWiki"
+          >
+            {{ t('observability.openWiki') }}
+          </button>
+          <button
+            v-if="telemetrySummary.hasData"
+            type="button"
+            class="runtime-wiki-btn secondary"
+            @click="openTelemetry"
+          >
+            {{ t('observability.openTelemetry') }}
+          </button>
+          <RuntimeCostBadge
+            :label="telemetrySummary.costLabel"
+            :status="telemetrySummary.costStatus"
+            :caption="runtimeCostCaption"
+          />
+        </div>
+      </div>
+
+      <EvidenceMetricStrip :metrics="runtimeMetrics" />
+
+      <div v-if="telemetrySummary.notices.length" class="runtime-notices">
+        <span v-for="notice in telemetrySummary.notices" :key="notice">{{ notice }}</span>
+      </div>
+
+      <details v-if="modelRows.length" class="runtime-details">
+        <summary>{{ t('observability.telemetry.modelDetails') }}</summary>
+        <div class="runtime-models">
+          <div v-for="row in modelRows" :key="row.model" class="runtime-model-row">
+            <span class="runtime-model-name">{{ row.model }}</span>
+            <span class="mono">{{ row.calls }} calls</span>
+            <span class="mono">{{ row.errors }} errors</span>
+            <span class="mono">{{ row.latency_p95_ms }}ms p95</span>
+            <span class="runtime-model-cost" :class="`cost--${row.cost_estimation_status || 'estimated'}`">
+              {{ formatCostWithStatus(row.cost_usd_est, row.cost_estimation_status) }}
+            </span>
+          </div>
+        </div>
+      </details>
+
+      <details class="runtime-details">
+        <summary>{{ t('observability.routingDetails.title') }}</summary>
+        <div v-if="routingRows.length" class="routing-table-wrap">
+          <table class="routing-table">
+            <thead>
+              <tr>
+                <th>{{ t('observability.routingDetails.agentId') }}</th>
+                <th>{{ t('observability.routingDetails.role') }}</th>
+                <th>{{ t('observability.routingDetails.provider') }}</th>
+                <th>{{ t('observability.routingDetails.model') }}</th>
+                <th>{{ t('observability.routingDetails.source') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in routingRows" :key="`${row.agent_id}-${row.role}-${row.model}`">
+                <td class="mono">{{ row.agent_id ?? '-' }}</td>
+                <td>{{ row.role || row.entity_name || '-' }}</td>
+                <td>{{ row.provider || '-' }}</td>
+                <td>{{ row.model || '-' }}</td>
+                <td><span class="routing-source">{{ row.source || '-' }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div v-else class="routing-empty">{{ t('observability.routingDetails.empty') }}</div>
+      </details>
+    </section>
+
     <!-- Main Content: Dual Timeline -->
     <div class="main-content-area" ref="scrollContainer">
       <!-- Timeline Header -->
@@ -282,6 +362,18 @@
         </div>
       </div>
     </div>
+
+    <WikiSlideOver
+      v-if="showWikiSlideOver && props.simulationId"
+      :simulation-id="props.simulationId"
+      @close="showWikiSlideOver = false"
+    />
+
+    <TelemetrySlideOver
+      v-if="showTelemetrySlideOver && props.simulationId"
+      :simulation-id="props.simulationId"
+      @close="showTelemetrySlideOver = false"
+    />
   </div>
 </template>
 
@@ -295,7 +387,17 @@ import {
   getRunStatus,
   getRunStatusDetail
 } from '../api/simulation'
-import { generateReport } from '../api/report'
+import { useSimulationArtifacts } from '../composables/useSimulationArtifacts'
+import EvidenceMetricStrip from './observability/EvidenceMetricStrip.vue'
+import RuntimeCostBadge from './observability/RuntimeCostBadge.vue'
+import WikiSlideOver from './observability/WikiSlideOver.vue'
+import TelemetrySlideOver from './observability/TelemetrySlideOver.vue'
+import {
+  formatCostWithStatus,
+  formatNumber,
+  summarizeRouting,
+  summarizeTelemetry
+} from '../composables/useObservabilitySummary'
 
 const { t } = useI18n()
 
@@ -317,14 +419,23 @@ const router = useRouter()
 
 // State
 const isGeneratingReport = ref(false)
+const showWikiSlideOver = ref(false)
 const phase = ref(0) // 0: 未开始, 1: 运行中, 2: 已完成
 const isStarting = ref(false)
 const isStopping = ref(false)
 const startError = ref(null)
+const showTelemetrySlideOver = ref(false)
 const runStatus = ref({})
 const allActions = ref([]) // 所有动作（增量累积）
 const actionIds = ref(new Set()) // 用于去重的动作ID集合
 const scrollContainer = ref(null)
+const {
+  manifest,
+  wiki,
+  telemetry,
+  audit,
+  load: loadArtifacts
+} = useSimulationArtifacts(() => props.simulationId)
 
 // Computed
 // 按时间顺序显示动作（最新的在最后面，即底部）
@@ -359,6 +470,70 @@ const twitterElapsedTime = computed(() => {
 const redditElapsedTime = computed(() => {
   return formatElapsedTime(runStatus.value.reddit_current_round || 0)
 })
+
+const telemetrySummary = computed(() => summarizeTelemetry(telemetry.value))
+const routingSummary = computed(() => summarizeRouting(audit.value))
+const modelRows = computed(() => telemetry.value?.per_model || [])
+const routingRows = computed(() => audit.value?.records || [])
+const wikiAvailable = computed(() => Boolean(manifest.value?.wiki || wiki.value?.pages?.length))
+const runtimeSubtitle = computed(() => {
+  if (!telemetrySummary.value.hasData) return t('observability.runtime.waitingTelemetry')
+  if (telemetrySummary.value.rateLimitedCalls) return t('observability.runtime.rateLimits')
+  if (telemetrySummary.value.costStatus === 'unknown') return t('observability.runtime.costUnknown')
+  return t('observability.runtime.ready')
+})
+const runtimeCostCaption = computed(() => {
+  const count = telemetrySummary.value.notices.length
+  if (!count) return ''
+  return t('observability.runtime.noticeCount', { count })
+})
+const runtimeMetrics = computed(() => [
+  {
+    key: 'calls',
+    label: 'Calls',
+    value: telemetrySummary.value.calls,
+    hint: 'LLM requests',
+    tone: telemetrySummary.value.hasData ? 'ready' : 'neutral'
+  },
+  {
+    key: 'errors',
+    label: 'Errors',
+    value: telemetrySummary.value.errors,
+    hint: telemetrySummary.value.rateLimitedCalls ? `${telemetrySummary.value.rateLimitedCalls} rate limited` : 'runtime',
+    tone: telemetrySummary.value.errors ? 'warning' : 'neutral'
+  },
+  {
+    key: 'tokens',
+    label: 'Tokens',
+    value: formatNumber(telemetrySummary.value.tokens),
+    hint: telemetrySummary.value.usageUnavailableCalls ? `${telemetrySummary.value.usageUnavailableCalls} unavailable` : 'usage',
+    tone: telemetrySummary.value.usageUnavailableCalls ? 'warning' : 'neutral'
+  },
+  {
+    key: 'p95',
+    label: 'p95',
+    value: `${telemetrySummary.value.p95}ms`,
+    hint: 'latency',
+    tone: telemetrySummary.value.p95 ? 'active' : 'neutral'
+  },
+  {
+    key: 'routing',
+    label: 'Routing',
+    value: `${routingSummary.value.modelCount || 0} models`,
+    hint: routingSummary.value.providerCount ? `${routingSummary.value.providerCount} providers` : 'audit',
+    tone: routingSummary.value.total ? 'ready' : 'neutral'
+  }
+])
+
+const openWiki = () => {
+  if (!props.simulationId) return
+  showWikiSlideOver.value = true
+}
+
+const openTelemetry = () => {
+  if (!props.simulationId || !telemetrySummary.value.hasData) return
+  showTelemetrySlideOver.value = true
+}
 
 // Methods
 const addLog = (msg) => {
@@ -423,6 +598,7 @@ const doStartSimulation = async () => {
       
       startStatusPolling()
       startDetailPolling()
+      startRuntimeArtifactsPolling()
     } else {
       startError.value = res.error || '启动失败'
       addLog(t('log.startFailed', { error: res.error || t('common.unknownError') }))
@@ -465,6 +641,7 @@ const handleStopSimulation = async () => {
 // 轮询状态
 let statusTimer = null
 let detailTimer = null
+let artifactsTimer = null
 
 const startStatusPolling = () => {
   statusTimer = setInterval(fetchRunStatus, 2000)
@@ -472,6 +649,21 @@ const startStatusPolling = () => {
 
 const startDetailPolling = () => {
   detailTimer = setInterval(fetchRunStatusDetail, 3000)
+}
+
+const refreshRuntimeArtifacts = async () => {
+  if (!props.simulationId) return
+  try {
+    await loadArtifacts()
+  } catch (err) {
+    console.warn('获取 runtime observability 失败:', err)
+  }
+}
+
+const startRuntimeArtifactsPolling = () => {
+  if (artifactsTimer) return
+  refreshRuntimeArtifacts()
+  artifactsTimer = setInterval(refreshRuntimeArtifacts, 5000)
 }
 
 const stopPolling = () => {
@@ -482,6 +674,10 @@ const stopPolling = () => {
   if (detailTimer) {
     clearInterval(detailTimer)
     detailTimer = null
+  }
+  if (artifactsTimer) {
+    clearInterval(artifactsTimer)
+    artifactsTimer = null
   }
 }
 
@@ -524,6 +720,7 @@ const fetchRunStatus = async () => {
         }
         addLog(t('log.simCompleted'))
         phase.value = 2
+        await refreshRuntimeArtifacts()
         stopPolling()
         emit('update-status', 'completed')
       }
@@ -651,30 +848,10 @@ const handleNextStep = async () => {
     addLog(t('log.reportRequestSent'))
     return
   }
-  
-  isGeneratingReport.value = true
-  addLog(t('log.startingReportGen'))
-  
-  try {
-    const res = await generateReport({
-      simulation_id: props.simulationId,
-      force_regenerate: true
-    })
-    
-    if (res.success && res.data) {
-      const reportId = res.data.report_id
-      addLog(t('log.reportGenTaskStarted', { reportId }))
-      
-      // 跳转到报告页面
-      router.push({ name: 'Report', params: { reportId } })
-    } else {
-      addLog(t('log.reportGenFailed', { error: res.error || t('common.unknownError') }))
-      isGeneratingReport.value = false
-    }
-  } catch (err) {
-    addLog(t('log.reportGenException', { error: err.message }))
-    isGeneratingReport.value = false
-  }
+
+	  isGeneratingReport.value = true
+	  addLog(t('log.startingReportGen'))
+	  router.push({ name: 'SimulationReport', params: { simulationId: props.simulationId } })
 }
 
 // Scroll log to bottom
@@ -899,6 +1076,201 @@ onUnmounted(() => {
 .action-btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+
+/* --- Runtime Observability --- */
+.runtime-observability {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 14px 24px 16px;
+  border-bottom: 1px solid #E2E8F0;
+  background:
+    linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+}
+
+.runtime-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.runtime-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.runtime-wiki-btn {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid #CBD5E1;
+  border-radius: 7px;
+  background: #FFFFFF;
+  color: #0F172A;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.runtime-wiki-btn:hover {
+  border-color: #0F172A;
+  background: #F8FAFC;
+}
+
+.runtime-wiki-btn.secondary {
+  background: #0F172A;
+  border-color: #0F172A;
+  color: #FFFFFF;
+}
+
+.runtime-wiki-btn.secondary:hover {
+  background: #334155;
+  border-color: #334155;
+}
+
+.runtime-title {
+  display: block;
+  font-size: 10px;
+  font-weight: 850;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.runtime-subtitle {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #475569;
+  font-weight: 650;
+}
+
+.runtime-notices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.runtime-notices span {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #FFF7ED;
+  border: 1px solid #FED7AA;
+  color: #9A3412;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.runtime-details {
+  margin-top: 10px;
+  font-size: 11px;
+  color: #4B5563;
+}
+
+.runtime-details summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: #374151;
+}
+
+.runtime-models {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.runtime-model-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) repeat(4, minmax(70px, auto));
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  background: #FFF;
+}
+
+.runtime-model-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+  color: #111827;
+}
+
+.runtime-model-cost {
+  font-size: 11px;
+  font-weight: 700;
+  color: #065F46;
+}
+
+.runtime-model-cost.cost--unknown,
+.runtime-model-cost.cost--partial {
+  color: #92400E;
+}
+
+.routing-table-wrap {
+  margin-top: 8px;
+  overflow: auto;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  background: #FFFFFF;
+}
+
+.routing-table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+}
+
+.routing-table th,
+.routing-table td {
+  padding: 8px;
+  border-bottom: 1px solid #E5E7EB;
+  text-align: left;
+  vertical-align: top;
+}
+
+.routing-table th {
+  color: #64748B;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.routing-table td {
+  color: #334155;
+  font-size: 11px;
+}
+
+.routing-source {
+  display: inline-flex;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #F1F5F9;
+  color: #475569;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.routing-empty {
+  margin-top: 8px;
+  padding: 10px;
+  border: 1px dashed #CBD5E1;
+  border-radius: 6px;
+  background: #FFFFFF;
+  color: #64748B;
+  font-size: 11px;
+  font-weight: 650;
 }
 
 /* --- Main Content Area --- */

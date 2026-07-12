@@ -1,6 +1,6 @@
 import json
 
-from app.services.simulation_manager import SimulationManager
+from app.services.simulation_manager import SimulationManager, SimulationState
 
 
 def test_write_deduplication_summary_persists_ui_ready_metrics(tmp_path, monkeypatch):
@@ -24,6 +24,25 @@ def test_write_deduplication_summary_persists_ui_ready_metrics(tmp_path, monkeyp
     assert data["removed_entities"] == 3
     assert data["reduction_pct"] == 30.0
     assert data["status"] == "completed"
+
+
+def test_simulation_state_serializes_candidate_and_deduped_counts():
+    state = SimulationState(
+        simulation_id="sim_counts",
+        project_id="proj_counts",
+        graph_id="graph_counts",
+        candidate_entities_count=15,
+        entities_count=8,
+        deduped_entities_count=8,
+        profiles_count=8,
+    )
+
+    data = state.to_simple_dict()
+
+    assert data["candidate_entities_count"] == 15
+    assert data["entities_count"] == 8
+    assert data["deduped_entities_count"] == 8
+    assert data["profiles_count"] == 8
 
 
 def test_compile_wiki_artifacts_creates_wiki_files(tmp_path, monkeypatch):

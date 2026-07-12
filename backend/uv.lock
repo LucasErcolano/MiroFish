@@ -1861,6 +1861,7 @@ requires-dist = [
     { name = "camel-oasis", specifier = "==0.2.5" },
     { name = "chardet", specifier = ">=5.0.0" },
     { name = "charset-normalizer", specifier = ">=3.0.0" },
+    { name = "chromadb", specifier = ">=0.4.0" },
     { name = "chromadb", specifier = ">=0.5.0" },
     { name = "flask", specifier = ">=3.0.0" },
     { name = "flask-cors", specifier = ">=6.0.0" },

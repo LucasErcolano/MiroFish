@@ -1422,6 +1422,7 @@ class ReportAgent:
         used_tools = set()  # 记录已调用过的工具名
         max_iterations = max(2, self.MAX_TOOL_CALLS_PER_SECTION)
         all_tools = {"insight_forge", "panorama_search", "quick_search", "interview_agents"}
+        grounding_observations = []  # successful tool outputs kept for forced-final fallback
 
         # 报告上下文，用于InsightForge的子问题生成
         report_context = f"章节标题: {section.title}\n模拟需求: {self.simulation_requirement}"
@@ -1622,6 +1623,7 @@ class ReportAgent:
                     call.get("parameters", {}),
                     report_context=report_context
                 )
+                grounding_observations.append((call["name"], _safe_text(result)))
 
                 if self.report_logger:
                     self.report_logger.log_tool_result(
@@ -1702,13 +1704,100 @@ class ReportAgent:
         
         # 达到最大迭代次数，强制生成内容
         logger.warning(t('report.sectionMaxIter', title=section.title))
-        messages.append({"role": "user", "content": REACT_FORCE_FINAL_MSG})
+        force_final_prompt = REACT_FORCE_FINAL_MSG
+        if tool_calls_count < min_tool_calls:
+            fallback_params = {
+                "query": f"{section.title}\n{self.simulation_requirement}"[:500],
+                "limit": 8,
+            }
+            logger.warning(
+                "Section %s reached forced finalization without grounding; "
+                "running fallback quick_search before validation.",
+                section.title,
+            )
+
+            if self.report_logger:
+                self.report_logger.log_tool_call(
+                    section_title=section.title,
+                    section_index=section_index,
+                    tool_name="quick_search",
+                    parameters=fallback_params,
+                    iteration=max_iterations + 1,
+                )
+
+            fallback_result = self._execute_tool(
+                "quick_search",
+                fallback_params,
+                report_context=report_context,
+            )
+            if self.report_logger:
+                self.report_logger.log_tool_result(
+                    section_title=section.title,
+                    section_index=section_index,
+                    tool_name="quick_search",
+                    result=fallback_result,
+                    iteration=max_iterations + 1,
+                )
+
+            if not _qg_is_tool_result_failure(fallback_result):
+                grounding_observations.append(("quick_search", _safe_text(fallback_result)))
+                tool_calls_count += 1
+                used_tools.add("quick_search")
+                synthetic_tool_call = json.dumps(
+                    {"name": "quick_search", "parameters": fallback_params},
+                    ensure_ascii=False,
+                )
+                messages.append({"role": "assistant", "content": f"<tool_call>{synthetic_tool_call}</tool_call>"})
+                force_final_prompt = (
+                    REACT_OBSERVATION_TEMPLATE.format(
+                        tool_name="quick_search",
+                        result=fallback_result,
+                        tool_calls_count=tool_calls_count,
+                        max_tool_calls=self.MAX_TOOL_CALLS_PER_SECTION,
+                        used_tools_str=", ".join(used_tools),
+                        unused_hint="",
+                    )
+                    + "\n\n"
+                    + REACT_FORCE_FINAL_MSG
+                )
+
+        messages.append({"role": "user", "content": force_final_prompt})
         
-        response = self.llm.chat(
-            messages=messages,
-            temperature=0.5,
-            max_tokens=4096
-        )
+        try:
+            response = self.llm.chat(
+                messages=messages,
+                temperature=0.5,
+                max_tokens=4096
+            )
+        except Exception as exc:
+            logger.exception(
+                "Forced final LLM call failed for section %s after %s tool calls; "
+                "using grounded fallback content.",
+                section.title,
+                tool_calls_count,
+            )
+            observations_text = "\n\n".join(
+                f"Source: {tool_name}\n{result[:2500]}"
+                for tool_name, result in grounding_observations
+                if result
+            )
+            final_answer = (
+                f"### Grounded summary for {section.title}\n\n"
+                "The report writer could not complete the final synthesis call, "
+                "so this section is assembled from retrieved simulation evidence.\n\n"
+                f"{observations_text or 'No additional retrieved evidence was available.'}"
+            )
+            self._validate_section_content(final_answer, tool_calls_count=tool_calls_count, forced=True)
+
+            if self.report_logger:
+                self.report_logger.log_section_content(
+                    section_title=section.title,
+                    section_index=section_index,
+                    content=final_answer,
+                    tool_calls_count=tool_calls_count
+                )
+
+            return final_answer
 
         # 检查强制收尾时 LLM 返回是否为 None
         if response is None:

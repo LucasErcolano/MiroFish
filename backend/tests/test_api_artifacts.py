@@ -134,11 +134,59 @@ def test_telemetry_endpoint_aggregates_jsonl(client, tmp_path):
     assert body["totals"]["calls"] == 3
     assert body["totals"]["errors"] == 1
     assert body["totals"]["parse_errors"] == 1
+    assert body["totals"]["cost_estimation_status"] == "estimated"
+    assert body["totals"]["usage_unavailable_calls"] == 0
     model_a = next(row for row in body["per_model"] if row["model"] == "model-a")
     assert model_a["calls"] == 2
     assert model_a["tokens_in"] == 30
     assert model_a["latency_p50_ms"] == 100.0
     assert model_a["latency_p95_ms"] == 300.0
+    assert model_a["cost_estimation_status"] == "estimated"
+
+
+def test_telemetry_endpoint_marks_unknown_cost_and_rate_limits(client, tmp_path):
+    simulation_id = "sim_unknown_cost"
+    sim_dir = _sim_dir(tmp_path, simulation_id)
+    sim_dir.mkdir(parents=True)
+    records = [
+        {
+            "model": "google/gemma-3-27b-it",
+            "provider": "openrouter",
+            "tokens_in": 1000,
+            "tokens_out": 100,
+            "latency_ms": 120,
+            "cost_usd_est": 0,
+            "error": None,
+            "leak_flags": ["cost_unknown_model"],
+        },
+        {
+            "model": "google/gemma-3-27b-it",
+            "provider": "openrouter",
+            "tokens_in": 0,
+            "tokens_out": 0,
+            "latency_ms": 75,
+            "cost_usd_est": 0,
+            "error": "RateLimitError: 429 Too Many Requests",
+            "leak_flags": ["cost_unknown_model", "usage_unavailable"],
+        },
+    ]
+    (sim_dir / "llm_telemetry.jsonl").write_text(
+        "\n".join(json.dumps(record) for record in records) + "\n",
+        encoding="utf-8",
+    )
+
+    response = client.get(f"/api/simulation/{simulation_id}/telemetry")
+
+    assert response.status_code == 200
+    body = response.get_json()
+    assert body["totals"]["cost_usd_est"] == 0
+    assert body["totals"]["cost_unknown_model_calls"] == 2
+    assert body["totals"]["usage_unavailable_calls"] == 1
+    assert body["totals"]["rate_limited_calls"] == 1
+    assert body["totals"]["cost_estimation_status"] == "unknown"
+    model = body["per_model"][0]
+    assert model["cost_estimation_status"] == "unknown"
+    assert model["leak_flags"] == ["cost_unknown_model", "usage_unavailable"]
 
 
 def test_routing_audit_endpoint_returns_jsonl_records(client, tmp_path):

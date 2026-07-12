@@ -612,6 +612,82 @@
     "redirectToQuickSearch": "search_graph redirected to quick_search",
     "redirectToInsightForge": "get_simulation_context redirected to insight_forge"
   },
+  "observability": {
+    "openWiki": "Open Wiki",
+    "openTelemetry": "Open Telemetry",
+    "preparationTrace": {
+      "title": "Preparation Trace",
+      "subtitle": "Candidates are deduplicated before final agent profiles are generated."
+    },
+    "runtime": {
+      "title": "Runtime Observability",
+      "waitingTelemetry": "Waiting for model-call telemetry",
+      "rateLimits": "Rate limits detected during model calls",
+      "costUnknown": "Cost needs model pricing or provider usage",
+      "ready": "Model calls, routing and cost estimate",
+      "noticeCount": "{count} notice | {count} notices"
+    },
+    "routingDetails": {
+      "title": "Routing details",
+      "agentId": "Agent ID",
+      "role": "Role",
+      "provider": "Provider",
+      "model": "Model",
+      "source": "Source",
+      "empty": "Routing audit not available yet."
+    },
+    "deepResearchTrace": {
+      "title": "Deep Research trace",
+      "pending": "Research trace pending",
+      "tavily": "Tavily grounded research",
+      "llmFallback": "LLM fallback research",
+      "failed": "Research trace failed",
+      "saved": "Research trace saved",
+      "empty": "No readable Deep Research findings are available yet."
+    },
+    "telemetry": {
+      "drawerLabel": "Telemetry details",
+      "kicker": "Telemetry",
+      "title": "Model calls, cost and latency",
+      "subtitle": "Runtime metrics stay open over the current workflow.",
+      "loading": "Loading telemetry...",
+      "empty": "No telemetry recorded for this simulation yet.",
+      "calls": "Calls",
+      "errors": "Errors",
+      "tokens": "Tokens",
+      "cost": "Cost",
+      "costByModel": "Cost by model",
+      "latencyByModel": "Latency by model",
+      "perModel": "Per-model details",
+      "models": "models",
+      "model": "Model",
+      "provider": "Provider",
+      "tokensIn": "Tokens in",
+      "tokensOut": "Tokens out",
+      "modelDetails": "Model details"
+    },
+    "wikiPreview": {
+      "kicker": "Evidence Wiki",
+      "pagesCompiled": "{count} pages compiled",
+      "latestPages": "Latest readable pages"
+    },
+    "wikiDrawer": {
+      "drawerLabel": "Evidence Wiki",
+      "kicker": "Evidence Wiki",
+      "title": "Readable context",
+      "subtitle": "Compiled pages stay open over the current workflow.",
+      "pages": "Pages",
+      "loading": "Loading wiki...",
+      "empty": "No wiki available for this simulation yet.",
+      "loadingPage": "Loading page...",
+      "selectPage": "Select a wiki page to inspect.",
+      "readerSubtitle": "Evidence formatted for review without leaving the active run."
+    },
+    "fusion": {
+      "title": "Fusion",
+      "waiting": "Fusion runs after the report completes and then summarizes outcome, confidence, risks and checks."
+    }
+  },
   "console": {
     "zepToolsInitialized": "ZepToolsService initialized",
     "zepRetryAttempt": "Zep {operation} attempt {attempt} failed: {error}, retrying in {delay}s...",

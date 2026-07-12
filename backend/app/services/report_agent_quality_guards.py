@@ -119,8 +119,9 @@ def parse_tool_calls(response: Optional[str], valid_tool_names: Iterable[str]) -
     if tool_calls:
         return tool_calls
 
-    # 2) ```json fenced JSON (object or array) — common in Gemini / Claude.
-    fence_pattern = r"```(?:json)?\s*([\[{].*?[\]}])\s*```"
+    # 2) Fenced JSON (object or array) — common in Gemini / Claude.
+    # Some local/proxy models use ```tool_call fences around the same JSON.
+    fence_pattern = r"```(?:json|tool_call)?\s*([\[{].*?[\]}])\s*```"
     for match in re.finditer(fence_pattern, response, re.DOTALL | re.IGNORECASE):
         try:
             add_if_valid(json.loads(match.group(1)))

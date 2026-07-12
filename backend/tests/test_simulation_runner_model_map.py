@@ -38,6 +38,8 @@ def test_simulation_runner_passes_model_map_to_reddit_command(tmp_path, monkeypa
     scripts_dir.mkdir()
     (scripts_dir / "run_reddit_simulation.py").write_text("print('ok')\n", encoding="utf-8")
     _write_ready_simulation(sim_root, "sim_model_map")
+    model_map = tmp_path / "model_map.yaml"
+    model_map.write_text("version: 1\n", encoding="utf-8")
 
     captured = {}
 
@@ -59,12 +61,12 @@ def test_simulation_runner_passes_model_map_to_reddit_command(tmp_path, monkeypa
         platform="reddit",
         max_rounds=2,
         no_wait=True,
-        model_map_path="backtesting/ipc-trimodel-multiagent/model_map_ipc_trimodel.yaml",
+        model_map_path=str(model_map),
     )
 
     assert "--model-map" in captured["cmd"]
     index = captured["cmd"].index("--model-map")
-    assert captured["cmd"][index + 1] == "backtesting/ipc-trimodel-multiagent/model_map_ipc_trimodel.yaml"
+    assert captured["cmd"][index + 1] == str(model_map)
     SimulationRunner._stdout_files["sim_model_map"].close()
     SimulationRunner._stdout_files.clear()
 
@@ -75,7 +77,6 @@ def test_simulation_runner_rejects_model_map_for_parallel(tmp_path, monkeypatch)
     scripts_dir.mkdir()
     (scripts_dir / "run_parallel_simulation.py").write_text("print('ok')\n", encoding="utf-8")
     _write_ready_simulation(sim_root, "sim_parallel")
-
     monkeypatch.setattr(SimulationRunner, "RUN_STATE_DIR", str(sim_root))
     monkeypatch.setattr(SimulationRunner, "SCRIPTS_DIR", str(scripts_dir))
 

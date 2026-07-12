@@ -43,6 +43,7 @@ node_modules/
 *.swp
 *.swo
 # Runtime / generated
+node_modules/
 *.log
 log/
 logs/

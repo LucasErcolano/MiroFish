@@ -33,8 +33,12 @@
           </div>
           <div class="kpi">
             <span class="label">Cost</span>
-            <strong>${{ Number(totals.cost_usd_est || 0).toFixed(4) }}</strong>
+            <strong>{{ summary.costLabel }}</strong>
           </div>
+        </section>
+
+        <section v-if="summary.notices.length" class="notice-row">
+          <span v-for="notice in summary.notices" :key="notice">{{ notice }}</span>
         </section>
 
         <section class="chart-grid">
@@ -74,7 +78,7 @@
                 <td>{{ formatNumber(row.tokens_out) }}</td>
                 <td>{{ row.latency_p50_ms }}ms</td>
                 <td>{{ row.latency_p95_ms }}ms</td>
-                <td>${{ Number(row.cost_usd_est || 0).toFixed(4) }}</td>
+                <td>{{ formatCostWithStatus(row.cost_usd_est, row.cost_estimation_status) }}</td>
               </tr>
             </tbody>
           </table>
@@ -88,6 +92,7 @@
 import { computed, defineAsyncComponent, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSimulationArtifacts } from '../composables/useSimulationArtifacts'
+import { formatCostWithStatus, summarizeTelemetry } from '../composables/useObservabilitySummary'
 
 const ModelCostChart = defineAsyncComponent(() => import('../components/charts/ModelCostChart.vue'))
 const ModelLatencyChart = defineAsyncComponent(() => import('../components/charts/ModelLatencyChart.vue'))
@@ -102,6 +107,7 @@ const { telemetry, loading, load } = useSimulationArtifacts(() => props.simulati
 const telemetryData = computed(() => telemetry.value)
 const totals = computed(() => telemetry.value?.totals || {})
 const rows = computed(() => telemetry.value?.per_model || [])
+const summary = computed(() => summarizeTelemetry(telemetry.value))
 
 const formatNumber = (value) => Number(value || 0).toLocaleString()
 
@@ -208,6 +214,23 @@ onMounted(load)
   font-size: 24px;
 }
 
+.notice-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -4px 0 16px;
+}
+
+.notice-row span {
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid #FED7AA;
+  background: #FFF7ED;
+  color: #9A3412;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .chart-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -218,12 +241,21 @@ onMounted(load)
 .chart-panel {
   height: 320px;
   padding: 18px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .chart-panel h2,
 .table-panel h2 {
   margin: 0 0 16px;
   font-size: 16px;
+  flex: 0 0 auto;
+}
+
+.chart-panel :deep(.model-chart) {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .table-panel {

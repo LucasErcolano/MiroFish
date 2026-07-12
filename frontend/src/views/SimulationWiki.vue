@@ -1,17 +1,20 @@
 <template>
-  <div class="observability-view">
-    <header class="obs-header">
+  <div class="wiki-view-shell">
+    <header class="wiki-topbar">
       <button class="brand" @click="router.push('/')">MIROFISH</button>
       <nav class="tabs">
         <router-link :to="{ name: 'Simulation', params: { simulationId } }">Overview</router-link>
         <router-link :to="{ name: 'SimulationWiki', params: { simulationId } }">Wiki</router-link>
-        <router-link :to="{ name: 'SimulationTelemetry', params: { simulationId } }">Telemetry</router-link>
+        <router-link :to="{ name: 'SimulationTelemetry', params: { simulationId } }">Debug telemetry</router-link>
       </nav>
     </header>
 
-    <main class="wiki-layout">
-      <aside class="wiki-tree">
-        <div class="tree-title">Report Wiki</div>
+    <main class="wiki-workspace">
+      <aside class="wiki-sidebar">
+        <div class="wiki-sidebar-heading">
+          <span>Evidence Wiki</span>
+          <strong>{{ pages.length }} pages</strong>
+        </div>
         <div v-if="loading" class="tree-empty">Loading...</div>
         <div v-else-if="pages.length === 0" class="tree-empty">No wiki available for this simulation.</div>
         <template v-else>
@@ -24,17 +27,24 @@
               :class="{ active: selectedPath === page.path }"
               @click="selectPage(page.path)"
             >
-              <span>{{ page.title }}</span>
-              <small>{{ formatBytes(page.size) }}</small>
+              <span>{{ page.displayTitle }}</span>
+              <small>{{ page.displayKind }}</small>
             </button>
           </section>
         </template>
       </aside>
 
-      <section class="wiki-content">
+      <section class="wiki-reader">
         <div v-if="pageLoading" class="empty">Loading page...</div>
         <div v-else-if="!selectedPath" class="empty">Select a wiki page to inspect.</div>
-        <article v-else class="markdown-body" v-html="renderedContent"></article>
+        <template v-else>
+          <div class="wiki-reader-header">
+            <span>{{ selectedPage?.displayKind || 'Wiki Page' }}</span>
+            <h1>{{ selectedPage?.displayTitle || 'Wiki Page' }}</h1>
+            <p>Readable context compiled from the simulation evidence layer.</p>
+          </div>
+          <article class="markdown-body" v-html="renderedContent"></article>
+        </template>
       </section>
     </main>
   </div>
@@ -45,6 +55,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { marked } from 'marked'
 import { useSimulationArtifacts } from '../composables/useSimulationArtifacts'
+import { normalizeWikiPages } from '../composables/useObservabilitySummary'
 
 marked.setOptions({ gfm: true, breaks: false })
 
@@ -58,7 +69,8 @@ const selectedPath = ref('')
 const pageContent = ref('')
 const pageLoading = ref(false)
 
-const pages = computed(() => wiki.value?.pages || [])
+const pages = computed(() => normalizeWikiPages(wiki.value?.pages || []))
+const selectedPage = computed(() => pages.value.find(page => page.path === selectedPath.value) || null)
 const groupedPages = computed(() => {
   const labels = {
     root: 'Overview pages',
@@ -80,8 +92,18 @@ const renderedContent = computed(() => {
       return `<pre>${pageContent.value}</pre>`
     }
   }
-  return marked.parse(pageContent.value)
+  return marked.parse(cleanWikiContent(pageContent.value))
 })
+
+const cleanWikiContent = (content) => {
+  return String(content || '')
+    .replace(/^#\s*Simulation\s+sim_[\w-]+\s+(?:\u2014|-)\s+Wiki\s+Index/m, '# Wiki Index')
+    .replace(/^#\s*Simulation\s+sim_[\w-]+\s+(?:\u2014|-)\s+/m, '# ')
+    .replace(/Simulation\s+\*\*sim_[^*]+\*\*\s+(?:\u2014|-)\s+/g, '')
+    .replace(/Simulation\s+sim_[\w-]+\s+(?:\u2014|-)\s+/g, '')
+    .replace(/Simulation\s+sim_[\w-]+\s+agent knowledge base/g, 'Agent knowledge base')
+    .replace(/\bsim_[\w-]+\b/g, 'this simulation')
+}
 
 const selectPage = async (path) => {
   selectedPath.value = path
@@ -94,12 +116,6 @@ const selectPage = async (path) => {
   }
 }
 
-const formatBytes = (size) => {
-  if (!size) return '0 B'
-  if (size < 1024) return `${size} B`
-  return `${(size / 1024).toFixed(1)} KB`
-}
-
 onMounted(async () => {
   await load()
   const first = pages.value.find(page => page.path === 'index.md') || pages.value[0]
@@ -110,36 +126,43 @@ watch(() => props.simulationId, async () => {
   selectedPath.value = ''
   pageContent.value = ''
   await load()
+  const first = pages.value.find(page => page.path === 'index.md') || pages.value[0]
+  if (first) await selectPage(first.path)
 })
 </script>
 
 <style scoped>
-.observability-view {
+.wiki-view-shell {
   height: 100vh;
-  background: #F8FAFC;
-  color: #111827;
+  background:
+    radial-gradient(circle at top left, rgba(226, 232, 240, 0.65), transparent 32%),
+    #F8FAFC;
+  color: #0F172A;
   font-family: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
   display: flex;
   flex-direction: column;
 }
 
-.obs-header {
+.wiki-topbar {
   height: 60px;
   padding: 0 24px;
-  background: #FFF;
-  border-bottom: 1px solid #E5E7EB;
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom: 1px solid #E2E8F0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
+  backdrop-filter: blur(12px);
 }
 
 .brand {
   border: 0;
   background: transparent;
+  color: #0F172A;
   font-family: 'JetBrains Mono', monospace;
-  font-weight: 800;
+  font-weight: 850;
   cursor: pointer;
+  letter-spacing: 0.02em;
 }
 
 .tabs {
@@ -149,126 +172,264 @@ watch(() => props.simulationId, async () => {
 
 .tabs a {
   padding: 8px 12px;
-  border-radius: 6px;
-  color: #6B7280;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: #64748B;
   text-decoration: none;
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 750;
 }
 
 .tabs a.router-link-active {
-  background: #111827;
-  color: #FFF;
+  background: #0F172A;
+  border-color: #0F172A;
+  color: #FFFFFF;
 }
 
-.wiki-layout {
+.wiki-workspace {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 320px minmax(0, 1fr);
 }
 
-.wiki-tree {
-  background: #FFF;
-  border-right: 1px solid #E5E7EB;
+.wiki-sidebar {
+  background: rgba(255, 255, 255, 0.96);
+  border-right: 1px solid #E2E8F0;
   padding: 20px;
   overflow-y: auto;
 }
 
-.tree-title {
-  font-size: 18px;
-  font-weight: 700;
+.wiki-sidebar-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
   margin-bottom: 18px;
 }
 
+.wiki-sidebar-heading span {
+  color: #0F172A;
+  font-size: 18px;
+  font-weight: 850;
+  line-height: 1.1;
+}
+
+.wiki-sidebar-heading strong {
+  flex-shrink: 0;
+  padding: 5px 8px;
+  border: 1px solid #E2E8F0;
+  border-radius: 999px;
+  background: #F8FAFC;
+  color: #334155;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+}
+
 .tree-empty {
-  color: #6B7280;
+  color: #64748B;
   font-size: 13px;
 }
 
 .tree-group {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .tree-group h2 {
   margin: 0 0 8px;
-  font-size: 11px;
+  color: #64748B;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: .08em;
-  color: #6B7280;
 }
 
 .tree-item {
   width: 100%;
-  border: 0;
+  border: 1px solid transparent;
   background: transparent;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 9px 10px;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   text-align: left;
   cursor: pointer;
 }
 
-.tree-item:hover,
+.tree-item:hover {
+  background: #F8FAFC;
+  border-color: #E2E8F0;
+}
+
 .tree-item.active {
-  background: #F3F4F6;
+  background: #EEF2FF;
+  border-color: #CBD5E1;
 }
 
 .tree-item span {
+  min-width: 0;
+  color: #0F172A;
+  font-size: 12px;
+  font-weight: 750;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .tree-item small {
-  color: #9CA3AF;
+  color: #64748B;
   flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
 }
 
-.wiki-content {
+.wiki-reader {
+  min-width: 0;
   overflow-y: auto;
   padding: 28px;
 }
 
+.wiki-reader-header,
 .empty,
 .markdown-body {
   max-width: 920px;
-  background: #FFF;
-  border: 1px solid #E5E7EB;
-  border-radius: 8px;
+  margin: 0 auto;
+}
+
+.wiki-reader-header {
+  padding: 24px 28px;
+  border: 1px solid #D8DEE8;
+  border-radius: 10px 10px 0 0;
+  background: #FFFFFF;
+  border-bottom: 0;
+}
+
+.wiki-reader-header span {
+  display: block;
+  color: #64748B;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.wiki-reader-header h1 {
+  margin: 5px 0 0;
+  color: #0F172A;
+  font-size: 30px;
+  font-weight: 850;
+  line-height: 1.08;
+}
+
+.wiki-reader-header p {
+  margin: 8px 0 0;
+  color: #64748B;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.empty,
+.markdown-body {
+  background: #FFFFFF;
+  border: 1px solid #D8DEE8;
+  border-radius: 10px;
   padding: 28px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.wiki-reader-header + .markdown-body {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
 }
 
 .empty {
-  color: #6B7280;
+  color: #64748B;
+}
+
+.markdown-body {
+  color: #1E293B;
+  font-size: 15px;
+  line-height: 1.68;
 }
 
 .markdown-body :deep(h1),
 .markdown-body :deep(h2),
 .markdown-body :deep(h3) {
+  margin: 1.2em 0 0.45em;
+  color: #0F172A;
+  line-height: 1.18;
+}
+
+.markdown-body :deep(h1:first-child),
+.markdown-body :deep(h2:first-child),
+.markdown-body :deep(h3:first-child) {
   margin-top: 0;
+}
+
+.markdown-body :deep(p) {
+  margin: 0.65em 0;
+}
+
+.markdown-body :deep(ul),
+.markdown-body :deep(ol) {
+  padding-left: 22px;
+}
+
+.markdown-body :deep(li) {
+  margin: 0.35em 0;
+}
+
+.markdown-body :deep(code) {
+  padding: 2px 5px;
+  border-radius: 5px;
+  background: #F1F5F9;
+  color: #0F172A;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88em;
 }
 
 .markdown-body :deep(pre) {
   white-space: pre-wrap;
-  background: #111827;
-  color: #E5E7EB;
-  border-radius: 6px;
+  background: #0F172A;
+  color: #E2E8F0;
+  border-radius: 8px;
   padding: 16px;
   overflow-x: auto;
 }
 
 @media (max-width: 900px) {
-  .wiki-layout {
+  .wiki-topbar {
+    align-items: flex-start;
+    height: auto;
+    padding: 14px 16px;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .tabs {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .wiki-workspace {
     grid-template-columns: 1fr;
   }
 
-  .wiki-tree {
+  .wiki-sidebar {
     max-height: 320px;
     border-right: 0;
-    border-bottom: 1px solid #E5E7EB;
+    border-bottom: 1px solid #E2E8F0;
+  }
+
+  .wiki-reader {
+    padding: 18px;
+  }
+
+  .wiki-reader-header h1 {
+    font-size: 24px;
   }
 }
 </style>

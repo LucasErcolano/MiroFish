@@ -425,6 +425,25 @@ class SimulationRunner:
                 "--config", config_path,  # 使用完整配置文件路径
             ]
 
+            explicit_model_map = bool(model_map_path)
+            if platform == "reddit" and not model_map_path and Config.ENABLE_SIMULATION_MODEL_ROUTING:
+                model_map_path = config.get("model_map_path") or Config.SIMULATION_MODEL_MAP_PATH
+            if model_map_path:
+                if not os.path.isabs(model_map_path):
+                    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+                    project_candidate = os.path.join(project_root, model_map_path)
+                    simulation_candidate = os.path.join(sim_dir, model_map_path)
+                    model_map_path = os.path.abspath(
+                        project_candidate if os.path.exists(project_candidate) else simulation_candidate
+                    )
+                if not os.path.exists(model_map_path):
+                    if explicit_model_map:
+                        raise ValueError(f"model_map_path does not exist: {model_map_path}")
+                    logger.warning("Default model map was not found: %s", model_map_path)
+                    model_map_path = None
+                else:
+                    logger.info("Model routing enabled for %s: %s", simulation_id, model_map_path)
+
             # 如果指定了最大轮数，添加到命令行参数
             if max_rounds is not None and max_rounds > 0:
                 cmd.extend(["--max-rounds", str(max_rounds)])

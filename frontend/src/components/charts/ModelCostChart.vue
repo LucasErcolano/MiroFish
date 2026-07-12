@@ -1,5 +1,7 @@
 <template>
-  <Bar :data="chartData" :options="chartOptions" />
+  <div class="model-chart">
+    <Bar :data="chartData" :options="chartOptions" />
+  </div>
 </template>
 
 <script setup>
@@ -45,3 +47,17 @@ const chartOptions = {
   }
 }
 </script>
+
+<style scoped>
+.model-chart {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.model-chart :deep(canvas) {
+  width: 100% !important;
+  height: 100% !important;
+}
+</style>
