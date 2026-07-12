@@ -1,6 +1,5 @@
 .git
 .github
-.gitignore
 .cursor
 .DS_Store
 .env
@@ -21,3 +20,4 @@ frontend/dist
 frontend/.vite
 
 backend/uploads
+backend/data

@@ -1,0 +1,46 @@
+# Default routing map for local UI observability runs.
+#
+# This avoids vLLM/LMS local ports and uses the same OpenAI-compatible
+# OpenRouter credentials already loaded through LLM_API_KEY / LLM_BASE_URL.
+
+version: 1
+
+default:
+  provider: openai
+  model: google/gemma-3-27b-it
+  base_url_env: LLM_BASE_URL
+  api_key_env: LLM_API_KEY
+  temperature: 0.7
+  seed: null
+
+fallback:
+  enabled: true
+
+by_role:
+  advisor:
+    model: openai/gpt-4o-mini
+    temperature: 0.4
+  Advisor:
+    model: openai/gpt-4o-mini
+    temperature: 0.4
+  investor:
+    model: openai/gpt-4o-mini
+    temperature: 0.4
+  Investor:
+    model: openai/gpt-4o-mini
+    temperature: 0.4
+  media_outlet:
+    model: google/gemma-3-27b-it
+    temperature: 0.8
+  MediaOutlet:
+    model: google/gemma-3-27b-it
+    temperature: 0.8
+  journalist:
+    model: google/gemma-3-27b-it
+    temperature: 0.8
+  government_source:
+    model: google/gemma-3-27b-it
+    temperature: 0.5
+  regulator:
+    model: google/gemma-3-27b-it
+    temperature: 0.5

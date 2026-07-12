@@ -53,6 +53,7 @@
       <div class="panel-wrapper right" :style="rightPanelStyle">
         <Step4Report
           :reportId="currentReportId"
+          :taskId="reportTaskId"
           :simulationId="simulationId"
           :systemLogs="systemLogs"
           @add-log="addLog"
@@ -71,7 +72,7 @@ import GraphPanel from '../components/GraphPanel.vue'
 import Step4Report from '../components/Step4Report.vue'
 import { getProject, getGraphData } from '../api/graph'
 import { getSimulation } from '../api/simulation'
-import { getReport } from '../api/report'
+import { checkReportBySimulation, generateReport, getReport } from '../api/report'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 
 const route = useRoute()
@@ -80,20 +81,23 @@ const { t } = useI18n()
 
 // Props
 const props = defineProps({
-  reportId: String
+  reportId: String,
+  simulationId: String
 })
 
 // Layout State - 默认切换到工作台视角
 const viewMode = ref('workbench')
 
 // Data State
-const currentReportId = ref(route.params.reportId)
-const simulationId = ref(null)
+const currentReportId = ref(route.params.reportId || null)
+const simulationId = ref(route.params.simulationId || route.query.simulationId || null)
+const reportTaskId = ref(route.query.taskId || null)
 const projectData = ref(null)
 const graphData = ref(null)
 const graphLoading = ref(false)
 const systemLogs = ref([])
 const currentStatus = ref('processing') // processing | completed | error
+const isEnsuringReport = ref(false)
 
 // --- Computed Layout Styles ---
 const leftPanelStyle = computed(() => {
@@ -142,42 +146,107 @@ const toggleMaximize = (target) => {
 }
 
 // --- Data Logic ---
+const loadSimulationContext = async (id) => {
+  if (!id) return
+  simulationId.value = id
+  const simRes = await getSimulation(id)
+  if (simRes.success && simRes.data) {
+    const simData = simRes.data
+
+    if (simData.project_id) {
+      const projRes = await getProject(simData.project_id)
+      if (projRes.success && projRes.data) {
+        projectData.value = projRes.data
+        addLog(t('log.projectLoadSuccess', { id: projRes.data.project_id }))
+
+        if (projRes.data.graph_id) {
+          await loadGraph(projRes.data.graph_id)
+        }
+      }
+    }
+  }
+}
+
+const ensureReportForSimulation = async () => {
+  if (!simulationId.value || isEnsuringReport.value) return
+  isEnsuringReport.value = true
+  currentStatus.value = 'processing'
+
+  try {
+    addLog(`Checking report for simulation ${simulationId.value}`)
+    await loadSimulationContext(simulationId.value)
+
+    const checkRes = await checkReportBySimulation(simulationId.value)
+    const checkData = checkRes?.data || {}
+    if (checkRes.success && checkData.has_report && checkData.report_id) {
+      currentReportId.value = checkData.report_id
+      reportTaskId.value = null
+      addLog(`Existing report found: ${checkData.report_id}`)
+      router.replace({
+        name: 'Report',
+        params: { reportId: checkData.report_id },
+        query: { simulationId: simulationId.value }
+      })
+      return
+    }
+
+    addLog('No report found. Starting Report Agent.')
+    const generateRes = await generateReport({
+      simulation_id: simulationId.value,
+      force_regenerate: false
+    })
+
+    if (generateRes.success && generateRes.data?.report_id) {
+      currentReportId.value = generateRes.data.report_id
+      reportTaskId.value = generateRes.data.task_id || null
+      addLog(`Report generation started: ${currentReportId.value}`)
+      router.replace({
+        name: 'Report',
+        params: { reportId: currentReportId.value },
+        query: {
+          simulationId: simulationId.value,
+          ...(reportTaskId.value ? { taskId: reportTaskId.value } : {})
+        }
+      })
+    } else {
+      currentStatus.value = 'error'
+      addLog(t('log.reportGenFailed', { error: generateRes.error || t('common.unknownError') }))
+    }
+  } catch (err) {
+    currentStatus.value = 'error'
+    addLog(t('log.reportGenException', { error: err.message }))
+  } finally {
+    isEnsuringReport.value = false
+  }
+}
+
 const loadReportData = async () => {
+  if (!currentReportId.value) {
+    await ensureReportForSimulation()
+    return
+  }
+
   try {
     addLog(t('log.loadReportData', { id: currentReportId.value }))
 
-    // 获取 report 信息以获取 simulation_id
     const reportRes = await getReport(currentReportId.value)
     if (reportRes.success && reportRes.data) {
       const reportData = reportRes.data
-      simulationId.value = reportData.simulation_id
-
-      if (simulationId.value) {
-        // 获取 simulation 信息
-        const simRes = await getSimulation(simulationId.value)
-        if (simRes.success && simRes.data) {
-          const simData = simRes.data
-
-          // 获取 project 信息
-          if (simData.project_id) {
-            const projRes = await getProject(simData.project_id)
-            if (projRes.success && projRes.data) {
-              projectData.value = projRes.data
-              addLog(t('log.projectLoadSuccess', { id: projRes.data.project_id }))
-
-              // 获取 graph 数据
-              if (projRes.data.graph_id) {
-                await loadGraph(projRes.data.graph_id)
-              }
-            }
-          }
-        }
-      }
+      simulationId.value = reportData.simulation_id || simulationId.value
+      if (simulationId.value) await loadSimulationContext(simulationId.value)
     } else {
       addLog(t('log.getReportInfoFailed', { error: reportRes.error || t('common.unknownError') }))
+      if (simulationId.value) {
+        addLog(`Using simulation evidence fallback: ${simulationId.value}`)
+        await loadSimulationContext(simulationId.value)
+      }
     }
   } catch (err) {
     addLog(t('log.loadException', { error: err.message }))
+    if (simulationId.value) {
+      addLog(`Using simulation evidence fallback: ${simulationId.value}`)
+      await loadSimulationContext(simulationId.value)
+    }
   }
 }
 
@@ -204,16 +273,20 @@ const refreshGraph = () => {
 }
 
 // Watch route params
-watch(() => route.params.reportId, (newId) => {
-  if (newId && newId !== currentReportId.value) {
-    currentReportId.value = newId
+watch(() => route.fullPath, () => {
+  currentReportId.value = route.params.reportId || null
+  simulationId.value = route.params.simulationId || route.query.simulationId || simulationId.value
+  reportTaskId.value = route.query.taskId || null
+
+  if (currentReportId.value) {
     loadReportData()
+  } else if (simulationId.value) {
+    ensureReportForSimulation()
   }
 }, { immediate: true })
 
 onMounted(() => {
   addLog(t('log.reportViewInit'))
-  loadReportData()
 })
 </script>
 
@@ -349,5 +422,63 @@ onMounted(() => {
 
 .panel-wrapper.left {
   border-right: 1px solid #EAEAEA;
+}
+
+@media (max-width: 760px) {
+  .main-view {
+    overflow: auto;
+  }
+
+  .app-header {
+    height: auto;
+    min-height: 60px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .header-center {
+    position: static;
+    transform: none;
+    order: 3;
+    width: 100%;
+  }
+
+  .view-switcher {
+    width: 100%;
+  }
+
+  .switch-btn {
+    flex: 1;
+    min-width: 0;
+    padding: 7px 6px;
+    white-space: nowrap;
+  }
+
+  .header-right {
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .workflow-step {
+    font-size: 12px;
+  }
+
+  .step-divider {
+    display: none;
+  }
+
+  .content-area {
+    overflow: visible;
+    display: block;
+  }
+
+  .panel-wrapper {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
 }
 </style>

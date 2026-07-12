@@ -1,0 +1,7 @@
+case_id: minimal_case
+mode: offline_fixture
+expected_outputs:
+  - report.md
+  - metrics.json
+  - run_config.yaml
+  - logs.txt

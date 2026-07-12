@@ -1,21 +1,37 @@
 {
   "name": "mirofish",
   "version": "0.1.0",
-  "description": "MiroFish - 简洁通用的群体智能引擎，预测万物",
+  "description": "Stable MiroFish research fork with multi-model backtesting and observability",
   "scripts": {
     "setup": "npm install && cd frontend && npm install",
-    "setup:backend": "cd backend && uv sync",
+    "setup:backend": "cd backend && uv sync --python 3.11",
     "setup:all": "npm run setup && npm run setup:backend",
     "dev": "concurrently --kill-others -n \"backend,frontend\" -c \"green,cyan\" \"npm run backend\" \"npm run frontend\"",
-    "backend": "cd backend && uv run python run.py",
+    "backend": "cd backend && uv run --frozen --python 3.11 python run.py",
     "frontend": "cd frontend && npm run dev",
-    "build": "cd frontend && npm run build"
+    "build": "cd frontend && npm run build",
+    "smoke-test": "cd backend && uv run --frozen --python 3.11 python ../scripts/smoke_test.py",
+    "smoke-test:real": "uv run --project backend --frozen --python 3.11 python scripts/run_real_smoke.py",
+    "run-example": "cd backend && uv run --frozen --python 3.11 python ../scripts/run_example.py",
+    "test": "uv run --project backend --frozen --python 3.11 pytest -q",
+    "test:frontend": "npm --prefix frontend test",
+    "hygiene": "uv run --project backend --frozen --python 3.11 python scripts/check_repo_hygiene.py",
+    "validate-outputs": "uv run --project backend --frozen --python 3.11 python scripts/validate_outputs.py",
+    "check:runtime": "npm run smoke-test && npm run run-example && npm test && npm run test:frontend && npm run build",
+    "check": "npm run hygiene && npm run smoke-test && npm run run-example && npm test && npm run test:frontend && npm run build",
+    "docker-up": "docker compose up --build --wait",
+    "docker-up:openrouter-smoke": "docker compose -f docker-compose.yml -f docker-compose.openrouter-smoke.yml --profile graphiti up --build --wait",
+    "docker-up:deepinfra-smoke": "docker compose -f docker-compose.yml -f docker-compose.deepinfra-smoke.yml --profile graphiti up --build --wait",
+    "docker-test": "docker compose exec -T mirofish npm run check:runtime",
+    "docker-down": "docker compose down --remove-orphans",
+    "docker-down:openrouter-smoke": "docker compose -f docker-compose.yml -f docker-compose.openrouter-smoke.yml --profile graphiti down --remove-orphans",
+    "docker-down:deepinfra-smoke": "docker compose -f docker-compose.yml -f docker-compose.deepinfra-smoke.yml --profile graphiti down --remove-orphans"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.19.0"
   },
   "license": "AGPL-3.0"
 }

@@ -1,0 +1,8 @@
+line,topic,model,condition_or_variant,status,output_path,started_at,completed_at,notes
+s3,bolivia,qwen,7-conditions,completed,backtesting/final-multimodel/evaluation/s3_qwen_bolivia_ipc_full_summary.csv,2026-06-24T06:47:30+00:00,2026-06-24T06:51:38+00:00,baseline 0 events and six injected conditions 1 event each
+s3,ipc,qwen,7-conditions,completed,backtesting/final-multimodel/evaluation/s3_qwen_bolivia_ipc_full_summary.csv,2026-06-24T06:51:38+00:00,2026-06-24T06:55:16+00:00,baseline 0 events and six injected conditions 1 event each
+temporal,bolivia,llama+qwen,T1-optimum,completed,backtesting/final-multimodel/evaluation/temporal_optimum_summary.csv,,,llama winner correct with high MAE qwen lower MAE but wrong winner
+temporal,copa,llama+qwen,T2-optimum,completed,backtesting/final-multimodel/evaluation/temporal_optimum_summary.csv,,,both models score 5 of 5 and predict Argentina
+temporal,ipc,llama+qwen,T3-optimum,completed,backtesting/final-multimodel/evaluation/temporal_optimum_summary.csv,,,qwen parses and scores 2 of 5 llama report evaluates 0 of 5
+line5,bolivia,gemma,R10-D2+R80-D2,completed,backtesting/final-multimodel/evaluation/line5_bolivia_summary.csv,,,both variants predict quiroga_gana R80 has two parse errors
+line5,bolivia,qwen,R10-D2+R80-D2,completed,backtesting/final-multimodel/evaluation/line5_bolivia_summary.csv,,,both variants predict quiroga_gana R80 target ended at 72 actual rounds

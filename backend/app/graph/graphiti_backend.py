@@ -7,6 +7,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 import threading
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -81,6 +82,27 @@ class _OntologyBundle:
     edge_types: Dict[str, type[BaseModel]] = field(default_factory=dict)
     edge_type_map: Dict[tuple[str, str], List[str]] = field(default_factory=dict)
     spec: Dict[str, Any] = field(default_factory=dict)
+
+
+def prepare_nodes_for_edge_resolution(
+    extracted_nodes: List[Any],
+    *,
+    bypass_node_dedup: bool,
+) -> tuple[List[Any], Dict[str, str]]:
+    """Prepare extracted nodes for edge resolution.
+
+    When Graphiti node dedup is bypassed, keep extracted nodes as-is and build
+    the minimal uuid identity map needed by edge pointer resolution.
+    """
+    if not bypass_node_dedup:
+        raise NotImplementedError("Graphiti node dedup resolver is required when bypass is disabled")
+
+    uuid_map = {}
+    for node in extracted_nodes:
+        uuid = getattr(node, "uuid", None) or getattr(node, "uuid_", None)
+        if uuid:
+            uuid_map[uuid] = uuid
+    return extracted_nodes, uuid_map
 
 
 # ------------------------------------------------------------------
@@ -585,13 +607,25 @@ class GraphitiBackend(GraphBackend):
             None,
             None,
         )
-        nodes, uuid_map, _ = await resolve_extracted_nodes(
-            self._graphiti.clients,
-            extracted_nodes,
-            episode,
-            previous_episodes,
-            entity_types,
-        )
+        bypass_node_dedup = os.getenv("GRAPHITI_BYPASS_NODE_DEDUP", "").lower() in {
+            "1",
+            "true",
+            "yes",
+        }
+        if bypass_node_dedup:
+            nodes, uuid_map = prepare_nodes_for_edge_resolution(
+                extracted_nodes,
+                bypass_node_dedup=True,
+            )
+            logger.info("Graphiti node dedup bypass enabled for graph_id=%s", graph_id)
+        else:
+            nodes, uuid_map, _ = await resolve_extracted_nodes(
+                self._graphiti.clients,
+                extracted_nodes,
+                episode,
+                previous_episodes,
+                entity_types,
+            )
         resolved_edges, invalidated_edges, new_edges = await self._graphiti._extract_and_resolve_edges(
             episode,
             extracted_nodes,

@@ -173,6 +173,13 @@ except ImportError as e:
     print("请先安装: pip install oasis-ai camel-ai")
     sys.exit(1)
 
+from app.services.model_router import ModelRouter, ModelRoutingError, build_backend
+from app.services.llm_telemetry import (
+    TelemetrySink,
+    instrument_backend,
+    load_prices,
+)
+
 
 # Twitter可用动作（不包含INTERVIEW，INTERVIEW只能通过ManualAction手动触发）
 TWITTER_ACTIONS = [
@@ -1037,6 +1044,115 @@ def create_model(config: Dict[str, Any], use_boost: bool = False):
     )
 
 
+def resolve_model_map_path(config: Dict[str, Any], cli_path: Optional[str] = None, config_dir: str = ".") -> Optional[str]:
+    """Return an absolute model map path when routing is configured."""
+    model_map_path = cli_path or config.get("model_map_path")
+    if not model_map_path:
+        return None
+    if not os.path.isabs(model_map_path):
+        model_map_path = os.path.abspath(os.path.join(config_dir, model_map_path))
+    return model_map_path
+
+
+def _roles_by_agent_id(config: Dict[str, Any]) -> Dict[int, Optional[str]]:
+    roles: Dict[int, Optional[str]] = {}
+    for idx, agent_config in enumerate(config.get("agent_configs", [])):
+        agent_id = agent_config.get("agent_id", idx)
+        try:
+            agent_id = int(agent_id)
+        except (TypeError, ValueError):
+            agent_id = idx
+        roles[agent_id] = agent_config.get("entity_type")
+    return roles
+
+
+def write_model_routing_audit(
+    config: Dict[str, Any],
+    simulation_dir: str,
+    model_map_path: str,
+    include_twitter: bool,
+    include_reddit: bool,
+) -> None:
+    """Write the route each generated agent would use under the model map."""
+    router = ModelRouter.from_file(model_map_path)
+    roles = _roles_by_agent_id(config)
+    audit_path = os.path.join(simulation_dir, "model_routing_audit.jsonl")
+    rows: List[Dict[str, Any]] = []
+
+    for agent_config in config.get("agent_configs", []):
+        fallback_id = len(rows)
+        agent_id = agent_config.get("agent_id", fallback_id)
+        try:
+            agent_id = int(agent_id)
+        except (TypeError, ValueError):
+            agent_id = fallback_id
+        policy = router.resolve(agent_id, roles.get(agent_id))
+        row = policy.to_audit()
+        row.update({
+            "route_scope": "agent",
+            "entity_name": agent_config.get("entity_name"),
+        })
+        rows.append(row)
+
+    platform_routes = []
+    if include_twitter:
+        platform_routes.append((-1, "twitter"))
+    if include_reddit:
+        platform_routes.append((-2, "reddit"))
+    for pseudo_agent_id, platform in platform_routes:
+        policy = router.resolve(pseudo_agent_id, platform)
+        row = policy.to_audit()
+        row.update({
+            "route_scope": "platform_shared_model",
+            "platform": platform,
+        })
+        rows.append(row)
+
+    with open(audit_path, "w", encoding="utf-8") as f:
+        for row in rows:
+            f.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+
+def create_observed_model(
+    config: Dict[str, Any],
+    *,
+    use_boost: bool,
+    model_map_path: Optional[str],
+    telemetry_sink: Optional[TelemetrySink],
+    platform_label: str,
+    pseudo_agent_id: int,
+):
+    """Create the platform model, instrumented when a model map is present."""
+    if not model_map_path or telemetry_sink is None:
+        return create_model(config, use_boost=use_boost)
+
+    router = ModelRouter.from_file(model_map_path)
+    policy = router.resolve(pseudo_agent_id, platform_label)
+    try:
+        backend = build_backend(policy)
+    except ModelRoutingError:
+        if not router.fallback_enabled:
+            raise
+        policy = router.resolve(pseudo_agent_id, None)
+        policy.source = "fallback_default"
+        backend = build_backend(policy)
+
+    print(
+        f"[{platform_label}] routed model={policy.model}, "
+        f"provider={policy.provider}, source={policy.source}"
+    )
+    return instrument_backend(
+        backend,
+        context={
+            "agent_id": pseudo_agent_id,
+            "role": platform_label,
+            "provider": policy.provider,
+            "model": policy.model,
+        },
+        sink=telemetry_sink,
+    )
+
+
 def get_active_agents_for_round(
     env,
     config: Dict[str, Any],
@@ -1103,7 +1219,9 @@ async def run_twitter_simulation(
     simulation_dir: str,
     action_logger: Optional[PlatformActionLogger] = None,
     main_logger: Optional[SimulationLogManager] = None,
-    max_rounds: Optional[int] = None
+    max_rounds: Optional[int] = None,
+    model_map_path: Optional[str] = None,
+    telemetry_sink: Optional[TelemetrySink] = None,
 ) -> PlatformSimulation:
     """运行Twitter模拟
     
@@ -1126,8 +1244,15 @@ async def run_twitter_simulation(
     
     log_info("初始化...")
     
-    # Twitter 使用通用 LLM 配置
-    model = create_model(config, use_boost=False)
+    # Twitter 使用通用 LLM 配置，或 model map routeado si está habilitado.
+    model = create_observed_model(
+        config,
+        use_boost=False,
+        model_map_path=model_map_path,
+        telemetry_sink=telemetry_sink,
+        platform_label="twitter",
+        pseudo_agent_id=-1,
+    )
     
     # OASIS Twitter使用CSV格式
     profile_path = os.path.join(simulation_dir, "twitter_profiles.csv")
@@ -1203,6 +1328,8 @@ async def run_twitter_simulation(
                 pass
         
         if initial_actions:
+            if telemetry_sink:
+                telemetry_sink.current_round = 0
             await result.env.step(initial_actions)
             log_info(f"已发布 {len(initial_actions)} 条初始帖子")
     
@@ -1251,6 +1378,8 @@ async def run_twitter_simulation(
             continue
         
         actions = {agent: LLMAction() for _, agent in active_agents}
+        if telemetry_sink:
+            telemetry_sink.current_round = round_num + 1
         await result.env.step(actions)
         
         # 从数据库获取实际执行的动作并记录
@@ -1295,7 +1424,9 @@ async def run_reddit_simulation(
     simulation_dir: str,
     action_logger: Optional[PlatformActionLogger] = None,
     main_logger: Optional[SimulationLogManager] = None,
-    max_rounds: Optional[int] = None
+    max_rounds: Optional[int] = None,
+    model_map_path: Optional[str] = None,
+    telemetry_sink: Optional[TelemetrySink] = None,
 ) -> PlatformSimulation:
     """运行Reddit模拟
     
@@ -1318,8 +1449,15 @@ async def run_reddit_simulation(
     
     log_info("初始化...")
     
-    # Reddit 使用加速 LLM 配置（如果有的话，否则回退到通用配置）
-    model = create_model(config, use_boost=True)
+    # Reddit 使用加速 LLM 配置，或 model map routeado si está habilitado.
+    model = create_observed_model(
+        config,
+        use_boost=True,
+        model_map_path=model_map_path,
+        telemetry_sink=telemetry_sink,
+        platform_label="reddit",
+        pseudo_agent_id=-2,
+    )
     
     profile_path = os.path.join(simulation_dir, "reddit_profiles.json")
     if not os.path.exists(profile_path):
@@ -1402,6 +1540,8 @@ async def run_reddit_simulation(
                 pass
         
         if initial_actions:
+            if telemetry_sink:
+                telemetry_sink.current_round = 0
             await result.env.step(initial_actions)
             log_info(f"已发布 {len(initial_actions)} 条初始帖子")
     
@@ -1450,6 +1590,8 @@ async def run_reddit_simulation(
             continue
         
         actions = {agent: LLMAction() for _, agent in active_agents}
+        if telemetry_sink:
+            telemetry_sink.current_round = round_num + 1
         await result.env.step(actions)
         
         # 从数据库获取实际执行的动作并记录
@@ -1519,6 +1661,12 @@ async def main():
         default=False,
         help='模拟完成后立即关闭环境，不进入等待命令模式'
     )
+    parser.add_argument(
+        '--model-map',
+        type=str,
+        default=None,
+        help='多模型路由配置文件，启用模型路由 audit 与 LLM telemetry'
+    )
     
     args = parser.parse_args()
     
@@ -1533,6 +1681,7 @@ async def main():
     config = load_config(args.config)
     simulation_dir = os.path.dirname(args.config) or "."
     wait_for_commands = not args.no_wait
+    model_map_path = resolve_model_map_path(config, args.model_map, os.path.dirname(args.config) or ".")
     
     # 初始化日志配置（禁用 OASIS 日志，清理旧文件）
     init_logging_for_simulation(simulation_dir)
@@ -1548,6 +1697,29 @@ async def main():
     log_manager.info(f"模拟ID: {config.get('simulation_id', 'unknown')}")
     log_manager.info(f"等待命令模式: {'启用' if wait_for_commands else '禁用'}")
     log_manager.info("=" * 60)
+
+    telemetry_sink: Optional[TelemetrySink] = None
+    if model_map_path:
+        if os.path.exists(model_map_path):
+            prices_path = os.path.join(_project_root, "configs", "model_prices.yaml")
+            telemetry_sink = TelemetrySink(
+                path=os.path.join(simulation_dir, "llm_telemetry.jsonl"),
+                prices=load_prices(prices_path),
+            )
+            try:
+                write_model_routing_audit(
+                    config,
+                    simulation_dir,
+                    model_map_path,
+                    include_twitter=not args.reddit_only,
+                    include_reddit=not args.twitter_only,
+                )
+                log_manager.info(f"Model routing enabled: {model_map_path}")
+            except Exception as route_exc:
+                log_manager.error(f"Model routing setup failed: {route_exc}")
+                raise
+        else:
+            log_manager.warning(f"Model map configured but not found: {model_map_path}")
     
     time_config = config.get("time_config", {})
     total_hours = time_config.get('total_simulation_hours', 72)
@@ -1577,20 +1749,54 @@ async def main():
     reddit_result: Optional[PlatformSimulation] = None
     
     if args.twitter_only:
-        twitter_result = await run_twitter_simulation(config, simulation_dir, twitter_logger, log_manager, args.max_rounds)
+        twitter_result = await run_twitter_simulation(
+            config,
+            simulation_dir,
+            twitter_logger,
+            log_manager,
+            args.max_rounds,
+            model_map_path,
+            telemetry_sink,
+        )
     elif args.reddit_only:
-        reddit_result = await run_reddit_simulation(config, simulation_dir, reddit_logger, log_manager, args.max_rounds)
+        reddit_result = await run_reddit_simulation(
+            config,
+            simulation_dir,
+            reddit_logger,
+            log_manager,
+            args.max_rounds,
+            model_map_path,
+            telemetry_sink,
+        )
     else:
         # 并行运行（每个平台使用独立的日志记录器）
         results = await asyncio.gather(
-            run_twitter_simulation(config, simulation_dir, twitter_logger, log_manager, args.max_rounds),
-            run_reddit_simulation(config, simulation_dir, reddit_logger, log_manager, args.max_rounds),
+            run_twitter_simulation(
+                config,
+                simulation_dir,
+                twitter_logger,
+                log_manager,
+                args.max_rounds,
+                model_map_path,
+                telemetry_sink,
+            ),
+            run_reddit_simulation(
+                config,
+                simulation_dir,
+                reddit_logger,
+                log_manager,
+                args.max_rounds,
+                model_map_path,
+                telemetry_sink,
+            ),
         )
         twitter_result, reddit_result = results
     
     total_elapsed = (datetime.now() - start_time).total_seconds()
     log_manager.info("=" * 60)
     log_manager.info(f"模拟循环完成! 总耗时: {total_elapsed:.1f}秒")
+    if telemetry_sink:
+        log_manager.info(f"LLM telemetry summary: {telemetry_sink.summary()}")
     
     # 是否进入等待命令模式
     if wait_for_commands:

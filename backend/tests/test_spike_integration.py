@@ -1,10 +1,10 @@
 
 import os
-import json
 import pytest
 import shutil
-import math
 from unittest.mock import MagicMock, patch
+
+from app.config import Config
 
 # Configuration for tests
 TEST_DATA_DIR = "backend/data_test_integration"
@@ -26,15 +26,17 @@ def test_dir():
         pass
 
 @pytest.fixture(autouse=True)
-def setup_test_env(test_dir):
+def setup_test_env(test_dir, monkeypatch):
     """Setup and teardown for all tests."""
-    # Mock Config
-    with patch('app.config.Config') as mock_config:
-        mock_config.DATA_DIR = test_dir
-        mock_config.USE_EXPERIMENTAL_MEMORY = True
-        mock_config.UPLOAD_FOLDER = os.path.join(test_dir, "uploads")
-        mock_config.get_graph_search_embedder_config.return_value = {"base_url": "http://mock", "model": "mock-m"}
-        yield mock_config
+    monkeypatch.setattr(Config, "DATA_DIR", test_dir)
+    monkeypatch.setattr(Config, "USE_EXPERIMENTAL_MEMORY", True)
+    monkeypatch.setattr(Config, "UPLOAD_FOLDER", os.path.join(test_dir, "uploads"))
+    monkeypatch.setattr(
+        Config,
+        "get_graph_search_embedder_config",
+        classmethod(lambda cls: {"base_url": None, "model": None}),
+    )
+    yield Config
 
 def test_strict_isolation_between_simulations():
     """Verify that data for one simulation does not leak into another."""
@@ -63,8 +65,10 @@ def test_fallback_audit_mechanism():
     service = ExperimentalMemoryService(TEST_SIM_ID)
     service.add_memory("Test episode")
     
-    # Force embedding failure by mocking the embedder to raise an exception
-    service.embedder.embed_texts = MagicMock(side_effect=Exception("Embedding failed"))
+    service.embedder = MagicMock()
+    service.embedder.embed_texts.side_effect = Exception("Embedding failed")
+    service.collection = MagicMock()
+    service.collection.get.return_value = {"documents": ["Test episode"]}
     
     assert service.fallback_count == 0
     
@@ -75,11 +79,11 @@ def test_fallback_audit_mechanism():
     stats = service.get_stats()
     assert stats["fallback_count"] == 1
 
-def test_bypass_mode_logic_in_updater():
+def test_bypass_mode_logic_in_updater(monkeypatch):
     """Verify that ZepGraphMemoryUpdater respects the bypass flag and stats reporting."""
     from app.services.zep_graph_memory_updater import ZepGraphMemoryUpdater
     
-    os.environ["USE_EXPERIMENTAL_MEMORY"] = "true"
+    monkeypatch.setenv("USE_EXPERIMENTAL_MEMORY", "true")
     
     # Mock the backend to ensure it's NOT initialized
     with patch('app.services.zep_graph_memory_updater.get_graph_backend') as mock_get_backend:

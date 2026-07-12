@@ -7,6 +7,7 @@ OASIS模拟管理器
 import os
 import json
 import shutil
+from pathlib import Path
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -21,6 +22,7 @@ from .simulation_planning_workflow import SimulationPlanningWorkflow
 from .simulation_plan_verifier import SimulationPlanVerifier
 from .worldbuilding_capture import WorldbuildingCapture
 from .deep_search import DeepSearchService
+from ..models.project import ProjectManager
 from ..utils.locale import t
 
 logger = get_logger('mirofish.simulation')
@@ -59,7 +61,9 @@ class SimulationState:
     status: SimulationStatus = SimulationStatus.CREATED
     
     # 准备阶段数据
+    candidate_entities_count: int = 0
     entities_count: int = 0
+    deduped_entities_count: int = 0
     profiles_count: int = 0
     entity_types: List[str] = field(default_factory=list)
     
@@ -88,7 +92,9 @@ class SimulationState:
             "enable_twitter": self.enable_twitter,
             "enable_reddit": self.enable_reddit,
             "status": self.status.value,
+            "candidate_entities_count": self.candidate_entities_count,
             "entities_count": self.entities_count,
+            "deduped_entities_count": self.deduped_entities_count,
             "profiles_count": self.profiles_count,
             "entity_types": self.entity_types,
             "config_generated": self.config_generated,
@@ -108,7 +114,9 @@ class SimulationState:
             "project_id": self.project_id,
             "graph_id": self.graph_id,
             "status": self.status.value,
+            "candidate_entities_count": self.candidate_entities_count,
             "entities_count": self.entities_count,
+            "deduped_entities_count": self.deduped_entities_count,
             "profiles_count": self.profiles_count,
             "entity_types": self.entity_types,
             "config_generated": self.config_generated,
@@ -145,6 +153,56 @@ class SimulationManager:
         sim_dir = os.path.join(self.SIMULATION_DATA_DIR, simulation_id)
         os.makedirs(sim_dir, exist_ok=True)
         return sim_dir
+
+    def _write_deduplication_summary(
+        self,
+        simulation_id: str,
+        threshold: float,
+        before_entities: int,
+        after_entities: int,
+        status: str,
+        warnings: Optional[List[str]] = None,
+    ) -> Path:
+        """Persist UI-ready semantic deduplication metrics."""
+        sim_dir = Path(self._get_simulation_dir(simulation_id))
+        removed_entities = max(0, before_entities - after_entities)
+        reduction_pct = round((removed_entities / before_entities) * 100, 2) if before_entities else 0.0
+        payload = {
+            "simulation_id": simulation_id,
+            "status": status,
+            "threshold": threshold,
+            "before_entities": before_entities,
+            "after_entities": after_entities,
+            "removed_entities": removed_entities,
+            "reduction_pct": reduction_pct,
+            "warnings": warnings or [],
+            "generated_at": datetime.now().isoformat(),
+        }
+        path = sim_dir / "deduplication_summary.json"
+        path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+        return path
+
+    def _compile_wiki_artifacts(
+        self,
+        simulation_id: str,
+        case_metadata: Dict[str, Any],
+        documents: Optional[List[Dict[str, Any]]] = None,
+        events: Optional[List[Dict[str, Any]]] = None,
+        retrieved_memories: Optional[List[Dict[str, Any]]] = None,
+    ) -> Dict[str, Any]:
+        """Compile filesystem wiki artifacts without making simulation depend on them."""
+        from .wiki_memory import WikiCompiler, WikiStore
+
+        store = WikiStore(wiki_root=self.SIMULATION_DATA_DIR)
+        compiler = WikiCompiler(store)
+        result = compiler.compile(
+            simulation_id=simulation_id,
+            events=events or [],
+            retrieved_memories=retrieved_memories or [],
+            case_metadata=case_metadata,
+            documents=documents or [],
+        )
+        return {"success": True, **result.to_dict()}
     
     def _save_simulation_state(self, state: SimulationState):
         """保存模拟状态到文件"""
@@ -179,7 +237,9 @@ class SimulationManager:
             enable_twitter=data.get("enable_twitter", True),
             enable_reddit=data.get("enable_reddit", True),
             status=SimulationStatus(data.get("status", "created")),
+            candidate_entities_count=data.get("candidate_entities_count", 0),
             entities_count=data.get("entities_count", 0),
+            deduped_entities_count=data.get("deduped_entities_count", data.get("entities_count", 0)),
             profiles_count=data.get("profiles_count", 0),
             entity_types=data.get("entity_types", []),
             config_generated=data.get("config_generated", False),
@@ -294,12 +354,14 @@ class SimulationManager:
                     progress_callback("research", 0, t('progress.startingDeepSearch'))
                 
                 try:
-                    deep_search = DeepSearchService()
-                    research_content = deep_search.perform_research(simulation_requirement)
-                    
+                    research_content = ProjectManager.get_deep_search_result(state.project_id)
+                    if not research_content:
+                        deep_search = DeepSearchService()
+                        research_content = deep_search.perform_research(simulation_requirement)
+                        if research_content:
+                            document_text = research_content + "\n\n" + (document_text or "")
+
                     if research_content:
-                        document_text = research_content + "\n\n" + (document_text or "")
-                        # Save research results for audit
                         research_path = os.path.join(sim_dir, "deep_search_result.txt")
                         with open(research_path, 'w', encoding='utf-8') as f:
                             f.write(research_content)
@@ -326,23 +388,74 @@ class SimulationManager:
             )
             
             # ========== Spike S3: Semantic Deduplication ==========
+            dedup_before = len(filtered.entities)
+            dedup_after = dedup_before
+            dedup_status = "skipped"
+            dedup_warnings: List[str] = []
+            state.candidate_entities_count = dedup_before
             if Config.SIMILARITY_THRESHOLD > 0:
                 if progress_callback:
-                    progress_callback("deduplication", 0, t('progress.deduplicatingAgents'))
+                    progress_callback(
+                        "deduplication",
+                        0,
+                        t('progress.deduplicatingAgents'),
+                        current=dedup_before,
+                        total=dedup_before,
+                        candidate_entities_count=dedup_before,
+                    )
                 
-                generator = OasisProfileGenerator()
-                unique_entities = generator.deduplicate_entities(
-                    filtered.entities, 
-                    threshold=Config.SIMILARITY_THRESHOLD
-                )
-                filtered.entities = unique_entities
-                filtered.filtered_count = len(unique_entities)
+                try:
+                    generator = OasisProfileGenerator()
+                    unique_entities = generator.deduplicate_entities(
+                        filtered.entities,
+                        threshold=Config.SIMILARITY_THRESHOLD
+                    )
+                    filtered.entities = unique_entities
+                    filtered.filtered_count = len(unique_entities)
+                    dedup_after = len(unique_entities)
+                    dedup_status = "completed"
+                except Exception as dedup_exc:
+                    dedup_status = "failed"
+                    dedup_warnings.append(str(dedup_exc))
+                    logger.error(f"Semantic deduplication failed: {dedup_exc}")
                 
                 if progress_callback:
-                    progress_callback("deduplication", 100, f"Deduplication complete. {len(unique_entities)} unique agents identified.")
+                    progress_callback(
+                        "deduplication",
+                        100,
+                        f"Deduplication complete. {filtered.filtered_count} unique agents identified.",
+                        current=dedup_after,
+                        total=dedup_after,
+                        candidate_entities_count=dedup_before,
+                        deduped_entities_count=dedup_after,
+                    )
+            elif progress_callback:
+                progress_callback(
+                    "deduplication",
+                    100,
+                    "Deduplication skipped; using graph candidates as agents.",
+                    current=dedup_after,
+                    total=dedup_after,
+                    candidate_entities_count=dedup_before,
+                    deduped_entities_count=dedup_after,
+                )
+
+            try:
+                self._write_deduplication_summary(
+                    simulation_id=simulation_id,
+                    threshold=Config.SIMILARITY_THRESHOLD,
+                    before_entities=dedup_before,
+                    after_entities=dedup_after,
+                    status=dedup_status,
+                    warnings=dedup_warnings,
+                )
+            except Exception as summary_exc:
+                logger.error(f"Failed to write deduplication summary: {summary_exc}")
 
             state.entities_count = filtered.filtered_count
+            state.deduped_entities_count = filtered.filtered_count
             state.entity_types = list(filtered.entity_types)
+            self._save_simulation_state(state)
             
             if progress_callback:
                 progress_callback(
@@ -429,6 +542,86 @@ class SimulationManager:
                     file_path=os.path.join(sim_dir, "twitter_profiles.csv"),
                     platform="twitter"
                 )
+
+            try:
+                if progress_callback:
+                    progress_callback(
+                        "compiling_wiki",
+                        0,
+                        "Compiling evidence wiki",
+                        current=0,
+                        total=len(profiles),
+                    )
+                documents = [
+                    {
+                        "name": "simulation_input",
+                        "path": "inline:simulation_requirement",
+                        "size": len(document_text or ""),
+                    }
+                ]
+                deep_search_path = os.path.join(sim_dir, "deep_search_result.txt")
+                if os.path.exists(deep_search_path):
+                    documents.append({
+                        "name": "deep_search_result.txt",
+                        "path": deep_search_path,
+                        "size": os.path.getsize(deep_search_path),
+                    })
+
+                wiki_events = [{
+                    "round_num": 0,
+                    "timestamp": datetime.now().isoformat(),
+                    "actions": [
+                        {
+                            "agent_id": profile.user_id,
+                            "agent_name": profile.name or profile.user_name,
+                            "round_num": 0,
+                            "platform": "worldbuilding",
+                            "content": profile.persona or profile.bio,
+                        }
+                        for profile in profiles
+                    ],
+                }]
+                retrieved_memories = [{
+                    "nodes": [entity.to_dict() for entity in filtered.entities],
+                    "edges": [
+                        edge
+                        for entity in filtered.entities
+                        for edge in (entity.related_edges or [])
+                        if isinstance(edge, dict)
+                    ],
+                    "facts": [entity.summary for entity in filtered.entities if entity.summary],
+                }]
+                self._compile_wiki_artifacts(
+                    simulation_id=simulation_id,
+                    case_metadata={
+                        "name": simulation_requirement[:120] if simulation_requirement else simulation_id,
+                        "project_id": state.project_id,
+                        "graph_id": state.graph_id,
+                        "entity_types": list(filtered.entity_types),
+                    },
+                    documents=documents,
+                    events=wiki_events,
+                    retrieved_memories=retrieved_memories,
+                )
+                logger.info(f"Wiki artifacts compiled for simulation {simulation_id}")
+                if progress_callback:
+                    progress_callback(
+                        "compiling_wiki",
+                        100,
+                        "Evidence wiki compiled",
+                        current=len(profiles),
+                        total=len(profiles),
+                    )
+            except Exception as wiki_exc:
+                logger.error(f"Failed to compile wiki artifacts: {wiki_exc}")
+                if progress_callback:
+                    progress_callback(
+                        "compiling_wiki",
+                        100,
+                        "Wiki compilation failed; continuing preparation",
+                        current=len(profiles),
+                        total=len(profiles),
+                    )
             
             if progress_callback:
                 progress_callback(
@@ -478,8 +671,18 @@ class SimulationManager:
             
             # 保存配置文件
             config_path = os.path.join(sim_dir, "simulation_config.json")
+            sim_config = json.loads(sim_params.to_json())
+            if Config.ENABLE_SIMULATION_MODEL_ROUTING:
+                model_map_path = Config.SIMULATION_MODEL_MAP_PATH
+                if model_map_path and os.path.exists(model_map_path):
+                    sim_config["model_map_path"] = model_map_path
+                else:
+                    logger.warning(
+                        "Simulation model routing enabled but model map was not found: %s",
+                        model_map_path,
+                    )
             with open(config_path, 'w', encoding='utf-8') as f:
-                f.write(sim_params.to_json())
+                json.dump(sim_config, f, ensure_ascii=False, indent=2)
             
             state.config_generated = True
             state.config_reasoning = sim_params.generation_reasoning

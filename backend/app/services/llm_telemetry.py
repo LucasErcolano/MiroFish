@@ -141,18 +141,40 @@ class TelemetrySink:
 # Response extraction
 # --------------------------------------------------------------------------- #
 
+def _usage_value(usage: Any, names: List[str]) -> Optional[Any]:
+    for name in names:
+        value = getattr(usage, name, None)
+        if value is not None:
+            return value
+        if isinstance(usage, dict) and usage.get(name) is not None:
+            return usage.get(name)
+    return None
+
+
 def _extract_usage(response: Any) -> Tuple[int, int]:
     usage = getattr(response, "usage", None)
     if usage is None and isinstance(response, dict):
         usage = response.get("usage")
     if usage is None:
         return 0, 0
-    pt = getattr(usage, "prompt_tokens", None)
-    ct = getattr(usage, "completion_tokens", None)
-    if pt is None and isinstance(usage, dict):
-        pt = usage.get("prompt_tokens")
-        ct = usage.get("completion_tokens")
+    pt = _usage_value(usage, ["prompt_tokens", "input_tokens"])
+    ct = _usage_value(usage, ["completion_tokens", "output_tokens"])
     return int(pt or 0), int(ct or 0)
+
+
+def _extract_provider_cost(response: Any) -> Optional[float]:
+    usage = getattr(response, "usage", None)
+    if usage is None and isinstance(response, dict):
+        usage = response.get("usage")
+    if usage is None:
+        return None
+    value = _usage_value(usage, ["cost", "total_cost", "cost_usd", "total_cost_usd"])
+    if value is None:
+        return None
+    try:
+        return round(float(value), 8)
+    except (TypeError, ValueError):
+        return None
 
 
 def _extract_content(response: Any) -> Optional[str]:
@@ -214,12 +236,22 @@ def instrument_backend(
     ) -> Dict[str, Any]:
         tokens_in, tokens_out = (0, 0) if response is None else _extract_usage(response)
         content = None if response is None else _extract_content(response)
-        cost, unknown = estimate_cost(
-            context.get("model", ""), tokens_in, tokens_out, sink.prices
-        )
+        provider_cost = None if response is None else _extract_provider_cost(response)
+        if provider_cost is not None:
+            cost = provider_cost
+            unknown = False
+            cost_source = "provider"
+        else:
+            cost, unknown = estimate_cost(
+                context.get("model", ""), tokens_in, tokens_out, sink.prices
+            )
+            cost_source = "estimated" if not unknown else "unknown"
         leak_flags: List[str] = []
         if unknown:
             leak_flags.append("cost_unknown_model")
+        usage_unavailable = response is None or (tokens_in + tokens_out == 0)
+        if usage_unavailable:
+            leak_flags.append("usage_unavailable")
         valid_json = _is_valid_json(content)
         return {
             "timestamp": datetime.now().isoformat(),
@@ -235,6 +267,8 @@ def instrument_backend(
             "tokens_out": tokens_out,
             "latency_ms": round(latency_ms, 2),
             "cost_usd_est": cost,
+            "cost_usd_source": cost_source,
+            "usage_unavailable": usage_unavailable,
             "output_valid_json": valid_json,
             "error": error,
             "leak_flags": leak_flags,

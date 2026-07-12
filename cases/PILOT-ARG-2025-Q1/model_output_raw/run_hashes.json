@@ -43,7 +43,6 @@
   "answer_key_post_x/sources/ElPais_Milei_midterms_20251027.html": "8f66299425e60df894bad91b58c08383913b3ecf12983395769e8dc393948e00",
   "answer_key_post_x/sources/ElPais_Milei_midterms_20251027.html.txt": "97b732f10aff98637386ec56087d37f3f19b6c0ae5ed21730a73ae06ff32a711",
   "answer_key_post_x/sources/GT5_ELPAIS_20251027_excerpt.md": "892886c9a1ba7716a07776e32157c84a03b14c51c62bab76ecd190e51d3feafa",
-  "answer_key_post_x/sources/NPR_Milei_midterms_20251027.html": "ef4278baa6f82784b70a4fc48b5df5f6d32aaea6022ed66521ba8b3c4ed15c6a",
   "answer_key_post_x/sources/NPR_Milei_midterms_20251027.html.txt": "e838052e73cac67f4962c48e54d530f7cd2e77e99012fa77cb379dbec0974d73",
   "answer_key_post_x/sources/GT6_NPR_20251027_excerpt.md": "da861e77dc31cbe3efd8a7ae093b8679b94f2413d502c0211af562e80db23e93",
   "answer_key_post_x/sources/DINE_resultados_2025/resultados_electorales_landing.html": "4c4471ebf09cd13ad80ab6d431cd9d5eb1da847d36a17a83ba896949f31666c8",
@@ -132,6 +131,5 @@
   "model_output_raw/real_mirofish_round_1/artifacts/db_export/trace_sample.json": "e1567ababa142d21e80da7108ef2381dc22079574af840f77035bb2180ae9a27",
   "model_output_raw/real_mirofish_round_1/artifacts/db_export/user_sample.json": "f72af4c33e9fed43ef90bc53e2fd8bd3e28efb92c27a4c9ee512089fa818f14c",
   "model_output_raw/real_mirofish_round_1/artifacts/oasis_twitter_minimal_sim/env_status.json": "19b6b66b23e34d0f4222bb8dbf9287858809d7948368bbc790d0a229c7b5e121",
-  "model_output_raw/real_mirofish_round_1/artifacts/oasis_twitter_minimal_sim/twitter_simulation.db": "8cd8052be0fc9149964e814e05f8e196af3ec0190434b6931b94a3ce3b9d5e33",
   "model_output_raw/real_mirofish_round_1/artifacts/verification_summary.json": "23fc2c0a19be54f262073306816e63d4f283c48d1ea018c10902668f28e1d97c"
 }

@@ -185,3 +185,76 @@ export const getSimulationHistory = (limit = 20) => {
   return service.get('/api/simulation/history', { params: { limit } })
 }
 
+/**
+ * 获取模拟可观察性 artifacts manifest
+ * @param {string} simulationId
+ */
+export const getSimulationArtifacts = (simulationId) => {
+  return service.get(`/api/simulation/${simulationId}/artifacts`)
+}
+
+/**
+ * 获取模拟 Wiki 页面树
+ * @param {string} simulationId
+ */
+export const getSimulationWiki = (simulationId) => {
+  return service.get(`/api/simulation/${simulationId}/wiki`)
+}
+
+/**
+ * 获取模拟 Wiki 单页内容
+ * @param {string} simulationId
+ * @param {string} path
+ */
+export const getSimulationWikiPage = (simulationId, path) => {
+  return service.get(`/api/simulation/${simulationId}/wiki/page`, { params: { path } })
+}
+
+/**
+ * 获取模拟 LLM telemetry 聚合
+ * @param {string} simulationId
+ */
+export const getSimulationTelemetry = (simulationId) => {
+  return service.get(`/api/simulation/${simulationId}/telemetry`)
+}
+
+/**
+ * 获取模型路由审计记录
+ * @param {string} simulationId
+ */
+export const getSimulationRoutingAudit = (simulationId) => {
+  return service.get(`/api/simulation/${simulationId}/routing-audit`)
+}
+
+/**
+ * 获取 Deep Search trace
+ * @param {string} simulationId
+ */
+export const getSimulationDeepSearch = (simulationId) => {
+  return service.get(`/api/simulation/${simulationId}/deep-search`)
+}
+
+/**
+ * 获取语义去重摘要
+ * @param {string} simulationId
+ */
+export const getSimulationDeduplication = (simulationId) => {
+  return service.get(`/api/simulation/${simulationId}/deduplication`)
+}
+
+/**
+ * 获取 Fusion verdict 列表
+ * @param {string} simulationId
+ */
+export const listFusionVerdicts = (simulationId) => {
+  return service.get(`/api/simulation/${simulationId}/fusion-verdicts`)
+}
+
+/**
+ * 获取单个 Fusion verdict
+ * @param {string} simulationId
+ * @param {string} path
+ */
+export const getFusionVerdict = (simulationId, path) => {
+  return service.get(`/api/simulation/${simulationId}/fusion-verdict`, { params: { path } })
+}

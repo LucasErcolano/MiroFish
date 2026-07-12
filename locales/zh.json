@@ -613,6 +613,82 @@
     "redirectToQuickSearch": "search_graph 已重定向到 quick_search",
     "redirectToInsightForge": "get_simulation_context 已重定向到 insight_forge"
   },
+  "observability": {
+    "openWiki": "打开 Wiki",
+    "openTelemetry": "打开遥测",
+    "preparationTrace": {
+      "title": "准备追踪",
+      "subtitle": "候选实体会先去重，再生成最终 Agent 人设。"
+    },
+    "runtime": {
+      "title": "运行观测",
+      "waitingTelemetry": "等待模型调用遥测",
+      "rateLimits": "检测到模型调用限流",
+      "costUnknown": "成本需要模型价格或供应商用量",
+      "ready": "模型调用、路由和成本估算",
+      "noticeCount": "{count} 条提示"
+    },
+    "routingDetails": {
+      "title": "路由详情",
+      "agentId": "Agent ID",
+      "role": "角色",
+      "provider": "供应商",
+      "model": "模型",
+      "source": "来源",
+      "empty": "路由审计尚不可用。"
+    },
+    "deepResearchTrace": {
+      "title": "Deep Research 追踪",
+      "pending": "研究追踪待生成",
+      "tavily": "Tavily 网络研究",
+      "llmFallback": "LLM 内部知识补充",
+      "failed": "研究追踪失败",
+      "saved": "研究追踪已保存",
+      "empty": "暂时没有可读的 Deep Research 发现。"
+    },
+    "telemetry": {
+      "drawerLabel": "遥测详情",
+      "kicker": "遥测",
+      "title": "模型调用、成本和延迟",
+      "subtitle": "运行指标会覆盖在当前流程上，不会离开页面。",
+      "loading": "正在加载遥测...",
+      "empty": "此模拟尚未记录遥测。",
+      "calls": "调用",
+      "errors": "错误",
+      "tokens": "Token",
+      "cost": "成本",
+      "costByModel": "按模型成本",
+      "latencyByModel": "按模型延迟",
+      "perModel": "按模型详情",
+      "models": "个模型",
+      "model": "模型",
+      "provider": "供应商",
+      "tokensIn": "输入 Token",
+      "tokensOut": "输出 Token",
+      "modelDetails": "模型详情"
+    },
+    "wikiPreview": {
+      "kicker": "证据 Wiki",
+      "pagesCompiled": "已编译 {count} 页",
+      "latestPages": "最新可读页面"
+    },
+    "wikiDrawer": {
+      "drawerLabel": "证据 Wiki",
+      "kicker": "证据 Wiki",
+      "title": "可读上下文",
+      "subtitle": "编译后的页面会覆盖在当前流程上。",
+      "pages": "页面",
+      "loading": "正在加载 Wiki...",
+      "empty": "此模拟尚未生成 Wiki。",
+      "loadingPage": "正在加载页面...",
+      "selectPage": "选择一个 Wiki 页面查看。",
+      "readerSubtitle": "证据可在不离开当前运行的情况下查看。"
+    },
+    "fusion": {
+      "title": "Fusion",
+      "waiting": "Fusion 会在报告完成后总结结论、置信度、风险和检查项。"
+    }
+  },
   "console": {
     "zepToolsInitialized": "ZepToolsService 初始化完成",
     "zepRetryAttempt": "Zep {operation} 第 {attempt} 次尝试失败: {error}, {delay}秒后重试...",

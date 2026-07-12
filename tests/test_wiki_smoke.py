@@ -425,7 +425,7 @@ class TestWikiSmokeEndToEnd(unittest.TestCase):
         for dirpath, dirnames, filenames in os.walk(wiki_dir):
             for filename in filenames:
                 filepath = os.path.join(dirpath, filename)
-                relpath = os.path.relpath(filepath, wiki_dir)
+                relpath = os.path.relpath(filepath, wiki_dir).replace(os.sep, "/")
                 size = os.path.getsize(filepath)
                 all_files.append((relpath, size))
 

@@ -27,11 +27,14 @@ def main():
     # 验证配置
     errors = Config.validate()
     if errors:
-        print("配置错误:")
+        label = "配置警告" if Config.ALLOW_UNCONFIGURED_STARTUP else "配置错误"
+        print(f"{label}:")
         for err in errors:
             print(f"  - {err}")
-        print("\n请检查 .env 文件中的配置")
-        sys.exit(1)
+        if not Config.ALLOW_UNCONFIGURED_STARTUP:
+            print("\n请检查 .env 文件中的配置")
+            sys.exit(1)
+        print("\n以受限模式启动；健康检查和 UI 可用，模型/图操作仍需完整配置。")
     
     # 创建应用
     app = create_app()

@@ -22,7 +22,7 @@ from ..utils.embedding_client import EmbeddingClient
 from ..utils.reranker_client import RerankerClient
 from ..utils.logger import get_logger
 from ..utils.llm_client import LLMClient
-from ..utils.locale import t
+from ..utils.locale import get_locale, t
 
 logger = get_logger('mirofish.zep_tools')
 
@@ -441,6 +441,8 @@ class ZepToolsService:
         from .experimental_memory import ExperimentalMemoryService
         self.exp_memory = self.provider if isinstance(self.provider, ExperimentalMemoryService) else None
         self.backend = getattr(self.provider, 'backend', None)
+        if self.backend is None:
+            self.backend = get_graph_backend(api_key=self.api_key)
 
         if self.exp_memory:
             logger.info(f"实验性记忆已在 ZepToolsService 中启用 (Provider 模式): simulation_id={simulation_id}")

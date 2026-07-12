@@ -42,7 +42,7 @@ Issue #21 lists **two** YAML deliverables that coexist by design:
 |------|------|--------|
 | `configs/model_map_example.yaml` | Annotated **template** with every field documented. | Copy it — don't run it directly. |
 | `agent_model_map.yaml` (user-provided, any path) | The **canonical runtime config** for a real run. Passed to the runner via `--model-map <path>`. | This is the file you author and edit per experiment. |
-| `runs/smoke_multimodel/agent_model_map.yaml`, `agent_model_map.gemini.yaml` | **Frozen smoke evidence** for the 2-model run below. | Reference only — not a starting point. |
+| `examples/multimodel-smoke-evidence/agent_model_map.yaml`, `agent_model_map.gemini.yaml` | **Frozen smoke evidence** for the 2-model run below. | Reference only — not a starting point. |
 
 The runner takes the map **path as an argument**, so the canonical
 `agent_model_map.yaml` lives wherever the researcher keeps it (alongside the
@@ -255,7 +255,7 @@ mean_latency_ms, errors, parse_errors`) and a per-model breakdown.
 
 ## Smoke run
 
-`runs/smoke_multimodel/` is the reproducible recipe **and the final S2 evidence**
+`examples/multimodel-smoke-evidence/` is the reproducible recipe **and the final S2 evidence**
 for an end-to-end multi-agent / 2-model run against real OpenAI-compatible
 endpoints. The real run was **executed** (2026-06-06) against the Gemini
 OpenAI-compatible endpoint — two real models, **no GPU required**: 18 calls,
@@ -263,15 +263,15 @@ OpenAI-compatible endpoint — two real models, **no GPU required**: 18 calls,
 
 The committed artifacts are the auditable record of that run:
 
-- `runs/smoke_multimodel/model_routing_audit.jsonl` — agent → model/provider/base_url.
-- `runs/smoke_multimodel/llm_telemetry.jsonl` — one line per LLM call.
-- `runs/smoke_multimodel/telemetry.csv` + `telemetry_summary.jsonl` — exported tables.
+- `examples/multimodel-smoke-evidence/model_routing_audit.jsonl` — agent → model/provider/base_url.
+- `examples/multimodel-smoke-evidence/llm_telemetry.jsonl` — one line per LLM call.
+- `examples/multimodel-smoke-evidence/telemetry.csv` + `telemetry_summary.jsonl` — exported tables.
 
 `cost_usd_est` is `0.0` with a `cost_unknown_model` leak flag for the Gemini
 models (no entry in `configs/model_prices.yaml`) — the documented
 auditable-not-silent behavior, not a bug. The unit suite (`test_model_routing.py`)
 additionally covers the logic with mock providers. See
-`runs/smoke_multimodel/README.md` for prerequisites, the run command (both the
+`examples/multimodel-smoke-evidence/README.md` for prerequisites, the run command (both the
 local-GPU and no-GPU variants), and the acceptance check (agent 0 and agent 1
 must use different models in `model_routing_audit.jsonl`).
 

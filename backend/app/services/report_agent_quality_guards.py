@@ -119,8 +119,9 @@ def parse_tool_calls(response: Optional[str], valid_tool_names: Iterable[str]) -
     if tool_calls:
         return tool_calls
 
-    # 2) ```json fenced JSON (object or array) — common in Gemini / Claude.
-    fence_pattern = r"```(?:json)?\s*([\[{].*?[\]}])\s*```"
+    # 2) Fenced JSON (object or array) — common in Gemini / Claude.
+    # Some local/proxy models use ```tool_call fences around the same JSON.
+    fence_pattern = r"```(?:json|tool_call)?\s*([\[{].*?[\]}])\s*```"
     for match in re.finditer(fence_pattern, response, re.DOTALL | re.IGNORECASE):
         try:
             add_if_valid(json.loads(match.group(1)))
@@ -297,3 +298,27 @@ def is_interview_agents_unavailable(result_text: str) -> bool:
     if not result_text:
         return False
     return any(marker in result_text for marker in _INTERVIEW_FAILURE_MARKERS)
+
+
+def is_tool_result_failure(result_text: Any) -> bool:
+    """Return True when a tool response contains no usable grounding evidence."""
+    text = "" if result_text is None else str(result_text).strip()
+    if not text:
+        return True
+    lowered = text.lower()
+    return any(
+        marker in lowered
+        for marker in (
+            "工具执行失败",
+            "未知工具",
+            "tool execution failed",
+            "unknown tool",
+            "采访api调用失败",
+            "采访失败：",
+            "采访过程发生错误",
+            "未找到可采访的agent人设文件",
+            "（无采访记录）",
+            "interview failed",
+            "no interview records",
+        )
+    )

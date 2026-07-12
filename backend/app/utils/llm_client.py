@@ -90,6 +90,13 @@ def repair_truncated_json(text: str) -> Optional[Dict[str, Any]]:
         if result is not None:
             logger.info(f"JSON repair (phase 1) succeeded at position {point}/{len(text)}")
             return result
+
+    # Preserve a complete final scalar/string when no earlier safe point exists;
+    # synthesize only delimiters that were cut off at the end of the response.
+    result = _try_close_and_parse(text)
+    if result is not None:
+        logger.info("JSON repair (phase 1b) succeeded by closing final delimiters")
+        return result
     
     # === 阶段2：激进修复 ===
     # 处理截断发生在字符串值中间的情况（如 "description": "A）
@@ -154,7 +161,9 @@ def _try_close_and_parse(candidate: str) -> Optional[Dict[str, Any]]:
     
     # 如果字符串未闭合，不尝试此候选
     if in_str:
-        return None
+        if esc and candidate.endswith('\\'):
+            candidate = candidate[:-1]
+        candidate += '"'
     
     # 按栈逆序关闭（LIFO）
     closing = ''.join(reversed(stack))
@@ -173,19 +182,28 @@ class LLMClient:
         self,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
-        model: Optional[str] = None
+        model: Optional[str] = None,
+        timeout: Optional[float] = None,
+        max_retries: Optional[int] = None
     ):
         self.api_key = api_key or Config.LLM_API_KEY
         self.base_url = base_url or Config.LLM_BASE_URL
         self.model = model or Config.LLM_MODEL_NAME
+        self.timeout = timeout
+        self.max_retries = max_retries
         
         if not self.api_key:
             raise ValueError("LLM_API_KEY 未配置")
         
-        self.client = OpenAI(
-            api_key=self.api_key,
-            base_url=self.base_url
-        )
+        client_kwargs: Dict[str, Any] = {
+            "api_key": self.api_key,
+            "base_url": self.base_url,
+        }
+        if self.timeout is not None:
+            client_kwargs["timeout"] = self.timeout
+        if self.max_retries is not None:
+            client_kwargs["max_retries"] = self.max_retries
+        self.client = OpenAI(**client_kwargs)
         
         # 检查是否有 Boost LLM 配置可用于回退
         self._has_boost = bool(Config.LLM_BOOST_API_KEY)
@@ -291,13 +309,29 @@ class LLMClient:
     
     def _create_boost_client(self) -> Tuple[OpenAI, str]:
         """创建 Boost LLM 客户端（按需创建，不缓存）"""
-        return (
-            OpenAI(
-                api_key=Config.LLM_BOOST_API_KEY,
-                base_url=Config.LLM_BOOST_BASE_URL
-            ),
-            Config.LLM_BOOST_MODEL_NAME
-        )
+        client_kwargs: Dict[str, Any] = {
+            "api_key": Config.LLM_BOOST_API_KEY,
+            "base_url": Config.LLM_BOOST_BASE_URL,
+        }
+        if self.timeout is not None:
+            client_kwargs["timeout"] = self.timeout
+        if self.max_retries is not None:
+            client_kwargs["max_retries"] = self.max_retries
+        return OpenAI(**client_kwargs), Config.LLM_BOOST_MODEL_NAME
+
+    @staticmethod
+    def _json_object_response_format(model: Optional[str]) -> Optional[Dict[str, str]]:
+        """Return a JSON constraint only for models that handle it reliably."""
+        if "qwen" in (model or "").lower():
+            return None
+        return {"type": "json_object"}
+
+    @staticmethod
+    def _parse_json_object(text: str) -> Dict[str, Any]:
+        parsed = json.loads(text)
+        if not isinstance(parsed, dict):
+            raise json.JSONDecodeError("Expected a JSON object", text, 0)
+        return parsed
     
     def chat_json(
         self,
@@ -324,7 +358,7 @@ class LLMClient:
                 messages=messages,
                 temperature=temperature,
                 max_tokens=max_tokens,
-                response_format={"type": "json_object"}
+                response_format=self._json_object_response_format(self.model)
             )
             
             # 清理 markdown 代码块标记
@@ -333,11 +367,11 @@ class LLMClient:
             # 正常完成 → 尝试解析
             if finish_reason == "stop":
                 try:
-                    return json.loads(cleaned)
+                    return self._parse_json_object(cleaned)
                 except json.JSONDecodeError:
                     logger.warning("Primary LLM returned invalid JSON despite finish_reason=stop, attempting repair")
                     repaired = repair_truncated_json(content)
-                    if repaired is not None:
+                    if isinstance(repaired, dict):
                         return repaired
                     # 回退到 Boost
             
@@ -345,7 +379,7 @@ class LLMClient:
             elif finish_reason == "length":
                 logger.warning(f"Primary LLM response truncated (finish_reason=length, {len(content)} chars)")
                 repaired = repair_truncated_json(content)
-                if repaired is not None:
+                if isinstance(repaired, dict):
                     logger.info("Truncated JSON repaired successfully from primary LLM")
                     return repaired
                 logger.warning("JSON repair failed, falling back to Boost LLM")
@@ -353,7 +387,7 @@ class LLMClient:
             else:
                 logger.warning(f"Unexpected finish_reason='{finish_reason}', attempting parse")
                 try:
-                    return json.loads(cleaned)
+                    return self._parse_json_object(cleaned)
                 except json.JSONDecodeError:
                     pass
         
@@ -375,7 +409,7 @@ class LLMClient:
                 messages=messages,
                 temperature=temperature,
                 max_tokens=max_tokens,
-                response_format={"type": "json_object"},
+                response_format=self._json_object_response_format(boost_model),
                 client=boost_client,
                 model=boost_model
             )
@@ -384,10 +418,10 @@ class LLMClient:
             
             if finish_reason == "stop":
                 try:
-                    return json.loads(cleaned)
+                    return self._parse_json_object(cleaned)
                 except json.JSONDecodeError:
                     repaired = repair_truncated_json(content)
-                    if repaired is not None:
+                    if isinstance(repaired, dict):
                         logger.info("Boost LLM JSON repaired successfully")
                         return repaired
                     raise ValueError(f"Boost LLM returned invalid JSON: {cleaned[:200]}...")
@@ -395,14 +429,14 @@ class LLMClient:
             elif finish_reason == "length":
                 logger.warning(f"Boost LLM also truncated ({len(content)} chars), attempting repair")
                 repaired = repair_truncated_json(content)
-                if repaired is not None:
+                if isinstance(repaired, dict):
                     logger.info("Truncated JSON from Boost LLM repaired successfully")
                     return repaired
                 raise ValueError(f"Boost LLM response truncated and repair failed: {cleaned[:200]}...")
             
             else:
                 try:
-                    return json.loads(cleaned)
+                    return self._parse_json_object(cleaned)
                 except json.JSONDecodeError:
                     raise ValueError(f"Boost LLM returned unparseable response: {cleaned[:200]}...")
         

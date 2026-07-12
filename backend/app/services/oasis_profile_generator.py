@@ -550,6 +550,13 @@ class OasisProfileGenerator:
     def _is_group_entity(self, entity_type: str) -> bool:
         """判断是否是群体/机构类型实体"""
         return entity_type.lower() in self.GROUP_ENTITY_TYPES
+
+    @staticmethod
+    def _json_object_response_format(model_name: Optional[str]) -> Optional[Dict[str, str]]:
+        """Return JSON mode only for models that reliably support the constraint."""
+        if "qwen" in (model_name or "").lower():
+            return None
+        return {"type": "json_object"}
     
     def _generate_profile_with_llm(
         self,
@@ -584,13 +591,14 @@ class OasisProfileGenerator:
         
         for attempt in range(max_attempts):
             try:
+                response_format = self._json_object_response_format(self.model_name)
                 response = self.client.chat.completions.create(
                     model=self.model_name,
                     messages=[
                         {"role": "system", "content": self._get_system_prompt(is_individual)},
                         {"role": "user", "content": prompt}
                     ],
-                    response_format={"type": "json_object"},
+                    **({"response_format": response_format} if response_format else {}),
                     temperature=0.7 - (attempt * 0.1)  # 每次重试降低温度
                     # 不设置max_tokens，让LLM自由发挥
                 )
@@ -606,6 +614,8 @@ class OasisProfileGenerator:
                 # 尝试解析JSON
                 try:
                     result = json.loads(content)
+                    if not isinstance(result, dict):
+                        raise ValueError("profile response must be a JSON object")
                     
                     # 验证必需字段
                     if "bio" not in result or not result["bio"]:
@@ -615,12 +625,12 @@ class OasisProfileGenerator:
                     
                     return result
                     
-                except json.JSONDecodeError as je:
+                except (json.JSONDecodeError, ValueError) as je:
                     logger.warning(f"JSON解析失败 (attempt {attempt+1}): {str(je)[:80]}")
                     
                     # 尝试修复JSON
                     result = self._try_fix_json(content, entity_name, entity_type, entity_summary)
-                    if result.get("_fixed"):
+                    if isinstance(result, dict) and result.get("_fixed"):
                         del result["_fixed"]
                         return result
                     

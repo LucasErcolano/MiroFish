@@ -1,0 +1,84 @@
+version: 3
+case_id: s3-cross-topic-injection
+rounds: 20
+platform: reddit
+accept_language: es
+smoke_conditions:
+  - baseline-control
+  - signal-mid
+conditions:
+  - id: baseline-control
+    role: control
+    timing: none
+    event_expected: 0
+  - id: signal-early
+    role: signal
+    timing: early
+    event_expected: 1
+  - id: signal-mid
+    role: signal
+    timing: mid
+    event_expected: 1
+  - id: signal-late
+    role: signal
+    timing: late
+    event_expected: 1
+  - id: counter-signal-mid
+    role: counter_signal
+    timing: mid
+    event_expected: 1
+  - id: noise-near-mid
+    role: near_noise
+    timing: mid
+    event_expected: 1
+  - id: noise-off-mid
+    role: off_noise
+    timing: mid
+    event_expected: 1
+round_policy:
+  early_pct: 0.10
+  mid_pct: 0.50
+  late_pct: 0.90
+models:
+  gemma:
+    provider: deepinfra
+    model: google/gemma-3-27b-it
+    graphiti_llm_model: google/gemma-3-27b-it
+    base_url: https://api.deepinfra.com/v1/openai
+    key_env: DEEPINFRA_API_KEY
+  llama:
+    provider: deepinfra
+    model: meta-llama/Llama-3.3-70B-Instruct-Turbo
+    graphiti_llm_model: google/gemma-3-27b-it
+    base_url: https://api.deepinfra.com/v1/openai
+    key_env: DEEPINFRA_API_KEY
+  qwen:
+    provider: openrouter
+    model: qwen/qwen3-8b
+    graphiti_llm_model: google/gemma-3-27b-it
+    graphiti_base_url: https://api.deepinfra.com/v1/openai
+    graphiti_key_env: DEEPINFRA_API_KEY
+    base_url: https://openrouter.ai/api/v1
+    key_env: OPENROUTER_API_KEY
+topics:
+  football:
+    label: Argentina vs Colombia Copa America 2024 final
+    source: current-branch issue-19 S2 artifacts
+    base_context: topics/football/base_context.md
+    question: topics/football/question.md
+    ground_truth: topics/football/ground_truth.md
+    injection_plan: topics/football/injection_plan.yaml
+  bolivia:
+    label: Bolivia 2025 presidential runoff
+    source: origin/feat/issue-17-bolivia-runoff-backtesting-pr
+    base_context: topics/bolivia/base_context.md
+    question: topics/bolivia/question.md
+    ground_truth: topics/bolivia/ground_truth.md
+    injection_plan: topics/bolivia/injection_plan.yaml
+  ipc:
+    label: Argentina IPC 2025 forecast
+    source: origin/feat/case-b-backtesting
+    base_context: topics/ipc/base_context.md
+    question: topics/ipc/question.md
+    ground_truth: topics/ipc/ground_truth_decision.md
+    injection_plan: topics/ipc/injection_plan.yaml

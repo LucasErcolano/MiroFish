@@ -6,15 +6,34 @@
 import os
 from dotenv import load_dotenv
 
+
+def _load_project_env(env_path: str) -> None:
+    """Load local defaults without overriding process-level configuration."""
+    if os.path.exists(env_path):
+        load_dotenv(env_path, override=False)
+    else:
+        load_dotenv(override=False)
+
 # 加载项目根目录的 .env 文件
 # 路径: MiroFish/.env (相对于 backend/app/config.py)
-project_root_env = os.path.join(os.path.dirname(__file__), '../../.env')
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+project_root_env = os.path.join(PROJECT_ROOT, '.env')
 
-if os.path.exists(project_root_env):
-    load_dotenv(project_root_env, override=True)
-else:
-    # 如果根目录没有 .env，尝试加载环境变量（用于生产环境）
-    load_dotenv(override=True)
+_load_project_env(project_root_env)
+
+
+def _env_int(name: str, default: int) -> int:
+    value = os.environ.get(name)
+    if value is None or str(value).strip() == "":
+        return default
+    return int(value)
+
+
+def _env_float(name: str, default: float) -> float:
+    value = os.environ.get(name)
+    if value is None or str(value).strip() == "":
+        return default
+    return float(value)
 
 
 class Config:
@@ -23,6 +42,9 @@ class Config:
     # Flask配置
     SECRET_KEY = os.environ.get('SECRET_KEY', 'mirofish-secret-key')
     DEBUG = os.environ.get('FLASK_DEBUG', 'True').lower() == 'true'
+    ALLOW_UNCONFIGURED_STARTUP = os.environ.get(
+        'ALLOW_UNCONFIGURED_STARTUP', 'False'
+    ).lower() == 'true'
     
     # JSON配置 - 禁用ASCII转义，让中文直接显示（而不是 \uXXXX 格式）
     JSON_AS_ASCII = False
@@ -61,24 +83,24 @@ class Config:
     GRAPH_BACKEND = os.environ.get('GRAPH_BACKEND', 'graphiti').lower()
     GRAPH_SEARCH_RERANKER = os.environ.get('GRAPH_SEARCH_RERANKER', 'rrf').strip() or None
     GRAPH_SEARCH_APP_RERANKER = (os.environ.get('GRAPH_SEARCH_APP_RERANKER', 'embedding_rrf').strip().lower() or 'embedding_rrf')
-    GRAPH_SEARCH_APP_RERANK_FUSION_K = max(1, int(os.environ.get('GRAPH_SEARCH_APP_RERANK_FUSION_K', '60')))
-    GRAPH_SEARCH_APP_SEMANTIC_WEIGHT = max(0.0, float(os.environ.get('GRAPH_SEARCH_APP_SEMANTIC_WEIGHT', '2.0')))
+    GRAPH_SEARCH_APP_RERANK_FUSION_K = max(1, _env_int('GRAPH_SEARCH_APP_RERANK_FUSION_K', 60))
+    GRAPH_SEARCH_APP_SEMANTIC_WEIGHT = max(0.0, _env_float('GRAPH_SEARCH_APP_SEMANTIC_WEIGHT', 2.0))
     GRAPH_SEARCH_APP_EMBEDDER_API_KEY = os.environ.get('GRAPH_SEARCH_APP_EMBEDDER_API_KEY') or None
     GRAPH_SEARCH_APP_EMBEDDER_BASE_URL = os.environ.get('GRAPH_SEARCH_APP_EMBEDDER_BASE_URL') or None
     GRAPH_SEARCH_APP_EMBEDDER_MODEL = os.environ.get('GRAPH_SEARCH_APP_EMBEDDER_MODEL') or None
-    GRAPH_SEARCH_APP_EMBED_BATCH_SIZE = max(1, int(os.environ.get('GRAPH_SEARCH_APP_EMBED_BATCH_SIZE', '32')))
+    GRAPH_SEARCH_APP_EMBED_BATCH_SIZE = max(1, _env_int('GRAPH_SEARCH_APP_EMBED_BATCH_SIZE', 32))
     GRAPH_SEARCH_APP_RERANKER_API_KEY = os.environ.get('GRAPH_SEARCH_APP_RERANKER_API_KEY') or None
     GRAPH_SEARCH_APP_RERANKER_BASE_URL = os.environ.get('GRAPH_SEARCH_APP_RERANKER_BASE_URL') or None
     GRAPH_SEARCH_APP_RERANKER_MODEL = os.environ.get('GRAPH_SEARCH_APP_RERANKER_MODEL') or None
     GRAPH_SEARCH_APP_RERANKER_PROVIDER = (os.environ.get('GRAPH_SEARCH_APP_RERANKER_PROVIDER', 'auto').strip().lower() or 'auto')
-    GRAPH_SEARCH_APP_RERANKER_TIMEOUT = max(1.0, float(os.environ.get('GRAPH_SEARCH_APP_RERANKER_TIMEOUT', '20')))
+    GRAPH_SEARCH_APP_RERANKER_TIMEOUT = max(1.0, _env_float('GRAPH_SEARCH_APP_RERANKER_TIMEOUT', 20.0))
     GRAPH_SEARCH_INCLUDE_NODES = os.environ.get('GRAPH_SEARCH_INCLUDE_NODES', 'true').lower() == 'true'
-    GRAPH_SEARCH_EDGE_LIMIT_MULTIPLIER = max(1, int(os.environ.get('GRAPH_SEARCH_EDGE_LIMIT_MULTIPLIER', '2')))
-    GRAPH_SEARCH_NODE_LIMIT_MULTIPLIER = max(1, int(os.environ.get('GRAPH_SEARCH_NODE_LIMIT_MULTIPLIER', '1')))
-    GRAPH_SEARCH_NODE_SUMMARY_LIMIT = max(1, int(os.environ.get('GRAPH_SEARCH_NODE_SUMMARY_LIMIT', '5')))
+    GRAPH_SEARCH_EDGE_LIMIT_MULTIPLIER = max(1, _env_int('GRAPH_SEARCH_EDGE_LIMIT_MULTIPLIER', 2))
+    GRAPH_SEARCH_NODE_LIMIT_MULTIPLIER = max(1, _env_int('GRAPH_SEARCH_NODE_LIMIT_MULTIPLIER', 1))
+    GRAPH_SEARCH_NODE_SUMMARY_LIMIT = max(1, _env_int('GRAPH_SEARCH_NODE_SUMMARY_LIMIT', 5))
     GRAPH_SEARCH_EXPAND_EDGES_FROM_NODES = os.environ.get('GRAPH_SEARCH_EXPAND_EDGES_FROM_NODES', 'true').lower() == 'true'
-    GRAPH_SEARCH_NODE_EDGE_EXPANSION_LIMIT = max(0, int(os.environ.get('GRAPH_SEARCH_NODE_EDGE_EXPANSION_LIMIT', '2')))
-    GRAPH_SEARCH_NODE_EDGE_PER_NODE_LIMIT = max(1, int(os.environ.get('GRAPH_SEARCH_NODE_EDGE_PER_NODE_LIMIT', '8')))
+    GRAPH_SEARCH_NODE_EDGE_EXPANSION_LIMIT = max(0, _env_int('GRAPH_SEARCH_NODE_EDGE_EXPANSION_LIMIT', 2))
+    GRAPH_SEARCH_NODE_EDGE_PER_NODE_LIMIT = max(1, _env_int('GRAPH_SEARCH_NODE_EDGE_PER_NODE_LIMIT', 8))
     GRAPHITI_URI = os.environ.get('GRAPHITI_URI')
     GRAPHITI_USER = os.environ.get('GRAPHITI_USER', 'neo4j')
     GRAPHITI_PASSWORD = os.environ.get('GRAPHITI_PASSWORD')
@@ -88,16 +110,16 @@ class Config:
     GRAPHITI_LLM_MODEL = os.environ.get('GRAPHITI_LLM_MODEL') or LLM_MODEL_NAME
     GRAPHITI_LLM_SMALL_MODEL = os.environ.get('GRAPHITI_LLM_SMALL_MODEL') or GRAPHITI_LLM_MODEL
     GRAPHITI_LLM_CLIENT_MODE = os.environ.get('GRAPHITI_LLM_CLIENT_MODE', 'openai').lower()
-    GRAPHITI_LLM_MAX_TOKENS = max(1024, int(os.environ.get('GRAPHITI_LLM_MAX_TOKENS', '16384')))
+    GRAPHITI_LLM_MAX_TOKENS = max(1024, _env_int('GRAPHITI_LLM_MAX_TOKENS', 16384))
     GRAPHITI_EMBEDDER_API_KEY = os.environ.get('GRAPHITI_EMBEDDER_API_KEY') or GRAPHITI_LLM_API_KEY
     GRAPHITI_EMBEDDER_BASE_URL = os.environ.get('GRAPHITI_EMBEDDER_BASE_URL') or GRAPHITI_LLM_BASE_URL
     GRAPHITI_EMBEDDER_MODEL = os.environ.get('GRAPHITI_EMBEDDER_MODEL', 'qwen3-embedding:8b')
-    GRAPHITI_EMBEDDER_DIM = max(128, int(os.environ.get('GRAPHITI_EMBEDDER_DIM', '1024')))
+    GRAPHITI_EMBEDDER_DIM = max(128, _env_int('GRAPHITI_EMBEDDER_DIM', 1024))
     GRAPHITI_RERANKER_API_KEY = os.environ.get('GRAPHITI_RERANKER_API_KEY') or GRAPHITI_LLM_API_KEY
     GRAPHITI_RERANKER_BASE_URL = os.environ.get('GRAPHITI_RERANKER_BASE_URL') or GRAPHITI_LLM_BASE_URL
     GRAPHITI_RERANKER_MODEL = os.environ.get('GRAPHITI_RERANKER_MODEL') or GRAPHITI_LLM_MODEL
     GRAPHITI_ENABLE_CROSS_ENCODER = os.environ.get('GRAPHITI_ENABLE_CROSS_ENCODER', 'false').lower() == 'true'
-    GRAPHITI_MAX_COROUTINES = max(1, int(os.environ.get('GRAPHITI_MAX_COROUTINES', '20')))
+    GRAPHITI_MAX_COROUTINES = max(1, _env_int('GRAPHITI_MAX_COROUTINES', 20))
     
     # 文件上传配置
     MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 50MB
@@ -111,6 +133,11 @@ class Config:
     # OASIS模拟配置
     OASIS_DEFAULT_MAX_ROUNDS = int(os.environ.get('OASIS_DEFAULT_MAX_ROUNDS', '10'))
     OASIS_SIMULATION_DATA_DIR = os.path.join(os.path.dirname(__file__), '../uploads/simulations')
+    ENABLE_SIMULATION_MODEL_ROUTING = os.environ.get('ENABLE_SIMULATION_MODEL_ROUTING', 'False').lower() == 'true'
+    SIMULATION_MODEL_MAP_PATH = os.path.abspath(
+        os.environ.get('SIMULATION_MODEL_MAP_PATH')
+        or os.path.join(PROJECT_ROOT, 'configs', 'model_map_openrouter.yaml')
+    )
     
     # OASIS平台可用动作配置
     OASIS_TWITTER_ACTIONS = [
@@ -124,14 +151,26 @@ class Config:
     
     # Report Agent配置
     REPORT_AGENT_MAX_TOOL_CALLS = int(os.environ.get('REPORT_AGENT_MAX_TOOL_CALLS', '5'))
+    REPORT_AGENT_MAX_SUB_QUERIES = int(os.environ.get('REPORT_AGENT_MAX_SUB_QUERIES', '5'))
     REPORT_AGENT_MAX_REFLECTION_ROUNDS = int(os.environ.get('REPORT_AGENT_MAX_REFLECTION_ROUNDS', '2'))
     REPORT_AGENT_TEMPERATURE = float(os.environ.get('REPORT_AGENT_TEMPERATURE', '0.5'))
+    ENABLE_FUSION_VERDICT = os.environ.get('ENABLE_FUSION_VERDICT', 'True').lower() == 'true'
+    FUSION_VERDICT_MODEL = os.environ.get('FUSION_VERDICT_MODEL', 'openai/gpt-4o-mini')
+    FUSION_VERDICT_MAX_REPORT_CHARS = int(os.environ.get('FUSION_VERDICT_MAX_REPORT_CHARS', '12000'))
+    FUSION_VERDICT_TIMEOUT_SECONDS = float(os.environ.get('FUSION_VERDICT_TIMEOUT_SECONDS', '20'))
     
     # Experimental Memory (Spike S1)
     USE_EXPERIMENTAL_MEMORY = os.environ.get('USE_EXPERIMENTAL_MEMORY', 'False').lower() == 'true'
     
     # Worldbuilding Planning & Capture (Spike S3)
     PLANNING_CAPTURE_ENABLED = os.environ.get('PLANNING_CAPTURE_ENABLED', 'True').lower() == 'true'
+    PLANNING_CAPTURE_MODE = os.environ.get('PLANNING_CAPTURE_MODE', 'capture_only')
+    PLANNING_CAPTURE_SAVE_RAW_ARTIFACTS = os.environ.get(
+        'PLANNING_CAPTURE_SAVE_RAW_ARTIFACTS', 'False'
+    ).lower() == 'true'
+    PLANNING_CAPTURE_REDACT_SECRETS = os.environ.get(
+        'PLANNING_CAPTURE_REDACT_SECRETS', 'True'
+    ).lower() == 'true'
     SIMILARITY_THRESHOLD = float(os.environ.get('SIMILARITY_THRESHOLD', '0.85'))
     
     # Deep Search (Spike S3)

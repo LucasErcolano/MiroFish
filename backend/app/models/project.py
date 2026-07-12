@@ -128,6 +128,10 @@ class ProjectManager:
     def _get_project_text_path(cls, project_id: str) -> str:
         """获取项目提取文本存储路径"""
         return os.path.join(cls._get_project_dir(project_id), 'extracted_text.txt')
+
+    @classmethod
+    def _get_deep_search_path(cls, project_id: str) -> str:
+        return os.path.join(cls._get_project_dir(project_id), 'deep_search_result.txt')
     
     @classmethod
     def create_project(cls, name: str = "Unnamed Project") -> Project:
@@ -287,6 +291,19 @@ class ProjectManager:
             return None
         
         with open(text_path, 'r', encoding='utf-8') as f:
+            return f.read()
+
+    @classmethod
+    def save_deep_search_result(cls, project_id: str, content: str) -> None:
+        with open(cls._get_deep_search_path(project_id), 'w', encoding='utf-8') as f:
+            f.write(content)
+
+    @classmethod
+    def get_deep_search_result(cls, project_id: str) -> Optional[str]:
+        path = cls._get_deep_search_path(project_id)
+        if not os.path.exists(path):
+            return None
+        with open(path, 'r', encoding='utf-8') as f:
             return f.read()
     
     @classmethod

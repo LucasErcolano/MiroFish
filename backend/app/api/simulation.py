@@ -4,6 +4,9 @@ Step2: Zep实体读取与过滤、OASIS模拟准备与运行（全程自动化�
 """
 
 import os
+import json
+import math
+from pathlib import Path
 import traceback
 from flask import request, jsonify, send_file
 
@@ -18,6 +21,212 @@ from ..utils.locale import t, get_locale, set_locale
 from ..models.project import ProjectManager
 
 logger = get_logger('mirofish.api.simulation')
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+RUNS_ROOT = Path(os.environ.get("MIROFISH_RUNS_DIR", REPO_ROOT / "runs")).resolve()
+
+
+def _simulation_dir(simulation_id: str) -> Path:
+    return Path(Config.UPLOAD_FOLDER).resolve() / "simulations" / simulation_id
+
+
+def _safe_artifact_path(base_dir: Path, rel_path: str, allowed_suffixes: tuple[str, ...]) -> Path:
+    if not rel_path or rel_path.startswith(("/", "\\")) or ".." in Path(rel_path).parts:
+        raise ValueError("invalid path")
+    target = (base_dir / rel_path).resolve()
+    base = base_dir.resolve()
+    if target != base and base not in target.parents:
+        raise ValueError("path traversal rejected")
+    if allowed_suffixes and target.suffix not in allowed_suffixes:
+        raise ValueError("unsupported file type")
+    return target
+
+
+def _read_jsonl(path: Path) -> list[dict]:
+    if not path.is_file():
+        return []
+    records = []
+    with path.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                item = json.loads(line)
+                if isinstance(item, dict):
+                    records.append(item)
+            except json.JSONDecodeError:
+                logger.warning(f"Skipping malformed JSONL line in {path}")
+    return records
+
+
+def _percentile(values: list[float], percentile: float) -> float:
+    if not values:
+        return 0.0
+    ordered = sorted(values)
+    index = max(0, min(len(ordered) - 1, math.ceil((percentile / 100.0) * len(ordered)) - 1))
+    return round(float(ordered[index]), 2)
+
+
+def _telemetry_flags(record: dict) -> set[str]:
+    flags = record.get("leak_flags") or []
+    if isinstance(flags, str):
+        flags = [flags]
+    if not isinstance(flags, list):
+        return set()
+    return {str(flag) for flag in flags}
+
+
+def _is_rate_limit_error(error: object) -> bool:
+    text = str(error or "").lower()
+    return "429" in text or "rate limit" in text or "ratelimit" in text
+
+
+def _cost_estimation_status(calls: int, unknown: int, usage_unavailable: int) -> str:
+    if calls <= 0:
+        return "none"
+    if unknown >= calls:
+        return "unknown"
+    if unknown or usage_unavailable:
+        return "partial"
+    return "estimated"
+
+
+def _aggregate_telemetry(records: list[dict]) -> dict:
+    by_model: dict[str, dict] = {}
+    totals = {
+        "calls": 0,
+        "errors": 0,
+        "parse_errors": 0,
+        "tokens_in": 0,
+        "tokens_out": 0,
+        "cost_usd_est": 0.0,
+        "latency_ms": 0.0,
+        "cost_unknown_model_calls": 0,
+        "usage_unavailable_calls": 0,
+        "rate_limited_calls": 0,
+    }
+
+    for record in records:
+        model = record.get("model") or "unknown"
+        bucket = by_model.setdefault(
+            model,
+            {
+                "model": model,
+                "provider": record.get("provider") or "",
+                "calls": 0,
+                "errors": 0,
+                "parse_errors": 0,
+                "tokens_in": 0,
+                "tokens_out": 0,
+                "cost_usd_est": 0.0,
+                "latencies_ms": [],
+                "cost_unknown_model_calls": 0,
+                "usage_unavailable_calls": 0,
+                "rate_limited_calls": 0,
+                "leak_flags": set(),
+            },
+        )
+        tokens_in = int(record.get("tokens_in") or 0)
+        tokens_out = int(record.get("tokens_out") or 0)
+        cost = float(record.get("cost_usd_est") or record.get("cost_usd") or 0.0)
+        latency = float(record.get("latency_ms") or 0.0)
+        has_error = bool(record.get("error"))
+        parse_error = record.get("output_valid_json") is False
+        flags = _telemetry_flags(record)
+        unknown_model = "cost_unknown_model" in flags
+        usage_unavailable = bool(record.get("usage_unavailable")) or (has_error and tokens_in + tokens_out == 0)
+        rate_limited = _is_rate_limit_error(record.get("error"))
+
+        bucket["calls"] += 1
+        bucket["errors"] += 1 if has_error else 0
+        bucket["parse_errors"] += 1 if parse_error else 0
+        bucket["tokens_in"] += tokens_in
+        bucket["tokens_out"] += tokens_out
+        bucket["cost_usd_est"] += cost
+        bucket["cost_unknown_model_calls"] += 1 if unknown_model else 0
+        bucket["usage_unavailable_calls"] += 1 if usage_unavailable else 0
+        bucket["rate_limited_calls"] += 1 if rate_limited else 0
+        bucket["leak_flags"].update(flags)
+        if latency:
+            bucket["latencies_ms"].append(latency)
+
+        totals["calls"] += 1
+        totals["errors"] += 1 if has_error else 0
+        totals["parse_errors"] += 1 if parse_error else 0
+        totals["tokens_in"] += tokens_in
+        totals["tokens_out"] += tokens_out
+        totals["cost_usd_est"] += cost
+        totals["cost_unknown_model_calls"] += 1 if unknown_model else 0
+        totals["usage_unavailable_calls"] += 1 if usage_unavailable else 0
+        totals["rate_limited_calls"] += 1 if rate_limited else 0
+        totals["latency_ms"] += latency
+
+    per_model = []
+    for bucket in by_model.values():
+        latencies = bucket.pop("latencies_ms")
+        flags = bucket.pop("leak_flags")
+        calls = bucket["calls"]
+        bucket["cost_usd_est"] = round(bucket["cost_usd_est"], 8)
+        bucket["latency_p50_ms"] = _percentile(latencies, 50)
+        bucket["latency_p95_ms"] = _percentile(latencies, 95)
+        bucket["mean_latency_ms"] = round(sum(latencies) / len(latencies), 2) if latencies else 0.0
+        bucket["error_rate"] = round(bucket["errors"] / calls, 4) if calls else 0.0
+        bucket["parse_error_rate"] = round(bucket["parse_errors"] / calls, 4) if calls else 0.0
+        bucket["cost_estimation_status"] = _cost_estimation_status(
+            calls,
+            bucket["cost_unknown_model_calls"],
+            bucket["usage_unavailable_calls"],
+        )
+        bucket["leak_flags"] = sorted(flags)
+        per_model.append(bucket)
+
+    totals["cost_usd_est"] = round(totals["cost_usd_est"], 8)
+    totals["latency_ms"] = round(totals["latency_ms"], 2)
+    totals["latency_p50_ms"] = _percentile([float(r.get("latency_ms") or 0.0) for r in records if r.get("latency_ms")], 50)
+    totals["latency_p95_ms"] = _percentile([float(r.get("latency_ms") or 0.0) for r in records if r.get("latency_ms")], 95)
+    totals["mean_latency_ms"] = round(totals["latency_ms"] / totals["calls"], 2) if totals["calls"] else 0.0
+    totals["cost_estimation_status"] = _cost_estimation_status(
+        totals["calls"],
+        totals["cost_unknown_model_calls"],
+        totals["usage_unavailable_calls"],
+    )
+
+    return {
+        "totals": totals,
+        "per_model": sorted(per_model, key=lambda item: item["model"]),
+    }
+
+
+def _json_contains_value(value, needle: str) -> bool:
+    if isinstance(value, dict):
+        return any(_json_contains_value(v, needle) for v in value.values())
+    if isinstance(value, list):
+        return any(_json_contains_value(v, needle) for v in value)
+    return value == needle
+
+
+def _list_fusion_verdicts_for_sim(simulation_id: str) -> list[dict]:
+    if not RUNS_ROOT.exists():
+        return []
+    verdicts = []
+    for path in sorted(RUNS_ROOT.glob("headless/fusion_*/verdict_raw.json")):
+        rel_path = path.relative_to(REPO_ROOT).as_posix() if REPO_ROOT in path.parents else path.name
+        include = False
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            include = _json_contains_value(data, simulation_id)
+        except Exception:
+            include = False
+
+        if include:
+            verdicts.append({
+                "path": rel_path,
+                "name": path.parent.name,
+                "size": path.stat().st_size,
+                "modified_at": path.stat().st_mtime,
+            })
+    return verdicts
 
 
 # Interview prompt 优化前缀
@@ -311,7 +520,15 @@ def _check_simulation_prepared(simulation_id: str) -> tuple:
         # - completed: 运行完成，说明准备早就完成了
         # - stopped: 已停止，说明准备早就完成了
         # - failed: 运行失败（但准备是完成的）
-        prepared_statuses = ["ready", "preparing", "running", "completed", "stopped", "failed"]
+        prepared_statuses = [
+            "ready",
+            "preparing",
+            "running",
+            "paused",
+            "completed",
+            "stopped",
+            "failed",
+        ]
         if status in prepared_statuses and config_generated:
             # 获取文件统计信息
             profiles_file = os.path.join(simulation_dir, "reddit_profiles.json")
@@ -339,7 +556,9 @@ def _check_simulation_prepared(simulation_id: str) -> tuple:
             logger.info(f"模拟 {simulation_id} 检测结果: 已准备完成 (status={status}, config_generated={config_generated})")
             return True, {
                 "status": status,
+                "candidate_entities_count": state_data.get("candidate_entities_count", 0),
                 "entities_count": state_data.get("entities_count", 0),
+                "deduped_entities_count": state_data.get("deduped_entities_count", state_data.get("entities_count", 0)),
                 "profiles_count": profiles_count,
                 "entity_types": state_data.get("entity_types", []),
                 "config_generated": config_generated,
@@ -471,8 +690,8 @@ def prepare_simulation():
         use_llm_for_profiles = data.get('use_llm_for_profiles', True)
         parallel_profile_count = data.get('parallel_profile_count', 5)
         
-        # ========== 同步获取实体数量（在后台任务启动前） ==========
-        # 这样前端在调用prepare后立即就能获取到预期Agent总数
+        # ========== 同步获取 candidatos del grafo（pre-Dedup） ==========
+        # Este número no es el total final de agentes; Dedup puede reducirlo.
         try:
             logger.info(f"同步获取实体数量: graph_id={state.graph_id}")
             reader = ZepEntityReader()
@@ -482,8 +701,8 @@ def prepare_simulation():
                 defined_entity_types=entity_types_list,
                 enrich_with_edges=False  # 不获取边信息，加快速度
             )
-            # 保存实体数量到状态（供前端立即获取）
-            state.entities_count = filtered_preview.filtered_count
+            # Guardar como candidatos para evitar mostrarlo como total final.
+            state.candidate_entities_count = filtered_preview.filtered_count
             state.entity_types = list(filtered_preview.entity_types)
             logger.info(f"预期实体数量: {filtered_preview.filtered_count}, 类型: {filtered_preview.entity_types}")
         except Exception as e:
@@ -496,7 +715,8 @@ def prepare_simulation():
             task_type="simulation_prepare",
             metadata={
                 "simulation_id": simulation_id,
-                "project_id": state.project_id
+                "project_id": state.project_id,
+                "candidate_entities_count": state.candidate_entities_count,
             }
         )
         
@@ -525,10 +745,13 @@ def prepare_simulation():
                 def progress_callback(stage, progress, message, **kwargs):
                     # 计算总进度
                     stage_weights = {
-                        "reading": (0, 20),           # 0-20%
-                        "generating_profiles": (20, 70),  # 20-70%
-                        "generating_config": (70, 90),    # 70-90%
-                        "copying_scripts": (90, 100)       # 90-100%
+                        "research": (0, 12),
+                        "reading": (12, 24),
+                        "deduplication": (24, 34),
+                        "generating_profiles": (34, 68),
+                        "compiling_wiki": (68, 76),
+                        "generating_config": (76, 92),
+                        "copying_scripts": (92, 100)
                     }
                     
                     start, end = stage_weights.get(stage, (0, 100))
@@ -536,8 +759,11 @@ def prepare_simulation():
                     
                     # 构建详细进度信息
                     stage_names = {
+                        "research": "Deep Research",
                         "reading": t('progress.readingGraphEntities'),
+                        "deduplication": "Deduplication",
                         "generating_profiles": t('progress.generatingProfiles'),
+                        "compiling_wiki": "Wiki",
                         "generating_config": t('progress.generatingSimConfig'),
                         "copying_scripts": t('progress.preparingScripts')
                     }
@@ -551,7 +777,9 @@ def prepare_simulation():
                         "stage_progress": progress,
                         "current": kwargs.get("current", 0),
                         "total": kwargs.get("total", 0),
-                        "item_name": kwargs.get("item_name", "")
+                        "item_name": kwargs.get("item_name", ""),
+                        "candidate_entities_count": kwargs.get("candidate_entities_count"),
+                        "deduped_entities_count": kwargs.get("deduped_entities_count"),
                     }
                     
                     # 构建详细进度信息
@@ -564,7 +792,9 @@ def prepare_simulation():
                         "stage_progress": progress,
                         "current_item": detail["current"],
                         "total_items": detail["total"],
-                        "item_description": message
+                        "item_description": message,
+                        "candidate_entities_count": detail.get("candidate_entities_count"),
+                        "deduped_entities_count": detail.get("deduped_entities_count"),
                     }
                     
                     # 构建简洁消息
@@ -622,7 +852,9 @@ def prepare_simulation():
                 "status": "preparing",
                 "message": t('api.prepareStarted'),
                 "already_prepared": False,
-                "expected_entities_count": state.entities_count,  # 预期的Agent总数
+                "expected_entities_count": state.candidate_entities_count,  # compat: pre-Dedup candidates
+                "candidate_entities_count": state.candidate_entities_count,
+                "deduped_entities_count": state.deduped_entities_count or None,
                 "entity_types": state.entity_types  # 实体类型列表
             }
         })
@@ -1103,6 +1335,8 @@ def get_simulation_profiles_realtime(simulation_id: str):
         # 检查是否正在生成（通过 state.json 判断）
         is_generating = False
         total_expected = None
+        candidate_entities_count = None
+        deduped_entities_count = None
         
         state_file = os.path.join(sim_dir, "state.json")
         if os.path.exists(state_file):
@@ -1111,19 +1345,23 @@ def get_simulation_profiles_realtime(simulation_id: str):
                     state_data = json.load(f)
                     status = state_data.get("status", "")
                     is_generating = status == "preparing"
-                    total_expected = state_data.get("entities_count")
+                    candidate_entities_count = state_data.get("candidate_entities_count")
+                    deduped_entities_count = state_data.get("deduped_entities_count") or state_data.get("entities_count")
+                    total_expected = deduped_entities_count or state_data.get("entities_count")
             except Exception:
                 pass
         
         return jsonify({
             "success": True,
-            "data": {
-                "simulation_id": simulation_id,
-                "platform": platform,
-                "count": len(profiles),
-                "total_expected": total_expected,
-                "is_generating": is_generating,
-                "file_exists": file_exists,
+	            "data": {
+	                "simulation_id": simulation_id,
+	                "platform": platform,
+	                "count": len(profiles),
+	                "total_expected": total_expected,
+	                "candidate_entities_count": candidate_entities_count,
+	                "deduped_entities_count": deduped_entities_count,
+	                "is_generating": is_generating,
+	                "file_exists": file_exists,
                 "file_modified_at": file_modified_at,
                 "profiles": profiles
             }
@@ -1506,6 +1744,8 @@ def start_simulation():
         max_rounds = data.get('max_rounds')  # 可选：最大模拟轮数
         enable_graph_memory_update = data.get('enable_graph_memory_update', False)  # 可选：是否启用图谱记忆更新
         force = data.get('force', False)  # 可选：强制重新开始
+        no_wait = data.get('no_wait', False)
+        model_map_path = data.get('model_map_path')
 
         # 验证 max_rounds 参数
         if max_rounds is not None:
@@ -1526,6 +1766,12 @@ def start_simulation():
             return jsonify({
                 "success": False,
                 "error": t('api.invalidPlatform', platform=platform)
+            }), 400
+
+        if model_map_path and platform != 'reddit':
+            return jsonify({
+                "success": False,
+                "error": "model_map_path is only supported for reddit simulations"
             }), 400
 
         # 检查模拟是否已准备好
@@ -1609,7 +1855,9 @@ def start_simulation():
             platform=platform,
             max_rounds=max_rounds,
             enable_graph_memory_update=enable_graph_memory_update,
-            graph_id=graph_id
+            graph_id=graph_id,
+            no_wait=no_wait,
+            model_map_path=model_map_path
         )
         
         # 更新模拟状态
@@ -2582,6 +2830,270 @@ def get_interview_history():
             "error": str(e),
             "traceback": traceback.format_exc()
         }), 500
+
+
+# ============== Observability artifact endpoints (Issue #32) ==============
+
+@simulation_bp.route('/<simulation_id>/artifacts', methods=['GET'])
+def get_simulation_artifacts(simulation_id: str):
+    """Return a read-only manifest of observability artifacts for a simulation."""
+    try:
+        sim_dir = _simulation_dir(simulation_id)
+        wiki_dir = sim_dir / "wiki"
+        telemetry_path = sim_dir / "llm_telemetry.jsonl"
+        audit_path = sim_dir / "model_routing_audit.jsonl"
+        deep_search_path = sim_dir / "deep_search_result.txt"
+        deduplication_path = sim_dir / "deduplication_summary.json"
+        verdicts = _list_fusion_verdicts_for_sim(simulation_id)
+
+        return jsonify({
+            "success": True,
+            "simulation_id": simulation_id,
+            "wiki": wiki_dir.is_dir(),
+            "telemetry": telemetry_path.is_file(),
+            "audit": audit_path.is_file(),
+            "deep_search": deep_search_path.is_file(),
+            "deduplication": deduplication_path.is_file(),
+            "fusion_verdicts": verdicts,
+            "paths": {
+                "simulation_dir": str(sim_dir),
+                "wiki": str(wiki_dir) if wiki_dir.exists() else None,
+                "telemetry": str(telemetry_path) if telemetry_path.exists() else None,
+                "routing_audit": str(audit_path) if audit_path.exists() else None,
+                "deep_search": str(deep_search_path) if deep_search_path.exists() else None,
+                "deduplication": str(deduplication_path) if deduplication_path.exists() else None,
+            },
+        })
+    except Exception as e:
+        logger.error(f"读取模拟 artifacts 失败: {str(e)}")
+        return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
+
+
+@simulation_bp.route('/<simulation_id>/wiki', methods=['GET'])
+def get_simulation_wiki(simulation_id: str):
+    """Return the wiki page tree for a simulation."""
+    try:
+        wiki_dir = _simulation_dir(simulation_id) / "wiki"
+        pages = []
+        if not wiki_dir.is_dir():
+            return jsonify({"success": True, "simulation_id": simulation_id, "pages": []})
+
+        def read_markdown_title(path: Path, fallback: str) -> str:
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        stripped = line.strip()
+                        if stripped.startswith('# '):
+                            return stripped.lstrip('#').strip() or fallback
+            except Exception:
+                pass
+            return fallback
+
+        root_names = ["index", "agents", "timeline", "sources", "contradictions"]
+        for name in root_names:
+            path = wiki_dir / f"{name}.md"
+            if path.is_file():
+                pages.append({
+                    "path": path.relative_to(wiki_dir).as_posix(),
+                    "kind": "root",
+                    "title": name.replace("_", " ").title(),
+                    "size": path.stat().st_size,
+                    "modified_at": path.stat().st_mtime,
+                })
+
+        meta_path = wiki_dir / "wiki_meta.json"
+        if meta_path.is_file():
+            pages.append({
+                "path": "wiki_meta.json",
+                "kind": "meta",
+                "title": "Wiki Metadata",
+                "size": meta_path.stat().st_size,
+                "modified_at": meta_path.stat().st_mtime,
+            })
+
+        for kind, folder in [("entity", "entities"), ("claim", "claims")]:
+            folder_path = wiki_dir / folder
+            if not folder_path.is_dir():
+                continue
+            for path in sorted(folder_path.glob("*.md")):
+                fallback_title = path.stem.replace("_", " ")
+                pages.append({
+                    "path": path.relative_to(wiki_dir).as_posix(),
+                    "kind": kind,
+                    "title": read_markdown_title(path, fallback_title),
+                    "size": path.stat().st_size,
+                    "modified_at": path.stat().st_mtime,
+                })
+
+        return jsonify({"success": True, "simulation_id": simulation_id, "pages": pages})
+    except Exception as e:
+        logger.error(f"读取模拟 wiki 失败: {str(e)}")
+        return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
+
+
+@simulation_bp.route('/<simulation_id>/wiki/page', methods=['GET'])
+def get_simulation_wiki_page(simulation_id: str):
+    """Return raw markdown/JSON content for one wiki page."""
+    try:
+        wiki_dir = _simulation_dir(simulation_id) / "wiki"
+        rel_path = request.args.get("path", "")
+        try:
+            target = _safe_artifact_path(wiki_dir, rel_path, (".md", ".json"))
+        except ValueError as exc:
+            return jsonify({"success": False, "error": str(exc)}), 400
+
+        if not target.is_file():
+            return jsonify({"success": False, "error": "not found"}), 404
+
+        return jsonify({
+            "success": True,
+            "simulation_id": simulation_id,
+            "path": rel_path,
+            "content": target.read_text(encoding="utf-8"),
+            "size": target.stat().st_size,
+            "modified_at": target.stat().st_mtime,
+        })
+    except Exception as e:
+        logger.error(f"读取 wiki 页面失败: {str(e)}")
+        return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
+
+
+@simulation_bp.route('/<simulation_id>/telemetry', methods=['GET'])
+def get_simulation_telemetry(simulation_id: str):
+    """Return aggregated LLM telemetry for a simulation."""
+    try:
+        telemetry_path = _simulation_dir(simulation_id) / "llm_telemetry.jsonl"
+        records = _read_jsonl(telemetry_path)
+        aggregated = _aggregate_telemetry(records)
+        return jsonify({
+            "success": True,
+            "simulation_id": simulation_id,
+            "records_count": len(records),
+            "records": records,
+            **aggregated,
+        })
+    except Exception as e:
+        logger.error(f"读取 telemetry 失败: {str(e)}")
+        return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
+
+
+@simulation_bp.route('/<simulation_id>/routing-audit', methods=['GET'])
+def get_simulation_routing_audit(simulation_id: str):
+    """Return post-run model routing audit records for a simulation."""
+    try:
+        audit_path = _simulation_dir(simulation_id) / "model_routing_audit.jsonl"
+        records = _read_jsonl(audit_path)
+        return jsonify({
+            "success": True,
+            "simulation_id": simulation_id,
+            "records_count": len(records),
+            "records": records,
+        })
+    except Exception as e:
+        logger.error(f"读取 routing audit 失败: {str(e)}")
+        return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
+
+
+@simulation_bp.route('/<simulation_id>/deduplication', methods=['GET'])
+def get_simulation_deduplication(simulation_id: str):
+    """Return semantic deduplication summary for a simulation."""
+    try:
+        summary_path = _simulation_dir(simulation_id) / "deduplication_summary.json"
+        if not summary_path.is_file():
+            return jsonify({
+                "success": True,
+                "simulation_id": simulation_id,
+                "available": False,
+                "summary": None,
+            })
+
+        return jsonify({
+            "success": True,
+            "simulation_id": simulation_id,
+            "available": True,
+            "summary": json.loads(summary_path.read_text(encoding="utf-8")),
+        })
+    except json.JSONDecodeError as e:
+        return jsonify({
+            "success": False,
+            "simulation_id": simulation_id,
+            "error": f"invalid deduplication summary: {str(e)}",
+        }), 500
+    except Exception as e:
+        logger.error(f"读取 deduplication summary 失败: {str(e)}")
+        return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
+
+
+@simulation_bp.route('/<simulation_id>/deep-search', methods=['GET'])
+def get_simulation_deep_search(simulation_id: str):
+    """Return Deep Search trace for a simulation."""
+    try:
+        trace_path = _simulation_dir(simulation_id) / "deep_search_result.txt"
+        if not trace_path.is_file():
+            return jsonify({
+                "success": True,
+                "simulation_id": simulation_id,
+                "available": False,
+                "content": "",
+            })
+
+        return jsonify({
+            "success": True,
+            "simulation_id": simulation_id,
+            "available": True,
+            "content": trace_path.read_text(encoding="utf-8"),
+            "size": trace_path.stat().st_size,
+            "modified_at": trace_path.stat().st_mtime,
+        })
+    except Exception as e:
+        logger.error(f"读取 Deep Search trace 失败: {str(e)}")
+        return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
+
+
+@simulation_bp.route('/<simulation_id>/fusion-verdicts', methods=['GET'])
+def get_simulation_fusion_verdicts(simulation_id: str):
+    """Return Fusion verdict files that reference this simulation."""
+    try:
+        return jsonify({
+            "success": True,
+            "simulation_id": simulation_id,
+            "verdicts": _list_fusion_verdicts_for_sim(simulation_id),
+        })
+    except Exception as e:
+        logger.error(f"读取 Fusion verdict 列表失败: {str(e)}")
+        return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
+
+
+@simulation_bp.route('/<simulation_id>/fusion-verdict', methods=['GET'])
+def get_simulation_fusion_verdict(simulation_id: str):
+    """Return one Fusion verdict file by path."""
+    try:
+        rel_path = request.args.get("path", "")
+        base_dir = REPO_ROOT
+        try:
+            target = _safe_artifact_path(base_dir, rel_path, (".json",))
+        except ValueError as exc:
+            return jsonify({"success": False, "error": str(exc)}), 400
+
+        runs_headless = (RUNS_ROOT / "headless").resolve()
+        if runs_headless not in target.parents:
+            return jsonify({"success": False, "error": "path is outside fusion artifacts"}), 400
+        if target.name != "verdict_raw.json" or not target.is_file():
+            return jsonify({"success": False, "error": "not found"}), 404
+
+        data = json.loads(target.read_text(encoding="utf-8"))
+        if simulation_id and not _json_contains_value(data, simulation_id):
+            return jsonify({"success": False, "error": "verdict does not reference simulation"}), 404
+
+        return jsonify({
+            "success": True,
+            "simulation_id": simulation_id,
+            "path": rel_path,
+            "data": data,
+        })
+    except Exception as e:
+        logger.error(f"读取 Fusion verdict 失败: {str(e)}")
+        return jsonify({"success": False, "error": str(e), "traceback": traceback.format_exc()}), 500
 
 
 @simulation_bp.route('/env-status', methods=['POST'])

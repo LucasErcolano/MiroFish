@@ -1,0 +1,29 @@
+# Smoke model map: 2 agents pinned to 2 different OpenAI-compatible endpoints.
+# Used by examples/multimodel-smoke-evidence/README.md. Keys come from env vars only.
+
+version: 1
+
+default:
+  provider: openai
+  model: gpt-4o-mini
+  base_url_env: LLM_BASE_URL
+  api_key_env: LLM_API_KEY
+  temperature: 0.7
+  seed: 1
+
+fallback:
+  enabled: false
+
+by_agent_id:
+  0:
+    provider: vllm
+    model: qwen2.5-7b-instruct-awq
+    base_url: http://127.0.0.1:8000/v1
+    api_key_env: LOCAL_LLM_API_KEY
+    seed: 1
+  1:
+    provider: vllm
+    model: mistral-7b-instruct-v0.3-awq
+    base_url: http://127.0.0.1:8001/v1
+    api_key_env: LOCAL_LLM_API_KEY
+    seed: 1

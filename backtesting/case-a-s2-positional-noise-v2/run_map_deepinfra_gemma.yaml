@@ -1,0 +1,6 @@
+v2-baseline-control: gemma/v2-baseline-control-12
+v2-signal-strong-mid: gemma/v2-signal-strong-mid-12
+v2-signal-weak-mid: gemma/v2-signal-weak-mid-12
+v2-counter-colombia-mid: gemma/v2-counter-colombia-mid-12
+v2-noise-near-mid: gemma/v2-noise-near-mid-12
+v2-noise-off-mid: gemma/v2-noise-off-mid-12
