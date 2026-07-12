@@ -13,7 +13,7 @@ services:
       GRAPH_BACKEND: graphiti
       GRAPHITI_LLM_API_KEY: ${OPENROUTER_API_KEY:?Set OPENROUTER_API_KEY in .env or the shell}
       GRAPHITI_LLM_BASE_URL: ${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
-      GRAPHITI_LLM_MODEL: ${QWEN_MODEL:-qwen/qwen3-8b}
+      GRAPHITI_LLM_MODEL: ${GRAPHITI_LLM_MODEL:-google/gemma-3-27b-it}
       GRAPHITI_LLM_CLIENT_MODE: generic
       GRAPHITI_EMBEDDER_API_KEY: ${OPENROUTER_API_KEY:?Set OPENROUTER_API_KEY in .env or the shell}
       GRAPHITI_EMBEDDER_BASE_URL: ${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
@@ -21,7 +21,7 @@ services:
       GRAPHITI_EMBEDDER_DIM: "4096"
       GRAPHITI_RERANKER_API_KEY: ${OPENROUTER_API_KEY:?Set OPENROUTER_API_KEY in .env or the shell}
       GRAPHITI_RERANKER_BASE_URL: ${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
-      GRAPHITI_RERANKER_MODEL: ${QWEN_MODEL:-qwen/qwen3-8b}
+      GRAPHITI_RERANKER_MODEL: ${GRAPHITI_RERANKER_MODEL:-google/gemma-3-27b-it}
       GRAPHITI_MAX_COROUTINES: "2"
       GRAPHITI_BYPASS_NODE_DEDUP: "true"
       USE_EXPERIMENTAL_MEMORY: "true"

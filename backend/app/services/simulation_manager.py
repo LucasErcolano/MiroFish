@@ -22,6 +22,7 @@ from .simulation_planning_workflow import SimulationPlanningWorkflow
 from .simulation_plan_verifier import SimulationPlanVerifier
 from .worldbuilding_capture import WorldbuildingCapture
 from .deep_search import DeepSearchService
+from ..models.project import ProjectManager
 from ..utils.locale import t
 
 logger = get_logger('mirofish.simulation')
@@ -353,12 +354,14 @@ class SimulationManager:
                     progress_callback("research", 0, t('progress.startingDeepSearch'))
                 
                 try:
-                    deep_search = DeepSearchService()
-                    research_content = deep_search.perform_research(simulation_requirement)
-                    
+                    research_content = ProjectManager.get_deep_search_result(state.project_id)
+                    if not research_content:
+                        deep_search = DeepSearchService()
+                        research_content = deep_search.perform_research(simulation_requirement)
+                        if research_content:
+                            document_text = research_content + "\n\n" + (document_text or "")
+
                     if research_content:
-                        document_text = research_content + "\n\n" + (document_text or "")
-                        # Save research results for audit
                         research_path = os.path.join(sim_dir, "deep_search_result.txt")
                         with open(research_path, 'w', encoding='utf-8') as f:
                             f.write(research_content)

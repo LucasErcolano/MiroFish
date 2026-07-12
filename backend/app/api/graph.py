@@ -12,6 +12,7 @@ from . import graph_bp
 from ..config import Config
 from ..services.ontology_generator import OntologyGenerator
 from ..services.graph_builder import GraphBuilderService
+from ..services.project_deep_search import augment_project_document
 from ..services.text_processor import TextProcessor
 from ..utils.file_parser import FileParser
 from ..utils.logger import get_logger
@@ -206,7 +207,16 @@ def generate_ontology():
                 "success": False,
                 "error": t('api.noDocProcessed')
             }), 400
-        
+
+        all_text, research_content = augment_project_document(
+            project.project_id,
+            simulation_requirement,
+            all_text,
+        )
+        if research_content:
+            document_texts.insert(0, research_content)
+            logger.info("Grounded Deep Search added before ontology generation")
+
         # 保存提取的文本
         project.total_text_length = len(all_text)
         ProjectManager.save_extracted_text(project.project_id, all_text)

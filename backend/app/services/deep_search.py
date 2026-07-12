@@ -17,6 +17,11 @@ try:
 except ImportError:
     TavilyClient = None
 
+
+def build_search_query(theme: str, max_length: int = 400) -> str:
+    """Normalize a simulation requirement to Tavily's query-size limit."""
+    return " ".join((theme or "").split())[:max_length].rstrip()
+
 class DeepSearchService:
     """
     Agente Orquestador de Research.
@@ -47,7 +52,7 @@ class DeepSearchService:
                 # We let Tavily handle the smart search and extraction
                 logger.info("Executing Tavily Search...")
                 search_kwargs = {
-                    "query": theme,
+                    "query": build_search_query(theme),
                     "search_depth": "advanced",
                     "max_results": max_results,
                     "include_answer": True,
