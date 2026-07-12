@@ -1,0 +1,19 @@
+.env.example
+  s_83e438a4a9aa4f::t_64a7137e739c5a 21-26,33-41,47,54,64-75,97,106-107,114-118,121,123-129
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "10adcf87d46303c3f1d1472e73c576db1326338e",
+  "prompts": {},
+  "sessions": {
+    "s_83e438a4a9aa4f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f5230-66c0-7a52-8c9d-fde2cfbca228",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Your Name <you@example.com>"
+    }
+  }
+}
